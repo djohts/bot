@@ -3,11 +3,7 @@ const mongoose = require("mongoose");
 const dbCache = new Map(), dbSaveQueue = new Map();
 
 const guildObject = {
-    guildid: "",
-    channel: "",
-    description: "",
-    nextBump: 0,
-    prefix: ""
+    guildid: ""
 };
 
 const guildSchema = mongoose.Schema(JSON.parse(JSON.stringify(guildObject)), { minimize: true }); // make a copy of guildObject

@@ -5,7 +5,12 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
+const { msToTime } = require("../constants/");
 
 module.exports.run = async (interaction = new CommandInteraction) => {
-    return await interaction.reply("pong");
+    const uptime = msToTime(interaction.client.uptime);
+    const api = Math.ceil(interaction.client.ws.ping);
+    const server = Date.now() - interaction.createdTimestamp;
+
+    return await interaction.reply(`🏓 Пинг сервера \`${server}\`, пинг API \`${api}\`, аптайм бота \`${uptime}\`.`);
 };

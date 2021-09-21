@@ -14,7 +14,7 @@ const client = new Discord.Client({
         }
     }),
     intents: [
-        Discord.Intents.FLAGS.GUILDS
+        "GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES", "GUILD_VOICE_STATES"
     ],
     presence: {
         status: "dnd",
@@ -60,19 +60,14 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
 });
 
 client.on("messageCreate", async message => {
-    global.msg = message;
-
     if (
         !message.guild ||
         message.author.bot ||
-        message.type !== "DEFAULT"
+        message.type != "DEFAULT"
     ) return;
 
     const gdb = await db.guild(message.guild.id);
     global.gdb = gdb;
-
-    let { prefix } = gdb.get();
-    if (!prefix.length) prefix = config.prefix;
 
     if (message.content.startsWith(prefix) || message.content.match(`^<@!?${client.user.id}> `)) return commandHandler(message, prefix, gdb, db);
     if (message.content.match(`^<@!?${client.user.id}>`)) return message.reply(`👋 Мой префикс на этом сервере \`${prefix}\`, для помощи напишите \`${prefix}help\`.`);

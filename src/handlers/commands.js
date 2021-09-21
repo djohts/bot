@@ -10,17 +10,13 @@ module.exports = async (message = new Message, prefix = String, gdb, db) => {
     content = content.join(" ");
 
     const processCommand = async () => {
-        log.log(`**${message.author.tag.replace("*", "\*")}** used the \`${commandName}\` command (\`${message.guild.name}\` - \`${message.channel.name}\`)`);
-
-        if (static) return message.channel.send(static.message.replace(/{{INVITE}}/g, await client.generateInvite({ permissions: 281673 })));
-
         const commandFile = commands.get(commandName);
 
         const permissionLevel = getPermissionLevel(message.member);
-        if (permissionLevel < commandFile.permissionRequired) return message.channel.send("❌ Недостаточно прав.");
+        if (permissionLevel < commandFile.permissionRequired) return message.reply("❌ Недостаточно прав.");
 
-        const args = (content.match(/"[^"]+"|[^ ]+/g) || []).map(arg => /*arg.startsWith("\"") && arg.endsWith("\"") ? arg.slice(1).slice(0, -1) : */arg);
-        if (!commandFile.checkArgs(args)) return message.channel.send(`❌ Неверные аргументы. Для помощи, напишите \`${prefix}help ${commandName}\`.`);
+        const args = (content.match(/"[^"]+"|[^ ]+/g) || []).map(arg => arg);
+        if (!commandFile.checkArgs(args)) return message.reply("❌ Неверные аргументы.");
 
         return commandFile.run(message, args, gdb, { prefix, permissionLevel, db })
             .catch(async (e) => {
@@ -42,7 +38,7 @@ const commands = new Map(), aliases = new Map();
 
 fs.readdir("./src/commands/", (err, files) => {
     if (err) return log.error(err);
-    for (const file of files) if (file.endsWith(".js")) loadCommand(file.replace(".js", ""));
+    for (const file of files) if (file.endsWith(".js") && !require(`../commands/${file}`).slash) loadCommand(file.replace(".js", ""));
 });
 
 const loadCommand = fileName => {
