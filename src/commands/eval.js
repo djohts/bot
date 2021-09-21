@@ -1,6 +1,6 @@
 module.exports = {
 	aliases: ["evaluate", "ev"],
-	permissionRequired: 5, // 0 All, 1 Admins, 2 Server Owner, 3 Bot Admin, 4 Bot Owner
+	permissionRequired: 5,
 	checkArgs: (args) => !!args.length
 };
 

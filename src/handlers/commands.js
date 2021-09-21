@@ -33,7 +33,6 @@ module.exports = async (message = new Message, prefix = String, gdb, db) => {
     await processCommand();
 };
 
-// loading commands
 const commands = new Map(), aliases = new Map();
 
 fs.readdir("./src/commands/", (err, files) => {
