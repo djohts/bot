@@ -59,7 +59,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     setInterval(updatePresence, 10000); // 10 seconds
 });
 
-client.on("message", async message => {
+client.on("messageCreate", async message => {
     global.msg = message;
 
     if (
