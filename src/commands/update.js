@@ -15,7 +15,7 @@ module.exports.run = async (interaction = new Interaction) => {
         if (stdout.includes("Already up to date.")) {
             interaction.reply("Bot already up to date. No changes since last pull.");
         } else {
-            interaction.reply("Pulled from GitHub. Restarting the bot.\n\nLogs:\n```\n" + res + "\n```")
+            interaction.reply("Pulled from GitHub. Restarting the bot.\n\nLogs:\n```\n" + stdout + "\n```")
                 .then(() => setTimeout(() => process.exit(), 1000));
         };
     });
