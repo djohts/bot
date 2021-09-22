@@ -11,6 +11,7 @@ module.exports = async (message = new Message, prefix = String, gdb, db) => {
 
     const processCommand = async () => {
         const commandFile = commands.get(commandName);
+        if (!commandFile) return;
 
         const permissionLevel = getPermissionLevel(message.member);
         if (permissionLevel < commandFile.permissionRequired) return message.reply("❌ Недостаточно прав.");
