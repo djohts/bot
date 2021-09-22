@@ -41,10 +41,36 @@ module.exports.parseTime = (input = "", outputType = "ms") => {
         parse.yr =
         parse.y = parse.d * 365.25;
 
-    let result = null;
+    parse["с"] = parse["second"];
+    parse["сек"] = parse["second"];
+    parse["секунд"] = parse["second"];
+    parse["секунды"] = parse["second"];
+    parse["м"] = parse["minute"];
+    parse["мин"] = parse["minute"];
+    parse["минут"] = parse["minute"];
+    parse["минуты"] = parse["minute"];
+    parse["ч"] = parse["hour"];
+    parse["час"] = parse["hour"];
+    parse["часа"] = parse["hour"];
+    parse["часов"] = parse["hour"];
+    parse["н"] = parse["week"];
+    parse["нед"] = parse["week"];
+    parse["недели"] = parse["week"];
+    parse["неделя"] = parse["week"];
+    parse["недель"] = parse["week"];
+    parse["мес"] = parse["month"];
+    parse["месяц"] = parse["month"];
+    parse["месяца"] = parse["month"];
+    parse["месяцев"] = parse["month"];
+    parse["г"] = parse["year"];
+    parse["год"] = parse["year"];
+    parse["года"] = parse["year"];
+    parse["годов"] = parse["year"];
+
+    let result = 0;
     // ignore commas/placeholders
     input = (input + '').replace(/(\d)[,_](\d)/g, '$1$2');
-    input.replace(durationRE, function (_, n, units) {
+    input.replace(durationRE, (_, n, units) => {
         units = unitRatio(units);
         if (units) result = (result || 0) + parseFloat(n, 10) * units;
     });
