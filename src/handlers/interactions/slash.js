@@ -21,7 +21,7 @@ module.exports = async (client, shard) => {
             return commandFile.run(interaction)
                 .catch(async (e) => {
                     log.error(`An error occured while executing ${commandName}: ${e.stack}`);
-                    await interaction.reply("❌ Произошла ошибка при исполнении команды. Сообщите разработчику.");
+                    await interaction.reply({ content: "❌ Произошла ошибка при исполнении команды. Сообщите разработчику.", ephemeral: true });
                 });
         };
         await processCommand();
@@ -35,7 +35,13 @@ module.exports = async (client, shard) => {
             let file = require(`../../commands/${name}.js`);
 
             if (file.slash) {
-                commands.push({ name: name, description: file.description ? file.description : "none" });
+                commands.push(
+                    {
+                        name: name,
+                        description: file.description ? file.description : "none",
+                        options: file.opts ? file.opts : null
+                    }
+                );
             };
         };
 
