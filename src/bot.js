@@ -28,9 +28,9 @@ const log = require("./handlers/logger");
 const db = require("./database/")();
 
 global.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+global.getInvite = require("./constants/").getInvite;
 global.msToTime = require("./constants/").msToTime;
 global.plurify = require("./constants/").plurify;
-global.parse = require("./constants/").parseTime;
 global.client = client;
 global.log = log;
 global.db = db;
@@ -56,7 +56,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     client.loading = false;
 
     await updatePresence();
-    setInterval(updatePresence, 60 * 1000); // 1 minute
+    setInterval(updatePresence, 10000); // 10 seconds
 });
 
 client.on("messageCreate", async message => {
@@ -76,10 +76,10 @@ client.on("messageCreate", async message => {
 const updatePresence = async () => {
     let guildCount = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, val) => prev + val, 0));
 
-    let name = `${plurify(guildCount, "сервер")}`;
+    let name = `${prefix}help • ${plurify(guildCount, "сервер")}`;
     return client.user.setPresence({
-        status: "idle",
-        activities: [{ type: "WATCHING", name }]
+        status: "online",
+        activity: { type: "WATCHING", name }
     });
 };
 
