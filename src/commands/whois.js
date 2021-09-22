@@ -23,6 +23,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             user.avatarURL({ dynamic: true }) || user.defaultAvatarURL
         )
         .setTimestamp(Date.now());
+
     if (member.presence?.activities) emb.addField("Активности", member.presence.activities.map((activity) => `\`${activity.name}\``).join(", "));
 
     return await interaction.reply({ embeds: [emb] });
