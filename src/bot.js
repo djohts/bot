@@ -95,5 +95,5 @@ client.on("shardResume", (_, replayedEvents) => { log.log(`${shard} Resumed. ${r
 client.on("warn", info => { log.warn(`${shard} Warning. ${info}`); });
 client.login(config.token);
 
-process.on("unhandledRejection", rej => { log.error(rej.stack); });
+process.on("unhandledRejection", rej => { log.error(rej, {}); });
 process.on("SIGINT", () => process.exit());
