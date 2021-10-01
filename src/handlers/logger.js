@@ -1,7 +1,11 @@
 const chalk = require("chalk"), { logChannel } = require("../../config");
 
 module.exports = {
-    log: async (output, embedData = {}) => {
+    log: (output) => {
+        const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
+        console.log(chalk.whiteBright(`[${timeFormatted} - INFO]`, output));
+    },
+    info: async (output, embedData = {}) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.whiteBright(`[${timeFormatted} - INFO]`, output));
         let channel = require("../bot").client.channels.cache.get(logChannel);
@@ -19,7 +23,11 @@ module.exports = {
             embeds: [embedData]
         });
     },
-    error: async (output, embedData = {}) => {
+    error: (output) => {
+        const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
+        console.log(chalk.redBright(`[${timeFormatted} - ERROR]`, output));
+    },
+    bad: async (output, embedData = {}) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.redBright(`[${timeFormatted} - ERROR]`, output));
         let channel = require("../bot").client.channels.cache.get(logChannel);
