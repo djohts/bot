@@ -19,3 +19,22 @@ module.exports.deleteMessage = (message = new Message) => {
         }, 5000);
     };
 };
+
+module.exports.checkMutes = async (client = new Client) => {
+    return client.guilds.cache.map(async (guild) => {
+        if (!guild.available) return;
+
+        const guilddb = await db.guild(guild.id);
+        let mutes = Object.keys(guilddb.get().mutes);
+        if (!mutes.length) return;
+
+        mutes = mutes.filter((key) => guilddb.get().mutes[key] != -1 && guilddb.get().mutes[key] < Date.now());
+
+        for (const key in mutes) {
+            const member = await guild.members.fetch(key);
+            member.roles.remove(guilddb.get().settings.muteRole).then(() => {
+                guilddb.removeFromObject("mutes", key);
+            }).catch();
+        };
+    });
+};
