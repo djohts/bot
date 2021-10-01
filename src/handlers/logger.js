@@ -4,7 +4,7 @@ let channel = require("../bot").client.channels.cache.get(logChannel);
 module.exports = {
     log: (output, embedData = {}) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
-        if (embedData && channel) return channel.send({
+        if (embedData && channel) channel.send({
             content: `\`[${timeFormatted} - INFO]\``,
             embeds: [embedData]
         });
@@ -12,7 +12,7 @@ module.exports = {
     },
     warn: (output, embedData = {}) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
-        if (embedData && channel) return channel.send({
+        if (embedData && channel) channel.send({
             content: `\`[${timeFormatted} - WARN]\``,
             embeds: [embedData]
         });
@@ -20,7 +20,7 @@ module.exports = {
     },
     error: (output, embedData = {}) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
-        if (embedData && channel) return channel.send({
+        if (embedData && channel) channel.send({
             content: `<@419892040726347776> \`[${timeFormatted} - ERROR]\``,
             embeds: [embedData]
         });
