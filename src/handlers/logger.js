@@ -22,7 +22,11 @@ module.exports = {
             embeds: [embedData]
         });
     },
-    error: async (output, embedData = {}) => {
+    error: (output) => {
+        const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
+        console.log(chalk.redBright(`[${timeFormatted} - ERROR]`, output));
+    },
+    bad: async (output, embedData = {}) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.redBright(`[${timeFormatted} - ERROR]`, output));
         if (embedData.description && channel) await channel.send({
