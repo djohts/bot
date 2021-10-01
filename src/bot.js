@@ -86,14 +86,14 @@ const updatePresence = async () => {
     });
 };
 
-client.on("error", err => log.error(`${shard} Client error. ${err}`));
-client.on("rateLimit", rateLimitInfo => log.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
-client.on("shardDisconnected", closeEvent => log.warn(`${shard} Disconnected. ${closeEvent}`));
-client.on("shardError", err => log.error(`${shard} Error. ${err}`));
-client.on("shardReconnecting", () => log.log(`${shard} Reconnecting.`));
-client.on("shardResume", (_, replayedEvents) => log.log(`${shard} Resumed. ${replayedEvents} replayed events.`));
-client.on("warn", info => log.warn(`${shard} Warning. ${info}`));
+client.on("error", err => { log.error(`${shard} Client error. ${err}`); });
+client.on("rateLimit", rateLimitInfo => { log.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`); });
+client.on("shardDisconnected", closeEvent => { log.warn(`${shard} Disconnected. ${closeEvent}`); });
+client.on("shardError", err => { log.error(`${shard} Error. ${err}`); });
+client.on("shardReconnecting", () => { log.log(`${shard} Reconnecting.`); });
+client.on("shardResume", (_, replayedEvents) => { log.log(`${shard} Resumed. ${replayedEvents} replayed events.`); });
+client.on("warn", info => { log.warn(`${shard} Warning. ${info}`); });
 client.login(config.token);
 
-process.on("unhandledRejection", rej => log.error(rej.stack));
+process.on("unhandledRejection", rej => { log.error(rej.stack); });
 process.on("SIGINT", () => process.exit());
