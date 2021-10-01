@@ -1,4 +1,5 @@
 module.exports = {
+    name: "update",
     permissionRequired: 5,
     slash: true
 };

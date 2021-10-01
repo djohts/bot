@@ -1,4 +1,5 @@
 module.exports = {
+    name: "ping",
     description: "Посмотреть задержку и аптайм бота.",
     permissionRequired: 0,
     slash: true
@@ -12,5 +13,5 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const api = Math.ceil(interaction.client.ws.ping);
     const server = Date.now() - interaction.createdTimestamp;
 
-    return await interaction.reply(`🏓 Пинг сервера \`${server}\`, пинг API \`${api}\`, аптайм бота \`${uptime}\`.`);
+    return await interaction.reply(`🏓 Пинг сервера \`${server}ms\`, пинг API \`${api}ms\`, аптайм бота \`${uptime}\`.`);
 };

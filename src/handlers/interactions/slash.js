@@ -30,11 +30,11 @@ module.exports = async (client, shard) => {
     fs.readdir("./src/commands/", (err, files) => {
         if (err) return log.error(err);
 
-        for (let name of files) {
-            name = name.replace(".js", "");
-            let file = require(`../../commands/${name}.js`);
+        for (let filename of files) {
+            let file = require(`../../commands/${filename}`);
+            const name = file.name || "";
 
-            if (file.slash) {
+            if (file.slash && name.length) {
                 commands.push(
                     {
                         name: name,

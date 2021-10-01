@@ -1,6 +1,6 @@
 module.exports.parseTime = (input = "", outputType = "ms") => {
 
-    var durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
+    const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
 
     parse.nanosecond =
         parse.ns = 1 / 1e6;

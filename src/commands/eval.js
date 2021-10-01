@@ -13,12 +13,13 @@ module.exports.run = async (message = new Message, args) => {
 		let evaled = await eval(content);
 		if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
-		message.reply(`\`\`\`js\n${evaled}\n\`\`\``);
+		if (evaled.length > 2000) message.react("✅").catch();
+		else message.reply(`\`\`\`js\n${evaled}\n\`\`\``).catch();
 	} catch (e) {
 		let err;
 		if (typeof e == "string") err = e.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
 		else err = e;
 
-		message.reply(`\`\`\`js\n${err}\n\`\`\``);
+		message.reply(`\`\`\`js\n${err}\n\`\`\``).catch();
 	};
 };

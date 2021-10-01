@@ -13,7 +13,7 @@ module.exports.getPermissionLevel = (member = new GuildMember) => {
     return 0; // server member
 };
 
-module.exports.plurify = (number, word) => {
+module.exports.plurify = (number = 0, word = "") => {
     const endsWith = (str, suffix) => {
         return String(str).match(suffix + "$") == suffix;
     };

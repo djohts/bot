@@ -14,7 +14,7 @@ module.exports = async (message = new Message, prefix = String, gdb, db) => {
         if (!commandFile) return;
 
         const permissionLevel = getPermissionLevel(message.member);
-        if (permissionLevel < commandFile.permissionRequired) return message.reply("❌ Недостаточно прав.");
+        if (permissionLevel < commandFile.permissionRequired) return;
 
         const args = (content.match(/"[^"]+"|[^ ]+/g) || []).map(arg => arg);
         if (!commandFile.checkArgs(args)) return message.reply("❌ Неверные аргументы.");

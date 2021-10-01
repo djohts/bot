@@ -35,7 +35,7 @@ if (config.port) {
 };
 
 async function updateBotInfo() {
-    const newBotInfo = await broadcastEval(client => ({
+    const newBotInfo = await manager.broadcastEval(client => ({
         status: client.ws.status,
         guilds: client.guilds.cache.size,
         cachedUsers: client.users.cache.size,
