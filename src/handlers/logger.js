@@ -2,7 +2,11 @@ const chalk = require("chalk"), { logChannel } = require("../../config");
 let channel = require("../bot").client.channels.cache.get(logChannel);
 
 module.exports = {
-    log: async (output, embedData = {}) => {
+    log: (output) => {
+        const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
+        console.log(chalk.whiteBright(`[${timeFormatted} - INFO]`, output));
+    },
+    info: async (output, embedData = {}) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.whiteBright(`[${timeFormatted} - INFO]`, output));
         if (embedData.description && channel) await channel.send({
