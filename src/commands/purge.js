@@ -4,7 +4,7 @@ module.exports = {
     opts: [
         {
             name: "amount",
-            description: "Количество сообщений которое надо удалить. От 5 до 100.",
+            description: "Количество сообщений которое надо удалить. От 2 до 100.",
             type: 10,
             required: true
         },
@@ -17,7 +17,6 @@ module.exports = {
     slash: true
 };
 
-const sleep = (s = 1) => new Promise(resolve => setTimeout(resolve, s * 1000));
 const cooldowns = new Set();
 const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
@@ -25,7 +24,7 @@ const db = require("../database/")();
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (cooldowns.has(interaction.guild.id))
         return interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
-    else cooldowns.add(interaction.guild.id) && await sleep(2) && cooldowns.delete(interaction.guild.id);
+    else cooldowns.add(interaction.guild.id) && setTimeout(() => cooldowns.delete(interaction.guild.id), 2000);
 
     const guilddb = await db.guild(interaction.guild.id);
 
@@ -34,7 +33,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 
     const limit = interaction.options.getNumber("amount");
     if (limit > 100) return await interaction.reply({ content: "❌ На данный момент удаление больше 100 сообщений не поддерживается.", ephemeral: true });
-    if (limit < 5) return await interaction.reply({ content: "❌ Количество сообщений для удаления должно быть больше чем 5.", ephemeral: true });
+    if (limit < 2) return await interaction.reply({ content: "❌ Количество сообщений для удаления должно быть больше чем 2.", ephemeral: true });
 
     let toDelete = await interaction.channel.messages.fetch({ limit: limit });
     if (!guilddb.get().purgePinned) toDelete = toDelete.filter(m => !m.pinned);
@@ -44,15 +43,17 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const purged = await interaction.channel.bulkDelete(toDelete, true);
 
     return await interaction.reply({
-        content: (purged.size ?
-            "✅ Удалено " + (
-                purged.size == 1 ?
-                    purged.size + " сообщение" :
-                    [2, 3, 4].includes(purged.size) ?
-                        purged.size + " сообщения" :
-                        purged.size + " сообщений"
-            ) :
-            "❌ Не удалось найти сообщений для удаления."),
+        content: (
+            purged.size ?
+                "✅ Удалено " + (
+                    purged.size == 1 ?
+                        purged.size + " сообщение" :
+                        [2, 3, 4].includes(purged.size) ?
+                            purged.size + " сообщения" :
+                            purged.size + " сообщений"
+                ) :
+                "Произошла ошибка при подсчёте удалённых сообщений."
+        ),
         ephemeral: true
     });
 };
