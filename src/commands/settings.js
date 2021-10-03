@@ -32,7 +32,7 @@ module.exports = {
     slash: true
 };
 
-const { CommandInteraction, MessageEmbed } = require("discord.js");
+const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
@@ -46,23 +46,38 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     timestamp: Date.now(),
                     fields: [
                         {
-                            name: "Удаление сообщений замьюченых участников.",
-                            value: guilddb.get().settings.delMuted ? "<:online:887393623845507082> **`Включено`**" : "<:dnd:887393623786803270> **`Выключено`**",
+                            name: "Удаление сообщений замьюченых участников",
+                            value: guilddb.get().settings.delMuted ?
+                                "<:online:887393623845507082> **`Включено`**" :
+                                "<:dnd:887393623786803270> **`Выключено`**",
                             inline: true
-                        }
+                        },
+                        {
+                            name: "Удаление закреплённых сообщений",
+                            value: guilddb.get().settings.purgePinned ?
+                                "<:online:887393623845507082> **`Включено`**" :
+                                "<:dnd:887393623786803270> **`Выключено`**",
+                            inline: true
+                        },
+                        {
+                            name: "Роль мьюта",
+                            value: guilddb.get().settings.muteRole ? `<@&${guilddb.get().settings.muteRole}>` : "**`Не установлена`**"
+                        },
                     ]
                 }]
             });
         case "toggle":
             let idk = "";
-            if (interaction.options.getString("setting") == "delMuted")
-                guilddb.get().settings.delMuted ? (() => {
-                    guilddb.setOnObject("settings", "delMuted", false);
-                    idk = "**`Удаление сообщений замьюченых участников`** было выключено.";
-                })() : (() => {
-                    guilddb.setOnObject("settings", "delMuted", true);
-                    idk = "**`Удаление сообщений замьюченых участников`** было включено.";
-                })();
-            return await interaction.reply(idk);
+            switch (interaction.options.getString("setting")) {
+                case "delMuted":
+                    guilddb.get().settings.delMuted ? (() => {
+                        guilddb.setOnObject("settings", "delMuted", false);
+                        idk = "**`Удаление сообщений замьюченых участников`** было выключено.";
+                    })() : (() => {
+                        guilddb.setOnObject("settings", "delMuted", true);
+                        idk = "**`Удаление сообщений замьюченых участников`** было включено.";
+                    })();
+                    return await interaction.reply(idk);
+            };
     };
 };
