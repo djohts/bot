@@ -30,11 +30,11 @@ module.exports.checkMutes = async (client = new Client) => {
 
         mutes = mutes.filter((key) => guilddb.get().mutes[key] != -1 && guilddb.get().mutes[key] < Date.now());
 
-        for (const key in mutes) {
+        mutes.forEach(async (key) => {
             const member = await guild.members.fetch(key);
             member.roles.remove(guilddb.get().settings.muteRole).then(() => {
                 guilddb.removeFromObject("mutes", key);
             }).catch();
-        };
+        });
     });
 };

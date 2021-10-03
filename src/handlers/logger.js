@@ -1,20 +1,19 @@
-const chalk = require("chalk"), { logChannel } = require("../../config");
+const chalk = require("chalk"), { logChannel } = require("../../config"), { MessageEmbed } = require("discord.js");
 
 module.exports = {
-    log: (output) => {
+    log: async (output, embedData = new MessageEmbed) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.whiteBright(`[${timeFormatted} - INFO]`, output));
-    },
-    info: async (output, embedData = {}) => {
-        const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
-        console.log(chalk.whiteBright(`[${timeFormatted} - INFO]`, output));
+        if (output.includes("Manager")) return;
+
         let channel = require("../bot").client.channels.cache.get(logChannel);
-        if (embedData.description && channel) await channel.send({
+
+        if (embedData.description && channel) return await channel.send({
             content: `\`[${timeFormatted} - INFO]\``,
             embeds: [embedData]
         });
     },
-    warn: async (output, embedData = {}) => {
+    warn: async (output, embedData = new MessageEmbed) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.yellowBright(`[${timeFormatted} - WARN]`, output));
         let channel = require("../bot").client.channels.cache.get(logChannel);
@@ -23,15 +22,14 @@ module.exports = {
             embeds: [embedData]
         });
     },
-    error: (output) => {
+    error: async (output, embedData = new MessageEmbed) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.redBright(`[${timeFormatted} - ERROR]`, output));
-    },
-    bad: async (output, embedData = {}) => {
-        const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
-        console.log(chalk.redBright(`[${timeFormatted} - ERROR]`, output));
+        if (output.includes("Manager")) return;
+
         let channel = require("../bot").client.channels.cache.get(logChannel);
-        if (embedData.description && channel) await channel.send({
+
+        if (embedData.description && channel) return await channel.send({
             content: `<@419892040726347776> \`[${timeFormatted} - ERROR]\``,
             embeds: [embedData]
         });

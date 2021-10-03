@@ -2,14 +2,14 @@ const { CommandInteraction, Guild } = require("discord.js");
 const { getPermissionLevel } = require("../../constants/");
 const config = require("../../../config");
 const fs = require("fs");
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+const { REST } = require("@discordjs/rest");
+const { Routes } = require("discord-api-types/v9");
 
 const commands = [];
-const rest = new REST({ version: '9' }).setToken(config.token);
+const rest = new REST({ version: "9" }).setToken(config.token);
 
 module.exports = async (client, shard) => {
-    client.on("interactionCreate", async (interaction = new CommandInteraction) => {
+    client.on("interactionCreate", async (interaction = new CommandInteraction()) => {
         const processCommand = async () => {
             const commandName = interaction.commandName;
 
@@ -18,11 +18,10 @@ module.exports = async (client, shard) => {
             const permissionLevel = getPermissionLevel(interaction.member);
             if (permissionLevel < commandFile.permissionRequired) return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
 
-            return commandFile.run(interaction)
-                .catch(async (e) => {
-                    log.error(`An error occured while executing ${commandName}: ${e.stack}`);
-                    await interaction.reply({ content: "❌ Произошла ошибка при исполнении команды. Сообщите разработчику.", ephemeral: true });
-                });
+            return commandFile.run(interaction).catch(async (e) => {
+                log.error(`An error occured while executing ${commandName}: ${e.stack}`);
+                await interaction.reply({ content: "❌ Произошла ошибка при исполнении команды. Сообщите разработчику.", ephemeral: true });
+            });
         };
         await processCommand();
     });
@@ -35,21 +34,16 @@ module.exports = async (client, shard) => {
             const name = file.name || "";
 
             if (file.slash && name.length) {
-                commands.push(
-                    {
-                        name: name,
-                        description: file.description ? file.description : "none",
-                        options: file.opts ? file.opts : null
-                    }
-                );
+                commands.push({
+                    name: name,
+                    description: file.description ? file.description : "none",
+                    options: file.opts ? file.opts : null,
+                });
             };
         };
 
-        client.guilds.cache.forEach(async (guild = new Guild) => {
-            await rest.put(
-                Routes.applicationGuildCommands(client.user.id, guild.id),
-                { body: commands },
-            );
+        client.guilds.cache.forEach(async (guild = new Guild()) => {
+            await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands });
         });
 
         log.log(`${shard} Refreshed slash commands.`);
