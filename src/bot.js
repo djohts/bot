@@ -10,14 +10,12 @@ const client = new Discord.Client({
             sweepInterval: 10
         }
     }),
-    intents: [
-        "GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"
-    ],
+    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"],
     presence: {
         status: "dnd",
         activity: {
             type: "WATCHING",
-            name: "загрузочный экран"
+            name: "загрузочный экран",
         }
     }
 });
@@ -25,7 +23,7 @@ const log = require("./handlers/logger");
 const db = require("./database/")();
 const { deleteMessage, checkMutes } = require("./handlers/utils");
 
-global.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 global.msToTime = require("./constants/").msToTime;
 global.parse = require("./constants/").parseTime;
 module.exports.client = client;
@@ -38,15 +36,21 @@ let shard = "[Shard N/A]";
 
 client.once("shardReady", async (shardid, unavailable = new Set()) => {
     shard = `[Shard ${shardid}]`;
-    log.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
+    log.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`, {
+        title: shard,
+        description: `Ready as ${client.user.tag}! Caching guilds.`,
+    });
 
     client.loading = true;
 
-    let disabledGuilds = new Set([...Array.from(unavailable), ...client.guilds.cache.map(guild => guild.id)]);
+    let disabledGuilds = new Set([...Array.from(unavailable), ...client.guilds.cache.map((guild) => guild.id)]);
     let guildCachingStart = Date.now();
 
     await db.cacheGuilds(disabledGuilds);
-    log.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`);
+    log.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`, {
+        title: shard,
+        description: `All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`,
+    });
 
     disabledGuilds.size = 0;
 
@@ -63,8 +67,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
 client.on("messageCreate", async (message) => {
     if (
         !message.guild ||
-        message.author.bot ||
-        message.type != "DEFAULT"
+        message.author.bot
     ) return;
     const gdb = await db.guild(message.guild.id);
 
@@ -82,18 +85,18 @@ const updatePresence = async () => {
     let name = `тикток фм`;
     return client.user.setPresence({
         status: "idle",
-        activities: [{ type: "LISTENING", name }]
+        activities: [{ type: "LISTENING", name }],
     });
 };
 
-client.on("error", err => log.error(`${shard} Client error. ${err}`));
-client.on("rateLimit", rateLimitInfo => log.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
-client.on("shardDisconnected", closeEvent => log.warn(`${shard} Disconnected. ${closeEvent}`));
-client.on("shardError", err => log.error(`${shard} Error. ${err}`));
+client.on("error", (err) => log.error(`${shard} Client error. ${err}`));
+client.on("rateLimit", (rateLimitInfo) => log.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
+client.on("shardDisconnected", (closeEvent) => log.warn(`${shard} Disconnected. ${closeEvent}`));
+client.on("shardError", (err) => log.error(`${shard} Error. ${err}`));
 client.on("shardReconnecting", () => log.log(`${shard} Reconnecting.`));
 client.on("shardResume", (_, replayedEvents) => log.log(`${shard} Resumed. ${replayedEvents} replayed events.`));
-client.on("warn", info => log.warn(`${shard} Warning. ${info}`));
+client.on("warn", (info) => log.warn(`${shard} Warning. ${info}`));
 client.login(config.token);
 
-process.on("unhandledRejection", rej => log.error(rej));
+process.on("unhandledRejection", (rej) => log.error(rej));
 process.on("SIGINT", () => process.exit());
