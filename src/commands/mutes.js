@@ -37,26 +37,13 @@ module.exports = {
                     required: true
                 }
             ]
-        },
-        {
-            name: "role",
-            description: "Роль, которая будет выдаваться участнику при выдаче мьюта.",
-            type: 1,
-            options: [
-                {
-                    name: "role",
-                    description: "Роль.",
-                    type: 8,
-                    required: true
-                }
-            ]
         }
     ],
     slash: true
 };
 
 const { CommandInteraction, MessageEmbed } = require("discord.js");
-const { parseTime } = require("../constants/");
+const { parseTime, getPermissionLevel } = require("../constants/");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
@@ -70,6 +57,10 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 return interaction.reply({ content: "❌ Роль мьюта находится выше моей.", ephemeral: true });
             if (!interaction.guild.me.permissions.has("MANAGE_ROLES"))
                 return interaction.reply({ content: "❌ У меня нет права на выдачу ролей.", ephemeral: true });
+            if (interaction.options.getUser("member").bot)
+                return interaction.reply({ content: "❌ Вы не можете замьютить бота.", ephemeral: true });
+            if (getPermissionLevel(interaction.options.getMember("member")) >= 1)
+                return interaction.reply({ content: "❌ Вы не можете замьютить этого человека.", ephemeral: true });
 
             interaction.options.getMember("member").roles.add(role).then(async () => {
                 let time = 0;
@@ -100,17 +91,13 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             return interaction.reply("sda");
 
         case "remove":
-            guilddb.removeFromObject("mutes", interaction.options.getMember("member").user.id);
-            interaction.options.getMember("member").roles.remove(guilddb.get().settings.muteRole).then().catch();
-            return interaction.reply("s");
+            if (!guilddb.get().mutes[interaction.options.getUser("member")])
+                return interaction.reply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
 
-        case "role":
-            await guilddb.setOnObject("settings", "muteRole", interaction.options.getRole("role").id);
-            return interaction.reply({
-                content: "✅ Роль была установлена." +
-                    (interaction.guild.me.roles.cache.first().rawPosition <= interaction.options.getRole("role").rawPosition ?
-                        "\n⚠️Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**" : ""),
-                ephemeral: true
-            });
+            interaction.options.getMember("member").roles.remove(guilddb.get().settings.muteRole).then(async () => {
+                guilddb.removeFromObject("mutes", interaction.options.getMember("member").user.id);
+                await interaction.reply("s");
+            }).catch();
+            break;
     };
 };
