@@ -91,7 +91,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             return interaction.reply("sda");
 
         case "remove":
-            if (!guilddb.get().mutes[interaction.options.getUser("member")])
+            if (!guilddb.get().mutes[interaction.options.getUser("member").id])
                 return interaction.reply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
 
             interaction.options.getMember("member").roles.remove(guilddb.get().settings.muteRole).then(async () => {
