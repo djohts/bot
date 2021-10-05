@@ -52,15 +52,24 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     switch (interaction.options.getSubcommand(true)) {
         case "add":
             const role = interaction.guild.roles.cache.get(guilddb.get().settings.muteRole);
-            if (!role) return interaction.reply({ content: "❌ Не удалось найти роль мьюта или она находится выше моей.", ephemeral: true });
-            if (interaction.guild.me.roles.cache.first().rawPosition <= role.rawPosition)
-                return interaction.reply({ content: "❌ Роль мьюта находится выше моей.", ephemeral: true });
-            if (!interaction.guild.me.permissions.has("MANAGE_ROLES"))
-                return interaction.reply({ content: "❌ У меня нет права на выдачу ролей.", ephemeral: true });
-            if (interaction.options.getUser("member").bot)
-                return interaction.reply({ content: "❌ Вы не можете замьютить бота.", ephemeral: true });
-            if (getPermissionLevel(interaction.options.getMember("member")) >= 1)
-                return interaction.reply({ content: "❌ Вы не можете замьютить этого человека.", ephemeral: true });
+            if (
+                !role
+            ) return interaction.reply({ content: "❌ Не удалось найти роль мьюта или она находится выше моей.", ephemeral: true });
+            if (
+                interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <= role.rawPosition
+            ) return interaction.reply({ content: "❌ Роль мьюта находится выше моей.", ephemeral: true });
+            if (
+                !interaction.guild.me.permissions.has("MANAGE_ROLES")
+            ) return interaction.reply({ content: "❌ У меня нет права на выдачу ролей.", ephemeral: true });
+            if (
+                interaction.options.getUser("member").bot
+            ) return interaction.reply({ content: "❌ Вы не можете замьютить бота.", ephemeral: true });
+            if (
+                getPermissionLevel(interaction.options.getMember("member")) >= 1
+            ) return interaction.reply({ content: "❌ Вы не можете замьютить этого участника.", ephemeral: true });
+            if (
+                guilddb.get().mutes[interaction.options.getUser("member").id]
+            ) return interaction.reply({ content: "❌ Этот участник уже замьючен.", ephemeral: true });
 
             interaction.options.getMember("member").roles.add(role).then(async () => {
                 let time = 0;
@@ -95,7 +104,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 return interaction.reply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
 
             interaction.options.getMember("member").roles.remove(guilddb.get().settings.muteRole).then(async () => {
-                guilddb.removeFromObject("mutes", interaction.options.getMember("member").user.id);
+                guilddb.removeFromObject("mutes", interaction.options.getUser("member").id);
                 await interaction.reply("s");
             }).catch();
             break;

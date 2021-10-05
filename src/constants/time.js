@@ -1,4 +1,4 @@
-module.exports.msToTime = ms => {
+module.exports.msToTime = (ms) => {
     const
         days = Math.floor(ms / 86400000), // 24*60*60*1000
         daysms = ms % 86400000, // 24*60*60*1000

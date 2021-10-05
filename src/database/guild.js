@@ -7,9 +7,11 @@ const guildObject = {
     settings: {
         delMuted: false,
         purgePinned: false,
-        muteRole: ""
+        muteRole: "",
+        logChannel: ""
     },
-    mutes: {}
+    mutes: {},
+    bans: {}
 };
 
 const guildSchema = Schema(JSON.parse(JSON.stringify(guildObject)), { minimize: true }); // make a copy of guildObject

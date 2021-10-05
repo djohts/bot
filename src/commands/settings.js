@@ -27,6 +27,17 @@ module.exports = {
                     }
                 ]
             }]
+        },
+        {
+            name: "muterole",
+            description: "Установить роль мьюта.",
+            type: 1,
+            options: [{
+                name: "role",
+                description: "Роль.",
+                type: 8,
+                required: true
+            }]
         }
     ],
     slash: true
@@ -79,5 +90,17 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     })();
                     return await interaction.reply(idk);
             };
+            break;
+        case "muterole":
+            await guilddb.setOnObject("settings", "muteRole", interaction.options.getRole("role").id);
+            return interaction.reply({
+                content: "✅ Роль была установлена." +
+                    (
+                        interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <=
+                            interaction.options.getRole("role").rawPosition ?
+                            "\n⚠️Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**" : ""
+                    ),
+                ephemeral: true
+            });
     };
 };

@@ -10,11 +10,11 @@ module.exports.deleteMessage = (message = new Message) => {
 
     const bulk = bulks.get(message.channel.id) || [];
     if (bulk.length) bulk.push(message);
-    else if (rate < 3) message.delete().catch();
+    else if (rate < 3) message.delete().catch(() => { });
     else {
         bulks.set(message.channel.id, [message]);
         setTimeout(() => {
-            message.channel.bulkDelete(bulks.get(message.channel.id)).catch();
+            message.channel.bulkDelete(bulks.get(message.channel.id)).catch(() => { });
             bulks.delete(message.channel.id);
         }, 5000);
     };
@@ -30,11 +30,31 @@ module.exports.checkMutes = async (client = new Client) => {
 
         mutes = mutes.filter((key) => guilddb.get().mutes[key] != -1 && guilddb.get().mutes[key] < Date.now());
 
-        mutes.forEach(async (key) => {
+        return mutes.map(async (key) => {
             const member = await guild.members.fetch(key);
-            member.roles.remove(guilddb.get().settings.muteRole).then(() => {
+            return member.roles.remove(guilddb.get().settings.muteRole).then(() => {
                 guilddb.removeFromObject("mutes", key);
             }).catch();
+        });
+    });
+};
+
+module.exports.checkBans = async (client = new Client) => {
+    return client.guilds.cache.map(async (guild) => {
+        if (!guild.available) return;
+
+        const guilddb = await db.guild(guild.id);
+        let bans = Object.keys(guilddb.get().bans);
+        if (!bans.length) return;
+
+        bans = bans.filter((key) => guilddb.get().bans[key] != -1 && guilddb.get().bans[key] < Date.now());
+
+        return bans.map(async (key) => {
+            return guild.bans.fetch(key).then(() => {
+                return guild.bans.remove(key).then(() => guilddb.removeFromObject("bans", key)).catch();
+            }).catch((err) => {
+                if (err.message.toLowerCase().includes("unknown ban")) return guilddb.removeFromObject("bans", key);
+            });
         });
     });
 };

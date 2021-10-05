@@ -10,7 +10,7 @@ const client = new Discord.Client({
             sweepInterval: 10
         }
     }),
-    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES"],
+    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES", "GUILD_BANS"],
     presence: {
         status: "dnd",
         activity: {
@@ -21,7 +21,7 @@ const client = new Discord.Client({
 });
 const log = require("./handlers/logger");
 const db = require("./database/")();
-const { deleteMessage, checkMutes } = require("./handlers/utils");
+const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 global.msToTime = require("./constants/").msToTime;
@@ -38,7 +38,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     shard = `[Shard ${shardid}]`;
     log.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`, {
         title: shard,
-        description: `Ready as ${client.user.tag}! Caching guilds.`,
+        description: `\`\`\`\nReady as ${client.user.tag}! Caching guilds.\n\`\`\``,
     });
 
     client.loading = true;
@@ -49,7 +49,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     await db.cacheGuilds(disabledGuilds);
     log.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`, {
         title: shard,
-        description: `All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`,
+        description: `\`\`\`\nAll ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]\n\`\`\``,
     });
 
     disabledGuilds.size = 0;
@@ -60,8 +60,12 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
 
     await updatePresence();
     setInterval(updatePresence, 60 * 1000); // 1 minute
+
     await checkMutes(client);
-    setInterval(() => checkMutes(client), 5 * 1000);
+    setInterval(() => checkMutes(client), 5 * 1000); // 5 seconds
+
+    await checkBans(client);
+    setInterval(() => checkBans(client), 10 * 1000); // 10 seconds
 });
 
 client.on("messageCreate", async (message) => {
