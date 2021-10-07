@@ -78,22 +78,6 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 
                 guilddb.setOnObject("mutes", interaction.options.getMember("member").user.id, time);
                 await interaction.guild.members.fetch(interaction.options.getMember("member")).then((member) => member.user.createDM().then((dm) => {
-                    dm.send({
-                        embeds: [{
-                            author: {
-                                name: interaction.guild.name,
-                                iconURL: interaction.guild.iconURL({ format: "png", dynamic: true }),
-                                url: "https://discord.com/channels/" + interaction.guild.id
-                            },
-                            title: "Вы были замьючены",
-                            fields: [
-                                {
-                                    name: "Модератор",
-                                    value: `${interaction.user.toString()} (**${interaction.user.tag.replace("*", "\\*")}**)`
-                                }
-                            ]
-                        }]
-                    }).then(() => { }).catch();
                 })).catch();
             }).catch(() => interaction.reply({ content: "❌ Не удалось выдать роль участнику... У меня есть право на изменение ролей?", ephemeral: true }));
 
