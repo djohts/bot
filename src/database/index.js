@@ -11,8 +11,6 @@ module.exports = () => {
         client.shard.send("respawn");
     });
 
-    require("./global").reload();
-
     return {
         guild: require("./guild")(), // guild(guildid)
         cacheGuilds: require("./guild").cacheAll,

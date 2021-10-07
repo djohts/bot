@@ -58,3 +58,5 @@ module.exports.checkBans = async (client = new Client) => {
         });
     });
 };
+
+module.exports.parseImage = async (imageUrl = "", lang = "") => { };

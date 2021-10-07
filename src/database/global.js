@@ -40,6 +40,8 @@ const save = async (changes) => {
     }).catch(console.log);
 };
 
+if (!dbCache.has("global")) (async () => await load())();
+
 module.exports = {
     reload: () => load(),
     unload: () => dbCache.delete("global"),

@@ -4,7 +4,8 @@
   "description": "djoh's random discord bot idk",
   "main": "src/sharding.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bash": "bash"
   },
   "repository": {
     "type": "git",
