@@ -32,9 +32,9 @@ module.exports.checkMutes = async (client = new Client) => {
 
         return mutes.map(async (key) => {
             const member = await guild.members.fetch(key);
-            return member.roles.remove(guilddb.get().settings.muteRole).then(() => {
+            return member?.roles.remove(guilddb.get().settings.muteRole).then(() => {
                 guilddb.removeFromObject("mutes", key);
-            }).catch();
+            }).catch(() => { });
         });
     });
 };
