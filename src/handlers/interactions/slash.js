@@ -18,13 +18,7 @@ module.exports = async (client, shard) => {
             const permissionLevel = getPermissionLevel(interaction.member);
             if (permissionLevel < commandFile.permissionRequired) return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
 
-            return commandFile.run(interaction).catch(async (err) => {
-                log.error(`An error occured while executing ${commandName}: ${err.stack}`, {
-                    title: shard,
-                    description: `\`\`\`\nAn error occured while executing ${commandName}:\n${err.stack}\n\`\`\``
-                });
-                await interaction.reply({ content: "❌ Произошла ошибка при исполнении команды. Сообщите разработчику.", ephemeral: true });
-            });
+            return commandFile.run(interaction);
         };
         await processCommand();
     });
