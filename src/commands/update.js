@@ -8,8 +8,7 @@ const { exec } = require("child_process");
 const { Interaction } = require("discord.js");
 
 module.exports.run = async (interaction = new Interaction) => {
-    exec("git add *");
-    exec("git stash push --include-untracked");
+    exec("git checkout HEAD^ *");
     exec("git pull", (error, stdout) => {
         exec("git stash drop");
         if (error) return interaction.reply(`\`\`\`fix\n${error}\n\`\`\``);
