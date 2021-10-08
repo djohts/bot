@@ -24,6 +24,7 @@ const db = require("./database/")();
 const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+global.parseImage = require("./handlers/utils").parseImage;
 global.msToTime = require("./constants/").msToTime;
 global.parse = require("./constants/").parseTime;
 module.exports.client = client;

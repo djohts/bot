@@ -115,3 +115,4 @@ node_modules/
 config.js
 .idea
 target/
+*.traineddata

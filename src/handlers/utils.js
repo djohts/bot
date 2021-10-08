@@ -1,6 +1,7 @@
 const bulks = new Map(), rates = new Map();
 const { Message, Client } = require("discord.js");
 const db = require("../database/")();
+const Tesseract = require("tesseract.js");
 
 module.exports.deleteMessage = (message = new Message) => {
     const rate = rates.get(message.channel.id) || 0;
@@ -59,4 +60,25 @@ module.exports.checkBans = async (client = new Client) => {
     });
 };
 
-module.exports.parseImage = async (imageUrl = "", lang = "") => { };
+module.exports.parseImage = async (imageUrl = "", lang = "") => new Promise(async (res, rej) => {
+    const image = await new Promise(async (resolve, reject) => {
+        const isImage = require('image-url-validator').default;
+        if (await isImage(imageUrl)) resolve(imageUrl);
+        else reject();
+    });
+    if (!image || !lang.length) rej();
+
+    const { createWorker } = Tesseract;
+    const worker = createWorker({
+        langPath: __dirname + "/../langs",
+        gzip: true
+    });
+
+    await worker.load();
+    await worker.loadLanguage(lang);
+    await worker.initialize(lang);
+    const { data: { text } } = await worker.recognize(image);
+    await worker.terminate();
+
+    res(text);
+});

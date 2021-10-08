@@ -24,6 +24,7 @@
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "express": "^4.17.1",
+    "image-url-validator": "^1.0.4",
     "mongoose": "^5.13.3",
     "node-fetch": "^3.0.0",
     "systeminformation": "^5.9.3",
