@@ -73,7 +73,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 {
                     name: "🌐 Ссылки",
                     value: [
-                        `**Пригласи меня:** [тык](${await interaction.client.generateInvite({ permissions: 1560669439n })})`,
+                        `**Пригласи меня:** [тык](${await interaction.client.generateInvite({ permissions: BigInt("1560669439") })})`,
                         "**Сервер поддержки**: [📥 Вступить](https://discord.gg/AaS4dwVHyA)"
                     ].join("\n"),
                     inline: false
