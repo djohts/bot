@@ -10,6 +10,6 @@ module.exports.run = (message, args) => {
     exec(args.join(" "), (error, stdout) => {
         if (error) return message.reply(`${error}`);
         let res = stdout;
-        message.reply("```fix\n" + res + "\n```");
+        message.reply({ content: "```fix\n" + res + "\n```" });
     });
 };
