@@ -39,7 +39,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     };
 
     return await interaction.reply({
-        embed: {
+        embeds: [{
             title: `Информация о ${interaction.client.user.tag}`,
             timestamp: Date.now(),
             fields: [
@@ -79,6 +79,6 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     inline: false
                 }
             ].filter(f => f.name) // filters out shard field if sharding is disabled
-        }
+        }]
     });
 };
