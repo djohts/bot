@@ -20,16 +20,7 @@ module.exports = async (message = new Message(), prefix, gdb, db) => {
         const args = (content.match(/"[^"]+"|[^ ]+/g) || []).map((arg) => arg);
         if (!commandFile.checkArgs(args)) return message.reply("❌ Неверные аргументы.");
 
-        return commandFile.run(message, args, gdb, { prefix, permissionLevel, db }).catch(async (e) => {
-            log.error(`An error occured while executing ${commandName}: ${e.stack}`);
-            const m = await message.reply("❌ Произошла ошибка при исполнении команды. Сообщите разработчику.");
-
-            let additionalInfo;
-            if (e.stack.includes("DiscordAPIError: Missing"))
-                additionalInfo = "Изучив логи, удалось узнать, что Боту не хватило прав для удачного выполнения команды.";
-
-            if (additionalInfo) m.edit(m.content + "\n" + additionalInfo);
-        });
+        return commandFile.run(message, args, gdb, { prefix, permissionLevel, db });
     };
     await processCommand();
 };
