@@ -40,7 +40,7 @@ module.exports = async (client, shard) => {
         };
 
         client.guilds.cache.forEach(async (guild = new Guild()) => {
-            await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands });
+            await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch(() => { });
         });
 
         log.log(`${shard} Refreshed slash commands.`, {

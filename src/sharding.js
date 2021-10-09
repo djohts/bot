@@ -12,11 +12,17 @@ const manager = new Discord.ShardingManager("./src/bot.js", {
 manager.on("shardCreate", shard => {
     shard.on("message", m => {
         if (m == "respawn") {
-            log.log(`[Manager] Shard ${shard.id} has requested a restart.`);
+            log.warn(`[Manager] Shard ${shard.id} has requested a restart.`, {
+                title: "[Manager]",
+                description: `\`\`\`\nShard ${shard.id} has requested a restart.\`\`\``
+            });
             shard.respawn();
         };
     });
-    log.log(`[Manager] Shard ${shard.id} is starting.`);
+    log.log(`[Manager] Shard ${shard.id} is starting.`, {
+        title: "[Manager]",
+        description: `\`\`\`\nShard ${shard.id} is starting.\`\`\``
+    });
 });
 
 let botInfo = {};
