@@ -8,7 +8,8 @@ const { exec } = require("child_process");
 
 module.exports.run = (message, args) => {
     exec(args.join(" "), (error, stdout) => {
-        let res = (error || stdout);
-        message.reply(`\`\`\`${res}\`\`\``);
+        if (error) return message.reply(`${error}`);
+        let res = stdout;
+        message.reply("```fix\n" + res + "\n```");
     });
 };
