@@ -1,4 +1,5 @@
-const chalk = require("chalk"), { logChannel } = require("../../config"), { MessageEmbed } = require("discord.js");
+const chalk = require("chalk"), { log: { id, token } } = require("../../config"), { MessageEmbed, WebhookClient } = require("discord.js");
+const log = new WebhookClient(id, token);
 
 module.exports = {
     log: async (output, embedData = new MessageEmbed) => {
@@ -6,9 +7,7 @@ module.exports = {
         console.log(chalk.whiteBright(`[${timeFormatted} - INFO]`, output));
         if (output.includes("Manager")) return;
 
-        let channel = require("../bot").client.channels.cache.get(logChannel);
-
-        if (embedData.description && channel) return await channel.send({
+        if (embedData.description && log) return await log.send({
             content: `\`[${timeFormatted} - INFO]\``,
             embeds: [embedData]
         });
@@ -16,8 +15,8 @@ module.exports = {
     warn: async (output, embedData = new MessageEmbed) => {
         const timeFormatted = new Date().toLocaleTimeString("ru-RU", { hour12: false });
         console.log(chalk.yellowBright(`[${timeFormatted} - WARN]`, output));
-        let channel = require("../bot").client.channels.cache.get(logChannel);
-        if (embedData.description && channel) await channel.send({
+
+        if (embedData.description && log) await log.send({
             content: `\`[${timeFormatted} - WARN]\``,
             embeds: [embedData]
         });
@@ -27,9 +26,7 @@ module.exports = {
         console.log(chalk.redBright(`[${timeFormatted} - ERROR]`, output));
         if (output.includes("Manager")) return;
 
-        let channel = require("../bot").client.channels.cache.get(logChannel);
-
-        if (embedData.description && channel) return await channel.send({
+        if (embedData.description && log) return await log.send({
             content: `<@419892040726347776> \`[${timeFormatted} - ERROR]\``,
             embeds: [embedData]
         });
