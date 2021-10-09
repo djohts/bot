@@ -44,8 +44,8 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             color: config.color,
             timestamp: Date.now(),
             footer: {
-                icon_url: message.author.displayAvatarURL(),
-                text: `Запрос от ${message.author.tag}`
+                icon_url: interaction.author.displayAvatarURL(),
+                text: `Запрос от ${interaction.author.tag}`
             },
             fields: [
                 {
@@ -67,7 +67,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     inline: true
                 },
                 {
-                    name: interaction.client.shard ? `🔷 Этот шард (${message.guild.shardID})` : false,
+                    name: interaction.client.shard ? `🔷 Этот шард (${interaction.guild.shardId})` : false,
                     value: [
                         `**Кол-во серверов**: \`${interaction.client.guilds.cache.size}\``,
                         `**Кол-во юзеров**: \`${interaction.client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)}\``,
