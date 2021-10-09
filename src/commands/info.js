@@ -41,12 +41,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     return await interaction.reply({
         embed: {
             title: `Информация о ${interaction.client.user.tag}`,
-            color: config.color,
             timestamp: Date.now(),
-            footer: {
-                icon_url: interaction.author.displayAvatarURL(),
-                text: `Запрос от ${interaction.author.tag}`
-            },
             fields: [
                 {
                     name: "💠 Хост",
