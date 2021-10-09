@@ -53,4 +53,4 @@ async function updateBotInfo() {
     return botInfo = newBotInfo;
 };
 
-manager.spawn(config.shards || "auto", 3000);
+manager.spawn(config.shards || "auto", 2000);
