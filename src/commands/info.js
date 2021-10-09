@@ -38,7 +38,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         else memoryUsageGlobal = memoryGlobal.toFixed(2) + "MB";
     };
 
-    message.channel.send({
+    return await interaction.reply({
         embed: {
             title: `Информация о ${interaction.client.user.tag}`,
             color: config.color,
@@ -79,7 +79,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     name: "🌐 Ссылки",
                     value: [
                         `**Пригласи меня:** [тык](${await interaction.client.generateInvite({ permissions: 281673 })})`,
-                        "**Сервер поддержки**: [dsc.gg/sof](https://dsc.gg/sof)"
+                        "**Сервер поддержки**: [📥 Вступить](https://discord.gg/AaS4dwVHyA)"
                     ].join("\n"),
                     inline: false
                 }
