@@ -64,11 +64,12 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             if (guilddb.get().mutes[interaction.options.getUser("member").id])
                 return interaction.reply({ content: "❌ Этот участник уже замьючен.", ephemeral: true });
 
-            interaction.options.getMember("member").roles.add(role).then(async () => {
-                let time = 0;
-                if (!interaction.options.getString("time")?.length) time = -1;
-                else time = Date.now() + parseTime(interaction.options.getString("time"));
+            let dmsent = false;
+            let time = 0;
+            if (!interaction.options.getString("time")?.length) time = -1;
+            else time = Date.now() + parseTime(interaction.options.getString("time"));
 
+            interaction.options.getMember("member").roles.add(role).then(async () => {
                 guilddb.setOnObject("mutes", interaction.options.getMember("member").user.id, time);
             }).catch(async (err) => {
                 await interaction.reply({ content: "❌ Произошла какая-то ошибка...", ephemeral: true });
