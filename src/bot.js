@@ -5,9 +5,23 @@ const commandHandler = require("./handlers/commands");
 const slashHandler = require("./handlers/interactions/slash");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
+        BaseGuildEmojiManager: 0,
+        GuildStickerManager: 0,
+        GuildInviteManager: 0,
+        GuildBanManager: 0,
         MessageManager: {
-            maxSize: 1,
-            sweepInterval: 10
+            sweepInterval: 30,
+            keepOverLimit: (message) => message.author.id != message.client.user.id,
+            sweepFilter: Discord.LimitedCollection.filterByLifetime({
+                lifetime: 300
+            })
+        },
+        GuildMemberManager: {
+            sweepInterval: 30,
+            sweepFilter: Discord.LimitedCollection.filterByLifetime({
+                lifetime: 300,
+                excludeFromSweep: (member) => member.user.id == member.client.user.id
+            })
         }
     }),
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES", "GUILD_BANS"],
