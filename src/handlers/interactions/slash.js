@@ -38,6 +38,8 @@ module.exports = async (client, shard) => {
                 });
             };
         };
+        
+        client.slashes = commands;
 
         client.guilds.cache.forEach(async (guild = new Guild()) => {
             await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch(() => { });
