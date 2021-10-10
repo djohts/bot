@@ -1,6 +1,5 @@
 const Discord = require("discord.js");
 const config = require("../config");
-const { prefix } = require("../config");
 const commandHandler = require("./handlers/commands");
 const slashHandler = require("./handlers/interactions/slash");
 const client = new Discord.Client({
@@ -53,6 +52,7 @@ global.db = db;
 let shard = "[Shard N/A]";
 
 client.once("shardReady", async (shardid, unavailable = new Set()) => {
+    client.shardId = shardid;
     shard = `[Shard ${shardid}]`;
     log.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`, {
         title: shard,
@@ -98,11 +98,10 @@ client.on("messageCreate", async (message) => {
 
     global.gdb = gdb;
     global.gldb = await db.global;
-    if (message.content.startsWith(prefix) || message.content.match(`^<@!?${client.user.id}> `)) return commandHandler(message, prefix, gdb, db);
-    if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch();
+    if (message.content.startsWith(config.prefix) || message.content.match(`^<@!?${client.user.id}> `)) return commandHandler(message, prefix, gdb, db);
+    if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => { });
 });
 
-const { plurify } = require("./constants/");
 const updatePresence = async () => {
     let name = `тикток фм`;
     return client.user.setPresence({
