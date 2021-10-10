@@ -49,9 +49,9 @@ async function updateBotInfo() {
         ping: client.ws.ping,
         loading: client.loading
     })).then(results => results.reduce((info, next, index) => {
-        for (const [key, value] of Object.entries(next))
-            if (["guilds", "cachedUsers", "users"].includes(key))
-                info[key] = (info[key] || 0) + value;
+        for (const [key, value] of Object.entries(next)) {
+            if (["guilds", "cachedUsers", "users"].includes(key)) info[key] = (info[key] || 0) + value;
+        };
         info.shards[`${index}`] = next;
         return info;
     }, { shards: {} }));
