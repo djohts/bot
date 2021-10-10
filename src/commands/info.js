@@ -17,21 +17,12 @@ let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memo
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10000;
-        if (interaction.client.shard) {
-            guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, val) => prev + val, 0));
-            users = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)).then(res => res.reduce((prev, val) => prev + val, 0));
-            shardCount = interaction.client.shard.count;
-        } else {
-            guilds = interaction.client.guilds.cache.size;
-            users = interaction.client.users.cache.size;
-            shardCount = 0;
-        };
 
-        const { heapUsed, rss } = process.memoryUsage();
+        guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, val) => prev + val, 0));
+        users = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)).then(res => res.reduce((prev, val) => prev + val, 0));
+        shardCount = interaction.client.shard.count;
 
-        memory = heapUsed / (1048576); // 1024 * 1024
-        if (memory >= 1024) memoryUsage = (memory / 1024).toFixed(2) + "GB";
-        else memoryUsage = memory.toFixed(2) + "MB";
+        const { rss } = process.memoryUsage();
 
         memoryGlobal = rss / (1048576); // 1024 * 1024
         if (memoryGlobal >= 1024) memoryUsageGlobal = (memoryGlobal / 1024).toFixed(2) + "GB";
@@ -48,7 +39,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     value: [
                         `**ОС**: \`${platform}\``,
                         `**Библиотека**: \`discord.js${djsversion}\``,
-                        `**Исп. ОЗУ**: \`${interaction.client.shard ? memoryUsageGlobal : memoryUsage}\``
+                        `**Исп. ОЗУ**: \`${memoryUsageGlobal}\``
                     ].join("\n"),
                     inline: true
                 },
@@ -62,7 +53,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     inline: true
                 },
                 {
-                    name: interaction.client.shard ? `🔷 Этот шард (${interaction.guild.shardId})` : false,
+                    name: `🔷 Этот шард (${interaction.guild.shardId})`,
                     value: [
                         `**Кол-во серверов**: \`${interaction.client.guilds.cache.size}\``,
                         `**Кол-во юзеров**: \`${interaction.client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)}\``,
@@ -78,7 +69,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     ].join("\n"),
                     inline: false
                 }
-            ].filter(f => f.name) // filters out shard field if sharding is disabled
+            ]
         }]
     });
 };
