@@ -77,7 +77,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             });
 
             return await interaction.reply({
-                content: `✅ ${user.toString()} был успешно замьючен.` +
+                content: `✅ ${interaction.options.getUser("member").toString()} был успешно замьючен.` +
                     (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
                 ephemeral: true
             });
