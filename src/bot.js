@@ -112,7 +112,7 @@ const updatePresence = async () => {
 };
 
 client.on("guildCreate", async (guild) => {
-    await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.commands }).catch(() => { });
+    await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch(() => { });
 });
 
 client.on("error", (err) => log.error(`${shard} Client error. ${err}`));
