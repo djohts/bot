@@ -1,5 +1,6 @@
 module.exports = {
     name: "purge",
+    description: "Удалить указанное количество сообщений в канале.",
     permissionRequired: 1,
     opts: [
         {
