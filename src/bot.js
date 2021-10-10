@@ -36,6 +36,9 @@ const client = new Discord.Client({
 const log = require("./handlers/logger");
 const db = require("./database/")();
 const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
+const { REST } = require("@discordjs/rest");
+const { Routes } = require("discord-api-types/v9");
+const rest = new REST({ version: "9" }).setToken(config.token);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 global.parseImage = require("./handlers/utils").parseImage;
@@ -107,6 +110,10 @@ const updatePresence = async () => {
         activities: [{ type: "LISTENING", name }],
     });
 };
+
+client.on("guildCreate", async (guild) => {
+    await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.commands }).catch(() => { });
+});
 
 client.on("error", (err) => log.error(`${shard} Client error. ${err}`));
 client.on("rateLimit", (rateLimitInfo) => log.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
