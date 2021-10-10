@@ -77,13 +77,13 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     client.loading = false;
 
     await updatePresence();
-    setInterval(updatePresence, 60 * 1000); // 1 minute
+    setInterval(updatePresence, 10 * 60 * 1000); // 10 minutes
 
     await checkMutes(client);
-    setInterval(() => checkMutes(client), 5 * 1000); // 5 seconds
+    setInterval(() => checkMutes(client), 3 * 1000); // 3 seconds
 
     await checkBans(client);
-    setInterval(() => checkBans(client), 10 * 1000); // 10 seconds
+    setInterval(() => checkBans(client), 5 * 1000); // 5 seconds
 });
 
 client.on("messageCreate", async (message) => {
