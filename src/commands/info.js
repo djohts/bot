@@ -71,5 +71,5 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 }
             ]
         }]
-    });
+    }).then(i => i.react("😄") && console.log(i));
 };
