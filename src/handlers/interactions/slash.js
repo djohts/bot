@@ -38,7 +38,7 @@ module.exports = async (client, shard) => {
                 });
             };
         };
-        
+
         client.slashes = commands;
 
         client.guilds.cache.forEach(async (guild = new Guild()) => {
