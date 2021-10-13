@@ -138,10 +138,10 @@ client.on("shardResume", (_, replayedEvents) => log.log(`${shard} Resumed. ${rep
     title: shard,
     description: `Resumed. ${replayedEvents} replayed events.`
 }));
-client.on("warn", (info) => log.warn(`${shard} Warning. ${info}`), {
+client.on("warn", (info) => log.warn(`${shard} Warning. ${info}`, {
     title: shard,
     description: `Warning. ${info}`
-});
+}));
 client.login(config.token);
 
 process.on("unhandledRejection", (rej) => log.error(rej.message + "\n" + rej.stack));
