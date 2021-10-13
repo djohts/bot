@@ -1,16 +1,16 @@
-const Discord = require("discord.js");
+const { ShardingManager } = require("discord.js");
 const config = require("../config");
 const express = require("express");
 const log = require("./handlers/logger");
 
-const manager = new Discord.ShardingManager("./src/bot.js", {
+const manager = new ShardingManager("./src/bot.js", {
     totalShards: config.shards || "auto",
     token: config.token,
     mode: "worker"
 });
 
-manager.on("shardCreate", shard => {
-    shard.on("message", m => {
+manager.on("shardCreate", async (shard) => {
+    shard.on("message", (m) => {
         if (m == "respawn") {
             log.warn(`[Manager] Shard ${shard.id} has requested a restart.`, {
                 title: "[Manager]",
@@ -19,7 +19,7 @@ manager.on("shardCreate", shard => {
             shard.respawn();
         };
     });
-    log.log(`[Manager] Shard ${shard.id} is starting.`, {
+    await log.log(`[Manager] Shard ${shard.id} is starting.`, {
         title: "[Manager]",
         description: `\`\`\`\nShard ${shard.id} is starting.\`\`\``
     });
@@ -32,22 +32,19 @@ if (config.port) {
 
     setInterval(updateBotInfo, 5000);
 
-    api.get("/", (_, response) => response.json(botInfo));
-    api.get("/newest", async (_, response) => {
-        const newInfo = await updateBotInfo();
-        return response.json(newInfo);
-    });
+    api.get("/", (_, res) => /* response.json(botInfo) */ res.sendStatus(200));
+    api.get("/newest", async (_, res) => res.json(await updateBotInfo()));
     api.listen(config.port);
 };
 
 async function updateBotInfo() {
-    const newBotInfo = await manager.broadcastEval(client => ({
-        status: client.ws.status,
-        guilds: client.guilds.cache.size,
-        cachedUsers: client.users.cache.size,
-        users: client.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
-        ping: client.ws.ping,
-        loading: client.loading
+    const newBotInfo = await manager.broadcastEval(bot => ({
+        status: bot.ws.status,
+        guilds: bot.guilds.cache.size,
+        cachedUsers: bot.users.cache.size,
+        users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
+        ping: bot.ws.ping,
+        loading: bot.loading
     })).then(results => results.reduce((info, next, index) => {
         for (const [key, value] of Object.entries(next)) {
             if (["guilds", "cachedUsers", "users"].includes(key)) info[key] = (info[key] || 0) + value;
