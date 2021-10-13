@@ -52,13 +52,13 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const member = interaction.guild.members.resolve(interaction.options.getUser("member").id);
     const user = interaction.options.getUser("member").id;
     if (!role) return interaction.reply({ content: "❌ Не удалось найти роль мьюта.", ephemeral: true });
+    if (!interaction.guild.me.permissions.has("MANAGE_ROLES"))
+        return interaction.reply({ content: "❌ У меня нет прав для изменения ролей.", ephemeral: true });
 
     switch (interaction.options.getSubcommand(true)) {
         case "add":
             if (interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <= role.rawPosition)
                 return interaction.reply({ content: "❌ Роль мьюта находится выше моей.", ephemeral: true });
-            if (!interaction.guild.me.permissions.has("MANAGE_ROLES"))
-                return interaction.reply({ content: "❌ У меня нет права на изменение ролей.", ephemeral: true });
             if (member.user.bot)
                 return interaction.reply({ content: "❌ Вы не можете замьютить бота.", ephemeral: true });
             if (getPermissionLevel(interaction.options.getMember("member")) >= 1)
