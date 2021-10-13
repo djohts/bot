@@ -94,11 +94,11 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         case "muterole":
             await guilddb.setOnObject("settings", "muteRole", interaction.options.getRole("role").id);
             return interaction.reply({
-                content: "✅ Роль была установлена." +
+                content: "✅ Роль мьюта была установлена." +
                     (
                         interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <=
                             interaction.options.getRole("role").rawPosition ?
-                            "\n⚠️Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**" : ""
+                            "\n⚠️ Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**" : ""
                     ),
                 ephemeral: true
             });
