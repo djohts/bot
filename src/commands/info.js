@@ -16,17 +16,20 @@ let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memo
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (nextUpdate < Date.now()) {
-        nextUpdate = Date.now() + 10000;
+        nextUpdate = Date.now() + 5000;
 
         guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, val) => prev + val, 0));
         users = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)).then(res => res.reduce((prev, val) => prev + val, 0));
         shardCount = interaction.client.shard.count;
 
-        const { rss } = process.memoryUsage();
+        const { rss, heapUsed } = process.memoryUsage();
 
         memoryGlobal = rss / (1048576); // 1024 * 1024
         if (memoryGlobal >= 1024) memoryUsageGlobal = (memoryGlobal / 1024).toFixed(2) + "GB";
         else memoryUsageGlobal = memoryGlobal.toFixed(2) + "MB";
+        memory = heapUsed / (1048576); // 1024 * 1024
+        if (memory >= 1024) memoryUsage = (memory / 1024).toFixed(2) + "GB";
+        else memoryUsage = memory.toFixed(2) + "MB";
     };
 
     return await interaction.reply({
