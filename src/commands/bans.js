@@ -8,9 +8,9 @@ module.exports = {
             type: 1,
             options: [
                 {
-                    name: "userid",
-                    description: "ID пользователя, которого надо забанить.",
-                    type: 3,
+                    name: "user",
+                    description: "Пользователь, которого надо забанить, или его ID.",
+                    type: 6,
                     required: true
                 },
                 {
@@ -31,9 +31,9 @@ module.exports = {
             type: 1,
             options: [
                 {
-                    name: "userid",
-                    description: "ID пользователя, которого надо разбанить.",
-                    type: 3,
+                    name: "user",
+                    description: "Пользователь, которого надо разбанить, или его ID.",
+                    type: 6,
                     required: true
                 }
             ]
@@ -47,27 +47,24 @@ const { parseTime, getPermissionLevel, msToTime } = require("../constants/");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
-    const guilddb = await db.guild(interaction.guild.id);
+    if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
+        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / выдачи и снятия банов.", ephemeral: true });
+    if (interaction.options.getString("time")?.length && !parseTime(interaction.options.getString("time")))
+        return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
+
     const bans = await interaction.guild.bans.fetch();
-    const member = await interaction.guild.members.fetch(interaction.options.getString("userid")).catch(() => { });
-    const user = await interaction.client.users.fetch(interaction.options.getString("userid")).catch(() => { });
+    const guilddb = await db.guild(interaction.guild.id);
+    const user = interaction.options.getUser("user");
+    const member = interaction.options.getMember("user");
 
     switch (interaction.options.getSubcommand(true)) {
         case "add":
-            if (
-                !interaction.guild.me.permissions.has("BAN_MEMBERS")
-            ) return interaction.reply({ content: "❌ У меня нет права для выдачи бана.", ephemeral: true });
-            if (
-                guilddb.get().bans[interaction.options.getString("userid")] ||
-                bans.has(interaction.options.getString("userid"))
-            ) return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
-            if (
-                getPermissionLevel(member) >= 1
-            ) return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
-            if (
-                member &&
-                !member.bannable
-            ) return interaction.reply({ content: "❌ Не удалось забанить этого участника.", ephemeral: true });
+            if (guilddb.get().bans[user.id] && bans.has(user.id))
+                return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
+            if (getPermissionLevel(member) >= 1)
+                return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
+            if (member && !member.bannable)
+                return interaction.reply({ content: "❌ Не удалось забанить этого участника.", ephemeral: true });
 
             let dmsent = false;
             let time = 0;
@@ -98,15 +95,11 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             });
 
         case "remove":
-            if (
-                !guilddb.get().bans[interaction.options.getString("userid")]
-            ) return interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true });
-            if (
-                !interaction.guild.me.permissions.has("BAN_MEMBERS")
-            ) return interaction.reply({ content: "❌ У меня нет прав для снятия банов.", ephemeral: true });
+            if (!guilddb.get().bans[user.id] && !bans.has(user.id))
+                return interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true });
 
-            interaction.guild.bans.remove(interaction.options.getString("userid")).then(async () => {
-                guilddb.removeFromObject("bans", interaction.options.getString("userid"));
+            interaction.guild.bans.remove(user.id).then(async () => {
+                guilddb.removeFromObject("bans", interaction.options.getString("user"));
                 await interaction.reply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
             });
             break;
