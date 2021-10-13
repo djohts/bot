@@ -21,7 +21,7 @@ manager.on("shardCreate", async (shard) => {
     });
     await log.log(`[Manager] Shard ${shard.id} is starting.`, {
         title: "[Manager]",
-        description: `\`\`\`\nShard ${shard.id} is starting.\`\`\``
+        description: `\`\`\`\nShard ${shard.id} is starting.\n\`\`\``
     });
 });
 
