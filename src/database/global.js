@@ -8,6 +8,7 @@ const globalObject = {
 
 const globalSchema = Schema(JSON.parse(JSON.stringify(globalObject)), { minimize: true });
 const Global = model("Global", globalSchema);
+global.Global = Global;
 
 const get = () => new Promise((resolve, reject) => Global.findOne({}, (err, global) => {
     if (err) return reject(err);

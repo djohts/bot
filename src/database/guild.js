@@ -16,6 +16,7 @@ const guildObject = {
 
 const guildSchema = Schema(JSON.parse(JSON.stringify(guildObject)), { minimize: true }); // make a copy of guildObject
 const Guild = model("Guild", guildSchema);
+global.Guild = Guild;
 
 const get = (guildid) => new Promise((resolve, reject) => Guild.findOne({ guildid }, (err, guild) => {
     if (err) return reject(err);
