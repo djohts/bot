@@ -6,7 +6,7 @@ module.exports = {
         {
             name: "amount",
             description: "Количество сообщений которое надо удалить. От 2 до 100.",
-            type: 10,
+            type: 4,
             required: true
         },
         {
@@ -32,7 +32,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     if (!interaction.channel.permissionsFor(interaction.guild.me).has("MANAGE_MESSAGES"))
         return await interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
 
-    const limit = interaction.options.getNumber("amount");
+    const limit = interaction.options.getInteger("amount");
     if (limit > 100) return await interaction.reply({ content: "❌ На данный момент удаление больше 100 сообщений не поддерживается.", ephemeral: true });
     if (limit < 2) return await interaction.reply({ content: "❌ Количество сообщений для удаления должно быть больше чем 2.", ephemeral: true });
 
