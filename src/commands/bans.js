@@ -68,6 +68,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 
             let dmsent = false;
             let time = 0;
+            let reason = interaction.options.getString("reason");
             if (!interaction.options.getString("time")?.length) time = -1;
             else time = Date.now() + parseTime(interaction.options.getString("time"));
 
@@ -80,11 +81,13 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 .setTitle("Вы были забанены")
                 .addField("Модератор", `${interaction.user.toString()} (**${interaction.user.tag.replace("*", "\\*")}**)`, true);
             if (time != -1) dmemb.addField("Время", msToTime(parseTime(interaction.options.getString("time"))), true);
-            if (interaction.options.getString("reason")?.length) dmemb.addField("Причина", interaction.options.getString("reason"));
+            if (reason.length) dmemb.addField("Причина", reason.trim());
 
             await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => { });
 
-            await interaction.guild.bans.create(user.id).then(() => {
+            await interaction.guild.bans.create(user.id, {
+                reason: interaction.user.tag + (reason.length ? ": " + reason : "")
+            }).then(() => {
                 guilddb.setOnObject("bans", user.id, time);
             });
 
