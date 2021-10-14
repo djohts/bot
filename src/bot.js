@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const config = require("../config");
 const commandHandler = require("./handlers/commands");
-const slashHandler = require("./handlers/interactions/slash");
+const slashHandler = require("./handlers/interactions/");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         BaseGuildEmojiManager: 0,
@@ -72,9 +72,15 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
 
     disabledGuilds.size = 0;
 
-    slashHandler(client, shard);
+    slashHandler(client);
 
     client.loading = false;
+
+    await require("./handlers/interactions/slash").registerCommands(client, shard);
+    log.log(`${shard} Refreshed slash commands.`, {
+        title: shard,
+        description: "```\nRefreshed slash commands.\n```"
+    });
 
     await updatePresence();
     setInterval(updatePresence, 10 * 60 * 1000); // 10 minutes
@@ -116,31 +122,31 @@ client.on("guildCreate", async (guild) => {
 
 client.on("error", (err) => log.error(`${shard} Client error. ${err}`, {
     title: shard,
-    description: `Client error. ${err}`
+    description: "```\n" + `Client error. ${err}` + "\n```"
 }));
 client.on("rateLimit", (rateLimitInfo) => log.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`, {
     title: shard,
-    description: `Rate limited.\n${JSON.stringify(rateLimitInfo)}`
+    description: "```\n" + `Rate limited.\n${JSON.stringify(rateLimitInfo)}` + "\n```"
 }));
 client.on("shardDisconnected", (closeEvent) => log.warn(`${shard} Disconnected. ${closeEvent}`, {
     title: shard,
-    description: `Disconnected. ${closeEvent}`
+    description: "```\n" + `Disconnected. ${closeEvent}` + "\n```"
 }));
 client.on("shardError", (err) => log.error(`${shard} Error. ${err}`, {
     title: shard,
-    description: `Error. ${err}`
+    description: "```\n" + `Error. ${err}` + "\n```"
 }));
 client.on("shardReconnecting", () => log.log(`${shard} Reconnecting.`, {
     title: shard,
-    description: `Reconnecting.`
+    description: "```\nReconnecting.\n```"
 }));
 client.on("shardResume", (_, replayedEvents) => log.log(`${shard} Resumed. ${replayedEvents} replayed events.`, {
     title: shard,
-    description: `Resumed. ${replayedEvents} replayed events.`
+    description: "```\n" + `Resumed. ${replayedEvents} replayed events.` + "\n```"
 }));
 client.on("warn", (info) => log.warn(`${shard} Warning. ${info}`, {
     title: shard,
-    description: `Warning. ${info}`
+    description: "```\n" + `Warning. ${info}` + "\n```"
 }));
 client.login(config.token);
 
