@@ -32,8 +32,9 @@ if (config.port) {
 
     setInterval(updateBotInfo, 5000);
 
-    api.get("/", (_, res) => /* response.json(botInfo) */ res.sendStatus(200));
+    api.get("/", (_, res) => response.json(botInfo));
     api.get("/newest", async (_, res) => res.json(await updateBotInfo()));
+
     api.listen(config.port);
 };
 

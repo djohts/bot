@@ -15,6 +15,7 @@ const config = require("../../config");
 let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    const botId = interaction.client.user.id;
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 5000;
 
@@ -67,7 +68,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 {
                     name: "🌐 Ссылки",
                     value: [
-                        `**Пригласи меня:** [📥 Добавить](https://discord.com/oauth2/authorize?client_id=889214509544247306&scope=applications.commands%20bot&permissions=1560669439)`,
+                        `**Пригласи меня:** [📥 Добавить](https://discord.com/oauth2/authorize?client_id=${botId}&scope=applications.commands%20bot&permissions=1543892223)`,
                         "**Сервер поддержки**: [📥 Вступить](https://discord.gg/AaS4dwVHyA)"
                     ].join("\n"),
                     inline: false

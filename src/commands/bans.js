@@ -22,6 +22,11 @@ module.exports = {
                     name: "reason",
                     description: "Причина выдачи бана.",
                     type: 3
+                },
+                {
+                    name: "purgedays",
+                    description: "Удаление сообщений пользователя за указанное время, в днях. От 0 до 7.",
+                    type: 4
                 }
             ]
         },
@@ -69,8 +74,10 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             let dmsent = false;
             let time = 0;
             let reason = interaction.options.getString("reason");
+            let purgedays = interaction.options.getInteger("purgedays");
             if (!interaction.options.getString("time")?.length) time = -1;
             else time = Date.now() + parseTime(interaction.options.getString("time"));
+            if (purgedays < 0 || purgedays > 7) return interaction.reply({ content: "❌ `purgedays` должно быть от 0 до 7.", ephemeral: true });
 
             const dmemb = new MessageEmbed()
                 .setAuthor(
@@ -86,15 +93,15 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => { });
 
             await interaction.guild.bans.create(user.id, {
-                reason: interaction.user.tag + (reason.length ? ": " + reason : "")
+                reason: interaction.user.tag + (reason.length ? ": " + reason : ""),
+                days: purgedays
             }).then(() => {
                 guilddb.setOnObject("bans", user.id, time);
             });
 
             return interaction.reply({
                 content: `✅ ${user.toString()} был успешно забанен.` +
-                    (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
-                ephemeral: true
+                    (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
             });
 
         case "remove":
