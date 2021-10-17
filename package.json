@@ -25,10 +25,8 @@
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
     "express": "^4.17.1",
-    "image-url-validator": "^1.0.4",
     "mongoose": "^5.13.3",
     "systeminformation": "^5.9.3",
-    "tesseract.js": "^2.1.5",
     "utf-8-validate": "^5.0.5",
     "zlib-sync": "^0.1.7"
   }

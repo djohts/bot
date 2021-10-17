@@ -76,7 +76,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
 
     client.loading = false;
 
-    await require("./handlers/interactions/slash").registerCommands(client, shard);
+    await require("./handlers/interactions/slash").registerCommands(client);
     log.log(`${shard} Refreshed slash commands.`, {
         title: shard,
         description: "```\nRefreshed slash commands.\n```"
@@ -109,7 +109,8 @@ client.on("messageCreate", async (message) => {
 });
 
 const updatePresence = async () => {
-    let name = `тикток фм`;
+    const gc = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, cur) => prev + cur, 0));
+    let name = `тикток фм | ${gc} guilds`;
     return client.user.setPresence({
         status: "idle",
         activities: [{ type: "LISTENING", name }],
