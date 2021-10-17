@@ -1,6 +1,6 @@
 module.exports = {
     name: "settings",
-    permissionRequired: 1,
+    permissionRequired: 2,
     opts: [
         {
             name: "get",
@@ -87,6 +87,15 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     })() : (() => {
                         guilddb.setOnObject("settings", "delMuted", true);
                         idk = "**`Удаление сообщений замьюченых участников`** было включено.";
+                    })();
+                    return await interaction.reply(idk);
+                case "purgePinned":
+                    guilddb.get().settings.purgePinned ? (() => {
+                        guilddb.setOnObject("settings", "purgePinned", false);
+                        idk = "**`Удаление закреплённых сообщений`** было выключено.";
+                    })() : (() => {
+                        guilddb.setOnObject("settings", "purgePinned", true);
+                        idk = "**`Удаление закреплённых сообщений`** было включено.";
                     })();
                     return await interaction.reply(idk);
             };
