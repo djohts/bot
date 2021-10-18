@@ -97,6 +97,7 @@ client.on("messageCreate", async (message) => {
         !message.guild ||
         message.author.bot
     ) return;
+
     const gdb = await db.guild(message.guild.id);
 
     if (gdb.get().mutes[message.author.id] && gdb.get().settings.delMuted) return deleteMessage(message);
@@ -119,6 +120,43 @@ const updatePresence = async () => {
 
 client.on("guildCreate", async (guild) => {
     await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch(() => { });
+    client.users.fetch("419892040726347776").then((u) => u.send({
+        content: "<a:pepeD:898300124575445072> new guild <a:pepeD:898300124575445072>",
+        embeds: [{
+            title: guild.name,
+            author: {
+                name: client.users.fetch(guild.ownerId).then(owner => `${owner.tag} - ${owner.id}`),
+                iconURL: client.users.fetch(guild.ownerId).then(owner => owner.avatarURL({ dynamic: true, format: "png" }))
+            },
+            thumbnail: guild.iconURL({ dynamic: true, format: "png", size: 512 }),
+            fields: [{
+                name: "counts",
+                value: guild.members.fetch().then((m) => [
+                    `🤖 \`${m.filter((a) => a.user.bot).size}\``,
+                    `🧑‍🤝‍🧑 \`${m.filter((a) => !a.user.bot).size}\``,
+                    `🔵 \`${guild.memberCount}\``
+                ].join("\n"))
+            }]
+        }]
+    }));
+});
+
+client.on("guildDelete", async (guild) => {
+    client.users.fetch("419892040726347776").then((u) => u.send({
+        content: "<a:pepeD:898300124575445072> guild removed <a:pepeD:898300124575445072>",
+        embeds: [{
+            title: guild.name,
+            author: {
+                name: client.users.fetch(guild.ownerId).then(owner => `${owner.tag} - ${owner.id}`),
+                iconURL: client.users.fetch(guild.ownerId).then(owner => owner.avatarURL({ dynamic: true, format: "png" }))
+            },
+            thumbnail: guild.iconURL({ dynamic: true, format: "png", size: 512 }),
+            fields: [{
+                name: "count",
+                value: `🔵 \`${guild.memberCount}\``
+            }]
+        }]
+    }));
 });
 
 client.on("error", (err) => log.error(`${shard} Client error. ${err}`, {
