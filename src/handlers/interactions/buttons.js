@@ -1,6 +1,5 @@
 const { ButtonInteraction } = require("discord.js");
 const { deleteMessage } = require("../../handlers/utils");
-const config = require("../../../config");
 
 module.exports = async (interaction = new ButtonInteraction) => {
     if (interaction.customId == "reply:delete") {
