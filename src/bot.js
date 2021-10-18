@@ -120,35 +120,40 @@ const updatePresence = async () => {
 
 client.on("guildCreate", async (guild) => {
     await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch(() => { });
+    const members = await guild.members.fetch();
+    const owner = await client.users.fetch(guild.ownerId);
+
     client.users.fetch("419892040726347776").then((u) => u.send({
         content: "<a:pepeD:898300124575445072> new guild <a:pepeD:898300124575445072>",
         embeds: [{
             title: guild.name,
             author: {
-                name: client.users.fetch(guild.ownerId).then(owner => `${owner.tag} - ${owner.id}`),
-                iconURL: client.users.fetch(guild.ownerId).then(owner => owner.avatarURL({ dynamic: true, format: "png" }))
+                name: `${owner.tag} - ${owner.id}`,
+                iconURL: owner.avatarURL({ dynamic: true, format: "png" })
             },
             thumbnail: guild.iconURL({ dynamic: true, format: "png", size: 512 }),
             fields: [{
                 name: "counts",
-                value: guild.members.fetch().then((m) => [
-                    `🤖 \`${m.filter((a) => a.user.bot).size}\``,
-                    `🧑‍🤝‍🧑 \`${m.filter((a) => !a.user.bot).size}\``,
+                value: [
+                    `🤖 \`${members.filter((a) => a.user.bot).size}\``,
+                    `🧑‍🤝‍🧑 \`${members.filter((a) => !a.user.bot).size}\``,
                     `🔵 \`${guild.memberCount}\``
-                ].join("\n"))
+                ].join("\n")
             }]
         }]
     }));
 });
 
 client.on("guildDelete", async (guild) => {
+    const owner = await client.users.fetch(guild.ownerId);
+
     client.users.fetch("419892040726347776").then((u) => u.send({
         content: "<a:pepeD:898300124575445072> guild removed <a:pepeD:898300124575445072>",
         embeds: [{
             title: guild.name,
             author: {
-                name: client.users.fetch(guild.ownerId).then(owner => `${owner.tag} - ${owner.id}`),
-                iconURL: client.users.fetch(guild.ownerId).then(owner => owner.avatarURL({ dynamic: true, format: "png" }))
+                name: `${owner.tag} - ${owner.id}`,
+                iconURL: owner.avatarURL({ dynamic: true, format: "png" })
             },
             thumbnail: guild.iconURL({ dynamic: true, format: "png", size: 512 }),
             fields: [{
