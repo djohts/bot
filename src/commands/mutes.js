@@ -42,7 +42,7 @@ module.exports = {
     slash: true
 };
 
-const { CommandInteraction, MessageEmbed } = require("discord.js");
+const { CommandInteraction } = require("discord.js");
 const { parseTime, getPermissionLevel } = require("../constants/");
 const db = require("../database/")();
 
@@ -86,8 +86,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 
             return await interaction.reply({
                 content: `✅ ${member.user.toString()} был успешно замьючен.` +
-                    (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
-                ephemeral: true
+                    (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
             });
 
         case "remove":
