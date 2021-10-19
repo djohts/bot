@@ -14,6 +14,6 @@ module.exports = () => {
     return {
         guild: require("./guild")(), // guild(guildid)
         cacheGuilds: require("./guild").cacheAll,
-        global: require("./global.js")
+        global: require("./global")
     };
 };
