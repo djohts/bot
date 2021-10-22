@@ -1,9 +1,19 @@
-const { GuildMember } = require("discord.js");
+const { GuildMember, Guild } = require("discord.js");
 const config = require("../../config");
 
 module.exports = Object.assign(
     require("./time"), require("./resolvers")
 );
+
+module.exports.paginate = (arr = [], size = 4) => {
+    return arr.reduce((acc, val, i) => {
+        let idx = Math.floor(i / size);
+        let page = acc[idx] || (acc[idx] = []);
+        page.push(val);
+
+        return acc;
+    }, []);
+};
 
 module.exports.getPermissionLevel = (member = new GuildMember) => {
     let idk = member instanceof GuildMember;
