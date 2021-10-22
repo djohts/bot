@@ -7,19 +7,19 @@ const client = new Discord.Client({
         BaseGuildEmojiManager: 0,
         GuildStickerManager: 0,
         GuildInviteManager: 0,
-        GuildBanManager: 0,
+        GuildBanManager: {
+            sweepInterval: 10,
+            keepOverLimit: (message) => message.author.id != message.client.user.id,
+            sweepFilter: Discord.LimitedCollection.filterByLifetime({
+                lifetime: 5
+            })
+        },
         MessageManager: {
-            sweepInterval: 30,
+            sweepInterval: 60,
+            maxSize: 100,
             keepOverLimit: (message) => message.author.id != message.client.user.id,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
                 lifetime: 300
-            })
-        },
-        GuildMemberManager: {
-            sweepInterval: 30,
-            sweepFilter: Discord.LimitedCollection.filterByLifetime({
-                lifetime: 300,
-                excludeFromSweep: (member) => member.user.id == member.client.user.id
             })
         }
     }),
