@@ -68,8 +68,8 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 {
                     name: "🌐 Ссылки",
                     value: [
-                        `**Пригласи меня:** [📥 Добавить](https://discord.com/oauth2/authorize?client_id=${botId}&scope=applications.commands%20bot&permissions=1543892223)`,
-                        "**Сервер поддержки**: [📥 Вступить](https://discord.gg/AaS4dwVHyA)"
+                        `[📥 Пригласить бота](https://discord.com/oauth2/authorize?client_id=${botId}&scope=applications.commands%20bot&permissions=1543892223)`,
+                        "[📥 Сервер поддержки](https://discord.gg/AaS4dwVHyA)"
                     ].join("\n"),
                     inline: false
                 }
