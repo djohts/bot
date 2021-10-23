@@ -57,4 +57,4 @@ async function updateBotInfo() {
     return botInfo = newBotInfo;
 };
 
-manager.spawn(config.shards || "auto", 2000);
+manager.spawn({ amount: config.shards || "auto", delay: 1500, timeout: -1 });
