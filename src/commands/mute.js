@@ -1,5 +1,5 @@
 module.exports = {
-    name: "mutes",
+    name: "mute",
     permissionRequired: 1,
     opts: [
         {
