@@ -1,5 +1,6 @@
 const { CommandInteraction, Guild } = require("discord.js");
 const { getPermissionLevel } = require("../../constants/");
+const log = require("../../handlers/logger");
 
 module.exports = async (interaction = CommandInteraction) => {
     const processCommand = async (interaction = CommandInteraction) => {
@@ -42,7 +43,12 @@ module.exports.registerCommands = async (client) => {
         client.slashes = commands;
 
         return client.guilds.cache.map(async (guild = new Guild) => {
-            return await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch(() => { });
+            return await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch((err) => {
+                if (!err.message.toLowerCase().includes("missing")) log.error(err.message, {
+                    title: client.shardId,
+                    description: "```fix\n" + err.message + "\n```"
+                });
+            });
         });
     });
 };
