@@ -4,8 +4,7 @@ module.exports = {
     opts: [{
         name: "member",
         description: "Участник, о котором Вы хотите получить информацию.",
-        type: 6,
-        required: false
+        type: 6
     }],
     permissionRequired: 0,
     slash: true
