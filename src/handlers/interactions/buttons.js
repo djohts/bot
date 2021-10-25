@@ -49,7 +49,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
                         },
                         style: 4,
                         custom_id: "servers:next",
-                        disabled: (fields.length == 1 ? true : false)
+                        disabled: (page == fields.length ? true : false)
                     }
                 ]
             }]
@@ -89,7 +89,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
                         },
                         style: 4,
                         custom_id: "servers:next",
-                        disabled: (fields.length == 1 ? true : false)
+                        disabled: (page == fields.length ? true : false)
                     }
                 ]
             }]
