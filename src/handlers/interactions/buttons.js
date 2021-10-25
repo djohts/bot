@@ -1,6 +1,6 @@
 const { ButtonInteraction } = require("discord.js");
 const { deleteMessage } = require("../../handlers/utils");
-const { paginate } = require("../constants/");
+const { paginate } = require("../../constants/");
 
 module.exports = async (interaction = new ButtonInteraction) => {
     if (["DEFAULT", "REPLY"].includes(interaction.message.type)) {
