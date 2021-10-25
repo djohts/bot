@@ -20,7 +20,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
         const fields = paginate(guilds, 25);
-        const page = interaction.message.embeds[0].footer.split("/")[0] - 1;
+        const page = interaction.message.embeds[0].footer.text.split("/")[0] - 1;
         return await interaction.message.edit({
             embeds: [{
                 title: interaction.client.user.tag + " guild list",
@@ -59,7 +59,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
         const fields = paginate(guilds, 25);
-        const page = interaction.message.embeds[0].footer.split("/")[0] + 1;
+        const page = interaction.message.embeds[0].footer.text.split("/")[0] + 1;
         return await interaction.message.edit({
             embeds: [{
                 title: interaction.client.user.tag + " guild list",
