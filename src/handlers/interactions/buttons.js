@@ -16,7 +16,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message);
 
     if (interaction.customId == "servers:prev") {
-        interaction.reply("ok");
+        interaction.reply({ content: "ok", ephemeral: true });
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
@@ -56,7 +56,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
         });
     };
     if (interaction.customId == "servers:next") {
-        interaction.reply("ok");
+        interaction.reply({ content: "ok", ephemeral: true });
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
