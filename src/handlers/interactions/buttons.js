@@ -28,7 +28,13 @@ module.exports = async (interaction = new ButtonInteraction) => {
                 footer: {
                     text: `${page}/${fields.length}`
                 },
-                fields: fields[page - 1].map((obj) => Object.assign(obj, { value: "abc", inline: true }))
+                fields: fields[page - 1].map((obj) => Object.assign(obj, {
+                    value: [
+                        `🤖 \`${obj.members.cache.filter((a) => a.user.bot).size}\``,
+                        `🧑‍🤝‍🧑 \`${obj.members.cache.filter((a) => !a.user.bot).size}\``,
+                        `🔵 \`${obj.memberCount}\``
+                    ].join("\n"), inline: true
+                }))
             }],
             components: [{
                 type: 1,
@@ -68,7 +74,13 @@ module.exports = async (interaction = new ButtonInteraction) => {
                 footer: {
                     text: `${page}/${fields.length}`
                 },
-                fields: fields[page - 1].map((obj) => Object.assign(obj, { value: "abc", inline: true }))
+                fields: fields[page - 1].map((obj) => Object.assign(obj, {
+                    value: [
+                        `🤖 \`${obj.members.cache.filter((a) => a.user.bot).size}\``,
+                        `🧑‍🤝‍🧑 \`${obj.members.cache.filter((a) => !a.user.bot).size}\``,
+                        `🔵 \`${obj.memberCount}\``
+                    ].join("\n"), inline: true
+                }))
             }],
             components: [{
                 type: 1,

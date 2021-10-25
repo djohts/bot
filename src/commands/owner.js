@@ -27,7 +27,13 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     footer: {
                         text: `1/${fields.length}`
                     },
-                    fields: fields[0].map((obj) => Object.assign(obj, { value: "abc", inline: true }))
+                    fields: fields[0].map((obj) => Object.assign(obj, {
+                        value: [
+                            `🤖 \`${obj.members.cache.filter((a) => a.user.bot).size}\``,
+                            `🧑‍🤝‍🧑 \`${obj.members.cache.filter((a) => !a.user.bot).size}\``,
+                            `🔵 \`${obj.memberCount}\``
+                        ].join("\n"), inline: true
+                    }))
                 }],
                 components: [{
                     type: 1,
