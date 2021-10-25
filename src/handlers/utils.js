@@ -6,7 +6,7 @@ module.exports.deleteMessage = (message = new Message) => {
     const rate = rates.get(message.channel.id) || 0;
     rates.set(message.channel.id, rate + 1);
 
-    setTimeout(() => rates.set(message.channel.id, rates.get(message.channel.id) - 1), 5000);
+    setTimeout(() => rates.set(message.channel.id, rates.get(message.channel.id) - 1), 8000);
 
     const bulk = bulks.get(message.channel.id) || [];
     if (bulk.length) bulk.push(message);
