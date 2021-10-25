@@ -1,8 +1,8 @@
 const { GuildMember } = require("discord.js");
-const config = require(__dirname + "/../../config");
+const config = require("../../config");
 
 module.exports = Object.assign(
-    require(__dirname + "/time"), require(__dirname + "/resolvers")
+    require("./time"), require("./resolvers")
 );
 
 module.exports.paginate = (arr = [], size = 4) => {
