@@ -16,12 +16,13 @@ module.exports = async (interaction = new ButtonInteraction) => {
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message);
 
     if (interaction.customId == "servers:prev") {
+        interaction.reply("ok");
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
         const fields = paginate(guilds, 9);
         const page = Number(interaction.message.embeds[0].footer.text.split("/")[0]) - 1;
-        return await interaction.message.edit({
+        return interaction.message.edit({
             embeds: [{
                 title: interaction.client.user.tag + " guild list",
                 footer: {
@@ -55,12 +56,13 @@ module.exports = async (interaction = new ButtonInteraction) => {
         });
     };
     if (interaction.customId == "servers:next") {
+        interaction.reply("ok");
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
         const fields = paginate(guilds, 9);
         const page = Number(interaction.message.embeds[0].footer.text.split("/")[0]) + 1;
-        return await interaction.message.edit({
+        return interaction.message.edit({
             embeds: [{
                 title: interaction.client.user.tag + " guild list",
                 footer: {
