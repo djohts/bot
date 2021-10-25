@@ -1,5 +1,5 @@
 const { ButtonInteraction } = require("discord.js");
-const { deleteMessage } = require("../../handlers/utils");
+const { deleteMessage } = require(__dirname + "/../../handlers/utils");
 
 module.exports = async (interaction = new ButtonInteraction) => {
     if (["DEFAULT", "REPLY"].includes(interaction.message.type)) {

@@ -3,6 +3,5 @@ module.exports = {
     database_uri: "",
     admins: [],
     prefix: "d!",
-    logChannel: "",
     shards: 1
 };

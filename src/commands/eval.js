@@ -6,8 +6,6 @@ module.exports = {
 	checkArgs: (args) => !!args.length
 };
 
-const { deleteMessage } = require("../handlers/utils");
-
 module.exports.run = async (message = new Message, args) => {
 	let content = args.join(" ");
 

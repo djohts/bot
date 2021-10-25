@@ -13,7 +13,7 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
-const db = require("../database/")();
+const db = require(__dirname + "/../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     const guilddb = await db.guild(interaction.guild.id);
@@ -43,9 +43,6 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             content: "❌ Произошла неизвестная ошибка.",
             ephemeral: true
         });
-        log.error(err.stack, {
-            title: `[Shard ${interaction.guild.shardId}]`,
-            description: "```\n" + err.stack + "\n```"
-        });
+        console.error(err.stack);
     });
 };

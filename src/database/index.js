@@ -1,4 +1,4 @@
-const config = require("../../config"), mongoose = require("mongoose");
+const config = require(__dirname + "/../../config"), mongoose = require("mongoose");
 
 module.exports = () => {
     mongoose.connect(config.database_uri, {
@@ -7,13 +7,13 @@ module.exports = () => {
         useCreateIndex: true,
         useUnifiedTopology: true
     }).catch(e => {
-        log.error(e.message + ": " + e.stack);
+        console.error(e.stack);
         client.shard.send("respawn");
     });
 
     return {
-        guild: require("./guild")(), // guild(guildid)
-        cacheGuilds: require("./guild").cacheAll,
-        global: require("./global")
+        guild: require(__dirname + "/guild")(),
+        cacheGuilds: require(__dirname + "/guild").cacheAll,
+        global: require(__dirname + "/global")
     };
 };

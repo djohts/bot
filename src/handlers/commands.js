@@ -1,4 +1,4 @@
-const { getPermissionLevel } = require("../constants/");
+const { getPermissionLevel } = require(__dirname + "/../constants/");
 const fs = require("fs");
 const { Message } = require("discord.js");
 
@@ -28,12 +28,12 @@ module.exports = async (message = new Message(), prefix, gdb, db) => {
 const commands = new Map(), aliases = new Map();
 
 fs.readdir("./src/commands/", (err, files) => {
-    if (err) return log.error(err);
-    for (const file of files) if (file.endsWith(".js") && !require(`../commands/${file}`).slash) loadCommand(file.replace(".js", ""));
+    if (err) return console.error(err);
+    for (const file of files) if (file.endsWith(".js") && !require(__dirname + `/../commands/${file}`).slash) loadCommand(file.replace(".js", ""));
 });
 
 const loadCommand = (fileName) => {
-    const commandFile = require(`../commands/${fileName}.js`);
+    const commandFile = require(__dirname + `/../commands/${fileName}.js`);
 
     commands.set(fileName, commandFile);
     if (commandFile.aliases) for (const alias of commandFile.aliases) aliases.set(alias, fileName);

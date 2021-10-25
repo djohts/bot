@@ -1,12 +1,11 @@
 const { CommandInteraction, Guild } = require("discord.js");
-const { getPermissionLevel } = require("../../constants/");
-const log = require("../../handlers/logger");
+const { getPermissionLevel } = require(__dirname + "/../../constants/");
 
 module.exports = async (interaction = CommandInteraction) => {
     const processCommand = async (interaction = CommandInteraction) => {
         const commandName = interaction.commandName;
 
-        const commandFile = require(`../../commands/${commandName}.js`);
+        const commandFile = require(__dirname + `/../../commands/${commandName}.js`);
 
         const permissionLevel = getPermissionLevel(interaction.member);
         if (permissionLevel < commandFile.permissionRequired) return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
@@ -18,17 +17,16 @@ module.exports = async (interaction = CommandInteraction) => {
 
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
-const { join } = require("path");
 const fs = require("fs");
 const commands = [];
-const rest = new REST({ version: "9" }).setToken(require("../../../config").token);
+const rest = new REST({ version: "9" }).setToken(require(__dirname + "/../../../config").token);
 
 module.exports.registerCommands = async (client) => {
-    return fs.readdir(join(__dirname, "..", "..", "commands/"), (err, files) => {
-        if (err) return log.error(err);
+    return fs.readdir(__dirname + "/../../commands/", (err, files) => {
+        if (err) return console.error(err);
 
         for (let filename of files) {
-            let file = require(`../../commands/${filename}`);
+            let file = require(__dirname + `/../../commands/${filename}`);
             const name = file.name || "";
 
             if (file.slash && name.length) {
@@ -44,10 +42,7 @@ module.exports.registerCommands = async (client) => {
 
         return client.guilds.cache.map(async (guild = new Guild) => {
             return await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch((err) => {
-                if (!err.message.toLowerCase().includes("missing")) log.error(err.message, {
-                    title: client.shardId,
-                    description: "```fix\n" + err.message + "\n```"
-                });
+                if (!err.message.toLowerCase().includes("missing")) console.error(err.stack);
             });
         });
     });

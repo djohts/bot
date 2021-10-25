@@ -9,8 +9,7 @@ const { CommandInteraction } = require("discord.js");
 
 const os = require("os");
 const platform = `${os.type()} (${os.release()})`;
-const djsversion = require("../../package.json").dependencies["discord.js"];
-const config = require("../../config");
+const { version } = require("discord.js");
 
 let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
@@ -42,7 +41,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     name: "💠 Хост",
                     value: [
                         `**ОС**: \`${platform}\``,
-                        `**Библиотека**: \`discord.js${djsversion}\``,
+                        `**Библиотека**: \`discord.js v${version}\``,
                         `**Исп. ОЗУ**: \`${memoryUsageGlobal}\``
                     ].join("\n"),
                     inline: true

@@ -23,8 +23,8 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
-const { parseTime, getPermissionLevel } = require("../constants/");
-const db = require("../database/")();
+const { parseTime, getPermissionLevel } = require(__dirname + "/../constants/");
+const db = require(__dirname + "/../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     const guilddb = await db.guild(interaction.guild.id);
@@ -55,10 +55,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             content: "❌ Произошла какая-то ошибка при выдачи роли...",
             ephemeral: true
         });
-        log.error(err.stack, {
-            title: `[Shard ${interaction.guild.shardId}]`,
-            description: "```\n" + err.stack + "\n```"
-        });
+        console.error(err.stack);
     });
 
     return await interaction.reply({

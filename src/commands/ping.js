@@ -6,7 +6,7 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
-const { msToTime } = require("../constants/");
+const { msToTime } = require(__dirname + "/../constants/");
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     const uptime = msToTime(interaction.client.uptime);

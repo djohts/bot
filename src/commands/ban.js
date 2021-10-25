@@ -28,8 +28,8 @@ module.exports = {
 };
 
 const { CommandInteraction, MessageEmbed } = require("discord.js");
-const { parseTime, getPermissionLevel, msToTime } = require("../constants/");
-const db = require("../database/")();
+const { parseTime, getPermissionLevel, msToTime } = require(__dirname + "/../constants/");
+const db = require(__dirname + "/../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
@@ -51,7 +51,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 
     let dmsent = false;
     let time = 0;
-    let reason = interaction.options.getString("reason");
+    let reason = interaction.options.getString("reason")?.trim();
     let purgedays = interaction.options.getInteger("purgedays");
     if (!interaction.options.getString("time")?.length) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("time"));
@@ -65,7 +65,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         .setTitle("Вы были забанены")
         .addField("Модератор", `${interaction.user.toString()} (**${interaction.user.tag.replace("*", "\\*")}**)`, true);
     if (time != -1) dmemb.addField("Время", msToTime(parseTime(interaction.options.getString("time"))), true);
-    if (reason.length) dmemb.addField("Причина", reason.trim());
+    if (reason.length) dmemb.addField("Причина", reason);
 
     await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => { });
 

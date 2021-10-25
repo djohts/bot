@@ -1,7 +1,8 @@
+require("nodejs-better-console").overrideConsole();
 const Discord = require("discord.js");
-const config = require("../config");
-const commandHandler = require("./handlers/commands");
-const slashHandler = require("./handlers/interactions/");
+const config = require(__dirname + "/../config");
+const commandHandler = require(__dirname + "/handlers/commands");
+const slashHandler = require(__dirname + "/handlers/interactions/");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         BaseGuildEmojiManager: 0,
@@ -32,22 +33,19 @@ const client = new Discord.Client({
         }
     }
 });
-const log = require("./handlers/logger");
-const db = require("./database/")();
-const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
+const db = require(__dirname + "/database/")();
+const { deleteMessage, checkMutes, checkBans } = require(__dirname + "/handlers/utils");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const rest = new REST({ version: "9" }).setToken(config.token);
 require("discord-logs")(client);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-global.parseImage = require("./handlers/utils").parseImage;
-global.msToTime = require("./constants/").msToTime;
-global.parse = require("./constants/").parseTime;
+global.msToTime = require(__dirname + "/constants/").msToTime;
+global.parse = require(__dirname + "/constants/").parseTime;
 module.exports.client = client;
 global.delMsg = deleteMessage;
 global.client = client;
-global.log = log;
 global.db = db;
 
 let shard = "[Shard N/A]";
@@ -55,10 +53,7 @@ let shard = "[Shard N/A]";
 client.once("shardReady", async (shardid, unavailable = new Set()) => {
     client.shardId = shardid;
     shard = `[Shard ${shardid}]`;
-    log.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`, {
-        title: shard,
-        description: `\`\`\`\nReady as ${client.user.tag}! Caching guilds.\n\`\`\``,
-    });
+    console.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
 
     client.loading = true;
 
@@ -66,10 +61,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     let guildCachingStart = Date.now();
 
     await db.cacheGuilds(disabledGuilds);
-    log.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`, {
-        title: shard,
-        description: `\`\`\`\nAll ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]\n\`\`\``,
-    });
+    console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`);
 
     disabledGuilds.size = 0;
 
@@ -78,10 +70,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     client.loading = false;
 
     await require("./handlers/interactions/slash").registerCommands(client);
-    log.log(`${shard} Refreshed slash commands.`, {
-        title: shard,
-        description: "```\nRefreshed slash commands.\n```"
-    });
+    console.log(`${shard} Refreshed slash commands.`);
 
     await updatePresence();
     setInterval(updatePresence, 10 * 60 * 1000); // 10 minutes
@@ -165,35 +154,13 @@ client.on("guildDelete", async (guild) => {
     }));
 });
 
-client.on("error", (err) => log.error(`${shard} Client error. ${err}`, {
-    title: shard,
-    description: "```\n" + `Client error. ${err}` + "\n```"
-}));
-client.on("rateLimit", (rateLimitInfo) => log.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`, {
-    title: shard,
-    description: "```\n" + `Rate limited.\n${JSON.stringify(rateLimitInfo)}` + "\n```"
-}));
-client.on("shardDisconnected", (closeEvent) => log.warn(`${shard} Disconnected. ${closeEvent}`, {
-    title: shard,
-    description: "```\n" + `Disconnected. ${closeEvent}` + "\n```"
-}));
-client.on("shardError", (err) => log.error(`${shard} Error. ${err}`, {
-    title: shard,
-    description: "```\n" + `Error. ${err}` + "\n```"
-}));
-client.on("shardReconnecting", () => log.log(`${shard} Reconnecting.`, {
-    title: shard,
-    description: "```\nReconnecting.\n```"
-}));
-client.on("shardResume", (_, replayedEvents) => log.log(`${shard} Resumed. ${replayedEvents} replayed events.`, {
-    title: shard,
-    description: "```\n" + `Resumed. ${replayedEvents} replayed events.` + "\n```"
-}));
-client.on("warn", (info) => log.warn(`${shard} Warning. ${info}`, {
-    title: shard,
-    description: "```\n" + `Warning. ${info}` + "\n```"
-}));
+client.on("error", (err) => console.error(`${shard} Client error. ${err}`));
+client.on("rateLimit", (rateLimitInfo) => console.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
+client.on("shardDisconnected", (closeEvent) => console.warn(`${shard} Disconnected. ${closeEvent}`));
+client.on("shardError", (err) => console.error(`${shard} Error. ${err}`));
+client.on("shardReconnecting", () => console.log(`${shard} Reconnecting.`));
+client.on("shardResume", (_, replayedEvents) => console.log(`${shard} Resumed. ${replayedEvents} replayed events.`));
+client.on("warn", (info) => console.warn(`${shard} Warning. ${info}`));
 client.login(config.token);
 
-process.on("unhandledRejection", (rej) => log.error(rej.message + "\n" + rej.stack));
-process.on("SIGINT", () => process.exit());
+process.on("unhandledRejection", (rej) => console.error(rej.stack));

@@ -1,9 +1,9 @@
+require("nodejs-better-console").overrideConsole();
 const { ShardingManager } = require("discord.js");
-const config = require("../config");
+const config = require(__dirname + "/../config");
 const express = require("express");
-const log = require("./handlers/logger");
 
-const manager = new ShardingManager("./src/bot.js", {
+const manager = new ShardingManager(__dirname + "/bot.js", {
     totalShards: config.shards || "auto",
     token: config.token,
     mode: "worker"
@@ -12,17 +12,11 @@ const manager = new ShardingManager("./src/bot.js", {
 manager.on("shardCreate", async (shard) => {
     shard.on("message", (m) => {
         if (m == "respawn") {
-            log.warn(`[Manager] Shard ${shard.id} has requested a restart.`, {
-                title: "[Manager]",
-                description: `\`\`\`\nShard ${shard.id} has requested a restart.\`\`\``
-            });
+            console.warn(`[Manager] Shard ${shard.id} has requested a restart.`);
             shard.respawn();
         };
     });
-    await log.log(`[Manager] Shard ${shard.id} is starting.`, {
-        title: "[Manager]",
-        description: `\`\`\`\nShard ${shard.id} is starting.\n\`\`\``
-    });
+    console.log(`[Manager] Shard ${shard.id} is starting.`);
 });
 
 let botInfo = {};

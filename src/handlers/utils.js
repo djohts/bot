@@ -1,6 +1,6 @@
 const bulks = new Map(), rates = new Map();
 const { Message, Client } = require("discord.js");
-const db = require("../database/")();
+const db = require(__dirname + "/../database/")();
 
 module.exports.deleteMessage = (message = new Message) => {
     const rate = rates.get(message.channel.id) || 0;
