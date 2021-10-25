@@ -1,5 +1,6 @@
 const { ButtonInteraction } = require("discord.js");
 const { deleteMessage } = require("../../handlers/utils");
+const { paginate } = require("../constants/");
 
 module.exports = async (interaction = new ButtonInteraction) => {
     if (["DEFAULT", "REPLY"].includes(interaction.message.type)) {
@@ -13,4 +14,83 @@ module.exports = async (interaction = new ButtonInteraction) => {
     };
 
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message);
+
+    if (interaction.customId == "servers:prev") {
+        let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
+            return guilds.reduce((prev, cur) => prev.concat(cur));
+        });
+        const fields = paginate(guilds, 25);
+        const page = interaction.message.embeds[0].footer.split("/")[0] - 1;
+        return await interaction.message.edit({
+            embeds: [{
+                title: interaction.client.user.tag + " guild list",
+                footer: {
+                    text: `${page}/${fields.length}`
+                },
+                fields: fields[page - 1].map((obj) => Object.assign(obj, { value: "abc", inline: true }))
+            }],
+            components: [{
+                type: 1,
+                components: [
+                    {
+                        type: 2,
+                        emoji: {
+                            name: "⬅️"
+                        },
+                        style: 4,
+                        custom_id: "servers:prev",
+                        disabled: (page == 1 ? true : false)
+                    },
+                    {
+                        type: 2,
+                        emoji: {
+                            name: "➡️"
+                        },
+                        style: 4,
+                        custom_id: "servers:next",
+                        disabled: (fields.length == 1 ? true : false)
+                    }
+                ]
+            }]
+        });
+    };
+    if (interaction.customId == "servers:next") {
+        let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
+            return guilds.reduce((prev, cur) => prev.concat(cur));
+        });
+        const fields = paginate(guilds, 25);
+        const page = interaction.message.embeds[0].footer.split("/")[0] + 1;
+        return await interaction.message.edit({
+            embeds: [{
+                title: interaction.client.user.tag + " guild list",
+                footer: {
+                    text: `${page}/${fields.length}`
+                },
+                fields: fields[page - 1].map((obj) => Object.assign(obj, { value: "abc", inline: true }))
+            }],
+            components: [{
+                type: 1,
+                components: [
+                    {
+                        type: 2,
+                        emoji: {
+                            name: "⬅️"
+                        },
+                        style: 4,
+                        custom_id: "servers:prev",
+                        disabled: (page == 1 ? true : false)
+                    },
+                    {
+                        type: 2,
+                        emoji: {
+                            name: "➡️"
+                        },
+                        style: 4,
+                        custom_id: "servers:next",
+                        disabled: (fields.length == 1 ? true : false)
+                    }
+                ]
+            }]
+        });
+    };
 };
