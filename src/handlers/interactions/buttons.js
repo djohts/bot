@@ -19,7 +19,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
-        const fields = paginate(guilds, 24);
+        const fields = paginate(guilds, 9);
         const page = Number(interaction.message.embeds[0].footer.text.split("/")[0]) - 1;
         return await interaction.message.edit({
             embeds: [{
@@ -58,7 +58,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
-        const fields = paginate(guilds, 24);
+        const fields = paginate(guilds, 9);
         const page = Number(interaction.message.embeds[0].footer.text.split("/")[0]) + 1;
         return await interaction.message.edit({
             embeds: [{

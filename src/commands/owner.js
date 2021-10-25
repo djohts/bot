@@ -20,7 +20,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
                 return guilds.reduce((prev, cur) => prev.concat(cur));
             });
-            const fields = paginate(guilds, 24);
+            const fields = paginate(guilds, 9);
             return await interaction.reply({
                 embeds: [{
                     title: interaction.client.user.tag + " guild list",
