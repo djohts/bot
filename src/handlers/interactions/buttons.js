@@ -16,7 +16,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message);
 
     if (interaction.customId == "servers:prev") {
-        interaction.reply({ content: "ok", fetchReply: true }).then((m) => m.delete());
+        interaction.reply({ content: "ok", fetchReply: true }).then((m) => deleteMessage(m));
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
             name: g.name,
             value: [
@@ -64,7 +64,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
         });
     };
     if (interaction.customId == "servers:next") {
-        interaction.reply({ content: "ok", fetchReply: true }).then((m) => m.delete());
+        interaction.reply({ content: "ok", fetchReply: true }).then((m) => deleteMessage(m));
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
             name: g.name,
             value: [
