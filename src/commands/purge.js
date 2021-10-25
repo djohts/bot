@@ -20,7 +20,7 @@ module.exports = {
 
 const cooldowns = new Set();
 const { CommandInteraction } = require("discord.js");
-const db = require(__dirname + "/../database/")();
+const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (cooldowns.has(interaction.guild.id))

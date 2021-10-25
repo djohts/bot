@@ -1,6 +1,6 @@
 require("nodejs-better-console").overrideConsole();
 const { ShardingManager } = require("discord.js");
-const config = require(__dirname + "/../config");
+const config = require("../config");
 const express = require("express");
 
 const manager = new ShardingManager(__dirname + "/bot.js", {

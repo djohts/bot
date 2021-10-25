@@ -13,7 +13,7 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
-const db = require(__dirname + "/../database/")();
+const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))

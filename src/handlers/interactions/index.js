@@ -1,6 +1,6 @@
 const { Client } = require("discord.js");
-const handleButton = require(__dirname + "/buttons");
-const handleCommand = require(__dirname + "/slash");
+const handleButton = require("./buttons");
+const handleCommand = require("./slash");
 
 module.exports = async (client = new Client) => {
     client.on("interactionCreate", async (interaction) => {

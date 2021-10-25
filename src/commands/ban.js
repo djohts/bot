@@ -28,8 +28,8 @@ module.exports = {
 };
 
 const { CommandInteraction, MessageEmbed } = require("discord.js");
-const { parseTime, getPermissionLevel, msToTime } = require(__dirname + "/../constants/");
-const db = require(__dirname + "/../database/")();
+const { parseTime, getPermissionLevel, msToTime } = require("../constants/");
+const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))

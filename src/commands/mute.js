@@ -23,8 +23,8 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
-const { parseTime, getPermissionLevel } = require(__dirname + "/../constants/");
-const db = require(__dirname + "/../database/")();
+const { parseTime, getPermissionLevel } = require("../constants/");
+const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     const guilddb = await db.guild(interaction.guild.id);

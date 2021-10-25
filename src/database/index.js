@@ -1,4 +1,4 @@
-const config = require(__dirname + "/../../config"), mongoose = require("mongoose");
+const config = require("../../config"), mongoose = require("mongoose");
 
 module.exports = () => {
     mongoose.connect(config.database_uri, {
@@ -12,8 +12,8 @@ module.exports = () => {
     });
 
     return {
-        guild: require(__dirname + "/guild")(),
-        cacheGuilds: require(__dirname + "/guild").cacheAll,
-        global: require(__dirname + "/global")
+        guild: require("./guild")(),
+        cacheGuilds: require("./guild").cacheAll,
+        global: require("./global")
     };
 };
