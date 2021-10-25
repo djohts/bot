@@ -29,11 +29,11 @@ const commands = new Map(), aliases = new Map();
 
 fs.readdir(__dirname + "/../commands/", (err, files) => {
     if (err) return console.error(err);
-    for (const file of files) if (file.endsWith(".js") && !require(__dirname + `/../commands/${file}`).slash) loadCommand(file.replace(".js", ""));
+    for (const file of files) if (file.endsWith(".js") && !require(`../commands/${file}`).slash) loadCommand(file.replace(".js", ""));
 });
 
 const loadCommand = (fileName) => {
-    const commandFile = require(__dirname + `/../commands/${fileName}.js`);
+    const commandFile = require(`../commands/${fileName}.js`);
 
     commands.set(fileName, commandFile);
     if (commandFile.aliases) for (const alias of commandFile.aliases) aliases.set(alias, fileName);

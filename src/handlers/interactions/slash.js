@@ -5,7 +5,7 @@ module.exports = async (interaction = CommandInteraction) => {
     const processCommand = async (interaction = CommandInteraction) => {
         const commandName = interaction.commandName;
 
-        const commandFile = require(__dirname + `/../../commands/${commandName}.js`);
+        const commandFile = require(`../../commands/${commandName}.js`);
 
         const permissionLevel = getPermissionLevel(interaction.member);
         if (permissionLevel < commandFile.permissionRequired) return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
@@ -26,7 +26,7 @@ module.exports.registerCommands = async (client) => {
         if (err) return console.error(err);
 
         for (let filename of files) {
-            let file = require(__dirname + `/../../commands/${filename}`);
+            let file = require(`../../commands/${filename}`);
             const name = file.name || "";
 
             if (file.slash && name.length) {

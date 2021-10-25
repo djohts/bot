@@ -1,8 +1,8 @@
 require("nodejs-better-console").overrideConsole();
 const Discord = require("discord.js");
-const config = require(__dirname + "/../config");
-const commandHandler = require(__dirname + "/handlers/commands");
-const slashHandler = require(__dirname + "/handlers/interactions/");
+const config = require("../config");
+const commandHandler = require("./handlers/commands");
+const slashHandler = require("./handlers/interactions/");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         BaseGuildEmojiManager: 0,
@@ -33,16 +33,16 @@ const client = new Discord.Client({
         }
     }
 });
-const db = require(__dirname + "/database/")();
-const { deleteMessage, checkMutes, checkBans } = require(__dirname + "/handlers/utils");
+const db = require("./database/")();
+const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const rest = new REST({ version: "9" }).setToken(config.token);
 require("discord-logs")(client);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-global.msToTime = require(__dirname + "/constants/").msToTime;
-global.parse = require(__dirname + "/constants/").parseTime;
+global.msToTime = require("./constants/").msToTime;
+global.parse = require("./constants/").parseTime;
 module.exports.client = client;
 global.delMsg = deleteMessage;
 global.client = client;
