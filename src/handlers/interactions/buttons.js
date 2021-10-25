@@ -17,7 +17,15 @@ module.exports = async (interaction = new ButtonInteraction) => {
 
     if (interaction.customId == "servers:prev") {
         interaction.reply({ content: "ok", ephemeral: true });
-        let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
+        let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
+            name: g.name,
+            value: [
+                `🤖 \`${g.members.cache.filter((a) => a.user.bot).size}\``,
+                `🧑‍🤝‍🧑 \`${g.members.cache.filter((a) => !a.user.bot).size}\``,
+                `🔵 \`${g.memberCount}\``
+            ].join("\n"),
+            inline: true
+        }))).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
         const fields = paginate(guilds, 9);
@@ -28,13 +36,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
                 footer: {
                     text: `${page}/${fields.length}`
                 },
-                fields: fields[page - 1].map((obj) => Object.assign(obj, {
-                    value: [
-                        `🤖 \`${obj.members.cache.filter((a) => a.user.bot).size}\``,
-                        `🧑‍🤝‍🧑 \`${obj.members.cache.filter((a) => !a.user.bot).size}\``,
-                        `🔵 \`${obj.memberCount}\``
-                    ].join("\n"), inline: true
-                }))
+                fields: fields[page - 1].map((obj) => obj)
             }],
             components: [{
                 type: 1,
@@ -63,7 +65,15 @@ module.exports = async (interaction = new ButtonInteraction) => {
     };
     if (interaction.customId == "servers:next") {
         interaction.reply({ content: "ok", ephemeral: true });
-        let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
+        let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
+            name: g.name,
+            value: [
+                `🤖 \`${g.members.cache.filter((a) => a.user.bot).size}\``,
+                `🧑‍🤝‍🧑 \`${g.members.cache.filter((a) => !a.user.bot).size}\``,
+                `🔵 \`${g.memberCount}\``
+            ].join("\n"),
+            inline: true
+        }))).then((guilds) => {
             return guilds.reduce((prev, cur) => prev.concat(cur));
         });
         const fields = paginate(guilds, 9);
@@ -74,13 +84,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
                 footer: {
                     text: `${page}/${fields.length}`
                 },
-                fields: fields[page - 1].map((obj) => Object.assign(obj, {
-                    value: [
-                        `🤖 \`${obj.members.cache.filter((a) => a.user.bot).size}\``,
-                        `🧑‍🤝‍🧑 \`${obj.members.cache.filter((a) => !a.user.bot).size}\``,
-                        `🔵 \`${obj.memberCount}\``
-                    ].join("\n"), inline: true
-                }))
+                fields: fields[page - 1].map((obj) => obj)
             }],
             components: [{
                 type: 1,

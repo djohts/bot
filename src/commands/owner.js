@@ -17,7 +17,15 @@ const { paginate } = require("../constants/");
 module.exports.run = async (interaction = new CommandInteraction) => {
     switch (interaction.options.getSubcommand()) {
         case "servers":
-            let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => g)).then((guilds) => {
+            let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
+                name: g.name,
+                value: [
+                    `🤖 \`${g.members.cache.filter((a) => a.user.bot).size}\``,
+                    `🧑‍🤝‍🧑 \`${g.members.cache.filter((a) => !a.user.bot).size}\``,
+                    `🔵 \`${g.memberCount}\``
+                ].join("\n"),
+                inline: true
+            }))).then((guilds) => {
                 return guilds.reduce((prev, cur) => prev.concat(cur));
             });
             const fields = paginate(guilds, 9);
@@ -27,13 +35,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     footer: {
                         text: `1/${fields.length}`
                     },
-                    fields: fields[0].map((obj) => Object.assign(obj, {
-                        value: [
-                            `🤖 \`${obj.members.cache.filter((a) => a.user.bot).size}\``,
-                            `🧑‍🤝‍🧑 \`${obj.members.cache.filter((a) => !a.user.bot).size}\``,
-                            `🔵 \`${obj.memberCount}\``
-                        ].join("\n"), inline: true
-                    }))
+                    fields: fields[0].map((obj) => obj)
                 }],
                 components: [{
                     type: 1,
