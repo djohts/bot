@@ -27,7 +27,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         return interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true });
 
     interaction.guild.bans.remove(user.id).then(async () => {
-        guilddb.removeFromObject("bans", interaction.options.getString("user"));
+        guilddb.removeFromObject("bans", user.id);
         await interaction.reply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
     });
 };
