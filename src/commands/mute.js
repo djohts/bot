@@ -27,8 +27,9 @@ const { parseTime, getPermissionLevel } = require("../constants/");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
-    const guilddb = await db.settings(interaction.guild.id);
-    const role = interaction.guild.roles.cache.get(guilddb.get().muteRole);
+    const guilddb = await db.guild(interaction.guild.id);
+    const gsdb = await db.settings(interaction.guild.id);
+    const role = interaction.guild.roles.cache.get(gsdb.get().muteRole);
     const member = interaction.guild.members.resolve(interaction.options.getUser("member").id);
 
     if (!role) return interaction.reply({ content: "❌ Не удалось найти роль мьюта.", ephemeral: true });
