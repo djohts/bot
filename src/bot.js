@@ -10,7 +10,6 @@ const client = new Discord.Client({
         GuildInviteManager: 0,
         GuildBanManager: {
             sweepInterval: 10,
-            keepOverLimit: (message) => message.author.id != message.client.user.id,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
                 lifetime: 5
             })
