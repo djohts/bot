@@ -1,4 +1,4 @@
-const { CommandInteraction, Guild } = require("discord.js");
+const { CommandInteraction, Guild, Client } = require("discord.js");
 const { getPermissionLevel } = require("../../constants/");
 
 module.exports = async (interaction = CommandInteraction) => {
@@ -21,7 +21,7 @@ const fs = require("fs");
 const commands = [];
 const rest = new REST({ version: "9" }).setToken(require("../../../config").token);
 
-module.exports.registerCommands = async (client) => {
+module.exports.registerCommands = async (client = new Client) => {
     return fs.readdir(__dirname + "/../../commands/", (err, files) => {
         if (err) return console.error(err);
 
