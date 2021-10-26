@@ -24,17 +24,20 @@ module.exports.checkMutes = async (client = new Client) => {
     return client.guilds.cache.map(async (guild) => {
         if (!guild.available) return;
 
-        const guilddb = await db.guild(guild.id);
-        let mutes = Object.keys(guilddb.get().mutes);
+        const gdb = await db.guild(guild.id);
+        const gsdb = await db.settings(guild.id);
+        let mutes = Object.keys(gdb.get().mutes);
         if (!mutes.length) return;
 
-        mutes = mutes.filter((key) => guilddb.get().mutes[key] != -1 && guilddb.get().mutes[key] < Date.now());
+        mutes = mutes.filter((key) => gdb.get().mutes[key] != -1 && gdb.get().mutes[key] < Date.now());
 
         return mutes.map(async (key) => {
             const member = await guild.members.fetch(key);
-            return member?.roles.remove(guilddb.get().settings.muteRole).then(() => {
-                guilddb.removeFromObject("mutes", key);
-            }).catch(() => { });
+            return member?.roles.remove(gsdb.get().muteRole).then(() => {
+                gdb.removeFromObject("mutes", key);
+            }).catch(() => {
+                gdb.removeFromObject("mutes", key);
+            });
         });
     });
 };

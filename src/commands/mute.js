@@ -27,9 +27,10 @@ const { parseTime, getPermissionLevel } = require("../constants/");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
-    const guilddb = await db.guild(interaction.guild.id);
-    const role = interaction.guild.roles.cache.get(guilddb.get().settings.muteRole);
+    const guilddb = await db.settings(interaction.guild.id);
+    const role = interaction.guild.roles.cache.get(guilddb.get().muteRole);
     const member = interaction.guild.members.resolve(interaction.options.getUser("member").id);
+
     if (!role) return interaction.reply({ content: "❌ Не удалось найти роль мьюта.", ephemeral: true });
     if (!interaction.guild.me.permissions.has("MANAGE_ROLES"))
         return interaction.reply({ content: "❌ У меня нет прав для изменения ролей.", ephemeral: true });
@@ -39,7 +40,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         return interaction.reply({ content: "❌ Вы не можете замьютить бота.", ephemeral: true });
     if (getPermissionLevel(interaction.options.getMember("member")) >= 1)
         return interaction.reply({ content: "❌ Вы не можете замьютить этого участника.", ephemeral: true });
-    if (guilddb.get().mutes[member.user.id])
+    if (member.roles.cache.has(role.id))
         return interaction.reply({ content: "❌ Этот участник уже замьючен.", ephemeral: true });
 
     let dmsent = false;
@@ -50,9 +51,9 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 
     interaction.options.getMember("member").roles.add(role).then(async () => {
         guilddb.setOnObject("mutes", interaction.options.getMember("member").user.id, time);
-    }).catch(async (err) => {
-        await interaction.reply({
-            content: "❌ Произошла какая-то ошибка при выдачи роли...",
+    }).catch((err) => {
+        interaction.reply({
+            content: "❌ Произошла неизвестная ошибка.",
             ephemeral: true
         });
         console.error(err.stack);

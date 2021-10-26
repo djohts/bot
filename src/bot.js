@@ -60,6 +60,7 @@ client.once("shardReady", async (shardid, unavailable = new Set()) => {
     let disabledGuilds = new Set([...Array.from(unavailable), ...client.guilds.cache.map((guild) => guild.id)]);
     let guildCachingStart = Date.now();
 
+    await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`);
 
@@ -89,12 +90,14 @@ client.on("messageCreate", async (message) => {
     ) return;
 
     const gdb = await db.guild(message.guild.id);
+    const gsdb = await db.settings(message.guild.id);
 
-    if (gdb.get().mutes[message.author.id] && gdb.get().settings.delMuted) return deleteMessage(message);
+    if (gdb.get().mutes[message.author.id] && gsdb.get().delMuted) return deleteMessage(message);
     if (gdb.get().mutes[message.author.id]) return;
 
     global.gdb = gdb;
-    global.gldb = await db.global;
+    global.gsdb = gsdb;
+    global.gldb = db.global;
     if (message.content.startsWith(config.prefix) || message.content.match(`^<@!?${client.user.id}> `)) return commandHandler(message, config.prefix, gdb, db);
     if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => { });
 });
@@ -161,6 +164,6 @@ client.on("shardError", (err) => console.error(`${shard} Error. ${err}`));
 client.on("shardReconnecting", () => console.log(`${shard} Reconnecting.`));
 client.on("shardResume", (_, replayedEvents) => console.log(`${shard} Resumed. ${replayedEvents} replayed events.`));
 client.on("warn", (info) => console.warn(`${shard} Warning. ${info}`));
-client.login(config.token);
+client.login();
 
 process.on("unhandledRejection", (rej) => console.error(rej.stack));

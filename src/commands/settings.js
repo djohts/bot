@@ -47,7 +47,7 @@ const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
-    const guilddb = await db.guild(interaction.guild.id);
+    const gset = await db.settings(interaction.guild.id);
 
     switch (interaction.options.getSubcommand()) {
         case "get":
@@ -58,21 +58,21 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     fields: [
                         {
                             name: "Удаление сообщений замьюченых участников",
-                            value: guilddb.get().settings.delMuted ?
+                            value: gset.get().delMuted ?
                                 "<:online:887393623845507082> **`Включено`**" :
                                 "<:dnd:887393623786803270> **`Выключено`**",
                             inline: true
                         },
                         {
                             name: "Удаление закреплённых сообщений",
-                            value: guilddb.get().settings.purgePinned ?
+                            value: gset.get().purgePinned ?
                                 "<:online:887393623845507082> **`Включено`**" :
                                 "<:dnd:887393623786803270> **`Выключено`**",
                             inline: true
                         },
                         {
                             name: "Роль мьюта",
-                            value: guilddb.get().settings.muteRole ? `<@&${guilddb.get().settings.muteRole}>` : "**`Не установлена`**"
+                            value: gset.get().muteRole ? `<@&${gset.get().muteRole}>` : "**`Не установлена`**"
                         },
                     ]
                 }]
@@ -81,27 +81,27 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             let idk = "";
             switch (interaction.options.getString("setting")) {
                 case "delMuted":
-                    guilddb.get().settings.delMuted ? (() => {
-                        guilddb.setOnObject("settings", "delMuted", false);
+                    gset.get().delMuted ? (() => {
+                        gset.set("delMuted", false);
                         idk = "**`Удаление сообщений замьюченых участников`** было выключено.";
                     })() : (() => {
-                        guilddb.setOnObject("settings", "delMuted", true);
+                        gset.set("delMuted", true);
                         idk = "**`Удаление сообщений замьюченых участников`** было включено.";
                     })();
                     return await interaction.reply(idk);
                 case "purgePinned":
-                    guilddb.get().settings.purgePinned ? (() => {
-                        guilddb.setOnObject("settings", "purgePinned", false);
+                    gset.get().purgePinned ? (() => {
+                        gset.set("purgePinned", false);
                         idk = "**`Удаление закреплённых сообщений`** было выключено.";
                     })() : (() => {
-                        guilddb.setOnObject("settings", "purgePinned", true);
+                        gset.set("purgePinned", true);
                         idk = "**`Удаление закреплённых сообщений`** было включено.";
                     })();
                     return await interaction.reply(idk);
             };
             break;
         case "muterole":
-            await guilddb.setOnObject("settings", "muteRole", interaction.options.getRole("role").id);
+            await gset.set("muteRole", interaction.options.getRole("role").id);
             return interaction.reply({
                 content: "✅ Роль мьюта была установлена." +
                     (

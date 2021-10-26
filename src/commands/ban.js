@@ -46,8 +46,6 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
     if (getPermissionLevel(member) >= 1)
         return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
-    if (member && !member.bannable)
-        return interaction.reply({ content: "❌ Не удалось забанить этого участника.", ephemeral: true });
 
     let dmsent = false;
     let time = 0;
