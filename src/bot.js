@@ -164,6 +164,6 @@ client.on("shardError", (err) => console.error(`${shard} Error. ${err}`));
 client.on("shardReconnecting", () => console.log(`${shard} Reconnecting.`));
 client.on("shardResume", (_, replayedEvents) => console.log(`${shard} Resumed. ${replayedEvents} replayed events.`));
 client.on("warn", (info) => console.warn(`${shard} Warning. ${info}`));
-client.login();
+client.login(config.token);
 
 process.on("unhandledRejection", (rej) => console.error(rej.stack));
