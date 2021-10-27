@@ -14,5 +14,5 @@ module.exports.msToTime = (ms) => {
     if (minutes) str = str + minutes + "мин ";
     if (sec) str = str + sec + "с";
 
-    return str || "0с";
+    return str?.trim() || "0с";
 };
