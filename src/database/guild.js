@@ -4,6 +4,7 @@ const dbCache = new Map(), dbSaveQueue = new Map();
 
 const guildObject = {
     guildid: String(),
+    voices: Object(),
     mutes: Object(),
     bans: Object()
 };
