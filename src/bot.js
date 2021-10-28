@@ -8,6 +8,7 @@ const client = new Discord.Client({
         BaseGuildEmojiManager: 0,
         GuildStickerManager: 0,
         GuildInviteManager: 0,
+        GuildEmojiManager: 0,
         GuildBanManager: {
             sweepInterval: 10,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
@@ -49,9 +50,9 @@ global.db = db;
 
 let shard = "[Shard N/A]";
 
-client.once("shardReady", async (shardid, unavailable = new Set()) => {
-    client.shardId = shardid;
-    shard = `[Shard ${shardid}]`;
+client.once("shardReady", async (shardId, unavailable = new Set()) => {
+    client.shardId = shardId;
+    shard = `[Shard ${shardId}]`;
     console.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
 
     client.loading = true;
