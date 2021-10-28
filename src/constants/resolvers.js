@@ -1,4 +1,4 @@
-module.exports.parseTime = (input = "", outputType = "ms") => {
+export function parseTime(input = "", outputType = "ms") {
 
     const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
 
