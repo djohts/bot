@@ -68,7 +68,6 @@ module.exports.parseTime = (input = "", outputType = "ms") => {
     parse["годов"] = parse["year"];
 
     let result = 0;
-    // ignore commas/placeholders
     input = (input + '').replace(/(\d)[,_](\d)/g, '$1$2');
     input.replace(durationRE, (_, n, units) => {
         units = unitRatio(units);
