@@ -38,7 +38,7 @@ const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const rest = new REST({ version: "9" }).setToken(config.token);
-require("./modules/voices")(client);
+if (!config.dev) require("./modules/voices")(client);
 require("discord-logs")(client);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
