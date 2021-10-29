@@ -24,7 +24,7 @@ const client = new Discord.Client({
             })
         }
     }),
-    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES", "GUILD_BANS"],
+    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES", "GUILD_BANS", "GUILD_VOICE_STATES"],
     presence: {
         status: "dnd",
         activity: {
@@ -38,6 +38,7 @@ const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const rest = new REST({ version: "9" }).setToken(config.token);
+require("./modules/voices")(client);
 require("discord-logs")(client);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

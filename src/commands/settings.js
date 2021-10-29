@@ -24,6 +24,10 @@ module.exports = {
                     {
                         name: "Удаление закреплённых сообщений при очистке (/purge).",
                         value: "purgePinned"
+                    },
+                    {
+                        name: "Временные голосовые каналы.",
+                        value: "voices"
                     }
                 ]
             }]
@@ -37,6 +41,23 @@ module.exports = {
                 description: "Роль.",
                 type: 8,
                 required: true
+            }]
+        },
+        {
+            name: "voice",
+            description: "Настройки модуля временных голосовых каналов.",
+            type: 2,
+            options: [{
+                name: "setlobby",
+                description: "Установить лобби для голосовых каналов.",
+                type: 1,
+                options: [{
+                    name: "channel",
+                    description: "Канал-генератор, в который надо зайти для создания временного канала.",
+                    type: 7,
+                    channel_types: [2],
+                    required: true
+                }]
             }]
         }
     ],
@@ -74,6 +95,20 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                             name: "Роль мьюта",
                             value: gset.get().muteRole ? `<@&${gset.get().muteRole}>` : "**`Не установлена`**"
                         },
+                        {
+                            name: "Временные голосовые каналы",
+                            value: gset.get().voices.enabled ?
+                                "<:online:887393623845507082> **`Включены`**" :
+                                "<:dnd:887393623786803270> **`Выключены`**",
+                            inline: true
+                        },
+                        {
+                            name: "Лобби-канал",
+                            value: gset.get().voices.lobby ?
+                                `<#${gset.get().voices.lobby}>` :
+                                "**`Не установлен`**",
+                            inline: true
+                        },
                     ]
                 }]
             });
@@ -98,6 +133,15 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                         idk = "**`Удаление закреплённых сообщений`** было включено.";
                     })();
                     return await interaction.reply(idk);
+                case "voices":
+                    gset.get().voices.enabled ? (() => {
+                        gset.setOnObject("voices", "enabled", false);
+                        idk = "**`Временные голосовые каналы`** были выключены.";
+                    })() : (() => {
+                        gset.setOnObject("voices", "enabled", true);
+                        idk = "**`Временные голосовые каналы`** были включены.";
+                    })();
+                    return await interaction.reply(idk);
             };
             break;
         case "muterole":
@@ -111,5 +155,9 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     ),
                 ephemeral: true
             });
+        case "setlobby":
+            const channel = interaction.options.getChannel("channel");
+            gset.setOnObject("voices", "lobby", channel.id);
+            interaction.reply({ content: `✅ Лобби было установлено. (${channel})` });
     };
 };

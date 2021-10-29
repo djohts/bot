@@ -2,7 +2,7 @@ const { GuildMember } = require("discord.js");
 const config = require("../../config");
 
 module.exports = Object.assign(
-    require("./time"), require("./resolvers")
+    require("./time"), require("./resolvers"), require("./callbacks")
 );
 
 module.exports.paginate = (arr = [], size = 4) => {
