@@ -28,7 +28,7 @@ module.exports.voicesSwitch = async (member = new GuildMember, oldChannel = new 
     const guilddb = await db.guild(member.guild.id);
 
     if (guilddb.get().voices[oldChannel.id] == member.user.id) {
-        oldChannel.delete() && guilddb.removeFromObject("voices", oldChannel.id);
+        oldChannel.delete().then(() => guilddb.removeFromObject("voices", oldChannel.id));
     };
     if (gset.get().voices.lobby == newChannel.id && gset.get().voices.enabled) {
         member.guild.channels.create("Комната " + member.user.tag, {
