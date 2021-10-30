@@ -6,7 +6,17 @@ const guildObject = {
     guildid: String(),
     voices: Object(),
     mutes: Object(),
-    bans: Object()
+    bans: Object(),
+    //
+    channel: String(),
+    count: Number(),
+    user: String(),
+    modules: ["RECOVER"],
+    flows: Object(),
+    message: String(),
+    users: Object(),
+    liveboard: Object(),
+    log: Object()
 };
 
 const guildSchema = Schema(JSON.parse(JSON.stringify(guildObject)), { minimize: true });
