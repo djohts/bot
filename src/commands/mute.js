@@ -1,5 +1,6 @@
 module.exports = {
     name: "mute",
+    description: "Замьютить участника.",
     permissionRequired: 1,
     opts: [
         {

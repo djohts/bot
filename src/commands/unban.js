@@ -1,5 +1,6 @@
 module.exports = {
     name: "unban",
+    description: "Разбанить участника.",
     permissionRequired: 1,
     opts: [
         {
@@ -17,7 +18,7 @@ const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
-        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / выдачи и снятия банов.", ephemeral: true });
+        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await db.guild(interaction.guild.id);

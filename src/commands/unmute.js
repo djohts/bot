@@ -1,5 +1,6 @@
 module.exports = {
     name: "unmute",
+    description: "Размьютить участника.",
     permissionRequired: 1,
     opts: [
         {
