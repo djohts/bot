@@ -32,8 +32,8 @@ module.exports.registerCommands = async (client = new Client) => {
             if (file.slash && name.length) {
                 commands.push({
                     name: name,
-                    description: file.description ? file.description : "none",
-                    options: file.opts ? file.opts : null,
+                    description: file.description || "none",
+                    options: file.opts || null,
                 });
             };
         };
