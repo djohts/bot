@@ -44,6 +44,8 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         return interaction.reply({ content: "❌ Вы не можете замьютить этого участника.", ephemeral: true });
     if (member.roles.cache.has(role.id))
         return interaction.reply({ content: "❌ Этот участник уже замьючен.", ephemeral: true });
+    if (interaction.options.getString("time")?.length && !parseTime(interaction.options.getString("time")))
+        return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     let dmsent = false;
 
