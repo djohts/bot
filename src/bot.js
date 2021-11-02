@@ -118,7 +118,7 @@ client.on("guildCreate", async (guild) => {
     const owner = await client.users.fetch(guild.ownerId);
 
     client.users.fetch("419892040726347776").then((u) => u.send({
-        content: "<a:pepeD:898300124575445072> new guild <a:pepeD:898300124575445072>",
+        content: "<a:pepeD:904171928091234344> new guild <a:pepeD:904171928091234344>",
         embeds: [{
             title: guild.name,
             author: {
@@ -142,7 +142,7 @@ client.on("guildDelete", async (guild) => {
     const owner = await client.users.fetch(guild.ownerId);
 
     client.users.fetch("419892040726347776").then((u) => u.send({
-        content: "<a:pepeD:898300124575445072> guild removed <a:pepeD:898300124575445072>",
+        content: "<a:pepeD:904171928091234344> guild removed <a:pepeD:904171928091234344>",
         embeds: [{
             title: guild.name,
             author: {

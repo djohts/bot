@@ -21,8 +21,10 @@ module.exports = {
         },
         {
             name: "purgedays",
-            description: "Удаление сообщений пользователя за указанное время, в днях. От 0 до 7.",
-            type: 4
+            description: "Удаление сообщений пользователя за указанное время, в днях. От 1 до 7.",
+            type: 4,
+            min_value: 1,
+            max_value: 7
         }
     ],
     slash: true
@@ -54,7 +56,6 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     let purgedays = interaction.options.getInteger("purgedays");
     if (!interaction.options.getString("time")?.length) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("time"));
-    if (purgedays < 0 || purgedays > 7) return interaction.reply({ content: "❌ `purgedays` должно быть от 0 до 7.", ephemeral: true });
 
     const dmemb = new MessageEmbed()
         .setAuthor(
