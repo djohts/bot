@@ -44,6 +44,6 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             content: "❌ Произошла неизвестная ошибка.",
             ephemeral: true
         });
-        console.error(err.stack);
+        console.error(err);
     });
 };
