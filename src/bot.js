@@ -2,7 +2,7 @@ require("nodejs-better-console").overrideConsole();
 const Discord = require("discord.js");
 const config = require("../config");
 const commandHandler = require("./handlers/commands");
-const slashHandler = require("./handlers/interactions/");
+const interactionHandler = require("./handlers/interactions/");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         BaseGuildEmojiManager: 0,
@@ -67,7 +67,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     disabledGuilds.size = 0;
 
-    slashHandler(client);
+    interactionHandler(client);
 
     client.loading = false;
 
@@ -105,10 +105,10 @@ client.on("messageCreate", async (message) => {
 
 const updatePresence = async () => {
     const gc = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, cur) => prev + cur, 0));
-    let name = `тикток фм | ${gc} guilds`;
+    let text = `тикток фм | ${gc} guilds`;
     return client.user.setPresence({
         status: "idle",
-        activities: [{ type: "LISTENING", name }],
+        activities: [{ type: "LISTENING", name: text }],
     });
 };
 
