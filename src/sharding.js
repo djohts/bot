@@ -51,4 +51,4 @@ async function updateBotInfo() {
     return botInfo = newBotInfo;
 };
 
-manager.spawn({ delay: 1500, timeout: -1 });
+manager.spawn({ delay: 3000, timeout: -1 });

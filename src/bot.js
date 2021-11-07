@@ -69,9 +69,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     await interactionHandler(client);
 
-    let slashStart = Date.now();
     await require("./handlers/interactions/slash").registerCommands(client);
-    console.log(`${shard} Refreshed slash commands. [${Date.now() - slashStart}ms]`);
 
     client.loading = false;
 
