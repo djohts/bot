@@ -67,12 +67,13 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     disabledGuilds.size = 0;
 
-    interactionHandler(client);
+    await interactionHandler(client);
+
+    let slashStart = Date.now();
+    await require("./handlers/interactions/slash").registerCommands(client);
+    console.log(`${shard} Refreshed slash commands. [${Date.now() - slashStart}ms]`);
 
     client.loading = false;
-
-    await require("./handlers/interactions/slash").registerCommands(client);
-    console.log(`${shard} Refreshed slash commands.`);
 
     await updatePresence();
     setInterval(updatePresence, 10 * 60 * 1000); // 10 minutes
@@ -167,4 +168,4 @@ client.on("shardResume", (_, replayedEvents) => console.log(`${shard} Resumed. $
 client.on("warn", (info) => console.warn(`${shard} Warning. ${info}`));
 client.login(config.token);
 
-process.on("unhandledRejection", (rej) => console.error(rej.stack));
+process.on("unhandledRejection", (rej) => console.error(rej));
