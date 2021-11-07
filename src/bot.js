@@ -70,6 +70,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await interactionHandler(client);
 
     await require("./handlers/interactions/slash").registerCommands(client);
+    console.log(`${shard} Refreshed slash commands.`);
 
     client.loading = false;
 
