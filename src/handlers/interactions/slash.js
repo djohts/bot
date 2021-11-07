@@ -40,10 +40,10 @@ module.exports.registerCommands = async (client = new Client) => {
 
         client.slashes = commands;
 
-        return client.guilds.cache.map(async (guild = new Guild) => {
+        return Promise.all(client.guilds.cache.map(async (guild = new Guild) => {
             return await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch((err) => {
-                if (!err.message.toLowerCase().includes("missing")) console.error(err.stack);
+                if (!err.message.toLowerCase().includes("missing")) console.error(err);
             });
-        });
+        }));
     });
 };
