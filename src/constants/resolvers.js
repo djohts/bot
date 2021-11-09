@@ -5,14 +5,14 @@ module.exports.parseTime = (input = "", outputType = "ms") => {
     parse.nanosecond =
         parse.ns = 1 / 1e6;
 
-    parse['µs'] =
-        parse['μs'] =
+    parse["µs"] =
+        parse["μs"] =
         parse.us =
         parse.microsecond = 1 / 1e3;
 
     parse.millisecond =
         parse.ms =
-        parse[''] = 1;
+        parse[""] = 1;
 
     parse.second =
         parse.sec =
@@ -68,7 +68,7 @@ module.exports.parseTime = (input = "", outputType = "ms") => {
     parse["годов"] = parse["year"];
 
     let result = 0;
-    input = (input + '').replace(/(\d)[,_](\d)/g, '$1$2');
+    input = (input + "").replace(/(\d)[,_](\d)/g, "$1$2");
     input.replace(durationRE, (_, n, units) => {
         units = unitRatio(units);
         if (units) result = (result || 0) + parseFloat(n, 10) * units;
@@ -77,6 +77,6 @@ module.exports.parseTime = (input = "", outputType = "ms") => {
     return result && (result / (unitRatio(outputType) || 1));
 
     function unitRatio(str) {
-        return parse[str] || parse[str.toLowerCase().replace(/s$/, '')];
+        return parse[str] || parse[str.toLowerCase().replace(/s$/, "")];
     };
 };
