@@ -1,5 +1,5 @@
-module.exports.parseTime = (input = "", outputType = "ms") => {
 
+module.exports.parseTime = (input = "", outputType = "ms") => {
     const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
 
     parse.nanosecond =
