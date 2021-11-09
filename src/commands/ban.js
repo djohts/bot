@@ -65,7 +65,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         .setTitle("Вы были забанены")
         .addField("Модератор", `${interaction.user.toString()} (**${interaction.user.tag.replace("*", "\\*")}**)`, true);
     if (time != -1) dmemb.addField("Время", msToTime(parseTime(interaction.options.getString("time"))), true);
-    if (reason.length) dmemb.addField("Причина", reason);
+    if (reason?.length) dmemb.addField("Причина", reason);
 
     await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => { });
 
