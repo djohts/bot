@@ -17,8 +17,9 @@ const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
-    const guilddb = await db.settings(interaction.guild.id);
-    const role = interaction.guild.roles.cache.get(guilddb.get().muteRole);
+    const guilddb = await db.guild(interaction.guild.id);
+    const gsdb = await db.settings(interaction.guild.id);
+    const role = interaction.guild.roles.cache.get(gsdb.get().muteRole);
     const member = interaction.guild.members.resolve(interaction.options.getUser("member").id);
     const user = interaction.options.getUser("member").id;
 
