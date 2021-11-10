@@ -37,8 +37,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         guilddb.removeFromObject("mutes", member.user.id);
         interaction.reply({
             content: `✅ ${user.toString()} был успешно размьючен.` +
-                (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
-            ephemeral: true
+                (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
         });
     }).catch((err) => {
         interaction.reply({
