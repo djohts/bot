@@ -21,7 +21,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const gsdb = await db.settings(interaction.guild.id);
     const role = interaction.guild.roles.cache.get(gsdb.get().muteRole);
     const member = interaction.guild.members.resolve(interaction.options.getUser("member").id);
-    const user = interaction.options.getUser("member").id;
+    const user = interaction.options.getUser("member");
 
     if (!role) return interaction.reply({ content: "❌ Не удалось найти роль мьюта.", ephemeral: true });
     if (!interaction.guild.me.permissions.has("MANAGE_ROLES"))
