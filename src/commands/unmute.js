@@ -27,7 +27,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         return interaction.reply({ content: "❌ У меня нет прав для изменения ролей.", ephemeral: true });
     if (interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <= role.rawPosition)
         return interaction.reply({ content: "❌ Роль мьюта находится выше моей.", ephemeral: true });
-    if (!member.roles.cache.has(role))
+    if (!member.roles.cache.has(role.id))
         return interaction.reply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
 
     let dmsent = false;
