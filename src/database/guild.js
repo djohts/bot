@@ -4,20 +4,20 @@ const { getDateFormatted } = require("../constants/time");
 const dbCache = new Map(), dbSaveQueue = new Map();
 
 const guildObject = {
-    guildid: String(),
-    voices: Object(),
-    mutes: Object(),
-    bans: Object(),
+    guildid: "",
+    voices: {},
+    mutes: {},
+    bans: {},
     //
-    channel: String(),
-    count: Number(),
-    user: String(),
-    modules: ["RECOVER"],
-    flows: Object(),
-    message: String(),
-    users: Object(),
-    liveboard: Object(),
-    log: Object()
+    channel: "",
+    count: 0,
+    user: "",
+    modules: [],
+    flows: {},
+    message: "",
+    users: {},
+    liveboard: {},
+    log: {}
 };
 
 const guildSchema = Schema(JSON.parse(JSON.stringify(guildObject)), { minimize: true });
