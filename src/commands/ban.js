@@ -70,7 +70,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => { });
 
     await interaction.guild.bans.create(user.id, {
-        reason: interaction.user.tag + (reason.length ? ": " + reason : ""),
+        reason: interaction.user.tag + (reason?.length ? ": " + reason : ""),
         days: purgedays
     }).then(() => {
         guilddb.setOnObject("bans", user.id, time);
