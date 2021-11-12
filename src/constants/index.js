@@ -15,23 +15,30 @@ module.exports.getPermissionLevel = (member = new GuildMember) => {
     return 0; // server member
 };
 
-module.exports.plurify = (number = 0, word = "") => {
-    const endsWith = (str, suffix) => {
-        return String(str).match(suffix + "$") == suffix;
-    };
+module.exports.onlyUnique = (value, index, self) => self.indexOf(value) == index;
 
-    if (
-        endsWith(number, 0) ||
-        endsWith(number, 5) ||
-        endsWith(number, 6) ||
-        endsWith(number, 7) ||
-        endsWith(number, 8) ||
-        endsWith(number, 9)
-    ) return `${number} ${word}ов`;
-    else if (endsWith(number, 1)) return `${number} ${word}`;
-    else if (
-        endsWith(number, 2) ||
-        endsWith(number, 3) ||
-        endsWith(number, 4)
-    ) return `${number} ${word}а`;
+const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+module.exports.generateID = (alreadyGenerated) => {
+    let id;
+    while (!id || alreadyGenerated.includes(id)) {
+        id = "";
+        for (let i = 0; i < 6; i++) id = id + chars[Math.floor(Math.random() * chars.length)];
+    };
+    return id;
+};
+
+const medals = {
+    "1й": "🥇", "2й": "🥈", "3й": "🥉"
+};
+const formatNumberSuffix = (number) => {
+    let str = number.toString();
+    if (str == "0") return "N/A";
+    return str + "й";
+};
+
+module.exports.formatScore = (id, index, users, userid = "") => {
+    let suffix = formatNumberSuffix(index + 1);
+    suffix = medals[suffix] || `**${suffix}**:`;
+    if (userid == id) return `${suffix} *__<@${id}>, **счёт:** ${(users[id] || 0)}__*`;
+    else return `${suffix} <@${id}>, **счёт:** ${(users[id] || 0)}`;
 };
