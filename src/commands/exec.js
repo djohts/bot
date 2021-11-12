@@ -17,7 +17,6 @@ module.exports.run = (message, args) => {
                 components: [{
                     type: 2,
                     emoji: {
-                        id: null,
                         name: "🗑"
                     },
                     style: 4,

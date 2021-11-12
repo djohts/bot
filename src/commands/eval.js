@@ -21,7 +21,6 @@ module.exports.run = async (message = new Message, args) => {
 				components: [{
 					type: 2,
 					emoji: {
-						id: null,
 						name: "🗑"
 					},
 					style: 4,

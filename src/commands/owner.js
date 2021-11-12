@@ -57,6 +57,14 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                             style: 4,
                             custom_id: "servers:next",
                             disabled: (fields.length == 1 ? true : false)
+                        },
+                        {
+                            type: 2,
+                            emoji: {
+                                name: "🗑"
+                            },
+                            style: 4,
+                            custom_id: "reply:delete"
                         }
                     ]
                 }]

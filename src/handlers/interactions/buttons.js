@@ -57,6 +57,14 @@ module.exports = async (interaction = new ButtonInteraction) => {
                         style: 4,
                         custom_id: "servers:next",
                         disabled: (page == fields.length ? true : false)
+                    },
+                    {
+                        type: 2,
+                        emoji: {
+                            name: "🗑"
+                        },
+                        style: 4,
+                        custom_id: "reply:delete"
                     }
                 ]
             }]
@@ -104,6 +112,14 @@ module.exports = async (interaction = new ButtonInteraction) => {
                         style: 4,
                         custom_id: "servers:next",
                         disabled: (page == fields.length ? true : false)
+                    },
+                    {
+                        type: 2,
+                        emoji: {
+                            name: "🗑"
+                        },
+                        style: 4,
+                        custom_id: "reply:delete"
                     }
                 ]
             }]
