@@ -63,6 +63,8 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`);
+    await checkBans(client);
+    await checkMutes(client);
 
     disabledGuilds = false;
 
@@ -74,12 +76,9 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     client.loading = false;
 
     await updatePresence();
-    setInterval(updatePresence, 10 * 60 * 1000); // 10 minutes
+    setInterval(updatePresence, 60 * 1000); // 1 minute
 
-    await checkMutes(client);
     setInterval(() => checkMutes(client), 3 * 1000); // 3 seconds
-
-    await checkBans(client);
     setInterval(() => checkBans(client), 5 * 1000); // 5 seconds
 });
 
@@ -107,7 +106,7 @@ const updatePresence = async () => {
     let text = `тикток фм | ${gc} guilds`;
     return client.user.setPresence({
         status: "idle",
-        activities: [{ type: "LISTENING", name: text }],
+        activities: [{ type: "PLAYING", name: text }],
     });
 };
 
