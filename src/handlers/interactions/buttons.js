@@ -16,7 +16,6 @@ module.exports = async (interaction = new ButtonInteraction) => {
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message);
 
     if (interaction.customId == "servers:prev") {
-        interaction.reply({ content: "ok", fetchReply: true }).then((m) => deleteMessage(m));
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
             name: g.name,
             value: [
@@ -30,7 +29,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
         });
         const fields = paginate(guilds, 9);
         const page = Number(interaction.message.embeds[0].footer.text.split("/")[0]) - 1;
-        return interaction.message.edit({
+        return interaction.update({
             embeds: [{
                 title: interaction.client.user.tag + " guild list",
                 footer: {
@@ -64,7 +63,6 @@ module.exports = async (interaction = new ButtonInteraction) => {
         });
     };
     if (interaction.customId == "servers:next") {
-        interaction.reply({ content: "ok", fetchReply: true }).then((m) => deleteMessage(m));
         let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
             name: g.name,
             value: [
@@ -78,7 +76,7 @@ module.exports = async (interaction = new ButtonInteraction) => {
         });
         const fields = paginate(guilds, 9);
         const page = Number(interaction.message.embeds[0].footer.text.split("/")[0]) + 1;
-        return interaction.message.edit({
+        return interaction.update({
             embeds: [{
                 title: interaction.client.user.tag + " guild list",
                 footer: {
