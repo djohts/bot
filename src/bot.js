@@ -35,17 +35,16 @@ const client = new Discord.Client({
 });
 const db = require("./database/")();
 const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
+const { voicesJoin, voicesLeave, voicesSwitch } = require("./constants/callbacks");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
 const rest = new REST({ version: "9" }).setToken(config.token);
-if (!config.dev) require("./modules/voices")(client);
 require("discord-logs")(client);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-global.msToTime = require("./constants/").msToTime;
-global.parse = require("./constants/").parseTime;
+global.parse = require("./constants/resolvers").parseTime;
+global.msToTime = require("./constants/time").msToTime;
 module.exports.client = client;
-global.delMsg = deleteMessage;
 global.client = client;
 global.db = db;
 
@@ -65,7 +64,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await db.cacheGuilds(disabledGuilds);
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`);
 
-    disabledGuilds.size = 0;
+    disabledGuilds = false;
 
     await interactionHandler(client);
 
@@ -158,6 +157,9 @@ client.on("guildDelete", async (guild) => {
     }));
 });
 
+if (!config.dev) client.on("voiceChannelJoin", voicesJoin);
+if (!config.dev) client.on("voiceChannelLeave", voicesLeave);
+if (!config.dev) client.on("voiceChannelSwitch", voicesSwitch);
 client.on("error", (err) => console.error(`${shard} Client error. ${err}`));
 client.on("rateLimit", (rateLimitInfo) => console.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
 client.on("shardDisconnected", (closeEvent) => console.warn(`${shard} Disconnected. ${closeEvent}`));
