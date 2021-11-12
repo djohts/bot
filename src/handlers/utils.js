@@ -34,9 +34,9 @@ module.exports.checkMutes = async (client = new Client) => {
         return mutes.map(async (key) => {
             const member = await guild.members.fetch(key);
             return member?.roles.remove(gsdb.get().muteRole).then(() => {
-                gdb.removeFromObject("mutes", key);
+                return gdb.removeFromObject("mutes", key);
             }).catch(() => {
-                gdb.removeFromObject("mutes", key);
+                return gdb.removeFromObject("mutes", key);
             });
         });
     });
@@ -53,10 +53,11 @@ module.exports.checkBans = async (client = new Client) => {
         bans = bans.filter((key) => guilddb.get().bans[key] != -1 && guilddb.get().bans[key] < Date.now());
 
         return bans.map(async (key) => {
-            return guild.bans.fetch(key).then(() => {
-                return guild.bans.remove(key).then(() => guilddb.removeFromObject("bans", key)).catch();
-            }).catch((err) => {
-                if (err.message.toLowerCase().includes("unknown ban")) return guilddb.removeFromObject("bans", key);
+            return guild.bans.fetch(key).then(async () => {
+                await guild.bans.remove(key);
+                return guilddb.removeFromObject("bans", key);
+            }).catch(() => {
+                return guilddb.removeFromObject("bans", key);
             });
         });
     });
