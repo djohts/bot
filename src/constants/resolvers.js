@@ -1,3 +1,12 @@
+module.exports.paginate = (arr = [], size = 4) => {
+    return arr.reduce((acc, val, i) => {
+        let idx = Math.floor(i / size);
+        let page = acc[idx] || (acc[idx] = []);
+        page.push(val);
+
+        return acc;
+    }, []);
+};
 
 module.exports.parseTime = (input = "", outputType = "ms") => {
     const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;

@@ -5,16 +5,6 @@ module.exports = Object.assign(
     require("./time"), require("./resolvers"), require("./callbacks")
 );
 
-module.exports.paginate = (arr = [], size = 4) => {
-    return arr.reduce((acc, val, i) => {
-        let idx = Math.floor(i / size);
-        let page = acc[idx] || (acc[idx] = []);
-        page.push(val);
-
-        return acc;
-    }, []);
-};
-
 module.exports.getPermissionLevel = (member = new GuildMember) => {
     if (!(member instanceof GuildMember)) return 0;
 
