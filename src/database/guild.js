@@ -24,92 +24,92 @@ const guildSchema = Schema(JSON.parse(JSON.stringify(guildObject)), { minimize: 
 const Guild = model("Guild", guildSchema);
 global.Guild = Guild;
 
-const get = (guildId) => new Promise((resolve, reject) => Guild.findOne({ guildId }, (err, guild) => {
+const get = (guildid) => new Promise((resolve, reject) => Guild.findOne({ guildid }, (err, guild) => {
     if (err) return reject(err);
     if (!guild) {
         guild = new Guild(JSON.parse(JSON.stringify(guildObject)));
-        guild.guildid = guildId;
+        guild.guildid = guildid;
     };
     return resolve(guild);
 }));
 
-const load = async (guildId) => {
-    const guild = await get(guildId), guildCache = {}, freshGuildObject = JSON.parse(JSON.stringify(guildObject));
+const load = async (guildid) => {
+    const guild = await get(guildid), guildCache = {}, freshGuildObject = JSON.parse(JSON.stringify(guildObject));
     for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
-    return dbCache.set(guildId, guildCache);
+    return dbCache.set(guildid, guildCache);
 };
 
-const save = async (guildId, changes) => {
-    if (!dbSaveQueue.has(guildId)) {
-        dbSaveQueue.set(guildId, changes);
-        const guild = await get(guildId), guildCache = dbCache.get(guildId), guildSaveQueue = JSON.parse(JSON.stringify(dbSaveQueue.get(guildId)));
+const save = async (guildid, changes) => {
+    if (!dbSaveQueue.has(guildid)) {
+        dbSaveQueue.set(guildid, changes);
+        const guild = await get(guildid), guildCache = dbCache.get(guildid), guildSaveQueue = JSON.parse(JSON.stringify(dbSaveQueue.get(guildid)));
         for (const key of guildSaveQueue) guild[key] = guildCache[key];
         return guild.save().then(() => {
-            let newSaveQueue = dbSaveQueue.get(guildId);
+            let newSaveQueue = dbSaveQueue.get(guildid);
             if (newSaveQueue.length > guildSaveQueue.length) {
-                dbSaveQueue.delete(guildId);
-                save(guildId, newSaveQueue.filter(key => !guildSaveQueue.includes(key)));
-            } else dbSaveQueue.delete(guildId);
+                dbSaveQueue.delete(guildid);
+                save(guildid, newSaveQueue.filter(key => !guildSaveQueue.includes(key)));
+            } else dbSaveQueue.delete(guildid);
         }).catch(console.log);
-    } else dbSaveQueue.get(guildId).push(...changes);
+    } else dbSaveQueue.get(guildid).push(...changes);
 };
 
-module.exports = () => (async guildId => {
-    if (!dbCache.has(guildId)) await load(guildId);
+module.exports = () => (async guildid => {
+    if (!dbCache.has(guildid)) await load(guildid);
     return {
-        reload: () => load(guildId),
-        unload: () => dbCache.delete(guildId),
+        reload: () => load(guildid),
+        unload: () => dbCache.delete(guildid),
 
-        get: () => Object.assign({}, dbCache.get(guildId)),
+        get: () => Object.assign({}, dbCache.get(guildid)),
         set: (key, value) => {
-            dbCache.get(guildId)[key] = value;
-            save(guildId, [key]);
+            dbCache.get(guildid)[key] = value;
+            save(guildid, [key]);
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         },
         setMultiple: (changes) => {
-            let guildCache = dbCache.get(guildId);
+            let guildCache = dbCache.get(guildid);
             Object.assign(guildCache, changes);
 
-            save(guildId, Object.keys(changes));
+            save(guildid, Object.keys(changes));
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         },
         addToArray: (array, value) => {
-            dbCache.get(guildId)[array].push(value);
-            save(guildId, [array]);
+            dbCache.get(guildid)[array].push(value);
+            save(guildid, [array]);
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         },
         removeFromArray: (array, value) => {
-            dbCache.get(guildId)[array] = dbCache.get(guildId)[array].filter(aValue => aValue !== value);
-            save(guildId, [array]);
+            dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter(aValue => aValue !== value);
+            save(guildid, [array]);
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         },
         setOnObject: (object, key, value) => {
-            dbCache.get(guildId)[object][key] = value;
-            save(guildId, [object]);
+            dbCache.get(guildid)[object][key] = value;
+            save(guildid, [object]);
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         },
         removeFromObject: (object, key) => {
-            delete dbCache.get(guildId)[object][key];
-            save(guildId, [object]);
+            delete dbCache.get(guildid)[object][key];
+            save(guildid, [object]);
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         },
         reset: () => {
-            let guildCache = dbCache.get(guildId);
+            let guildCache = dbCache.get(guildid);
             Object.assign(guildCache, guildObject);
-            guildCache.guildId = guildId;
+            guildCache.guildid = guildid;
 
-            save(guildId, Object.keys(guildObject));
+            save(guildid, Object.keys(guildObject));
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         },
         addToCount: (member) => {
-            let guildCache = dbCache.get(guildId);
+            let guildCache = dbCache.get(guildid);
             guildCache.count++;
             guildCache.user = member.id;
 
@@ -123,22 +123,22 @@ module.exports = () => (async guildId => {
             };
             guildCache.log[dateFormat] += 1;
 
-            save(guildId, ["count", "user", "users", "log"]);
+            save(guildid, ["count", "user", "users", "log"]);
 
-            return dbCache.get(guildId);
+            return dbCache.get(guildid);
         }
     };
 });
 
 module.exports.cacheAll = async (guilds = new Set()) => {
-    let gdbs = await Guild.find({ $or: [...guilds].map(guildId => ({ guildId })) });
-    return await Promise.all([...guilds].map(async (guildId) => {
-        const guild = gdbs.find(db => db.guildId == guildId) || { guildId };
+    let gdbs = await Guild.find({ $or: [...guilds].map(guildid => ({ guildid })) });
+    return await Promise.all([...guilds].map(async (guildid) => {
+        const guild = gdbs.find(db => db.guildid == guildid) || { guildid };
         const guildCache = {};
         const freshGuildObject = JSON.parse(JSON.stringify(guildObject));
 
         for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
 
-        return dbCache.set(guildId, guildCache);
+        return dbCache.set(guildid, guildCache);
     }));
 };
