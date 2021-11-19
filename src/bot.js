@@ -63,8 +63,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`);
-    await checkBans(client);
-    await checkMutes(client);
 
     disabledGuilds = false;
 
@@ -78,8 +76,8 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await updatePresence();
     setInterval(updatePresence, 60 * 1000); // 1 minute
 
-    setInterval(() => checkMutes(client), 3 * 1000); // 3 seconds
-    setInterval(() => checkBans(client), 5 * 1000); // 5 seconds
+    setInterval(() => checkMutes(client), 4 * 1000); // 4 seconds
+    setInterval(() => checkBans(client), 6 * 1000); // 6 seconds
 });
 
 client.on("messageCreate", async (message) => {
