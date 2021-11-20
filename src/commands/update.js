@@ -5,9 +5,9 @@ module.exports = {
 };
 
 const { exec } = require("child_process");
-const { Interaction } = require("discord.js");
+const { CommandInteraction } = require("discord.js");
 
-module.exports.run = async (interaction = new Interaction) => {
+module.exports.run = async (interaction = new CommandInteraction) => {
     exec("git stash push --include-untracked");
     exec("git pull", (error, stdout) => {
         exec("git stash drop");
