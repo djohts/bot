@@ -2,7 +2,9 @@ const { GuildMember } = require("discord.js");
 const config = require("../../config");
 
 module.exports = Object.assign(
-    require("./time"), require("./resolvers"), require("./callbacks")
+    require("./callbacks"),
+    require("./resolvers"),
+    require("./time")
 );
 
 module.exports.getPermissionLevel = (member = new GuildMember) => {
