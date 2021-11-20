@@ -10,17 +10,17 @@ const client = new Discord.Client({
         GuildInviteManager: 0,
         GuildEmojiManager: 0,
         GuildBanManager: {
-            sweepInterval: 10,
+            sweepInterval: 30,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
                 lifetime: 5
             })
         },
         MessageManager: {
-            sweepInterval: 60,
-            maxSize: 100,
-            keepOverLimit: (message) => message.author.id != message.client.user.id,
+            sweepInterval: 600,
+            maxSize: 1024,
+            keepOverLimit: (m) => m.author.id != m.client.user.id,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
-                lifetime: 300
+                lifetime: 86400
             })
         }
     }),
@@ -51,6 +51,7 @@ global.db = db;
 let shard = "[Shard N/A]";
 
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
+    let start = Date.now();
     client.shardId = shardId;
     shard = `[Shard ${shardId}]`;
     console.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
@@ -78,6 +79,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     setInterval(() => checkMutes(client), 4 * 1000); // 4 seconds
     setInterval(() => checkBans(client), 6 * 1000); // 6 seconds
+    console.log(`${shard} Loaded in ${Math.ceil((Date.now() - start) / 1000)}s`);
 });
 
 client.on("messageCreate", async (message) => {
