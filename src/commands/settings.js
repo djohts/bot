@@ -68,96 +68,96 @@ const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    const cmd = interaction.options.getSubcommand();
     const gset = await db.settings(interaction.guild.id);
+    const gdb = await db.guild(interaction.guild.id);
 
-    switch (interaction.options.getSubcommand()) {
-        case "get":
-            return await interaction.reply({
-                embeds: [{
-                    title: "Настройки " + interaction.guild.name,
-                    timestamp: Date.now(),
-                    fields: [
-                        {
-                            name: "Удаление сообщений замьюченых участников",
-                            value: gset.get().delMuted ?
-                                "<:online:887393623845507082> **`Включено`**" :
-                                "<:dnd:887393623786803270> **`Выключено`**",
-                            inline: true
-                        },
-                        {
-                            name: "Удаление закреплённых сообщений",
-                            value: gset.get().purgePinned ?
-                                "<:online:887393623845507082> **`Включено`**" :
-                                "<:dnd:887393623786803270> **`Выключено`**",
-                            inline: true
-                        },
-                        {
-                            name: "Роль мьюта",
-                            value: gset.get().muteRole ? `<@&${gset.get().muteRole}>` : "**`Не установлена`**"
-                        },
-                        {
-                            name: "Временные голосовые каналы",
-                            value: gset.get().voices.enabled ?
-                                "<:online:887393623845507082> **`Включены`**" :
-                                "<:dnd:887393623786803270> **`Выключены`**",
-                            inline: true
-                        },
-                        {
-                            name: "Лобби-канал",
-                            value: gset.get().voices.lobby ?
-                                `<#${gset.get().voices.lobby}>` :
-                                "**`Не установлен`**",
-                            inline: true
-                        },
-                    ]
-                }]
-            });
-        case "toggle":
-            let idk = "";
-            switch (interaction.options.getString("setting")) {
-                case "delMuted":
-                    gset.get().delMuted ? (() => {
-                        gset.set("delMuted", false);
-                        idk = "**`Удаление сообщений замьюченых участников`** было выключено.";
-                    })() : (() => {
-                        gset.set("delMuted", true);
-                        idk = "**`Удаление сообщений замьюченых участников`** было включено.";
-                    })();
-                    return await interaction.reply(idk);
-                case "purgePinned":
-                    gset.get().purgePinned ? (() => {
-                        gset.set("purgePinned", false);
-                        idk = "**`Удаление закреплённых сообщений`** было выключено.";
-                    })() : (() => {
-                        gset.set("purgePinned", true);
-                        idk = "**`Удаление закреплённых сообщений`** было включено.";
-                    })();
-                    return await interaction.reply(idk);
-                case "voices":
-                    gset.get().voices.enabled ? (() => {
-                        gset.setOnObject("voices", "enabled", false);
-                        idk = "**`Временные голосовые каналы`** были выключены.";
-                    })() : (() => {
-                        gset.setOnObject("voices", "enabled", true);
-                        idk = "**`Временные голосовые каналы`** были включены.";
-                    })();
-                    return await interaction.reply(idk);
-            };
-            break;
-        case "muterole":
-            await gset.set("muteRole", interaction.options.getRole("role").id);
-            return interaction.reply({
-                content: "✅ Роль мьюта была установлена." +
-                    (
-                        interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <=
-                            interaction.options.getRole("role").rawPosition ?
-                            "\n⚠️ Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**" : ""
-                    ),
-                ephemeral: true
-            });
-        case "setlobby":
-            const channel = interaction.options.getChannel("channel");
-            gset.setOnObject("voices", "lobby", channel.id);
-            interaction.reply({ content: `✅ Лобби было установлено. (${channel})` });
+    if (cmd == "get") {
+        return await interaction.reply({
+            embeds: [{
+                title: "Настройки " + interaction.guild.name,
+                timestamp: Date.now(),
+                fields: [
+                    {
+                        name: "Удаление сообщений замьюченых участников",
+                        value: gset.get().delMuted ?
+                            "<:online:887393623845507082> **`Включено`**" :
+                            "<:dnd:887393623786803270> **`Выключено`**",
+                        inline: true
+                    },
+                    {
+                        name: "Удаление закреплённых сообщений",
+                        value: gset.get().purgePinned ?
+                            "<:online:887393623845507082> **`Включено`**" :
+                            "<:dnd:887393623786803270> **`Выключено`**",
+                        inline: true
+                    },
+                    {
+                        name: "Роль мьюта",
+                        value: gset.get().muteRole ? `<@&${gset.get().muteRole}>` : "**`Не установлена`**"
+                    },
+                    {
+                        name: "Временные голосовые каналы",
+                        value: gset.get().voices.enabled ?
+                            "<:online:887393623845507082> **`Включены`**" :
+                            "<:dnd:887393623786803270> **`Выключены`**",
+                        inline: true
+                    },
+                    {
+                        name: "Лобби-канал",
+                        value: gset.get().voices.lobby ?
+                            `<#${gset.get().voices.lobby}>` :
+                            "**`Не установлен`**",
+                        inline: true
+                    },
+                ]
+            }]
+        });
+    } else if (cmd == "toggle") {
+        let idk = "";
+        const type = interaction.options.getString("setting");
+        if (type == "delMuted") {
+            gset.get().delMuted ? (() => {
+                gset.set("delMuted", false);
+                idk = "**`Удаление сообщений замьюченых участников`** было выключено.";
+            })() : (() => {
+                gset.set("delMuted", true);
+                idk = "**`Удаление сообщений замьюченых участников`** было включено.";
+            })();
+            return await interaction.reply(idk);
+        } else if (type == "purgePinned") {
+            gset.get().purgePinned ? (() => {
+                gset.set("purgePinned", false);
+                idk = "**`Удаление закреплённых сообщений`** было выключено.";
+            })() : (() => {
+                gset.set("purgePinned", true);
+                idk = "**`Удаление закреплённых сообщений`** было включено.";
+            })();
+            return await interaction.reply(idk);
+        } else if (type == "voices") {
+            gset.get().voices.enabled ? (() => {
+                gset.setOnObject("voices", "enabled", false);
+                idk = "**`Временные голосовые каналы`** были выключены.";
+            })() : (() => {
+                gset.setOnObject("voices", "enabled", true);
+                idk = "**`Временные голосовые каналы`** были включены.";
+            })();
+            return await interaction.reply(idk);
+        };
+    } else if (cmd == "muterole") {
+        await gset.set("muteRole", interaction.options.getRole("role").id);
+        return interaction.reply({
+            content: "✅ Роль мьюта была установлена." +
+                (
+                    interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <=
+                        interaction.options.getRole("role").rawPosition ?
+                        "\n⚠️ Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**" : ""
+                ),
+            ephemeral: true
+        });
+    } else if (cmd == "setlobby") {
+        let lobby = interaction.options.getChannel("channel");
+        gset.setOnObject("voices", "lobby", lobby.id);
+        return interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
     };
 };
