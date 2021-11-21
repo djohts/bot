@@ -1,10 +1,10 @@
-const { Message } = require("discord.js");
-
 module.exports = {
 	aliases: ["evaluate", "ev"],
 	permissionRequired: 5,
 	checkArgs: (args) => !!args.length
 };
+
+const { Message } = require("discord.js");
 
 module.exports.run = async (message = new Message, args) => {
 	let content = args.join(" ");
