@@ -4,6 +4,8 @@ const config = require("../../config");
 module.exports = Object.assign(
     require("./callbacks"),
     require("./resolvers"),
+    require("./modules"),
+    require("./flows/"),
     require("./time")
 );
 
