@@ -2,21 +2,19 @@ module.exports = {
     name: "purge",
     description: "Удалить указанное количество сообщений в канале.",
     permissionRequired: 1,
-    opts: [
-        {
-            name: "amount",
-            description: "Количество сообщений которое надо удалить. От 2 до 100.",
-            type: 4,
-            min_value: 2,
-            max_value: 100,
-            required: true
-        },
-        {
-            name: "member",
-            description: "Участник, чьи сообщения должны быть очищены.",
-            type: 6
-        }
-    ],
+    opts: [{
+        name: "amount",
+        description: "Количество сообщений которое надо удалить. От 2 до 100.",
+        type: 4,
+        min_value: 2,
+        max_value: 100,
+        required: true
+    },
+    {
+        name: "member",
+        description: "Участник, чьи сообщения должны быть очищены.",
+        type: 6
+    }],
     slash: true
 };
 

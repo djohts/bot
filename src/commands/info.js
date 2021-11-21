@@ -2,6 +2,7 @@ module.exports = {
     name: "info",
     description: "Посмотреть информацию о боте.",
     permissionRequired: 0,
+    opts: [],
     slash: true
 };
 

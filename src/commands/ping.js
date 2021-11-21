@@ -2,6 +2,7 @@ module.exports = {
     name: "ping",
     description: "Посмотреть задержку и аптайм бота.",
     permissionRequired: 0,
+    opts: [],
     slash: true
 };
 

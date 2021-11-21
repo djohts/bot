@@ -2,24 +2,22 @@ module.exports = {
     name: "mute",
     description: "Замьютить участника.",
     permissionRequired: 1,
-    opts: [
-        {
-            name: "member",
-            description: "Участник, которому надо выдать мьют.",
-            type: 6,
-            required: true
-        },
-        {
-            name: "time",
-            description: "Время, на которое участнику надо выдать мьют.",
-            type: 3
-        },
-        {
-            name: "reason",
-            description: "Причина выдачи мьюта.",
-            type: 3
-        }
-    ],
+    opts: [{
+        name: "member",
+        description: "Участник, которому надо выдать мьют.",
+        type: 6,
+        required: true
+    },
+    {
+        name: "time",
+        description: "Время, на которое участнику надо выдать мьют.",
+        type: 3
+    },
+    {
+        name: "reason",
+        description: "Причина выдачи мьюта.",
+        type: 3
+    }],
     slash: true
 };
 

@@ -1,13 +1,11 @@
 module.exports = {
     name: "owner",
     permissionRequired: 5,
-    opts: [
-        {
-            type: 1,
-            name: "servers",
-            description: "Lists servers bot is in."
-        }
-    ],
+    opts: [{
+        type: 1,
+        name: "servers",
+        description: "Lists servers bot is in."
+    }],
     slash: true
 };
 

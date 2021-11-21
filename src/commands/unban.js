@@ -2,14 +2,12 @@ module.exports = {
     name: "unban",
     description: "Разбанить участника.",
     permissionRequired: 1,
-    opts: [
-        {
-            name: "user",
-            description: "Пользователь, которого надо разбанить, или его ID.",
-            type: 6,
-            required: true
-        }
-    ],
+    opts: [{
+        name: "user",
+        description: "Пользователь, которого надо разбанить, или его ID.",
+        type: 6,
+        required: true
+    }],
     slash: true
 };
 

@@ -2,14 +2,12 @@ module.exports = {
     name: "unmute",
     description: "Размьютить участника.",
     permissionRequired: 1,
-    opts: [
-        {
-            name: "member",
-            description: "Участник, у которого надо снять мьют.",
-            type: 6,
-            required: true
-        }
-    ],
+    opts: [{
+        name: "member",
+        description: "Участник, у которого надо снять мьют.",
+        type: 6,
+        required: true
+    }],
     slash: true
 };
 
