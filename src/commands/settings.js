@@ -1,66 +1,81 @@
 module.exports = {
     name: "settings",
     permissionRequired: 2,
-    opts: [
-        {
-            name: "get",
-            description: "Получить настройки сервера.",
-            type: 1
-        },
-        {
-            name: "toggle",
-            description: "Изменить значение найстройки.",
+    opts: [{
+        name: "get",
+        description: "Получить настройки сервера.",
+        type: 1
+    },
+    {
+        name: "toggle",
+        description: "Изменить значение найстройки.",
+        type: 1,
+        options: [{
+            name: "setting",
+            description: "Настройка, которую надо изменить.",
+            type: 3,
+            required: true,
+            choices: [
+                {
+                    name: "Удаление сообщений замьюченых участников.",
+                    value: "delMuted"
+                },
+                {
+                    name: "Удаление закреплённых сообщений при очистке (/purge).",
+                    value: "purgePinned"
+                },
+                {
+                    name: "Временные голосовые каналы.",
+                    value: "voices"
+                }
+            ]
+        }]
+    },
+    {
+        name: "muterole",
+        description: "Установить роль мьюта.",
+        type: 1,
+        options: [{
+            name: "role",
+            description: "Роль.",
+            type: 8,
+            required: true
+        }]
+    },
+    {
+        name: "voice",
+        description: "Настройки модуля временных голосовых каналов.",
+        type: 2,
+        options: [{
+            name: "setlobby",
+            description: "Установить лобби для голосовых каналов.",
             type: 1,
             options: [{
-                name: "setting",
-                description: "Настройка, которую надо изменить.",
-                type: 3,
-                required: true,
-                choices: [
-                    {
-                        name: "Удаление сообщений замьюченых участников.",
-                        value: "delMuted"
-                    },
-                    {
-                        name: "Удаление закреплённых сообщений при очистке (/purge).",
-                        value: "purgePinned"
-                    },
-                    {
-                        name: "Временные голосовые каналы.",
-                        value: "voices"
-                    }
-                ]
-            }]
-        },
-        {
-            name: "muterole",
-            description: "Установить роль мьюта.",
-            type: 1,
-            options: [{
-                name: "role",
-                description: "Роль.",
-                type: 8,
+                name: "channel",
+                description: "Канал-генератор, в который надо зайти для создания временного канала.",
+                type: 7,
+                channel_types: [2],
                 required: true
             }]
-        },
-        {
-            name: "voice",
-            description: "Настройки модуля временных голосовых каналов.",
-            type: 2,
+        }]
+    },
+    {
+        name: "counting",
+        description: "Настройки модуля счёта.",
+        type: 2,
+        options: [{
+            name: "setchannel",
+            description: "Установить канал для счёта.",
+            type: 1,
             options: [{
-                name: "setlobby",
-                description: "Установить лобби для голосовых каналов.",
-                type: 1,
-                options: [{
-                    name: "channel",
-                    description: "Канал-генератор, в который надо зайти для создания временного канала.",
-                    type: 7,
-                    channel_types: [2],
-                    required: true
-                }]
+                name: "channel",
+                description: "Текстовый канал в котором пользователи смогут считать циферки.",
+                type: 7,
+                channel_types: [0],
+                required: true
             }]
-        }
-    ],
+        }]
+    }],
     slash: true
 };
 
@@ -159,5 +174,14 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);
         return interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
+    } else if (cmd == "setchannel") {
+        let counting = interaction.options.getChannel("channel");
+        gdb.setMultiple({
+            channel: counting.id,
+            count: 0,
+            user: "",
+            message: (parseInt(interaction.id) + 1).toString()
+        });
+        interaction.reply({ content: `✅ Канал счёта был установлен. (${counting})` });
     };
 };
