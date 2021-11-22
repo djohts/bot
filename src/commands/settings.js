@@ -126,7 +126,8 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                         inline: true
                     },
                 ]
-            }]
+            }],
+            ephemeral: (gdb.get().channel == interaction.channel.id)
         });
     } else if (cmd == "toggle") {
         let idk = "";
@@ -139,7 +140,10 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 gset.set("delMuted", true);
                 idk = "**`Удаление сообщений замьюченых участников`** было включено.";
             })();
-            return await interaction.reply(idk);
+            return await interaction.reply({
+                content: idk,
+                ephemeral: (gdb.get().channel == interaction.channel.id)
+            });
         } else if (type == "purgePinned") {
             gset.get().purgePinned ? (() => {
                 gset.set("purgePinned", false);
@@ -148,7 +152,10 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 gset.set("purgePinned", true);
                 idk = "**`Удаление закреплённых сообщений`** было включено.";
             })();
-            return await interaction.reply(idk);
+            return await interaction.reply({
+                content: idk,
+                ephemeral: (gdb.get().channel == interaction.channel.id)
+            });
         } else if (type == "voices") {
             gset.get().voices.enabled ? (() => {
                 gset.setOnObject("voices", "enabled", false);
@@ -157,7 +164,10 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 gset.setOnObject("voices", "enabled", true);
                 idk = "**`Временные голосовые каналы`** были включены.";
             })();
-            return await interaction.reply(idk);
+            return await interaction.reply({
+                content: idk,
+                ephemeral: (gdb.get().channel == interaction.channel.id)
+            });
         };
     } else if (cmd == "muterole") {
         await gset.set("muteRole", interaction.options.getRole("role").id);
@@ -173,7 +183,10 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     } else if (cmd == "setlobby") {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);
-        return interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
+        return interaction.reply({
+            content: `✅ Лобби было установлено. (${lobby})`,
+            ephemeral: (gdb.get().channel == interaction.channel.id)
+        });
     } else if (cmd == "setchannel") {
         let counting = interaction.options.getChannel("channel");
         gdb.setMultiple({
@@ -182,6 +195,9 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             user: "",
             message: (parseInt(interaction.id) + 1).toString()
         });
-        interaction.reply({ content: `✅ Канал счёта был установлен. (${counting})` });
+        interaction.reply({
+            content: `✅ Канал счёта был установлен. (${counting})`,
+            ephemeral: (gdb.get().channel == interaction.channel.id)
+        });
     };
 };
