@@ -3,9 +3,10 @@ const Discord = require("discord.js");
 const config = require("../config");
 const commandHandler = require("./handlers/commands");
 const interactionHandler = require("./handlers/interactions/");
+const countingHandler = require("./handlers/counting");
+const prepareGuild = require("./handlers/prepareGuilds");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
-        BaseGuildEmojiManager: 0,
         GuildStickerManager: 0,
         GuildInviteManager: 0,
         GuildEmojiManager: 0,
@@ -51,6 +52,7 @@ global.db = db;
 let shard = "[Shard N/A]";
 
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
+    client.shardId = shardId;
     let start = Date.now();
     client.shardId = shardId;
     shard = `[Shard ${shardId}]`;
@@ -63,7 +65,23 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
-    console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. [${Date.now() - guildCachingStart}ms]`);
+    console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
+    let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user.setPresence({
+        status: "idle",
+        activities: [{
+            type: "WATCHING",
+            name: `${Math.round((completed / client.guilds.cache.size) * 100)}%`
+        }]
+    }), 1000);
+    await checkBans(client);
+    await checkMutes(client);
+    await Promise.all(client.guilds.cache.map(async (guild) => {
+        await prepareGuild(guild, db);
+        disabledGuilds.delete(guild.id);
+        completed++;
+    }));
+    clearInterval(presenceInterval);
+    console.log(`${shard} All ${client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
 
     disabledGuilds = false;
 
@@ -97,7 +115,11 @@ client.on("messageCreate", async (message) => {
     global.gdb = gdb;
     global.gsdb = gsdb;
     global.gldb = db.global;
+
+    let { channel } = gdb.get();
+
     if (message.content.startsWith(config.prefix) || message.content.match(`^<@!?${client.user.id}> `)) return commandHandler(message, config.prefix, gdb, db);
+    if (channel == message.channel.id) return countingHandler(message, gdb);
     if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => { });
 });
 
@@ -109,6 +131,42 @@ const updatePresence = async () => {
         activities: [{ type: "PLAYING", name: text }],
     });
 };
+
+client.on("messageDelete", async (deleted) => {
+    if (client.loading) return;
+    const gdb = await db.guild(deleted.guild.id);
+    let { modules, channel, message, user, count } = gdb.get();
+    if (
+        channel == deleted.channel.id &&
+        message == deleted.id &&
+        !modules.includes("embed") &&
+        !modules.includes("webhook")
+    ) {
+        let newMessage = await deleted.channel.send(`${deleted.author || `<@${user}>`}: ${deleted.content || count}`);
+        gdb.set("message", newMessage.id);
+    };
+});
+
+client.on("messageUpdate", async (original, updated) => {
+    if (client.loading) return;
+    const gdb = await db.guild(updated.guild.id);
+    let { modules, channel, message, count } = gdb.get();
+    if (
+        channel == updated.channel.id &&
+        message == updated.id &&
+        !modules.includes("embed") &&
+        !modules.includes("webhook") &&
+        (
+            modules.includes("talking") ?
+                (original.content || `${count}`).split(" ")[0] != updated.content.split(" ")[0] : // check if the count changed at all
+                (original.content || `${count}`) != updated.content
+        )
+    ) {
+        let newMessage = await updated.channel.send(`${updated.author}: ${original.content || count}`);
+        gdb.set("message", newMessage.id);
+        deleteMessage(original);
+    };
+});
 
 client.on("guildCreate", async (guild) => {
     await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch(() => { });
