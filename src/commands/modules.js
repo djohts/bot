@@ -55,7 +55,17 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         if (newModules.includes("embed") && newModules.includes("webhook"))
             return a.first().update({
                 content: "Модули **Embed** и **Webhook** несовместимы.",
-                components: []
+                components: [{
+                    type: 1,
+                    components: [{
+                        type: 2,
+                        emoji: {
+                            name: "🗑"
+                        },
+                        style: 4,
+                        custom_id: "reply:delete"
+                    }]
+                }]
             });
 
         const oldList = oldModules?.map((m) => names[m]).join("**, **") || "Пусто";
@@ -68,7 +78,17 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 `Прошлые модули: **${oldList}**`,
                 `Новые модули: **${newList}**`
             ].join("\n"),
-            components: []
+            components: [{
+                type: 1,
+                components: [{
+                    type: 2,
+                    emoji: {
+                        name: "🗑"
+                    },
+                    style: 4,
+                    custom_id: "reply:delete"
+                }]
+            }]
         });
     });
 };
