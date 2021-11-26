@@ -76,7 +76,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await checkBans(client);
     await checkMutes(client);
     await Promise.all(client.guilds.cache.map(async (guild) => {
-        await prepareGuild(guild, db);
+        if (!config.dev) await prepareGuild(guild, db);
         disabledGuilds.delete(guild.id);
         completed++;
     }));
