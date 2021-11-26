@@ -32,7 +32,7 @@ module.exports.checkMutes = async (client = new Client) => {
         mutes = mutes.filter((key) => gdb.get().mutes[key] != -1 && gdb.get().mutes[key] < Date.now());
 
         return mutes.map(async (key) => {
-            const member = await guild.members.fetch(key);
+            const member = await guild.members.fetch(key).catch(() => gdb.removeFromObject("mutes", key));
             return member?.roles.remove(gsdb.get().muteRole).then(() => {
                 return gdb.removeFromObject("mutes", key);
             }).catch(() => {
