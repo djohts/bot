@@ -99,24 +99,20 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 },
                 {
                     name: "Действия",
-                    value: cutFieldValue(
-                        await Promise.all(
-                            newFlow.actions.map(async (action, index) =>
-                                `${index + 1} - ${action ? `${await formatExplanation(action)}` : "**Пусто**"}`
-                            )
+                    value: cutFieldValue(await Promise.all(
+                        newFlow.actions.map(async (action, index) =>
+                            `${index + 1} - ${action ? `${await formatExplanation(action)}` : "**Пусто**"}`
                         )
-                    ),
+                    )),
                     inline: true
                 },
                 {
                     name: "Триггеры",
-                    value: cutFieldValue(
-                        await Promise.all(
-                            newFlow.triggers.map(async (trigger, index) =>
-                                `${index + 1} - ${trigger ? `${await formatExplanation(trigger)}` : "**Пусто**"}`
-                            )
+                    value: cutFieldValue(await Promise.all(
+                        newFlow.triggers.map(async (trigger, index) =>
+                            `${index + 1} - ${trigger ? `${await formatExplanation(trigger)}` : "**Пусто**"}`
                         )
-                    ),
+                    )),
                     inline: true
                 }
             ]
@@ -179,7 +175,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 };
 
 function cutFieldValue(value) {
-    if (typeof value == []) value = value.join("\n");
+    if (typeof value == "object") value = value.join("\n");
     if (value.length > 1024) return value.slice(0, 1014) + " **[...]**";
     else return value;
 };
