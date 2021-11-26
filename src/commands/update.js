@@ -17,7 +17,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         if (stdout.includes("Already up to date.")) {
             interaction.reply("Bot already up to date. No changes since last pull.");
         } else {
-            console.log("Pulled from GitHub. Rebooting all shards in 10 seconds.\n\n" + stdout);
+            console.log("Pulled from GitHub. Rebooting all shards.\n\n" + stdout);
             interaction.reply({
                 content: "Pulled from GitHub. Rebooting all shards.\n\nLogs:\n```\n" + stdout + "\n```",
                 fetchReply: true
