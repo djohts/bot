@@ -22,8 +22,10 @@
         "node": ">=16"
     },
     "dependencies": {
+        "@discordjs/rest": "^0.1.0-canary.0",
         "axios": "^0.23.0",
         "bufferutil": "^4.0.3",
+        "discord-api-types": "^0.24.0",
         "discord-logs": "^2.0.1",
         "discord.js": "^13.3.1",
         "express": "^4.17.1",
