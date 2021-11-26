@@ -169,7 +169,9 @@ client.on("messageUpdate", async (original, updated) => {
 });
 
 client.on("guildCreate", async (guild) => {
-    await guild.commands.set(client.slashes).catch(() => { });
+    await guild.commands.set(client.slashes).catch((err) => {
+        if (!err.message.toLowerCase().includes("missing")) console.error(err);
+    });
     const members = await guild.members.fetch();
     const owner = await client.users.fetch(guild.ownerId);
 
