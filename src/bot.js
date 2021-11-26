@@ -133,7 +133,6 @@ const updatePresence = async () => {
 };
 
 client.on("messageDelete", async (deleted) => {
-    if (client.loading) return;
     const gdb = await db.guild(deleted.guild.id);
     let { modules, channel, message, user, count } = gdb.get();
     if (
@@ -148,7 +147,6 @@ client.on("messageDelete", async (deleted) => {
 });
 
 client.on("messageUpdate", async (original, updated) => {
-    if (client.loading) return;
     const gdb = await db.guild(updated.guild.id);
     let { modules, channel, message, count } = gdb.get();
     if (
