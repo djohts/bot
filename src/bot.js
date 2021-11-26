@@ -169,7 +169,7 @@ client.on("messageUpdate", async (original, updated) => {
 });
 
 client.on("guildCreate", async (guild) => {
-    await guild.commands.set(client.slashes).catch(() => { });
+    await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch(() => { });
     const members = await guild.members.fetch();
     const owner = await client.users.fetch(guild.ownerId);
 
