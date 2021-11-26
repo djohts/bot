@@ -6,6 +6,7 @@ module.exports = {
 
 const { exec } = require("child_process");
 const { CommandInteraction } = require("discord.js");
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports.run = async (interaction = new CommandInteraction) => {
     exec("git stash push --include-untracked");
@@ -16,8 +17,13 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         if (stdout.includes("Already up to date.")) {
             interaction.reply("Bot already up to date. No changes since last pull.");
         } else {
-            interaction.reply("Pulled from GitHub. Restarting the bot.\n\nLogs:\n```\n" + stdout + "\n```")
-                .then(() => setTimeout(() => process.exit(), 1000));
+            console.log("Pulled from GitHub. Rebooting all shards in 10 seconds.\n\n" + stdout);
+            interaction.reply({
+                content: "Pulled from GitHub. Rebooting all shards.\n\nLogs:\n```\n" + stdout + "\n```",
+                fetchReply: true
+            }).then(async (i) => {
+                i.react("♻️").then(() => interaction.client.shard.broadcastEval(() => process.exit()));
+            });
         };
     });
 };
