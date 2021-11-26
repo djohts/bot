@@ -70,7 +70,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
         status: "idle",
         activities: [{
             type: "WATCHING",
-            name: `${Math.round((completed / client.guilds.cache.size) * 100)}%`
+            name: `${Math.floor((completed / client.guilds.cache.size) * 100)}%`
         }]
     }), 1000);
     await checkBans(client);
