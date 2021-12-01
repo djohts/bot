@@ -9,7 +9,7 @@ module.exports = async (client = new Client) => {
             content: "🌀 Бот ещё запускается, подождите некоторое время...",
             ephemeral: true
         });
-        if (interaction.isButton()) return handleButton(interaction);
         if (interaction.isCommand()) return handleCommand(interaction);
+        if (interaction.isButton()) return handleButton(interaction);
     });
 };
