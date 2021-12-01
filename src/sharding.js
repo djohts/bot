@@ -44,7 +44,7 @@ async function updateBotInfo() {
         for (const [key, value] of Object.entries(next)) {
             if (["guilds", "cachedUsers", "users"].includes(key)) info[key] = (info[key] || 0) + value;
         };
-        info.shards[`${index}`] = next;
+        info.shards[index] = next;
         return info;
     }, { shards: {} }));
     newBotInfo.lastUpdate = Date.now();
