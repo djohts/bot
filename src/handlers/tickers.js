@@ -1,6 +1,7 @@
 const { Client } = require("discord.js");
 const db = require("../database/")();
 const config = require("../../config");
+const fetch = require("node-fetch");
 
 module.exports = async (client = new Client) => {
     await updatePresence(client);
