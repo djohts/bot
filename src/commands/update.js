@@ -34,7 +34,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         } else {
             console.log(`Pulled from GitHub by ${interaction.user.tag}. Rebooting all shards.\n\n` + stdout);
             interaction.reply({
-                content: "Pulled from GitHub. Rebooting all shards.\n\nLogs:\n```\n" + stdout + "\n```",
+                content: "Pulled from GitHub. Rebooting all shards.\n\nLogs:\n```\n" + stdout + "\n```".slice(0, 2000),
                 fetchReply: true,
                 components: [{
                     type: 1,
