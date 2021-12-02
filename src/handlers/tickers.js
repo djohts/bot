@@ -10,7 +10,7 @@ module.exports = async (client = new Client) => {
     setInterval(() => checkMutes(client), 4 * 1000);
     setInterval(() => checkBans(client), 6 * 1000);
 
-    if (config.sdcToken) {
+    if (config.sdcToken && client.shardId == 0) {
         await postStats();
         setInterval(postStats, 5 * 60 * 1000);
     };
