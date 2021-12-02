@@ -36,7 +36,8 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     if (presence?.activities?.slice(1).length)
         emb.setDescription(
             emb.description +
-            `\n**Активност${presence.activities.length == 1 ? "ь" : "и"}**: ${member.presence.activities.slice(1).map((activity) => `\`${activity.name}\``).join(", ")}`
+            `\n**Активност${presence.activities.length == 1 ? "ь" : "и"}**: ` +
+            member.presence.activities.slice(1).map((activity) => `\`${activity.name}\``).join(", ")
         );
 
     if (presence?.activities.find((activity) => activity.id == "custom")) {
