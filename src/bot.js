@@ -5,6 +5,7 @@ const commandHandler = require("./handlers/commands");
 const interactionHandler = require("./handlers/interactions/");
 const countingHandler = require("./handlers/counting");
 const prepareGuild = require("./handlers/prepareGuilds");
+const tickers = require("./handlers/tickers");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         GuildStickerManager: 0,
@@ -28,14 +29,14 @@ const client = new Discord.Client({
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES", "GUILD_BANS", "GUILD_VOICE_STATES"],
     presence: {
         status: "dnd",
-        activity: {
+        activities: [{
             type: "WATCHING",
             name: "загрузочный экран",
-        }
+        }]
     }
 });
 const db = require("./database/")();
-const { deleteMessage, checkMutes, checkBans } = require("./handlers/utils");
+const { deleteMessage } = require("./handlers/utils");
 const { voicesJoin, voicesLeave, voicesSwitch } = require("./constants/callbacks");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
@@ -52,7 +53,6 @@ global.db = db;
 let shard = "[Shard N/A]";
 
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
-    client.shardId = shardId;
     let start = Date.now();
     client.shardId = shardId;
     shard = `[Shard ${shardId}]`;
@@ -73,8 +73,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
             name: `${Math.floor((completed / client.guilds.cache.size) * 100)}%`
         }]
     }), 1000);
-    await checkBans(client);
-    await checkMutes(client);
     await Promise.all(client.guilds.cache.map(async (guild) => {
         if (!config.dev) await prepareGuild(guild, db);
         disabledGuilds.delete(guild.id);
@@ -85,18 +83,14 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     disabledGuilds = false;
 
-    await interactionHandler(client);
+    interactionHandler(client);
+    await tickers(client);
 
     await require("./handlers/interactions/slash").registerCommands(client);
     console.log(`${shard} Refreshed slash commands.`);
 
     client.loading = false;
 
-    await updatePresence();
-    setInterval(updatePresence, 60 * 1000); // 1 minute
-
-    setInterval(() => checkMutes(client), 4 * 1000); // 4 seconds
-    setInterval(() => checkBans(client), 6 * 1000); // 6 seconds
     console.log(`${shard} Loaded in ${Math.ceil((Date.now() - start) / 1000)}s`);
 });
 
@@ -122,15 +116,6 @@ client.on("messageCreate", async (message) => {
     if (channel == message.channel.id) return countingHandler(message, gdb);
     if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => { });
 });
-
-const updatePresence = async () => {
-    const gc = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, cur) => prev + cur, 0));
-    let text = `тикток фм | ${gc} guilds`;
-    return client.user.setPresence({
-        status: "idle",
-        activities: [{ type: "PLAYING", name: text }],
-    });
-};
 
 client.on("messageDelete", async (deleted) => {
     const gdb = await db.guild(deleted.guild.id);
@@ -165,6 +150,26 @@ client.on("messageUpdate", async (original, updated) => {
         deleteMessage(original);
     };
 });
+
+async function postStats() {
+    const sdcToken = "SDC " + config.sdcToken;
+    const route = "https://api.server-discord.com/v2";
+    const shardCount = client.shard.count;
+    const guildCount = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
+    const botUser = client.user;
+
+    await fetch(route + `/bots/${botUser.id}/stats`, {
+        method: "post",
+        body: JSON.stringify({
+            shards: shardCount,
+            servers: guildCount
+        }),
+        headers: {
+            "Content-type": "application/json",
+            "Authorization": sdcToken
+        }
+    }).then(async (res) => console.info("[SDC API] Posted stats for " + botUser.tag, await res.json()));
+};
 
 client.on("guildCreate", async (guild) => {
     await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch((err) => {
