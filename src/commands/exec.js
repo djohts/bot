@@ -6,7 +6,7 @@ module.exports = {
 
 const { exec } = require("child_process");
 
-module.exports.run = (message, args) => {
+module.exports.run = (message, args = [String()]) => {
     exec(args.join(" "), (err, res) => {
         const combo = err || res;
 
