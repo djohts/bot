@@ -11,6 +11,8 @@ const { msToTime } = require("../constants/");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     const gdb = await db.guild(interaction.guild.id);
     const uptime = msToTime(interaction.client.uptime);
     const api = Math.ceil(interaction.client.ws.ping);

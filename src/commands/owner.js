@@ -13,6 +13,8 @@ const { CommandInteraction } = require("discord.js");
 const { paginate } = require("../constants/");
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     switch (interaction.options.getSubcommand()) {
         case "servers":
             let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {

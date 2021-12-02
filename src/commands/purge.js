@@ -23,6 +23,8 @@ const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     if (cooldowns.has(interaction.channel.id))
         return interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
     else cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 4000);

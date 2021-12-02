@@ -9,6 +9,8 @@ const { CommandInteraction } = require("discord.js");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     exec("git stash push --include-untracked");
     exec("git pull", (error, stdout) => {
         exec("git stash drop");

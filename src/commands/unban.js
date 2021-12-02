@@ -15,6 +15,8 @@ const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
 

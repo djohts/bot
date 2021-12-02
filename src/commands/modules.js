@@ -17,6 +17,8 @@ const names = {
 };
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     const gdb = await db.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
 

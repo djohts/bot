@@ -26,6 +26,8 @@ const { parseTime, getPermissionLevel } = require("../constants/");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     const guilddb = await db.guild(interaction.guild.id);
     const gsdb = await db.settings(interaction.guild.id);
     const role = interaction.guild.roles.cache.get(gsdb.get().muteRole);

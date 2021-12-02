@@ -13,6 +13,8 @@ module.exports = {
 const { CommandInteraction, MessageEmbed, GuildMember } = require("discord.js");
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     const guild = interaction.guild;
     const user = interaction.options.getUser("member") ?
         await interaction.client.users.fetch(interaction.options.getUser("member").id) : await interaction.client.users.fetch(interaction.user.id);

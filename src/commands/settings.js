@@ -83,6 +83,8 @@ const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     const cmd = interaction.options.getSubcommand();
     const gset = await db.settings(interaction.guild.id);
     const gdb = await db.guild(interaction.guild.id);

@@ -11,6 +11,8 @@ const { CommandInteraction } = require("discord.js");
 const { formatScore } = require("../constants/");
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     const gdb = await db.guild(interaction.guild.id);
     const { users, channel } = gdb.get();
     const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);

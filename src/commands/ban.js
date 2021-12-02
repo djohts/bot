@@ -33,6 +33,8 @@ const { parseTime, getPermissionLevel, msToTime } = require("../constants/");
 const db = require("../database/")();
 
 module.exports.run = async (interaction = new CommandInteraction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
+
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / выдачи банов.", ephemeral: true });
     if (interaction.options.getString("time")?.length && !parseTime(interaction.options.getString("time")))
