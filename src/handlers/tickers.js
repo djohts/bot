@@ -42,7 +42,7 @@ async function postStats(client = require("../bot").client) {
             "Content-type": "application/json",
             "Authorization": sdcToken
         }
-    }).then(async (res) => console.info("[SDC API] Posted stats for " + botUser.tag, await res.json()));
+    }).then(async (res) => console.log("[SDC API] Posted stats for " + botUser.tag, await res.json()));
 };
 
 async function checkMutes(client = new Client) {
