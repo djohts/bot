@@ -15,7 +15,7 @@ module.exports = async (client = new Client) => {
     };
 };
 
-async function updatePresence(client) {
+async function updatePresence(client = new Client) {
     const gc = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, curr) => prev + curr, 0));
     let text = `хочу 75 -> | ${gc} guilds`;
     return client.user.setPresence({
@@ -24,7 +24,7 @@ async function updatePresence(client) {
     });
 };
 
-async function postStats(client = new Client) {
+async function postStats(client = require("../bot").client) {
     const sdcToken = "SDC " + config.sdcToken;
     const route = "https://api.server-discord.com/v2";
     const shardCount = client.shard.count;
