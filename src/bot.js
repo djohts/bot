@@ -161,7 +161,7 @@ client.on("guildCreate", async (guild) => {
     client.users.fetch("419892040726347776").then((u) => u.send({
         content: "<a:pepeD:904171928091234344> new guild <a:pepeD:904171928091234344>",
         embeds: [{
-            title: guild.name,
+            title: `${guild.name} - ${guild.id}`,
             author: {
                 name: `${owner.tag} - ${owner.id}`,
                 iconURL: owner.avatarURL({ dynamic: true, format: "png" })
@@ -185,7 +185,7 @@ client.on("guildDelete", async (guild) => {
     client.users.fetch("419892040726347776").then((u) => u.send({
         content: "<a:pepeD:904171928091234344> guild removed <a:pepeD:904171928091234344>",
         embeds: [{
-            title: guild.name,
+            title: `${guild.name} - ${guild.id}`,
             author: {
                 name: `${owner.tag} - ${owner.id}`,
                 iconURL: owner.avatarURL({ dynamic: true, format: "png" })
