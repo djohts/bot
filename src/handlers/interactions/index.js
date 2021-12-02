@@ -2,7 +2,7 @@ const { Client } = require("discord.js");
 const handleButton = require("./buttons");
 const handleCommand = require("./slash");
 
-module.exports = async (client = new Client) => {
+module.exports = (client = new Client) => {
     client.on("interactionCreate", async (interaction) => {
         if (!interaction.guild) return;
         if (client.loading) return interaction.reply({
