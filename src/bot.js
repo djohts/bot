@@ -84,7 +84,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     disabledGuilds = false;
 
     interactionHandler(client);
-    await tickers(client);
 
     await require("./handlers/interactions/slash").registerCommands(client);
     console.log(`${shard} Refreshed slash commands.`);
@@ -92,6 +91,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     client.loading = false;
 
     console.log(`${shard} Loaded in ${Math.ceil((Date.now() - start) / 1000)}s`);
+    await tickers(client);
 });
 
 client.on("messageCreate", async (message) => {
@@ -150,26 +150,6 @@ client.on("messageUpdate", async (original, updated) => {
         deleteMessage(original);
     };
 });
-
-async function postStats() {
-    const sdcToken = "SDC " + config.sdcToken;
-    const route = "https://api.server-discord.com/v2";
-    const shardCount = client.shard.count;
-    const guildCount = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
-    const botUser = client.user;
-
-    await fetch(route + `/bots/${botUser.id}/stats`, {
-        method: "post",
-        body: JSON.stringify({
-            shards: shardCount,
-            servers: guildCount
-        }),
-        headers: {
-            "Content-type": "application/json",
-            "Authorization": sdcToken
-        }
-    }).then(async (res) => console.info("[SDC API] Posted stats for " + botUser.tag, await res.json()));
-};
 
 client.on("guildCreate", async (guild) => {
     await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch((err) => {
