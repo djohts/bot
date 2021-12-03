@@ -1,5 +1,6 @@
 require("nodejs-better-console").overrideConsole();
 const Discord = require("discord.js");
+const fetch = require("node-fetch");
 const config = require("../config");
 const commandHandler = require("./handlers/commands");
 const interactionHandler = require("./handlers/interactions/");
@@ -51,6 +52,7 @@ global.client = client;
 global.db = db;
 
 let shard = "[Shard N/A]";
+let linkCache = [];
 
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let start = Date.now();
@@ -88,6 +90,12 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await require("./handlers/interactions/slash").registerCommands(client);
     console.log(`${shard} Refreshed slash commands.`);
 
+    linkCache = await fetch("https://raw.githubusercontent.com/DevSpen/links/master/src/links.txt").then(async (res) => {
+        let text = await res.text();
+        let array = text.split(/ |\n/);
+        return array.map((i) => i.trim());
+    });
+
     client.loading = false;
 
     console.log(`${shard} Loaded in ${Math.ceil((Date.now() - start) / 1000)}s`);
@@ -104,7 +112,6 @@ client.on("messageCreate", async (message) => {
     const gsdb = await db.settings(message.guild.id);
 
     if (gdb.get().mutes[message.author.id] && gsdb.get().delMuted) return deleteMessage(message);
-    if (gdb.get().mutes[message.author.id]) return;
 
     global.gdb = gdb;
     global.gsdb = gsdb;
