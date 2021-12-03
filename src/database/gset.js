@@ -5,10 +5,11 @@ const dbCache = new Map(), dbSaveQueue = new Map();
 const gSetObject = {
     delMuted: Boolean(),
     purgePinned: Boolean(),
-    guildid: String(),
-    muteRole: String(),
-    logChannel: String(),
-    voices: { enabled: Boolean(), lobby: String(), parent: String() }
+    detectScamLinks: Boolean(),
+    guildid: "",
+    muteRole: "",
+    logChannel: "",
+    voices: { enabled: Boolean(), lobby: "", parent: "" }
 };
 
 const gSetSchema = Schema(JSON.parse(JSON.stringify(gSetObject)), { minimize: true });
