@@ -102,7 +102,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await tickers(client);
 });
 
-const linkRate = new Map();
+const linkRate = new Set();
 client.on("messageCreate", async (message) => {
     if (
         !message.guild ||
@@ -114,21 +114,16 @@ client.on("messageCreate", async (message) => {
 
     if (gdb.get().mutes[message.author.id] && gsdb.get().delMuted) return deleteMessage(message);
 
-    let filtered = message.content.split(" ").filter((i) => linkCache.includes(i));
-    if (gsdb.get().detectScamLinks && filtered?.length) {
-        let arr = Array.from(linkRate.get(message.channelId) || []);
-        let cond = arr.includes(message.author.id);
-
-        if (!cond) await message.channel.send(
+    if (gsdb.get().detectScamLinks && linkCache.some((i) => message.content.includes(i))) {
+        if (!linkRate.has(message.author.id)) await message.channel.send(
             `${message.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
             (message.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")
         ).then((m) => setTimeout(() => deleteMessage(m), 15 * 1000));
 
         deleteMessage(message);
 
-        if (!cond) arr.push(message.author.id);
-        linkRate.set(message.channelId, arr);
-        setTimeout(() => linkRate.set(message.channelId, Array.from(linkRate.get(message.channelId)).filter((i) => i != message.author.id)), 5000);
+        if (!linkRate.has(message.author.id)) linkRate.add(message.author.id);
+        setTimeout(() => linkRate.add(message.author.id), 5000);
     };
 
     global.gdb = gdb;
