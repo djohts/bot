@@ -95,7 +95,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
         let array = text.split(/ |\n/);
         return array.map((i) => i.trim());
     });
-    console.log(linkCache)
 
     client.loading = false;
 
