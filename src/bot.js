@@ -123,7 +123,7 @@ client.on("messageCreate", async (message) => {
         deleteMessage(message);
 
         if (!linkRate.has(message.author.id)) linkRate.add(message.author.id);
-        setTimeout(() => linkRate.add(message.author.id), 5000);
+        setTimeout(() => linkRate.delete(message.author.id), 5000);
     };
 
     global.gdb = gdb;
