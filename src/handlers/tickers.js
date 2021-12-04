@@ -11,21 +11,21 @@ module.exports = async (client = new Client) => {
     setInterval(() => checkBans(client), 6 * 1000);
 
     if (config.sdcToken && client.shardId == 0) {
-        await postStats();
-        setInterval(postStats, 5 * 60 * 1000);
+        await postStats(client);
+        setInterval(() => postStats(client), 5 * 60 * 1000);
     };
 };
 
 async function updatePresence(client = new Client) {
     const gc = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, curr) => prev + curr, 0));
-    let text = `хочу 75+ -> | ${gc} guilds`;
+    let text = `верифицируюсь | ${gc} guilds`;
     return client.user.setPresence({
         status: "idle",
         activities: [{ type: "PLAYING", name: text }],
     });
 };
 
-async function postStats(client = require("../bot").client) {
+async function postStats(client = new Client) {
     const sdcToken = "SDC " + config.sdcToken;
     const route = "https://api.server-discord.com/v2";
     const shardCount = client.shard.count;
