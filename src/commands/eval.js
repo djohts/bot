@@ -1,5 +1,5 @@
 module.exports = {
-    aliases: ["evaluate", "ev"],
+    aliases: ["ev"],
     permissionRequired: 5,
     checkArgs: (args) => !!args.length
 };
