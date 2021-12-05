@@ -9,7 +9,7 @@ module.exports = async (guild, db) => {
     try {
         let channel = guild.channels.cache.get(channelId);
         if (channel) {
-            let messages = await channel.messages.fetch({ limit: 100, after: messageId });
+            let messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { });
             if (messages.size) {
                 alert = await channel.send("💢 Идёт подготовка канала.");
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone) || { allow: new Set(), deny: new Set() };
@@ -29,7 +29,7 @@ module.exports = async (guild, db) => {
                         await alert.edit(`💢 Идёт подготовка канала. **\`[${msToTime(Date.now() - preparationStart)}]\`**`);
                     };
                     if (processing && !fail) {
-                        messages = await channel.messages.fetch({ limit: 100, after: messageId });
+                        messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => fail = true);
                         if (messages.filter((m) => m.id != alert.id).size) await sleep(3000);
                     };
                 };
