@@ -58,6 +58,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let start = Date.now();
     client.shardId = shardId;
     shard = `[Shard ${shardId}]`;
+    client.s = shard;
     console.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
 
     client.loading = true;
