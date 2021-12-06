@@ -53,7 +53,6 @@ global.db = db;
 
 let shard = "[Shard N/A]";
 let linkCache = [];
-
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let start = Date.now();
     client.shardId = shardId;
