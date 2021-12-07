@@ -105,8 +105,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 const linkRate = new Set();
 client.on("messageCreate", async (message) => {
     if (
-        !message.guild ||
-        message.author.bot
+        !message.guild
     ) return;
 
     const gdb = await db.guild(message.guild.id);
