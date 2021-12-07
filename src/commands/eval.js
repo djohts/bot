@@ -11,7 +11,7 @@ module.exports.run = async (message = new Message, args) => {
 
     try {
         let evaled = await eval(content);
-        if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
+        if (typeof evaled != "string") evaled = require("util").inspect(evaled);
 
         if (evaled.length > 2000) message.react("✅").catch(() => { });
         else message.reply({
