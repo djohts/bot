@@ -18,7 +18,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const api = Math.ceil(interaction.client.ws.ping);
     const server = Date.now() - interaction.createdTimestamp;
 
-    return await interaction.reply({
+    return await interaction.editReply({
         content: `🏓 Задержка сервера \`${server}ms\`, пинг API \`${api}ms\`, аптайм бота \`${uptime}\`.`,
         ephemeral: (gdb.get().channel == interaction.channel.id)
     });

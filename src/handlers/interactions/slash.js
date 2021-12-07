@@ -8,7 +8,7 @@ module.exports = async (interaction = CommandInteraction) => {
         const commandFile = require(`../../commands/${commandName}.js`);
 
         const permissionLevel = getPermissionLevel(interaction.member);
-        if (permissionLevel < commandFile.permissionRequired) return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
+        if (permissionLevel < commandFile.permissionRequired) return await interaction.editReply({ content: "❌ Недостаточно прав.", ephemeral: true });
 
         return commandFile.run(interaction);
     };

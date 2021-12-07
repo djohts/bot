@@ -22,7 +22,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const gdb = await db.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
 
-    const m = await interaction.reply({
+    const m = await interaction.editReply({
         content: "​", // U+200b
         fetchReply: true,
         components: [{

@@ -26,24 +26,24 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     if (cooldowns.has(interaction.channel.id))
-        return interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
+        return interaction.editReply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
     else cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 4000);
 
     const guilddb = await db.guild(interaction.guild.id);
 
     if (!interaction.channel.permissionsFor(interaction.guild.me).has("MANAGE_MESSAGES"))
-        return await interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
+        return await interaction.editReply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
 
     const limit = interaction.options.getInteger("amount");
 
     let toDelete = await interaction.channel.messages.fetch({ limit: limit });
     if (!guilddb.get().purgePinned) toDelete = toDelete.filter(m => !m.pinned);
     if (interaction.options.getUser("member")) toDelete = toDelete.filter(m => m.author.id == interaction.options.getUser("member").id);
-    if (!toDelete.size) return await interaction.reply({ content: "❌ Не удалось найти сообщений для удаления.", ephemeral: true });
+    if (!toDelete.size) return await interaction.editReply({ content: "❌ Не удалось найти сообщений для удаления.", ephemeral: true });
 
     const purged = await interaction.channel.bulkDelete(toDelete, true);
 
-    return await interaction.reply({
+    return await interaction.editReply({
         content: (
             purged.size ?
                 "✅ Удалено " + (

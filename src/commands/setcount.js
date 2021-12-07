@@ -23,7 +23,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
 
     gdb.set("count", count);
 
-    return interaction.reply({
+    return interaction.editReply({
         content: `✅ Новый текущий счёт - **\`${count}\`**.`,
         ephemeral: (gdb.get().channel == interaction.channel.id)
     });

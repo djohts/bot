@@ -23,24 +23,24 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const member = interaction.guild.members.resolve(interaction.options.getUser("member").id);
     const user = interaction.options.getUser("member");
 
-    if (!role) return interaction.reply({ content: "❌ Не удалось найти роль мьюта.", ephemeral: true });
+    if (!role) return interaction.editReply({ content: "❌ Не удалось найти роль мьюта.", ephemeral: true });
     if (!interaction.guild.me.permissions.has("MANAGE_ROLES"))
-        return interaction.reply({ content: "❌ У меня нет прав для изменения ролей.", ephemeral: true });
+        return interaction.editReply({ content: "❌ У меня нет прав для изменения ролей.", ephemeral: true });
     if (interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <= role.rawPosition)
-        return interaction.reply({ content: "❌ Роль мьюта находится выше моей.", ephemeral: true });
+        return interaction.editReply({ content: "❌ Роль мьюта находится выше моей.", ephemeral: true });
     if (!member.roles.cache.has(role.id))
-        return interaction.reply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
+        return interaction.editReply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
 
     let dmsent = false;
 
     interaction.options.getMember("member").roles.remove(role).then(() => {
         guilddb.removeFromObject("mutes", member.user.id);
-        interaction.reply({
+        interaction.editReply({
             content: `✅ ${user.toString()} был успешно размьючен.` +
                 (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
         });
     }).catch((err) => {
-        interaction.reply({
+        interaction.editReply({
             content: "❌ Произошла неизвестная ошибка.",
             ephemeral: true
         });

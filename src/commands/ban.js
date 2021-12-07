@@ -36,9 +36,9 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
-        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / выдачи банов.", ephemeral: true });
+        return interaction.editReply({ content: "❌ У меня нет прав для просмотра списка / выдачи банов.", ephemeral: true });
     if (interaction.options.getString("time")?.length && !parseTime(interaction.options.getString("time")))
-        return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
+        return interaction.editReply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await db.guild(interaction.guild.id);
@@ -46,9 +46,9 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const member = interaction.options.getMember("user");
 
     if (guilddb.get().bans[user.id] && bans.has(user.id))
-        return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
+        return interaction.editReply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
     if (getPermissionLevel(member) >= 1)
-        return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
+        return interaction.editReply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
 
     let dmsent = false;
     let time = 0;
@@ -75,13 +75,13 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     }).then(() => {
         guilddb.setOnObject("bans", user.id, time);
     }).catch(() => {
-        interaction.reply({
+        interaction.editReply({
             content: "❌ Произошла неизвестная ошибка.",
             ephemeral: true
         });
     });
 
-    return interaction.reply({
+    return interaction.editReply({
         content: `✅ ${user.toString()} был успешно забанен.` +
             (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
     });

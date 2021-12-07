@@ -18,17 +18,17 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
-        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
+        return interaction.editReply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await db.guild(interaction.guild.id);
     const user = interaction.options.getUser("user");
 
     if (!guilddb.get().bans[user.id] && !bans.has(user.id))
-        return interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true });
+        return interaction.editReply({ content: "❌ Этот участник не забанен.", ephemeral: true });
 
     interaction.guild.bans.remove(user.id).then(async () => {
         guilddb.removeFromObject("bans", user.id);
-        await interaction.reply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
+        await interaction.editReply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
     });
 };

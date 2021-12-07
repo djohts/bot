@@ -90,7 +90,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const gdb = await db.guild(interaction.guild.id);
 
     if (cmd == "get") {
-        return await interaction.reply({
+        return await interaction.editReply({
             embeds: [{
                 title: "Настройки " + interaction.guild.name,
                 timestamp: Date.now(),
@@ -142,7 +142,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 gset.set("delMuted", true);
                 idk = "**`Удаление сообщений замьюченых участников`** было включено.";
             })();
-            return await interaction.reply({
+            return await interaction.editReply({
                 content: idk,
                 ephemeral: (gdb.get().channel == interaction.channel.id)
             });
@@ -154,7 +154,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 gset.set("purgePinned", true);
                 idk = "**`Удаление закреплённых сообщений`** было включено.";
             })();
-            return await interaction.reply({
+            return await interaction.editReply({
                 content: idk,
                 ephemeral: (gdb.get().channel == interaction.channel.id)
             });
@@ -166,14 +166,14 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 gset.setOnObject("voices", "enabled", true);
                 idk = "**`Временные голосовые каналы`** были включены.";
             })();
-            return await interaction.reply({
+            return await interaction.editReply({
                 content: idk,
                 ephemeral: (gdb.get().channel == interaction.channel.id)
             });
         };
     } else if (cmd == "muterole") {
         await gset.set("muteRole", interaction.options.getRole("role").id);
-        return interaction.reply({
+        return interaction.editReply({
             content: "✅ Роль мьюта была установлена." +
                 (
                     interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <=
@@ -185,7 +185,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     } else if (cmd == "setlobby") {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);
-        return interaction.reply({
+        return interaction.editReply({
             content: `✅ Лобби было установлено. (${lobby})`,
             ephemeral: (gdb.get().channel == interaction.channel.id)
         });
@@ -197,7 +197,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
             user: "",
             message: (parseInt(interaction.id) + 1).toString()
         });
-        interaction.reply({
+        interaction.editReply({
             content: `✅ Канал счёта был установлен. (${counting})`,
             ephemeral: (gdb.get().channel == interaction.channel.id)
         });
