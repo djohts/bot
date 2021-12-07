@@ -58,6 +58,11 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     client.shardId = shardId;
     shard = `[Shard ${shardId}]`;
     client.s = shard;
+
+    interactionHandler(client);
+    await require("./handlers/interactions/slash").registerCommands(client);
+    console.log(`${shard} Refreshed slash commands.`);
+
     console.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
 
     client.loading = true;
@@ -84,11 +89,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     console.log(`${shard} All ${client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
 
     disabledGuilds = false;
-
-    interactionHandler(client);
-
-    await require("./handlers/interactions/slash").registerCommands(client);
-    console.log(`${shard} Refreshed slash commands.`);
 
     linkCache = await fetch("https://raw.githubusercontent.com/DevSpen/links/master/src/links.txt").then(async (res) => {
         let text = await res.text();
