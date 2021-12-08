@@ -113,7 +113,7 @@ client.on("messageCreate", async (message) => {
         if (!linkRate.has(message.author.id)) await message.channel.send(
             `${message.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
             (message.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")
-        ).then((m) => setTimeout(() => deleteMessage(m), 15 * 1000));
+        ).then((m) => setTimeout(() => deleteMessage(m), 10 * 1000));
 
         deleteMessage(message);
 
