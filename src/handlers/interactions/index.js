@@ -5,9 +5,7 @@ const handleCommand = require("./slash");
 module.exports = (client = new Client) => {
     client.on("interactionCreate", async (interaction) => {
         if (!interaction.guild) return;
-        await interaction.deferReply();
-
-        if (client.loading) return interaction.editReply({
+        if (client.loading) return interaction.reply({
             content: "🌀 Бот ещё запускается, подождите некоторое время...",
             ephemeral: true
         });

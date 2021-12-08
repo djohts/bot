@@ -29,7 +29,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 return guilds.reduce((prev, cur) => prev.concat(cur));
             });
             const fields = paginate(guilds, 9);
-            return await interaction.editReply({
+            return await interaction.reply({
                 embeds: [{
                     title: interaction.client.user.tag + " guild list",
                     footer: {

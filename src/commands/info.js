@@ -35,7 +35,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         else memoryUsage = memory.toFixed(2) + "MB";
     };
 
-    return await interaction.editReply({
+    return await interaction.reply({
         embeds: [{
             title: `Информация о ${interaction.client.user.tag}`,
             timestamp: Date.now(),

@@ -35,13 +35,13 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
     if (cmd == "create") {
-        if (Object.keys(flows).length >= limitFlows) return interaction.editReply({
+        if (Object.keys(flows).length >= limitFlows) return interaction.reply({
             content: `❌ Вы можете иметь только ${limitFlows} потоков.`,
             ephemeral: true
         });
 
         if (!interaction.guild.me.permissions.has("MANAGE_CHANNELS"))
-            return interaction.editReply({
+            return interaction.reply({
                 content: "❌ У бота нету прав на создание каналов.",
                 ephemeral: true
             });
@@ -75,7 +75,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                 }
             ]
         });
-        await interaction.editReply({
+        await interaction.reply({
             content: `🌀 Перейдите в ${channel} для настройки нового потока.`,
             ephemeral: true
         });
@@ -130,11 +130,11 @@ module.exports.run = async (interaction = new CommandInteraction) => {
     } else if (cmd === "delete") {
         const flowId = interaction.options.getString("id");
         if (!flows[flowId])
-            return interaction.editReply({ content: "❌ Этот поток не существует.", ephemeral: true });
+            return interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
 
         gdb.removeFromObject("flows", flowId);
 
-        return interaction.editReply({
+        return interaction.reply({
             content: `✅ Поток \`${flowId}\` был удалён.`,
             ephemeral: (gdb.get().channel == interaction.channel.id)
         });
@@ -142,7 +142,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         const flowIds = Object.keys(flows).slice(0, limitFlows);
 
         if (flowIds.length) {
-            return interaction.editReply({
+            return interaction.reply({
                 embeds: [{
                     title: "Список потоков",
                     description: `У Вас использовано ${flowIds.length} из ${limitFlows} потоков.`,
@@ -172,7 +172,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
                     }]
                 }]
             });
-        } else return interaction.editReply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
+        } else return interaction.reply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
     };
 };
 

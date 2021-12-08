@@ -50,7 +50,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         );
     };
 
-    return await interaction.editReply({
+    return await interaction.reply({
         embeds: [emb],
         ephemeral: (gdb.get().channel == interaction.channel.id)
     });

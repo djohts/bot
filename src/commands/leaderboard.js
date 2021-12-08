@@ -24,7 +24,7 @@ module.exports.run = async (interaction = new CommandInteraction) => {
         description = description + formatScore(interaction.user.id, sorted.indexOf(interaction.user.id), users);
     };
 
-    return interaction.editReply({
+    return interaction.reply({
         embeds: [{
             title: `Таблица лидеров ${interaction.guild.name}`,
             description
