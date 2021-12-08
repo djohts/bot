@@ -7,20 +7,20 @@ const globalObject = {
     premiumServers: []
 };
 
-const globalSchema = Schema(JSON.parse(JSON.stringify(globalObject)), { minimize: true });
+const globalSchema = Schema(globalObject, { minimize: true });
 const Global = model("Global", globalSchema);
 global.Global = Global;
 
 const get = () => new Promise((resolve, reject) => Global.findOne({}, (err, global) => {
     if (err) return reject(err);
     if (!global) {
-        global = new Global(JSON.parse(JSON.stringify(globalObject)));
+        global = new Global(globalObject);
     };
     return resolve(global);
 }));
 
 const load = async () => {
-    let global = await get(), globalCache = {}, freshGlobalObject = JSON.parse(JSON.stringify(globalObject));
+    let global = await get(), globalCache = {}, freshGlobalObject = globalObject;
 
     for (const key in freshGlobalObject) globalCache[key] = global[key] || freshGlobalObject[key];
 
@@ -29,7 +29,7 @@ const load = async () => {
 
 const save = async (changes) => {
     dbSaveQueue.set("global", changes);
-    let global = await get(), globalCache = dbCache.get("global"), globalSaveQueue = JSON.parse(JSON.stringify(dbSaveQueue.get("global")));
+    let global = await get(), globalCache = dbCache.get("global"), globalSaveQueue = dbSaveQueue.get("global");
 
     for (const key of globalSaveQueue) global[key] = globalCache[key];
 

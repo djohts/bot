@@ -3,30 +3,31 @@ const { Schema, model } = require("mongoose");
 const dbCache = new Map(), dbSaveQueue = new Map();
 
 const gSetObject = {
+    guildid: "",
+    //
     delMuted: Boolean(),
     purgePinned: Boolean(),
     detectScamLinks: Boolean(),
-    guildid: "",
     muteRole: "",
     logChannel: "",
     voices: { enabled: Boolean(), lobby: "", parent: "" }
 };
 
-const gSetSchema = Schema(JSON.parse(JSON.stringify(gSetObject)), { minimize: true });
+const gSetSchema = Schema(gSetObject, { minimize: true });
 const GSet = model("GSet", gSetSchema);
 global.GSet = GSet;
 
 const get = (guildid) => new Promise((resolve, reject) => GSet.findOne({ guildid }, (err, guild) => {
     if (err) return reject(err);
     if (!guild) {
-        guild = new GSet(JSON.parse(JSON.stringify(gSetObject)));
+        guild = new GSet(gSetObject);
         guild.guildid = guildid;
     };
     return resolve(guild);
 }));
 
 const load = async (guildid) => {
-    const guild = await get(guildid), guildCache = {}, freshGuildObject = JSON.parse(JSON.stringify(gSetObject));
+    const guild = await get(guildid), guildCache = {}, freshGuildObject = gSetObject;
     for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
     return dbCache.set(guildid, guildCache);
 };
@@ -34,7 +35,7 @@ const load = async (guildid) => {
 const save = async (guildid, changes) => {
     if (!dbSaveQueue.has(guildid)) {
         dbSaveQueue.set(guildid, changes);
-        const guild = await get(guildid), guildCache = dbCache.get(guildid), guildSaveQueue = JSON.parse(JSON.stringify(dbSaveQueue.get(guildid)));
+        const guild = await get(guildid), guildCache = dbCache.get(guildid), guildSaveQueue = dbSaveQueue.get(guildid);
         for (const key of guildSaveQueue) guild[key] = guildCache[key];
         return guild.save().then(() => {
             let newSaveQueue = dbSaveQueue.get(guildid);
@@ -108,7 +109,7 @@ module.exports.cacheAll = async (guilds = new Set()) => {
     return await Promise.all([...guilds].map(async guildid => {
         const guild = gsdbs.find(db => db.guildid == guildid) || { guildid };
         const guildCache = {};
-        const freshGuildObject = JSON.parse(JSON.stringify(gSetObject));
+        const freshGuildObject = gSetObject;
 
         for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
 
