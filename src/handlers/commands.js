@@ -21,7 +21,7 @@ module.exports = async (message, prefix, gdb, db) => {
         const args = (content.match(/"[^"]+"|[^ ]+/g) || []).map((arg) => arg);
         if (!commandFile.checkArgs(args)) return message.reply("❌ Неверные аргументы.");
 
-        return commandFile.run(message, args, gdb, { prefix, permissionLevel, db });
+        return commandFile.run(message, args);
     };
     await processCommand();
 };
