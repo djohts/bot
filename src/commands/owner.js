@@ -12,7 +12,7 @@ module.exports = {
 const { CommandInteraction } = require("discord.js");
 const { paginate } = require("../constants/");
 
-module.exports.run = async (interaction = new CommandInteraction) => {
+module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     switch (interaction.options.getSubcommand()) {

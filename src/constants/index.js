@@ -9,7 +9,7 @@ module.exports = Object.assign(
     require("./time")
 );
 
-module.exports.getPermissionLevel = (member = new GuildMember) => {
+module.exports.getPermissionLevel = (member) => {
     if (!(member instanceof GuildMember)) return 0;
 
     if (config.admins[0] == member.user.id) return 5; // bot owner
@@ -34,8 +34,8 @@ module.exports.generateID = (alreadyGenerated) => {
 const medals = {
     "1й": "🥇", "2й": "🥈", "3й": "🥉"
 };
-const formatNumberSuffix = (number) => {
-    let str = number.toString();
+const formatNumberSuffix = (n) => {
+    let str = `${n}`;
     if (str == "0") return "N/A";
     return str + "й";
 };

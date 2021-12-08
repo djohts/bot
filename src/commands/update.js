@@ -8,7 +8,7 @@ const { exec } = require("child_process");
 const { CommandInteraction } = require("discord.js");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-module.exports.run = async (interaction = new CommandInteraction) => {
+module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     exec("git stash push --include-untracked");

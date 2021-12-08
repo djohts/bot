@@ -12,7 +12,7 @@ module.exports = {
 
 const { CommandInteraction, MessageEmbed, GuildMember } = require("discord.js");
 
-module.exports.run = async (interaction = new CommandInteraction) => {
+module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     const guild = interaction.guild;

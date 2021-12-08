@@ -14,7 +14,7 @@ const { version } = require("discord.js");
 
 let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
-module.exports.run = async (interaction = new CommandInteraction) => {
+module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     const botId = interaction.client.user.id;

@@ -2,7 +2,9 @@ const { getPermissionLevel } = require("../constants/");
 const fs = require("fs");
 const { Message } = require("discord.js");
 
-module.exports = async (message = new Message(), prefix, gdb, db) => {
+module.exports = async (message, prefix, gdb, db) => {
+    if (!(message instanceof Message)) return;
+
     let content;
     if (message.content.match(`^<@!?${client.user.id}> `)) content = message.content.split(/\s+/).slice(1);
     else content = message.content.slice(prefix.length).split(/\s+/);
@@ -14,8 +16,7 @@ module.exports = async (message = new Message(), prefix, gdb, db) => {
         const commandFile = commands.get(commandName);
         if (!commandFile) return;
 
-        const permissionLevel = getPermissionLevel(message.member);
-        if (permissionLevel < commandFile.permissionRequired) return;
+        if (!require("../../config").admins.includes(message.author.id)) return;
 
         const args = (content.match(/"[^"]+"|[^ ]+/g) || []).map((arg) => arg);
         if (!commandFile.checkArgs(args)) return message.reply("❌ Неверные аргументы.");

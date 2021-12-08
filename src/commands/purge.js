@@ -22,7 +22,7 @@ const cooldowns = new Set();
 const { CommandInteraction } = require("discord.js");
 const db = require("../database/")();
 
-module.exports.run = async (interaction = new CommandInteraction) => {
+module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     if (cooldowns.has(interaction.channel.id))

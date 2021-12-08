@@ -28,7 +28,7 @@ const db = require("../database/")();
 const { CommandInteraction } = require("discord.js");
 const { flowWalkthrough, formatExplanation, limitTriggers, limitActions, limitFlows, generateID } = require("../constants/");
 
-module.exports.run = async (interaction = new CommandInteraction) => {
+module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     const gdb = await db.guild(interaction.guild.id);
