@@ -52,7 +52,6 @@ global.client = client;
 global.db = db;
 
 let shard = "[Shard N/A]";
-let linkCache = [];
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let start = Date.now();
     client.shardId = shardId;
@@ -90,19 +89,15 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     disabledGuilds = false;
 
-    linkCache = await fetch("https://raw.githubusercontent.com/DevSpen/links/master/src/links.txt").then(async (res) => {
-        let text = await res.text();
-        let array = text.split(/ |\n/);
-        return array.map((i) => i.trim());
-    });
+    await tickers(client);
 
     client.loading = false;
 
-    console.log(`${shard} Loaded in ${Math.ceil((Date.now() - start) / 1000)}s`);
-    await tickers(client);
+    console.log(`${shard} Ready in ${((Date.now() - start) / 1000).toFixed(2)}s`);
 });
 
 const linkRate = new Set();
+const linkCache = require("./constants/badlinks");
 client.on("messageCreate", async (message) => {
     if (
         !message.guild ||
