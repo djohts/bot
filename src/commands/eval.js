@@ -6,9 +6,10 @@ module.exports = {
 
 const { Message } = require("discord.js");
 
-module.exports.run = async (message = new Message, args) => {
-    let content = args.join(" ");
+module.exports.run = async (message, args = [""]) => {
+    if (!(message instanceof Message)) return;
 
+    let content = args.join(" ");
     try {
         let evaled = await eval(content);
         if (typeof evaled != "string") evaled = require("util").inspect(evaled);
