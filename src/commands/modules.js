@@ -50,8 +50,23 @@ module.exports.run = async (interaction) => {
         time: 60 * 1000,
         idle: 10 * 1000
     });
-    collector.on("collect", () => collector.stop());
-    collector.on("end", async (a) => {
+    collector.on("collect", () => collector.stop("abc"));
+    collector.on("end", async (a, r) => {
+        if ("abc" != r) return interaction.editReply({
+            content: "Время вышло.",
+            components: [{
+                type: 1,
+                components: [{
+                    type: 2,
+                    emoji: {
+                        name: "🗑"
+                    },
+                    style: 4,
+                    custom_id: "reply:delete"
+                }]
+            }]
+        });
+
         const newModules = a.first()?.values;
 
         if (newModules.includes("embed") && newModules.includes("webhook"))
