@@ -26,7 +26,7 @@ module.exports = async (guild, db) => {
                     if (!messages.size) processing = false;
                     else {
                         await channel.bulkDelete(messages).catch(() => fail = true);
-                        await alert.edit(`💢 Идёт подготовка канала. **\`[${msToTime(Date.now() - preparationStart)}]\`**`);
+                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${msToTime(Date.now() - preparationStart)}]\`**`);
                     };
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => fail = true);
