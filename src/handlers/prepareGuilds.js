@@ -30,7 +30,7 @@ module.exports = async (guild, db) => {
                     };
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => fail = true);
-                        if (messages.filter((m) => m.id != alert.id).size) await sleep(3000);
+                        if (messages.filter((m) => m.id != alert.id).size) await sleep(3500);
                     };
                 };
 
