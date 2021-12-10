@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const config = require("../config");
 const commandHandler = require("./handlers/commands");
 const interactionHandler = require("./handlers/interactions/");
+const lavaHandler = require("./handlers/lava");
 const countingHandler = require("./handlers/counting");
 const prepareGuild = require("./handlers/prepareGuilds");
 const tickers = require("./handlers/tickers");
@@ -90,6 +91,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     disabledGuilds = false;
 
     await tickers(client);
+    await lavaHandler(client);
 
     client.loading = false;
 
