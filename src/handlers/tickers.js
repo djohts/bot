@@ -43,7 +43,7 @@ async function postStats(client = new Client) {
             "Authorization": sdcToken
         }
     }).then(async (res) => {
-        console.log("[SDC API] Posted stats for " + botUser.tag, res.headers);
+        console.log("[SDC API] Posted stats for " + botUser.tag, (res.headers["expect-ct"]));
     });
 };
 
