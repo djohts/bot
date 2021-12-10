@@ -62,6 +62,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     interactionHandler(client);
     await require("./handlers/interactions/slash").registerCommands(client);
     console.log(`${shard} Refreshed slash commands.`);
+    await lavaHandler(client);
 
     console.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
 
@@ -91,7 +92,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     disabledGuilds = false;
 
     await tickers(client);
-    await lavaHandler(client);
 
     client.loading = false;
 
