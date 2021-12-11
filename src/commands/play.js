@@ -22,7 +22,8 @@ module.exports.run = async (interaction) => {
     await interaction.deferReply();
 
     if (
-        interaction.guild.me.voice.channelId &&
+        !!interaction.guild.me.voice.channelId &&
+        !!interaction.member.voice.channelId &&
         interaction.member.voice.channelId != interaction.guild.me.voice.channelId
     ) return interaction.editReply("❌ Вы должны находится в том же голосовом канале, что и я.");
 
