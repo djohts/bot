@@ -23,7 +23,7 @@ module.exports.run = async (interaction) => {
 
     if (
         interaction.guild.me.voice.channelId &&
-        !interaction.guild.me.voice?.channel?.equals(interaction.member.voice.channel)
+        interaction.member.voice.channelId != interaction.guild.me.voice.channelId
     ) return interaction.editReply("❌ Вы должны находится в том же голосовом канале, что и я.");
 
     const res = await client.manager.search(interaction.options.getString("query"), interaction.user);
