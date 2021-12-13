@@ -23,14 +23,11 @@ module.exports.run = async (interaction) => {
     await interaction.deferReply();
 
     const player = client.manager.create({
-        guild: interaction.guildId,
-        voiceChannel: interaction.member.voice.channelId,
-        textChannel: interaction.channelId,
-        selfDeafen: true
+        guild: interaction.guildId
     });
 
-    if (player.playing) {
+    if (player.playing || player.queue.totalSize) {
         interaction.editReply("Пропускаю текущий трек.");
         player.stop();
-    } else interaction.editReply("❌ Плеер на паузе или не играет.");
+    } else interaction.editReply("❌ Плеер на паузе или не играет.") && player.destroy();
 };
