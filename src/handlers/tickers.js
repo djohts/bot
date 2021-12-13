@@ -65,8 +65,13 @@ async function checkMutes(client = new Client) {
         mutes = mutes.filter((key) => gdb.get().mutes[key] != -1 && gdb.get().mutes[key] < Date.now());
 
         return mutes.map(async (key) => {
-            const member = await guild.members.fetch(key).catch(() => gdb.removeFromObject("mutes", key));
-            return member?.roles.remove(gsdb.get().muteRole).then(() => {
+            const member = guild.members.resolve(key);
+            if (
+                !member ||
+                !guild.me.permissions.has("MANAGE_ROLES")
+            ) return;
+
+            return member.roles.remove(gsdb.get().muteRole).then(() => {
                 return gdb.removeFromObject("mutes", key);
             }).catch(() => {
                 return gdb.removeFromObject("mutes", key);
@@ -86,8 +91,9 @@ async function checkBans(client = new Client) {
         bans = bans.filter((key) => guilddb.get().bans[key] != -1 && guilddb.get().bans[key] < Date.now());
 
         return bans.map(async (key) => {
-            return guild.bans.fetch(key).then(async () => {
-                await guild.bans.remove(key);
+            if (!guild.me.permissions.has("BAN_MEMBERS")) return;
+
+            guild.bans.remove(key).then(() => {
                 return guilddb.removeFromObject("bans", key);
             }).catch(() => {
                 return guilddb.removeFromObject("bans", key);
