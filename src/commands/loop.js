@@ -29,10 +29,10 @@ module.exports.run = async (interaction) => {
     if (player.playing || player.queue.totalSize) {
         player.trackRepeat ? (() => {
             player.setTrackRepeat(false);
-            interaction.editReply("Повтор включён.");
+            interaction.editReply("Повтор выключен.");
         })() : (() => {
             player.setTrackRepeat(true);
-            interaction.editReply("Повтор выключен.");
+            interaction.editReply("Повтор включён.");
         })();
     } else interaction.editReply("❌ Плеер на паузе или не играет.") && player.destroy();
 };
