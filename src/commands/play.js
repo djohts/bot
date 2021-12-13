@@ -19,13 +19,13 @@ module.exports.run = async (interaction) => {
     const client = interaction.client;
     const gdb = await db.guild(interaction.guild.id);
     if (gdb.get().channel == interaction.channelId) return interaction.reply({ content: "❌ Эта команда недоступна в данном канале.", ephemeral: true });
-    await interaction.deferReply();
 
+    if (!interaction.member.voice.channelId) return interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
     if (
-        !!interaction.guild.me.voice.channelId &&
-        !!interaction.member.voice.channelId &&
+        interaction.guild.me.voice.channelId &&
         interaction.member.voice.channelId != interaction.guild.me.voice.channelId
-    ) return interaction.editReply("❌ Вы должны находится в том же голосовом канале, что и я.");
+    ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
+    await interaction.deferReply();
 
     const res = await client.manager.search(interaction.options.getString("query"), interaction.user);
     if (!res?.tracks[0]) return interaction.editReply("❌ По вашему запросу не удалось ничего найти.");
