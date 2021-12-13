@@ -147,6 +147,22 @@ client.on("messageDelete", async (deleted) => {
         gdb.set("message", newMessage.id);
     };
 });
+client.on("channelDelete", async (channel) => {
+    if (!(channel instanceof Discord.VoiceChannel)) return;
+
+    const player = client.manager.create({
+        guild: channel.guildId
+    });
+
+    if (
+        player.voiceChannel == channel.id &&
+        (player.playing || player.queue.totalSize)
+    ) {
+        client.channels.cache.get(player.textChannel)?.send("Канал был удалён. Останавливаю плеер.");
+        player.destroy();
+    };
+    if (!(player.playing || player.queue.totalSize)) player.destroy();
+});
 
 client.on("messageUpdate", async (original, updated) => {
     const gdb = await db.guild(updated.guild.id);

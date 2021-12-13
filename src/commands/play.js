@@ -20,10 +20,10 @@ module.exports.run = async (interaction) => {
     const gdb = await db.guild(interaction.guild.id);
     if (gdb.get().channel == interaction.channelId) return interaction.reply({ content: "❌ Эта команда недоступна в данном канале.", ephemeral: true });
 
-    if (!interaction.member.voice.channelId) return interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
+    if (!interaction.member.voice.channel) return interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
     if (
-        interaction.guild.me.voice.channelId &&
-        interaction.member.voice.channelId != interaction.guild.me.voice.channelId
+        interaction.guild.me.voice.channel &&
+        interaction.member.voice.channel.id != interaction.guild.me.voice.channel.id
     ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
     await interaction.deferReply();
 
