@@ -15,7 +15,7 @@ module.exports.run = async (interaction) => {
 
     const gdb = await db.guild(interaction.guild.id);
     const uptime = msToTime(interaction.client.uptime);
-    const api = Math.ceil(interaction.client.ws.ping);
+    const api = Math.round(interaction.client.ws.ping);
     const server = Date.now() - interaction.createdTimestamp;
 
     return await interaction.reply({
