@@ -7,7 +7,10 @@ module.exports = async (message, gdb) => {
     if (content.startsWith("!") && permissionLevel >= 1) return;
 
     let { count, user, modules, flows, users: scores, mutes } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
-    if (mutes[message.author.id]) return deleteMessage(message);
+    if (
+        message.client.loading ||
+        mutes[message.author.id]
+    ) return deleteMessage(message);
 
     if (
         (!modules.includes("allow-spam") && message.author.id == user) ||
