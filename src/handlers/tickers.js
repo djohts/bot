@@ -12,7 +12,7 @@ module.exports = async (client = new Client) => {
 
     if (config.sdcToken && client.shardId == 0) {
         await postStats(client);
-        setInterval(() => postStats(client), 10 * 60 * 1000);
+        setInterval(() => postStats(client), 60 * 60 * 1000);
     };
 };
 
