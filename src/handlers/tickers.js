@@ -17,7 +17,7 @@ module.exports = async (client = new Client) => {
 };
 
 async function updatePresence(client = new Client) {
-    const gc = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, curr) => prev + curr, 0));
+    const gc = await client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
     let text = `вакцинацию | ${gc} guilds`;
     return client.user.setPresence({
         status: "idle",
@@ -29,7 +29,7 @@ async function postStats(client = new Client) {
     const sdcToken = "SDC " + config.sdcToken;
     const route = "https://api.server-discord.com/v2";
     const shardCount = client.shard.count;
-    const guildCount = await client.shard.broadcastEval(bot => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
+    const guildCount = await client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
     const botUser = client.user;
 
     await fetch(route + `/bots/${botUser.id}/stats`, {

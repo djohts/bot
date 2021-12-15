@@ -17,7 +17,7 @@ module.exports.run = async (interaction) => {
 
     switch (interaction.options.getSubcommand()) {
         case "servers":
-            let guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map((g) => Object.assign({}, {
+            let guilds = await interaction.client.shard.broadcastEval((bot) => bot.guilds.cache.map((g) => Object.assign({}, {
                 name: g.name,
                 value: [
                     `🤖 \`${g.members.cache.filter((a) => a.user.bot).size}\``,

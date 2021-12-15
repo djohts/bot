@@ -37,7 +37,7 @@ const save = async (changes) => {
         let newSaveQueue = dbSaveQueue.get("global");
         if (newSaveQueue.length > globalSaveQueue.length) {
             dbSaveQueue.delete("global");
-            save(newSaveQueue.filter(key => !globalSaveQueue.includes(key)));
+            save(newSaveQueue.filter((key) => !globalSaveQueue.includes(key)));
         } else dbSaveQueue.delete("global");
     }).catch(console.log);
 };
@@ -70,7 +70,7 @@ module.exports = {
         return dbCache.get("global");
     },
     removeFromArray: (array, value) => {
-        dbCache.get("global")[array] = dbCache.get("global")[array].filter(aValue => aValue !== value);
+        dbCache.get("global")[array] = dbCache.get("global")[array].filter((aValue) => aValue !== value);
         save([array]);
 
         return dbCache.get("global");

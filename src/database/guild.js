@@ -49,13 +49,13 @@ const save = async (guildid, changes) => {
             let newSaveQueue = dbSaveQueue.get(guildid);
             if (newSaveQueue.length > guildSaveQueue.length) {
                 dbSaveQueue.delete(guildid);
-                save(guildid, newSaveQueue.filter(key => !guildSaveQueue.includes(key)));
+                save(guildid, newSaveQueue.filter((key) => !guildSaveQueue.includes(key)));
             } else dbSaveQueue.delete(guildid);
         }).catch(console.log);
     } else dbSaveQueue.get(guildid).push(...changes);
 };
 
-module.exports = () => (async guildid => {
+module.exports = () => (async (guildid) => {
     if (!dbCache.has(guildid)) await load(guildid);
     return {
         reload: () => load(guildid),
@@ -83,7 +83,7 @@ module.exports = () => (async guildid => {
             return dbCache.get(guildid);
         },
         removeFromArray: (array, value) => {
-            dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter(aValue => aValue !== value);
+            dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter((aValue) => aValue !== value);
             save(guildid, [array]);
 
             return dbCache.get(guildid);
@@ -132,9 +132,9 @@ module.exports = () => (async guildid => {
 });
 
 module.exports.cacheAll = async (guilds = new Set()) => {
-    let gdbs = await Guild.find({ $or: [...guilds].map(guildid => ({ guildid })) });
+    let gdbs = await Guild.find({ $or: [...guilds].map((guildid) => ({ guildid })) });
     return await Promise.all([...guilds].map(async (guildid) => {
-        const guild = gdbs.find(db => db.guildid == guildid) || { guildid };
+        const guild = gdbs.find((db) => db.guildid == guildid) || { guildid };
         const guildCache = {};
         const freshGuildObject = guildObject;
 

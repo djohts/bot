@@ -152,7 +152,7 @@ module.exports.run = async (interaction) => {
                             await formatTriggers(flows[flowId]),
                             "**Действия:**",
                             await formatActions(flows[flowId])
-                        ].join("\n").split("\n").map(l => `> ${l}`).join("\n") + "\n** **");
+                        ].join("\n").split("\n").map((l) => `> ${l}`).join("\n") + "\n** **");
                         return ({
                             name: `Поток \`${flowId}\``,
                             value: cutFieldValue(val),

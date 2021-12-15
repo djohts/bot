@@ -21,8 +21,10 @@ module.exports.run = async (interaction) => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 5000;
 
-        guilds = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.size).then(res => res.reduce((prev, val) => prev + val, 0));
-        users = await interaction.client.shard.broadcastEval(bot => bot.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)).then(res => res.reduce((prev, val) => prev + val, 0));
+        guilds = await interaction.client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, val) => prev + val, 0));
+        users = await interaction.client.shard.broadcastEval((bot) =>
+            bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)
+        ).then((res) => res.reduce((prev, val) => prev + val, 0));
         shardCount = interaction.client.shard.count;
 
         const { rss, heapUsed } = process.memoryUsage();
@@ -62,7 +64,7 @@ module.exports.run = async (interaction) => {
                     name: `🔷 Этот шард (${interaction.guild.shardId})`,
                     value: [
                         `**Кол-во серверов**: \`${interaction.client.guilds.cache.size}\``,
-                        `**Кол-во юзеров**: \`${interaction.client.guilds.cache.map(g => g.memberCount).reduce((a, b) => a + b)}\``,
+                        `**Кол-во юзеров**: \`${interaction.client.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)}\``,
                         `**Исп. ОЗУ**: \`${memoryUsage}\``
                     ].join("\n"),
                     inline: true

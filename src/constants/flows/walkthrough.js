@@ -87,7 +87,7 @@ module.exports.flowWalkthrough = async (guild, author, channel, newFlow, generat
                                         title: `💨 Подтвердите триггер ${slot}`,
                                         description: [
                                             "**Это правильно? Напишите `да` или `нет`.**",
-                                            `${(await module.exports.formatExplanation(newTrigger)).split("\n").map(l => `> ${l}`).join("\n")}`
+                                            `${(await module.exports.formatExplanation(newTrigger)).split("\n").map((l) => `> ${l}`).join("\n")}`
                                         ].join("\n"),
                                         timestamp: Date.now()
                                     }]
@@ -173,7 +173,7 @@ module.exports.flowWalkthrough = async (guild, author, channel, newFlow, generat
                                         title: `💨 Подтвердите действие ${slot}`,
                                         description: [
                                             "**Это правильно? Напишите `да` или `нет`.**",
-                                            `${(await module.exports.formatExplanation(newAction)).split("\n").map(l => `> ${l}`).join("\n")}`
+                                            `${(await module.exports.formatExplanation(newAction)).split("\n").map((l) => `> ${l}`).join("\n")}`
                                         ].join("\n"),
                                         timestamp: Date.now()
                                     }]
@@ -201,7 +201,7 @@ module.exports.flowWalkthrough = async (guild, author, channel, newFlow, generat
                 };
             }
             else if (command == "save") {
-                if (newFlow.triggers.find(t => t) && newFlow.actions.find(a => a)) {
+                if (newFlow.triggers.find((t) => t) && newFlow.actions.find((a) => a)) {
                     editing = false;
                     successStatus = true;
                 } else messagesToDelete.push(await channel.send("❌ Вы должны указать как минимум один триггер и одно действие!"));

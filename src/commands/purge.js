@@ -37,8 +37,8 @@ module.exports.run = async (interaction) => {
     const limit = interaction.options.getInteger("amount");
 
     let toDelete = await interaction.channel.messages.fetch({ limit: limit });
-    if (!guilddb.get().purgePinned) toDelete = toDelete.filter(m => !m.pinned);
-    if (interaction.options.getUser("member")) toDelete = toDelete.filter(m => m.author.id == interaction.options.getUser("member").id);
+    if (!guilddb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
+    if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id == interaction.options.getUser("member").id);
     if (!toDelete.size) return await interaction.reply({ content: "❌ Не удалось найти сообщений для удаления.", ephemeral: true });
 
     const purged = await interaction.channel.bulkDelete(toDelete, true);

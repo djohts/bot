@@ -33,14 +33,14 @@ if (config.port) {
 };
 
 async function updateBotInfo() {
-    const newBotInfo = await manager.broadcastEval(bot => ({
+    const newBotInfo = await manager.broadcastEval((bot) => ({
         status: bot.ws.status,
         guilds: bot.guilds.cache.size,
         cachedUsers: bot.users.cache.size,
         users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
         ping: bot.ws.ping,
         loading: bot.loading
-    })).then(results => results.reduce((info, next, index) => {
+    })).then((results) => results.reduce((info, next, index) => {
         for (const [key, value] of Object.entries(next)) {
             if (["guilds", "cachedUsers", "users"].includes(key)) info[key] = (info[key] || 0) + value;
         };
