@@ -9,9 +9,9 @@ module.exports.msToTime = (ms) => {
         sec = Math.floor(minutesms / 1000);
 
     let str = "";
-    if (days) str = str + days + "дн ";
+    if (days) str = str + days + "д ";
     if (hours) str = str + hours + "ч ";
-    if (minutes) str = str + minutes + "мин ";
+    if (minutes) str = str + minutes + "м ";
     if (sec) str = str + sec + "с";
 
     return str?.trim() || "0с";
