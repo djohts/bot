@@ -31,7 +31,7 @@ module.exports = async (message, gdb) => {
                 for (const action of flow.actions.slice(0, limitActions).filter((a) => a)) try {
                     await allActions[action.type].run(countData, action.data);
                 } catch (e) { };
-        } catch () { };
+        } catch (e) { };
         return;
     };
 
@@ -65,7 +65,7 @@ module.exports = async (message, gdb) => {
             }]
         });
         deleteMessage(message);
-    } catch () { };
+    } catch (e) { };
 
     gdb.set("message", countingMessage.id);
 
@@ -85,6 +85,6 @@ module.exports = async (message, gdb) => {
         if (success)
             for (const action of flow.actions.slice(0, limitActions).filter((a) => a)) try {
                 await allActions[action.type].run(countData, action.data);
-            } catch () { };
-    } catch () { };
+            } catch (e) { };
+    } catch (e) { };
 };
