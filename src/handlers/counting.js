@@ -3,9 +3,7 @@ const { deleteMessage } = require("./utils");
 
 module.exports = async (message, gdb) => {
     const permissionLevel = getPermissionLevel(message.member), content = message.content;
-
     if (content.startsWith("!") && permissionLevel >= 1) return;
-
     let { count, user, modules, flows, users: scores, mutes } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
     if (
         message.client.loading ||
@@ -33,8 +31,7 @@ module.exports = async (message, gdb) => {
                 for (const action of flow.actions.slice(0, limitActions).filter((a) => a)) try {
                     await allActions[action.type].run(countData, action.data);
                 } catch (e) { };
-        } catch (e) { };
-
+        } catch () { };
         return;
     };
 
@@ -59,7 +56,7 @@ module.exports = async (message, gdb) => {
             });
             deleteMessage(message);
         };
-    } catch (e) { }
+    } catch () { }
     else if (modules.includes("embed")) try {
         countingMessage = await message.channel.send({
             embeds: [{
@@ -68,7 +65,7 @@ module.exports = async (message, gdb) => {
             }]
         });
         deleteMessage(message);
-    } catch (e) { };
+    } catch () { };
 
     gdb.set("message", countingMessage.id);
 
@@ -84,10 +81,10 @@ module.exports = async (message, gdb) => {
         for (const trigger of flow.triggers.slice(0, limitTriggers).filter((t) => t)) {
             success = await allTriggers[trigger.type].check(countData, trigger.data);
             if (success) break;
-        }
+        };
         if (success)
             for (const action of flow.actions.slice(0, limitActions).filter((a) => a)) try {
                 await allActions[action.type].run(countData, action.data);
-            } catch (e) { };
-    } catch (e) { };
+            } catch () { };
+    } catch () { };
 };
