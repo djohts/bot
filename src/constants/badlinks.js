@@ -13,8 +13,6 @@ module.exports = [
     "adcash.com",
     "adcell.de",
     "adexchangecloud.com",
-    "adf.ly",
-    "adfoc.us",
     "adforce.com",
     "affix-cup.click",
     "affix-cup.link",
