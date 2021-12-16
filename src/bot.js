@@ -63,17 +63,19 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await require("./handlers/interactions/slash").registerCommands(client);
     console.log(`${shard} Refreshed slash commands.`);
     await lavaHandler(client);
+    await tickers(client);
 
     console.log(`${shard} Ready as ${client.user.tag}! Caching guilds.`);
 
     client.loading = true;
 
-    let disabledGuilds = new Set([...Array.from(unavailable), ...client.guilds.cache.map((guild) => guild.id)]);
+    let disabledGuilds = new Set([...Array.from(unavailable), ...client.guilds.cache.map((g) => g.id)]);
     let guildCachingStart = Date.now();
 
     await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
+
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user.setPresence({
         status: "idle",
         activities: [{
@@ -90,9 +92,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     console.log(`${shard} All ${client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
 
     disabledGuilds = false;
-
-    await tickers(client);
-
     client.loading = false;
 
     console.log(`${shard} Ready in ${((Date.now() - start) / 1000).toFixed(2)}s`);
