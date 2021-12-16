@@ -56,7 +56,7 @@ module.exports = async (message, gdb) => {
             });
             deleteMessage(message);
         };
-    } catch () { }
+    } catch (e) { }
     else if (modules.includes("embed")) try {
         countingMessage = await message.channel.send({
             embeds: [{
