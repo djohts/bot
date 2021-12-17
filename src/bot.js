@@ -250,7 +250,7 @@ if (!config.dev) client.on("voiceChannelLeave", voicesLeave);
 if (!config.dev) client.on("voiceChannelSwitch", voicesSwitch);
 client.on("error", (err) => console.error(`${shard} Client error. ${err}`));
 client.on("rateLimit", (rateLimitInfo) => console.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
-client.on("shardDisconnected", (closeEvent) => console.warn(`${shard} Disconnected. ${closeEvent}`));
+client.on("shardDisconnected", () => console.warn(`${shard} Disconnected.`));
 client.on("shardError", (err) => console.error(`${shard} Error. ${err}`));
 client.on("shardReconnecting", () => console.log(`${shard} Reconnecting.`));
 client.on("shardResume", (_, replayedEvents) => console.log(`${shard} Resumed. ${replayedEvents} replayed events.`));
