@@ -1,7 +1,7 @@
 const { GuildMember, VoiceChannel } = require("discord.js");
 const db = require("../database/")();
 
-module.exports.voicesJoin = async (member = new GuildMember, channel = new VoiceChannel) => {
+module.exports.voicesJoin = async (member, channel) => {
     if (!(member instanceof GuildMember)) return;
     //if (!(channel instanceof VoiceChannel)) return;
 
@@ -22,7 +22,7 @@ module.exports.voicesJoin = async (member = new GuildMember, channel = new Voice
     }).catch(() => { });
 };
 
-module.exports.voicesLeave = async (member = new GuildMember, channel = new VoiceChannel) => {
+module.exports.voicesLeave = async (member, channel) => {
     if (!(member instanceof GuildMember)) return;
     //if (!(channel instanceof VoiceChannel)) return;
 
