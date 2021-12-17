@@ -13,7 +13,7 @@ module.exports.deleteMessage = (message = new Message) => {
     else {
         bulks.set(message.channel?.id, [message]);
         setTimeout(() => {
-            message.channel.bulkDelete(bulks.get(message.channel?.id)).catch(() => { });
+            message.channel?.bulkDelete(bulks.get(message.channel?.id)).catch(() => { });
             bulks.delete(message.channel?.id);
         }, 5000);
     };
