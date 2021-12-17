@@ -1,6 +1,5 @@
 require("nodejs-better-console").overrideConsole();
 const Discord = require("discord.js");
-const fetch = require("node-fetch");
 const config = require("../config");
 const commandHandler = require("./handlers/commands");
 const interactionHandler = require("./handlers/interactions/");
