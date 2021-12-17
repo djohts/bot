@@ -11,7 +11,7 @@ module.exports = async (guild, db) => {
         if (channel) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { });
             if (messages.size) {
-                alert = await channel.send("💢 Идёт подготовка канала.");
+                alert = await channel.send("💢 Идёт подготовка канала.").catch(() => { });
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone) || { allow: new Set(), deny: new Set() };
                 let oldPermission = null;
                 if (defaultPermissions.allow.has("SEND_MESSAGES")) oldPermission = true;
