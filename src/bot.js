@@ -100,7 +100,7 @@ const linkRate = new Set();
 const linkCache = require("./constants/badlinks");
 client.on("messageCreate", async (message) => {
     if (message.channel.id == "920602710196244530") {
-        message.crosspost();
+        //message.crosspost();
     };
     if (
         !message.guild ||
