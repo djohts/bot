@@ -27,7 +27,7 @@ module.exports.run = async (interaction) => {
     });
 
     if (player.playing || player.queue.totalSize) {
-        interaction.editReply("Пропускаю текущий трек.");
         player.stop();
+        interaction.editReply("Пропускаю текущий трек.");
     } else interaction.editReply("❌ Плеер на паузе или не играет.") && player.destroy();
 };

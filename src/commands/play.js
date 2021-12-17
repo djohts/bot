@@ -40,7 +40,6 @@ module.exports.run = async (interaction) => {
     player.connect();
     if (player.queue.totalSize > 10) return interaction.editReply("❌ Размер очереди не может превышать 10 треков.");
     else player.queue.add(res.tracks[0]);
-    interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
 
     if (!player.playing && !player.paused && !player.queue.size) player.play();
     else if (
@@ -48,4 +47,5 @@ module.exports.run = async (interaction) => {
         !player.paused &&
         player.queue.totalSize == res.tracks.length
     ) player.play();
+    interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
 };
