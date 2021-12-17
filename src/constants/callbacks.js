@@ -3,7 +3,7 @@ const db = require("../database/")();
 
 module.exports.voicesJoin = async (member = new GuildMember, channel = new VoiceChannel) => {
     if (!(member instanceof GuildMember)) return;
-    if (!(channel instanceof VoiceChannel)) return;
+    //if (!(channel instanceof VoiceChannel)) return;
 
     const gset = await db.settings(member.guild.id);
     if (!gset.get().voices.enabled) return;
@@ -24,7 +24,7 @@ module.exports.voicesJoin = async (member = new GuildMember, channel = new Voice
 
 module.exports.voicesLeave = async (member = new GuildMember, channel = new VoiceChannel) => {
     if (!(member instanceof GuildMember)) return;
-    if (!(channel instanceof VoiceChannel)) return;
+    //if (!(channel instanceof VoiceChannel)) return;
 
     const guilddb = await db.guild(member.guild.id);
 
@@ -33,10 +33,10 @@ module.exports.voicesLeave = async (member = new GuildMember, channel = new Voic
     };
 };
 
-module.exports.voicesSwitch = async (member = new GuildMember, oldChannel = new VoiceChannel, newChannel = new VoiceChannel) => {
+module.exports.voicesSwitch = async (member, oldChannel, newChannel) => {
     if (!(member instanceof GuildMember)) return;
-    if (!(oldChannel instanceof VoiceChannel)) return;
-    if (!(newChannel instanceof VoiceChannel)) return;
+    //if (!(oldChannel instanceof VoiceChannel)) return;
+    //if (!(newChannel instanceof VoiceChannel)) return;
 
     const gset = await db.settings(member.guild.id);
     const guilddb = await db.guild(member.guild.id);
