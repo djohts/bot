@@ -7,8 +7,8 @@ module.exports = async (client = new Client) => {
     await updatePresence(client);
 
     setInterval(() => updatePresence(client), 60 * 1000);
-    setInterval(() => checkMutes(client), 4 * 1000);
-    setInterval(() => checkBans(client), 6 * 1000);
+    await checkMutes(client);
+    await checkBans(client);
 
     if (config.sdcToken && client.shardId == 0) {
         await postStats(client);
@@ -53,19 +53,22 @@ async function postStats(client = new Client) {
     });
 };
 
-async function checkMutes(client = new Client) {
-    return client.guilds.cache.map(async (guild) => {
+async function checkMutes(client) {
+    if (!(client instanceof Client)) return;
+
+    await Promise.all(client.guilds.cache.map(async (guild) => {
         if (!guild.available) return;
 
         const gdb = await db.guild(guild.id);
         const gsdb = await db.settings(guild.id);
-        let mutes = Object.keys(gdb.get().mutes);
-        if (!mutes.length) return;
+        let { mutes } = gdb.get();
+        let ids = Object.keys(mutes);
+        if (!ids.length) return;
 
-        mutes = mutes.filter((key) => gdb.get().mutes[key] != -1 && gdb.get().mutes[key] < Date.now());
+        ids = ids.filter((key) => mutes[key] != -1 && mutes[key] < Date.now());
 
-        return mutes.map(async (key) => {
-            const member = guild.members.resolve(key);
+        return ids.map(async (key) => {
+            const member = await guild.members.fetch(key).catch(() => { });
             if (
                 !member ||
                 !guild.me.permissions.has("MANAGE_ROLES")
@@ -77,27 +80,32 @@ async function checkMutes(client = new Client) {
                 return gdb.removeFromObject("mutes", key);
             });
         });
-    });
+    }));
+    setTimeout(() => checkMutes(client), 2500);
 };
 
-async function checkBans(client = new Client) {
-    return client.guilds.cache.map(async (guild) => {
+async function checkBans(client) {
+    if (!(client instanceof Client)) return;
+
+    await Promise.all(client.guilds.cache.map(async (guild) => {
         if (!guild.available) return;
 
-        const guilddb = await db.guild(guild.id);
-        let bans = Object.keys(guilddb.get().bans);
-        if (!bans.length) return;
+        const gdb = await db.guild(guild.id);
+        let { bans } = gdb.get();
+        let ids = Object.keys(bans);
+        if (!ids.length) return;
 
-        bans = bans.filter((key) => guilddb.get().bans[key] != -1 && guilddb.get().bans[key] < Date.now());
+        ids = ids.filter((key) => bans[key] != -1 && bans[key] < Date.now());
 
-        return bans.map(async (key) => {
+        return ids.map(async (key) => {
             if (!guild.me.permissions.has("BAN_MEMBERS")) return;
 
             guild.bans.remove(key).then(() => {
-                return guilddb.removeFromObject("bans", key);
+                return gdb.removeFromObject("bans", key);
             }).catch(() => {
-                return guilddb.removeFromObject("bans", key);
+                return gdb.removeFromObject("bans", key);
             });
         });
-    });
+    }));
+    setTimeout(() => checkBans(client), 5000);
 };
