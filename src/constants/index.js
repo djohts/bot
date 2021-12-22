@@ -21,7 +21,7 @@ module.exports.getPermissionLevel = (member) => {
 
 module.exports.onlyUnique = (value, index, self) => self.indexOf(value) == index;
 
-const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 module.exports.generateID = (alreadyGenerated) => {
     let id;
     while (!id || alreadyGenerated.includes(id)) {
