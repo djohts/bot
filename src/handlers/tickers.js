@@ -81,7 +81,7 @@ async function checkMutes(client) {
             });
         });
     }));
-    setTimeout(() => checkMutes(client), 2500);
+    setTimeout(() => checkMutes(client), 2000);
 };
 
 async function checkBans(client) {
