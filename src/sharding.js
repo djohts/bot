@@ -2,7 +2,6 @@ require("nodejs-better-console").overrideConsole();
 const { ShardingManager } = require("discord.js");
 const config = require("../config");
 const express = require("express");
-const cors = require("cors");
 
 const manager = new ShardingManager(__dirname + "/bot.js", {
     totalShards: config.shards || "auto",
@@ -24,7 +23,6 @@ let botInfo = {};
 
 if (config.port) {
     const api = express();
-    api.use(cors());
 
     setInterval(updateBotInfo, 5000);
 
