@@ -2,7 +2,9 @@ const { Client } = require("discord.js");
 const { formatScore } = require("../constants/index");
 const db = require("../database/")();
 
-module.exports = (client = new Client) => {
+module.exports = (client) => {
+    if (!(client instanceof Client)) return;
+
     return () => Promise.all(client.guilds.cache.map(async (guild) => {
         const gdb = await db.guild(guild.id);
         const { liveboard: { channel: channelId, message: messageId }, users } = gdb.get();
