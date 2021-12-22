@@ -9,7 +9,6 @@ const gSetObject = {
     purgePinned: Boolean(),
     detectScamLinks: Boolean(),
     muteRole: "",
-    logChannel: "",
     voices: { enabled: Boolean(), lobby: "", parent: "" }
 };
 
