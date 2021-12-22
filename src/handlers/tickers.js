@@ -68,7 +68,7 @@ async function checkMutes(client) {
         ids = ids.filter((key) => mutes[key] != -1 && mutes[key] < Date.now());
 
         return ids.map(async (key) => {
-            const member = await guild.members.fetch(key).catch(() => { });
+            const member = await guild.members.fetch(key).catch(() => null);
             if (
                 !member ||
                 !guild.me.permissions.has("MANAGE_ROLES")
