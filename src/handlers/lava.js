@@ -3,14 +3,12 @@ const { Manager } = require("erela.js");
 const Spotify = require("erela.js-spotify");
 const { lava: { nodes, spotify: { clientID, clientSecret } } } = require("../../config");
 
-module.exports = async (client = new Client) => {
+module.exports = async (client) => {
+    if (!(client instanceof Client)) return;
+
     client.manager = new Manager({
         nodes: nodes,
-        plugins: [
-            new Spotify({
-                clientID, clientSecret
-            })
-        ],
+        plugins: [new Spotify({ clientID, clientSecret })],
         send(id, payload) {
             client.guilds.cache.get(id)?.shard.send(payload);
         }
@@ -20,14 +18,10 @@ module.exports = async (client = new Client) => {
         .on("nodeConnect", ({ options }) => console.log(`${client.s} Lava ${options.host}:${options.port} connected.`))
         .on("nodeError", ({ options }, error) => console.log(`${client.s} Lava ${options.host}:${options.port} had an error: ${error.message}`))
         .on("trackStart", (player, track) => {
-            client.channels.cache
-                .get(player.textChannel)
-                .send(`Играю:\n\`${track.title}\``);
+            client.channels.cache.get(player.textChannel).send(`Играю:\n\`${track.title}\``);
         })
         .on("queueEnd", (player) => {
-            client.channels.cache
-                .get(player.textChannel)
-                .send("Очередь пуста. Останавливаю плеер.");
+            client.channels.cache.get(player.textChannel).send("Очередь пуста. Останавливаю плеер.");
 
             player.destroy();
         })
