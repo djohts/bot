@@ -27,7 +27,7 @@ const client = new Discord.Client({
             })
         }
     }),
-    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_PRESENCES", "GUILD_BANS", "GUILD_VOICE_STATES"],
+    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
     presence: {
         status: "dnd",
         activities: [{
