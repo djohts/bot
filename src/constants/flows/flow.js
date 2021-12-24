@@ -42,14 +42,14 @@ module.exports.flow = {
             explanation: "Закрепит сообщение.",
             run: async ({ countingMessage }) => await countingMessage.pin().catch(async () => {
                 let pinned = await countingMessage.channel.messages.fetchPinned(false).catch(() => ({ size: 0 }));
-                if (pinned.size == 50) await pinned.last().unpin().then(() => countingMessage.pin().catch(() => { })).catch(() => { });
+                if (pinned.size == 50) await pinned.last().unpin().then(() => countingMessage.pin().catch(() => null)).catch(() => null);
             })
         },
         lock: {
             short: "Заблокировать канал счёта",
             long: "Это сделает канал счёта доступным только для читания.",
             explanation: "Заблокировать канал счёта",
-            run: async ({ message: { channel, guild } }) => await channel.updateOverwrite(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => { })
+            run: async ({ message: { channel, guild } }) => await channel.updateOverwrite(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => null)
         },
         reset: {
             short: "Сбросить текущий счёт",

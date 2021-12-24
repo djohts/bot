@@ -41,7 +41,7 @@ module.exports = async (message, gdb) => {
     let countingMessage = message;
     if (modules.includes("webhook")) try {
         let webhooks = await message.channel.fetchWebhooks(), webhook = webhooks.find((w) => w.name == "Counting");
-        if (!webhook) webhook = await message.channel.createWebhook("Counting").catch(() => { });
+        if (!webhook) webhook = await message.channel.createWebhook("Counting").catch(() => null);
 
         if (webhook) {
             countingMessage = await webhook.send({

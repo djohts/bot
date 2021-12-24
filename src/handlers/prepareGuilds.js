@@ -1,4 +1,5 @@
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const { deleteMessage } = require("./utils");
 const parseMs = require("pretty-ms");
 
 module.exports = async (guild, db) => {
@@ -9,9 +10,9 @@ module.exports = async (guild, db) => {
     try {
         let channel = guild.channels.cache.get(channelId);
         if (channel) {
-            let messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { });
+            let messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => null);
             if (messages.size) {
-                alert = await channel.send("💢 Идёт подготовка канала.").catch(() => { });
+                alert = await channel.send("💢 Идёт подготовка канала.").catch(() => null);
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone) || { allow: new Set(), deny: new Set() };
                 let oldPermission = null;
                 if (defaultPermissions.allow.has("SEND_MESSAGES")) oldPermission = true;
@@ -26,7 +27,7 @@ module.exports = async (guild, db) => {
                     if (!messages.size) processing = false;
                     else {
                         await channel.bulkDelete(messages).catch(() => fail = true);
-                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${parseMs(Date.now() - preparationStart)}]\`**`);
+                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${parseMs(Date.now() - preparationStart)}]\`**`).catch(() => null);
                     };
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => fail = true);
@@ -35,8 +36,9 @@ module.exports = async (guild, db) => {
                 };
 
                 if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission });
-                if (fail) alert?.edit("❌ Что-то пошло не так при подготовке канала.");
-                else alert?.edit(`🔰 Канал готов! **\`[${parseMs(Date.now() - preparationStart)}]\`**`) && setTimeout(() => alert.delete().catch(() => { }), 20000);
+                if (fail) alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
+                else alert?.edit(`🔰 Канал готов! **\`[${parseMs(Date.now() - preparationStart)}]\`**`).catch(() => null) &&
+                    setTimeout(() => deleteMessage(alert), 20000);
             };
         };
     } catch (e) {

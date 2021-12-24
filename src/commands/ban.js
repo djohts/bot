@@ -68,7 +68,7 @@ module.exports.run = async (interaction) => {
     if (time != -1) dmemb.addField("Время", parseMs(parseTime(interaction.options.getString("time"))), true);
     if (reason?.length) dmemb.addField("Причина", reason);
 
-    await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => { });
+    await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
 
     await interaction.guild.bans.create(user.id, {
         reason: interaction.user.tag + (reason?.length ? ": " + reason : ""),

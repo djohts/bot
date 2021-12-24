@@ -19,7 +19,7 @@ module.exports.voicesJoin = async (member, channel) => {
         }]
     }).then((ch) => {
         member.voice.setChannel(ch.id) && guilddb.setOnObject("voices", ch.id, member.user.id);
-    }).catch(() => { });
+    }).catch(() => null);
 };
 
 module.exports.voicesLeave = async (member, channel) => {
@@ -54,6 +54,6 @@ module.exports.voicesSwitch = async (member, oldChannel, newChannel) => {
             }]
         }).then((ch) => {
             member.voice.setChannel(ch.id) && guilddb.setOnObject("voices", ch.id, member.user.id);
-        }).catch(() => { });
+        }).catch(() => null);
     };
 };

@@ -12,7 +12,7 @@ module.exports = (client) => {
         if (channelId && messageId) {
             const channel = client.channels.resolve(channelId);
             if (!channel) return;
-            const message = await channel.messages.fetch(messageId).catch(() => { });
+            const message = await channel.messages.fetch(messageId).catch(() => null);
             if (!message) return;
 
             const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);
@@ -30,7 +30,7 @@ module.exports = (client) => {
                     description,
                     timestamp: Date.now()
                 }]
-            }).catch(() => { });
+            }).catch(() => null);
         }
     }));
 };
