@@ -21,7 +21,8 @@ module.exports = async (client) => {
             const voice = client.channels.cache.get(voiceChannel);
             const text = client.channels.cache.get(textChannel);
 
-            if (!voice.members.filter((m) => m.user.id != client.user.id).size) return text.send("Все участники покинули голосовой канал. Останавливаю плеер.");
+            if (!voice.members.filter((m) => m.user.id != client.user.id).size)
+                return text.send("Все участники покинули голосовой канал. Останавливаю плеер.") && player.destroy();
 
             text.send(`Играю:\n\`${track.title}\``);
         })
