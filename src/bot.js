@@ -46,7 +46,7 @@ require("discord-logs")(client);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 global.parse = require("./constants/resolvers").parseTime;
-global.msToTime = require("./constants/time").msToTime;
+global.parseMs = require("pretty-ms");
 module.exports.client = client;
 global.client = client;
 global.db = db;

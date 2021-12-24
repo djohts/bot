@@ -29,7 +29,8 @@ module.exports = {
 };
 
 const { CommandInteraction, MessageEmbed } = require("discord.js");
-const { parseTime, getPermissionLevel, msToTime } = require("../constants/");
+const { parseTime, getPermissionLevel } = require("../constants/");
+const parseMs = require("pretty-ms");
 const db = require("../database/")();
 
 module.exports.run = async (interaction) => {
@@ -64,7 +65,7 @@ module.exports.run = async (interaction) => {
         )
         .setTitle("Вы были забанены")
         .addField("Модератор", `${interaction.user.toString()} (**${interaction.user.tag.replace("*", "\\*")}**)`, true);
-    if (time != -1) dmemb.addField("Время", msToTime(parseTime(interaction.options.getString("time"))), true);
+    if (time != -1) dmemb.addField("Время", parseMs(parseTime(interaction.options.getString("time"))), true);
     if (reason?.length) dmemb.addField("Причина", reason);
 
     await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => { });

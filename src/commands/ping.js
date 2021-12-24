@@ -7,14 +7,14 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
-const { msToTime } = require("../constants/");
+const parseMs = require("pretty-ms");
 const db = require("../database/")();
 
 module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     const gdb = await db.guild(interaction.guild.id);
-    const uptime = msToTime(interaction.client.uptime);
+    const uptime = parseMs(interaction.client.uptime);
     const api = Math.round(interaction.client.ws.ping);
     const server = Date.now() - interaction.createdTimestamp;
 
