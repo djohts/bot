@@ -99,9 +99,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 const linkRate = new Set();
 const linkCache = require("./constants/badlinks");
 client.on("messageCreate", async (message) => {
-    if (message.channel.id == "920602710196244530") {
-        //message.crosspost();
-    };
     if (
         !message.guild ||
         message.webhookId ||
