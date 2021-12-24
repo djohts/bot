@@ -17,9 +17,9 @@ module.exports = async (client) => {
         .on("trackStuck", console.log)
         .on("nodeConnect", ({ options }) => console.log(`${client.s} Lava ${options.host}:${options.port} connected.`))
         .on("nodeError", ({ options }, error) => console.log(`${client.s} Lava ${options.host}:${options.port} had an error: ${error.message}`))
-        .on("trackStart", ({ voiceChannel, textChannel }, track) => {
-            const voice = client.channels.cache.get(voiceChannel);
-            const text = client.channels.cache.get(textChannel);
+        .on("trackStart", (player, track) => {
+            const voice = client.channels.cache.get(player.voiceChannel);
+            const text = client.channels.cache.get(player.textChannel);
 
             if (!voice.members.filter((m) => m.user.id != client.user.id).size)
                 return text.send("Все участники покинули голосовой канал. Останавливаю плеер.") && player.destroy();
