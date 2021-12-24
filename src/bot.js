@@ -104,7 +104,8 @@ client.on("messageCreate", async (message) => {
     };
     if (
         !message.guild ||
-        message.webhookId
+        message.webhookId ||
+        message.author.bot
     ) return;
 
     const gdb = await db.guild(message.guild.id);
