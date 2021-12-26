@@ -5,11 +5,11 @@ const dbCache = new Map(), dbSaveQueue = new Map();
 
 const guildObject = {
     guildid: "",
-    //
+    // moderation data
     voices: {},
     mutes: {},
     bans: {},
-    //
+    // counting
     channel: "",
     count: 0,
     user: "",
@@ -18,7 +18,9 @@ const guildObject = {
     message: "",
     users: {},
     liveboard: {},
-    log: {}
+    log: {},
+    // buttonroles
+    cbrs: {}
 };
 
 const guildSchema = Schema(guildObject, { minimize: true });

@@ -5,7 +5,7 @@ const dbCache = new Map(), dbSaveQueue = new Map();
 const globalObject = {
     maintenance: Boolean(),
     premiumServers: [],
-    brMessages: {}
+    brms: {}
 };
 
 const globalSchema = Schema(globalObject, { minimize: true });
