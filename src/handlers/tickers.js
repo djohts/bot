@@ -18,7 +18,7 @@ module.exports = async (client = new Client) => {
 
 async function updatePresence(client = new Client) {
     const gc = await client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
-    let text = `intents | ${gc} guilds`;
+    let text = `150? -> | ${gc} guilds`;
     return client.user.setPresence({
         status: "idle",
         activities: [{ type: "PLAYING", name: text }],
