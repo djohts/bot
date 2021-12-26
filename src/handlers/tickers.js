@@ -3,7 +3,9 @@ const db = require("../database/")();
 const config = require("../../config");
 const fetch = require("node-fetch");
 
-module.exports = async (client = new Client) => {
+module.exports = async (client) => {
+    if (!(client instanceof Client)) return;
+
     await updatePresence(client);
 
     setInterval(() => updatePresence(client), 60 * 1000);
@@ -16,7 +18,9 @@ module.exports = async (client = new Client) => {
     };
 };
 
-async function updatePresence(client = new Client) {
+async function updatePresence(client) {
+    if (!(client instanceof Client)) return;
+
     const gc = await client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
     let text = `150? -> | ${gc} guilds`;
     return client.user.setPresence({
@@ -25,7 +29,9 @@ async function updatePresence(client = new Client) {
     });
 };
 
-async function postStats(client = new Client) {
+async function postStats(client) {
+    if (!(client instanceof Client)) return;
+
     const sdcToken = "SDC " + config.sdcToken;
     const route = "https://api.server-discord.com/v2";
     const shardCount = client.shard.count;
@@ -67,19 +73,19 @@ async function checkMutes(client) {
 
         ids = ids.filter((key) => mutes[key] != -1 && mutes[key] < Date.now());
 
-        return ids.map(async (key) => {
+        await Promise.all(ids.map(async (key) => {
             const member = await guild.members.fetch(key).catch(() => null);
             if (
                 !member ||
                 !guild.me.permissions.has("MANAGE_ROLES")
             ) return;
 
-            return member.roles.remove(gsdb.get().muteRole).then(() => {
+            await member.roles.remove(gsdb.get().muteRole).then(() => {
                 return gdb.removeFromObject("mutes", key);
             }).catch(() => {
                 return gdb.removeFromObject("mutes", key);
             });
-        });
+        }));
     }));
     setTimeout(() => checkMutes(client), 2000);
 };
@@ -97,15 +103,15 @@ async function checkBans(client) {
 
         ids = ids.filter((key) => bans[key] != -1 && bans[key] < Date.now());
 
-        return ids.map(async (key) => {
+        await Promise.all(ids.map(async (key) => {
             if (!guild.me.permissions.has("BAN_MEMBERS")) return;
 
-            guild.bans.remove(key).then(() => {
+            await guild.bans.remove(key).then(() => {
                 return gdb.removeFromObject("bans", key);
             }).catch(() => {
                 return gdb.removeFromObject("bans", key);
             });
-        });
+        }));
     }));
     setTimeout(() => checkBans(client), 5000);
 };
