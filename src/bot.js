@@ -82,7 +82,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
         }]
     }), 1000);
     await Promise.all(client.guilds.cache.map(async (guild) => {
-        if (!config.dev) await prepareGuild(guild, db);
+        await prepareGuild(guild, db);
         disabledGuilds.delete(guild.id);
         completed++;
     }));
@@ -244,9 +244,9 @@ client.on("guildDelete", async (guild) => {
     }));
 });
 
-if (!config.dev) client.on("voiceChannelJoin", voicesJoin);
-if (!config.dev) client.on("voiceChannelLeave", voicesLeave);
-if (!config.dev) client.on("voiceChannelSwitch", voicesSwitch);
+client.on("voiceChannelJoin", voicesJoin);
+client.on("voiceChannelLeave", voicesLeave);
+client.on("voiceChannelSwitch", voicesSwitch);
 client.on("error", (err) => console.error(`${shard} Client error. ${err}`));
 client.on("rateLimit", (rateLimitInfo) => console.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
 client.on("shardDisconnected", () => console.warn(`${shard} Disconnected.`));
