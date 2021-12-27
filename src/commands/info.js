@@ -17,7 +17,17 @@ let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memo
 module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
-    const botId = interaction.client.user.id;
+    const invite = interaction.client.generateInvite({
+        scopes: ["bot", "applications.commands"],
+        permissions: [
+            "VIEW_CHANNEL", "SEND_MESSAGES", "SEND_MESSAGES_IN_THREADS",
+            "READ_MESSAGE_HISTORY", // basic
+            "KICK_MEMBERS", "BAN_MEMBERS", "MANAGE_ROLES", "VIEW_AUDIT_LOG", // moderation
+            "MANAGE_CHANNELS", "MOVE_MEMBERS", // temporary vcs
+            "CONNECT", "SPEAK", "PRIORITY_SPEAKER", // music
+            "CREATE_INSTANT_INVITE", "ADMINISTRATOR" // misc
+        ]
+    });
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 5000;
 
@@ -72,7 +82,7 @@ module.exports.run = async (interaction) => {
                 {
                     name: "🌐 Ссылки",
                     value: [
-                        `[📥 Пригласить бота](https://discord.com/oauth2/authorize?client_id=${botId}&scope=bot%20applications.commands&permissions=1007021151)`,
+                        `[📥 Пригласить бота](${invite})`,
                         "[📥 Сервер поддержки](https://discord.gg/AaS4dwVHyA)"
                     ].join("\n"),
                     inline: false
