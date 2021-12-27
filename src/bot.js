@@ -101,7 +101,6 @@ const linkCache = require("./constants/badlinks");
 client.on("messageCreate", async (message) => {
     if (
         !message.guild ||
-        message.webhookId ||
         message.author.bot
     ) return;
 
