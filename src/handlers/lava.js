@@ -21,13 +21,13 @@ module.exports = async (client) => {
             const voice = client.channels.cache.get(player.voiceChannel);
             const text = client.channels.cache.get(player.textChannel);
 
-            if (!voice.members.filter((m) => m.user.id != client.user.id).size)
-                return text.send("Все участники покинули голосовой канал. Останавливаю плеер.") && player.destroy();
+            if (!voice?.members.filter((m) => m.user.id != client.user.id).size)
+                return text?.send("Все участники покинули голосовой канал. Останавливаю плеер.") && player.destroy();
 
             text.send(`Играю:\n\`${track.title}\``);
         })
         .on("queueEnd", (player) => {
-            client.channels.cache.get(player.textChannel).send("Очередь пуста. Останавливаю плеер.");
+            client.channels.cache.get(player.textChannel)?.send("Очередь пуста. Останавливаю плеер.");
 
             player.destroy();
         })
