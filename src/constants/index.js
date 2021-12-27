@@ -1,5 +1,6 @@
 const { GuildMember } = require("discord.js");
 const config = require("../../config");
+const db = require("../database/")();
 
 module.exports = Object.assign(
     require("./callbacks"),
@@ -22,9 +23,11 @@ module.exports.getPermissionLevel = (member) => {
 module.exports.onlyUnique = (value, index, self) => self.indexOf(value) == index;
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-module.exports.generateID = (alreadyGenerated = [""]) => {
+module.exports.generateID = () => {
     let id;
-    while (!id || alreadyGenerated.includes(id)) {
+    const { generatedIds } = db.global.get();
+
+    while (!id || generatedIds.includes(id)) {
         id = "";
         for (let i = 0; i < 10; i++) id = id + chars[Math.floor(Math.random() * chars.length)];
     };

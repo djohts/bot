@@ -46,7 +46,7 @@ module.exports.run = async (interaction) => {
                 ephemeral: true
             });
 
-        const flowId = generateID(Object.keys(flows));
+        const flowId = generateID();
         const channel = await interaction.guild.channels.create("dob-flow-editor", {
             permissionOverwrites: [
                 {
@@ -125,7 +125,10 @@ module.exports.run = async (interaction) => {
         const success = await flowWalkthrough(interaction.guild, interaction.user, channel, newFlow, generateEmbed, pinned);
 
         channel.delete();
-        if (success) gdb.setOnObject("flows", flowId, newFlow);
+        if (success) {
+            gdb.setOnObject("flows", flowId, newFlow);
+            db.global.addToArray("generatedIds", flowId);
+        };
         return interaction;
     } else if (cmd === "delete") {
         const flowId = interaction.options.getString("id");
@@ -133,6 +136,7 @@ module.exports.run = async (interaction) => {
             return interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
 
         gdb.removeFromObject("flows", flowId);
+        db.global.removeFromArray("generatedIds", flowId);
 
         return interaction.reply({
             content: `✅ Поток \`${flowId}\` был удалён.`,
