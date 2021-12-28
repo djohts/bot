@@ -207,10 +207,10 @@ module.exports.flowWalkthrough = async (guild, author, channel, newFlow, generat
                 } else messagesToDelete.push(await channel.send("❌ Вы должны указать как минимум один триггер и одно действие!"));
             }
             else if (command == "cancel") editing = false;
-            else if (command == "help") messagesToDelete.push(await channel.send(`🔗 Проверьте закреплённое сообщение для помощи! ${pinned.url}`));
-            else if (command != "#") messagesToDelete.push(await channel.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));
+            else if (["help", "?"].includes(command)) messagesToDelete.push(await channel.send(`🔗 Проверьте закреплённое сообщение для помощи! ${pinned.url}`));
+            else messagesToDelete.push(await channel.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));
 
-            if (command != "#" && editing) setTimeout(() => channel.bulkDelete(messagesToDelete), 5000);
+            if (editing) setTimeout(() => channel.bulkDelete(messagesToDelete), 5000);
         } catch (e) {
             editing = false;
             console.log(e);
