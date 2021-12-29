@@ -48,7 +48,7 @@ module.exports.run = async (interaction) => {
         filter: (i) => i.customId == "modules_menu" && i.user.id == interaction.user.id,
         componentType: "SELECT_MENU",
         time: 60 * 1000,
-        idle: 10 * 1000
+        idle: 30 * 1000
     });
     collector.on("collect", () => collector.stop("abc"));
     collector.on("end", async (a, r) => {
