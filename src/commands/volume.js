@@ -27,14 +27,16 @@ module.exports.run = async (interaction) => {
         interaction.guild.me.voice.channel &&
         interaction.member.voice.channel.id != interaction.guild.me.voice.channel.id
     ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
-    await interaction.deferReply();
 
-    const player = client.manager.create({
-        guild: interaction.guildId
-    });
+    const player = client.manager.get(interaction.guildId);
+    if (!player) {
+        return await interaction.reply({
+            content: "❌ На этом сервере ничего не играет.",
+            ephemeral: true
+        });
+    };
 
-    if (player.playing || player.queue.totalSize) {
-        interaction.editReply(`Новая громкость - \`${interaction.options.getInteger("volume")}%\``);
-        player.setVolume(interaction.options.getInteger("volume"));
-    } else interaction.editReply("❌ Плеер на паузе или не играет.") && player.destroy();
+    return await interaction.reply(`Новая громкость - \`${interaction.options.getInteger("volume")}%\``).then(() =>
+        player.setVolume(interaction.options.getInteger("volume"))
+    );
 };

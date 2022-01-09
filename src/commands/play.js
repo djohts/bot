@@ -37,15 +37,19 @@ module.exports.run = async (interaction) => {
         selfDeafen: true
     });
 
-    player.connect();
-    if (player.queue.totalSize > 10) return interaction.editReply("❌ Размер очереди не может превышать 10 треков.");
+    if (player.state != "CONNECTED") player.connect();
+    if ((player.queue.totalSize + (res.tracks[0].length || 1)) > 25) return await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");
     else player.queue.add(res.tracks[0]);
+    await interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
 
-    if (!player.playing && !player.paused && !player.queue.size) player.play();
-    else if (
+    if (
         !player.playing &&
         !player.paused &&
-        player.queue.totalSize == res.tracks.length
+        (
+            !player.queue.size ||
+            (
+                player.queue.totalSize == res.tracks.length
+            )
+        )
     ) player.play();
-    interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
 };

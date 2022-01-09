@@ -20,19 +20,16 @@ module.exports.run = async (interaction) => {
         interaction.guild.me.voice.channel &&
         interaction.member.voice.channel.id != interaction.guild.me.voice.channel.id
     ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
-    await interaction.deferReply();
 
-    const player = client.manager.create({
-        guild: interaction.guildId
-    });
+    const player = client.manager.get(interaction.guildId);
+    if (!player) {
+        return await interaction.reply({
+            content: "❌ На этом сервере ничего не играет.",
+            ephemeral: true
+        });
+    };
 
-    if (player.playing || player.queue.totalSize) {
-        player.trackRepeat ? (() => {
-            player.setTrackRepeat(false);
-            interaction.editReply("Повтор выключен.");
-        })() : (() => {
-            player.setTrackRepeat(true);
-            interaction.editReply("Повтор включён.");
-        })();
-    } else interaction.editReply("❌ Плеер на паузе или не играет.") && player.destroy();
+    player.trackRepeat
+        ? await interaction.reply("Повтор выключен.").then(() => player.setTrackRepeat(false))
+        : await interaction.reply("Повтор включён.").then(() => player.setTrackRepeat(true));
 };
