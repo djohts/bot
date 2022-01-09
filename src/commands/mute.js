@@ -64,7 +64,7 @@ module.exports.run = async (interaction) => {
     });
 
     return await interaction.reply({
-        content: `✅ ${member.user.toString()} был успешно замьючен.` +
+        content: `✅ ${member.user} был успешно замьючен.` +
             (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
         ephemeral: (guilddb.get().channel == interaction.channel.id)
     });
