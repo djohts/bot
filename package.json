@@ -23,18 +23,18 @@
     },
     "dependencies": {
         "@discordjs/rest": "^0.2.0-canary.0",
-        "bufferutil": "^4.0.5",
-        "discord-api-types": "^0.26.0",
+        "bufferutil": "^4.0.6",
+        "discord-api-types": "^0.26.1",
         "discord-logs": "^2.0.1",
-        "discord.js": "^13.5.0",
+        "discord.js": "^13.5.1",
         "erela.js": "^2.3.3",
         "erela.js-spotify": "^1.2.0",
         "express": "^4.17.2",
-        "mongoose": "^6.1.4",
+        "mongoose": "^6.1.5",
         "node-fetch": "^2.6.6",
         "nodejs-better-console": "^1.0.2",
         "pretty-ms": "^7.0.1",
-        "utf-8-validate": "^5.0.7",
+        "utf-8-validate": "^5.0.8",
         "zlib-sync": "^0.1.7"
     }
 }
