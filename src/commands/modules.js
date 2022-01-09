@@ -70,7 +70,7 @@ module.exports.run = async (interaction) => {
         const newModules = a.first()?.values;
 
         if (newModules.includes("embed") && newModules.includes("webhook"))
-            return a.first().update({
+            return await a.first().update({
                 content: "Модули **Embed** и **Webhook** несовместимы.",
                 components: [{
                     type: 1,
