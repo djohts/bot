@@ -1,7 +1,9 @@
 const bulks = new Map(), rates = new Map();
 const { Message } = require("discord.js");
 
-module.exports.deleteMessage = (message = new Message) => {
+module.exports.deleteMessage = (message) => {
+    if (!(message instanceof Message)) return;
+
     const rate = rates.get(message.channel?.id) || 0;
     rates.set(message.channel?.id, rate + 1);
 
