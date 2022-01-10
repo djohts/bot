@@ -3,7 +3,7 @@ const { deleteMessage } = require("../../handlers/utils");
 
 module.exports = async (interaction) => {
     if (!(interaction instanceof ButtonInteraction)) return;
-    if (["DEFAULT", "REPLY"].includes(interaction.message.type)) {
+    if (interaction.message.type == "REPLY") {
         if (
             interaction.user.id != (await interaction.channel.messages.fetch(interaction.message.reference.messageId).then((m) => m.author.id))
         ) return interaction.reply({ content: "❌ Вы не можете использовать это.", ephemeral: true });
