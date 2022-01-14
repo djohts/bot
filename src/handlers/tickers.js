@@ -22,7 +22,7 @@ async function updatePresence(client) {
     if (!(client instanceof Client)) return;
 
     const gc = await client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
-    let text = `150? -> | ${gc} guilds`;
+    let text = `200? -> | ${gc} guilds`;
     return client.user.setPresence({
         status: "idle",
         activities: [{ type: "PLAYING", name: text }],
