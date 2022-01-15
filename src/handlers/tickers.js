@@ -1,7 +1,6 @@
 const { Client } = require("discord.js");
 const db = require("../database/")();
 const config = require("../../config");
-const fetch = require("node-fetch");
 
 module.exports = async (client) => {
     if (!(client instanceof Client)) return;
@@ -11,11 +10,6 @@ module.exports = async (client) => {
     setInterval(() => updatePresence(client), 60 * 1000);
     await checkMutes(client);
     await checkBans(client);
-
-    if (config.sdcToken && client.shardId == 0) {
-        await postStats(client);
-        setInterval(() => postStats(client), 60 * 60 * 1000);
-    };
 };
 
 async function updatePresence(client) {
@@ -26,36 +20,6 @@ async function updatePresence(client) {
     return client.user.setPresence({
         status: "idle",
         activities: [{ type: "PLAYING", name: text }],
-    });
-};
-
-async function postStats(client) {
-    if (!(client instanceof Client)) return;
-
-    const sdcToken = "SDC " + config.sdcToken;
-    const route = "https://api.server-discord.com/v2";
-    const shardCount = client.shard.count;
-    const guildCount = await client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, curr) => prev + curr, 0));
-    const botUser = client.user;
-
-    await fetch(route + `/bots/${botUser.id}/stats`, {
-        method: "post",
-        body: JSON.stringify({
-            shards: shardCount,
-            servers: guildCount
-        }),
-        headers: {
-            "Content-type": "application/json",
-            "Authorization": sdcToken
-        }
-    }).then(async (res) => {
-        let a;
-        try {
-            a = await res.json();
-        } catch {
-            a = res.headers;
-        };
-        console.log("[SDC API] Posted stats for " + botUser.tag, a);
     });
 };
 
