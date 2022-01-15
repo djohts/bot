@@ -38,7 +38,7 @@ async function checkMutes(client) {
         ids = ids.filter((key) => mutes[key] != -1 && mutes[key] < Date.now());
 
         await Promise.all(ids.map(async (key) => {
-            const member = await guild.members.fetch(key).catch(() => null);
+            const member = await guild.members.fetch(key).catch(() => false);
             if (
                 !member ||
                 !guild.me.permissions.has("MANAGE_ROLES")
@@ -51,7 +51,7 @@ async function checkMutes(client) {
             });
         }));
     }));
-    setTimeout(() => checkMutes(client), 2000);
+    setTimeout(async () => await checkMutes(client), 2000);
 };
 
 async function checkBans(client) {
@@ -77,5 +77,5 @@ async function checkBans(client) {
             });
         }));
     }));
-    setTimeout(() => checkBans(client), 5000);
+    setTimeout(async () => await checkBans(client), 5000);
 };
