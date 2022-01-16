@@ -14,9 +14,8 @@ module.exports.run = async (message, args = [""]) => {
         let evaled = await eval(content);
         if (typeof evaled != "string") evaled = require("util").inspect(evaled);
 
-        if (evaled.length > 2000) message.react("✅").catch(() => null);
-        else message.reply({
-            content: "```js\n" + evaled + "\n```",
+        message.reply({
+            content: `\`\`\`\`js\n${evaled}\n\`\`\``,
             components: [{
                 type: 1,
                 components: [{
@@ -28,14 +27,14 @@ module.exports.run = async (message, args = [""]) => {
                     custom_id: "reply:delete"
                 }]
             }]
-        });
+        }).catch(() => message.react("✅").catch(() => false));
     } catch (e) {
         let err;
         if (typeof e == "string") err = e.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
         else err = e;
 
         message.reply({
-            content: "```fix\n" + err + "\n```",
+            content: `\`\`\`\`fix\n${err}\n\`\`\``,
             components: [{
                 type: 1,
                 components: [{
@@ -48,6 +47,6 @@ module.exports.run = async (message, args = [""]) => {
                     custom_id: "reply:delete"
                 }]
             }]
-        });
+        }).catch(() => message.react("✅").catch(() => false));
     };
 };
