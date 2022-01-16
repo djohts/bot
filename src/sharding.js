@@ -25,10 +25,7 @@ let botInfo = {};
 if (config.port) {
     const api = express();
 
-    setInterval(updateBotInfo, 5000);
-
-    api.get("/", (_, res) => res.json(botInfo));
-    api.get("/newest", async (_, res) => res.json(await updateBotInfo()));
+    api.get("/shardinfo", async (_, res) => res.json(await updateBotInfo()));
 
     api.listen(config.port);
 };
@@ -56,7 +53,7 @@ async function updateBotInfo() {
         return info;
     }, { shards: {} }));
     newBotInfo.lastUpdate = Date.now();
-    return botInfo = newBotInfo;
+    return newBotInfo;
 };
 
 async function postStats() {
