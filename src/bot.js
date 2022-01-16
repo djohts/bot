@@ -107,7 +107,7 @@ client.on("messageCreate", async (message) => {
     const gdb = await db.guild(message.guild.id);
     const gsdb = await db.settings(message.guild.id);
 
-    if (gdb.get().mutes[message.author.id] && gsdb.get().delMuted) return deleteMessage(message);
+    if (Object.keys(gdb.get().mutes).includes(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
 
     if (gsdb.get().detectScamLinks && linkCache.filter((i) => i.length && message.content?.replaceAll(/ |[а-я]/gi, "").includes(i))?.length) {
         if (!linkRate.has(message.author.id)) await message.channel.send(
@@ -148,18 +148,15 @@ client.on("messageDelete", async (deleted) => {
 client.on("channelDelete", async (channel) => {
     if (!(channel instanceof Discord.VoiceChannel)) return;
 
-    const player = client.manager.create({
-        guild: channel.guildId
-    });
+    const player = client.manager.get(channel.guild.id);
 
     if (
-        player.voiceChannel == channel.id &&
-        (player.playing || player.queue.totalSize)
+        player &&
+        player.voiceChannel == channel.id
     ) {
         client.channels.cache.get(player.textChannel)?.send("Канал был удалён. Останавливаю плеер.");
         player.destroy();
     };
-    if (!(player.playing || player.queue.totalSize)) player.destroy();
 });
 
 client.on("messageUpdate", async (original, updated) => {
