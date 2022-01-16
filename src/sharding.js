@@ -59,7 +59,6 @@ async function updateBotInfo() {
 async function postStats() {
     const guildCount = await manager.broadcastEval((bot) => bot.guilds.cache.size).then((x) => x.reduce((prev, now) => prev + now, 0));
     const shardCount = manager.shards.size;
-    console.log(`GC: ${guildCount}\nSC: ${shardCount}`);
 
     await fetch("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
         method: "post",
@@ -78,7 +77,7 @@ async function postStats() {
         } catch {
             a = res.headers;
         };
-        console.log("[SDC API] Posted stats.\n", a);
+        console.log("[SDC API] Posted stats. ", a);
     });
 };
 
