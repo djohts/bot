@@ -15,7 +15,7 @@ module.exports.run = async (message, args = [""]) => {
         if (typeof evaled != "string") evaled = require("util").inspect(evaled);
 
         message.reply({
-            content: `\`\`\`\`js\n${evaled}\n\`\`\``,
+            content: `\`\`\`js\n${evaled}\n\`\`\``,
             components: [{
                 type: 1,
                 components: [{
@@ -34,7 +34,7 @@ module.exports.run = async (message, args = [""]) => {
         else err = e;
 
         message.reply({
-            content: `\`\`\`\`fix\n${err}\n\`\`\``,
+            content: `\`\`\`fix\n${err}\n\`\`\``,
             components: [{
                 type: 1,
                 components: [{
