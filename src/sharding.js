@@ -3,6 +3,7 @@ const { ShardingManager } = require("discord.js");
 const fetch = require("node-fetch");
 const config = require("../config");
 const express = require("express");
+const cors = require("cors");
 
 const manager = new ShardingManager(__dirname + "/bot.js", {
     totalShards: config.shards || "auto",
@@ -20,10 +21,11 @@ manager.on("shardCreate", async (shard) => {
     console.log(`[Manager] Shard ${shard.id} is starting.`);
 });
 
-let botInfo = {};
-
 if (config.port) {
     const api = express();
+    api.use(cors({
+        origin: "*"
+    }));
 
     api.get("/shardinfo", async (_, res) => res.json(await updateBotInfo()));
 
@@ -33,7 +35,7 @@ if (config.port) {
 if (config.sdcToken) {
     new Promise((res) => setTimeout(() => res(), 5 * 60 * 1000)).then(async () => {
         await postStats();
-        setInterval(postStats, 10 * 60 * 1000);
+        setInterval(postStats, 30 * 60 * 1000);
     });
 };
 
@@ -71,14 +73,12 @@ async function postStats() {
             "Authorization": `SDC ${config.sdcToken}`
         }
     }).then(async (res) => {
-        let a;
         try {
-            a = await res.json();
+            await res.json();
         } catch {
-            a = res.headers;
+            console.log("[SDC API] Error. ", res.headers);
         };
-        console.log("[SDC API] Posted stats. ", a);
     });
 };
 
-manager.spawn({ delay: 10 * 1000, timeout: -1 });
+manager.spawn({ delay: 6 * 1000, timeout: -1 });
