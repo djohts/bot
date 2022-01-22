@@ -7,7 +7,7 @@ module.exports = {
 };
 
 const { CommandInteraction } = require("discord.js");
-const parseMs = require("pretty-ms");
+const prettyms = require("pretty-ms");
 const db = require("../database/")();
 
 module.exports.run = async (interaction) => {
@@ -20,7 +20,7 @@ module.exports.run = async (interaction) => {
         ephemeral: (gdb.get().channel == interaction.channel.id),
         fetchReply: true
     }).then(async (m) => {
-        const uptime = parseMs(interaction.client.uptime);
+        const uptime = prettyms(interaction.client.uptime);
         const api = Math.round(interaction.guild.shard.ping);
         const server = Date.now() - m.createdTimestamp;
 

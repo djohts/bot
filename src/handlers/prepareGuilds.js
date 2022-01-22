@@ -1,6 +1,6 @@
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const { deleteMessage } = require("./utils");
-const parseMs = require("pretty-ms");
+const prettyms = require("pretty-ms");
 
 module.exports = async (guild, db) => {
     const gdb = await db.guild(guild.id);
@@ -27,7 +27,7 @@ module.exports = async (guild, db) => {
                     if (!messages.size) processing = false;
                     else {
                         await channel.bulkDelete(messages).catch(() => fail = true);
-                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${parseMs(Date.now() - preparationStart)}]\`**`).catch(() => null);
+                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => null);
                     };
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => fail = true);
@@ -37,7 +37,7 @@ module.exports = async (guild, db) => {
 
                 if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission });
                 if (fail) alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
-                else alert?.edit(`🔰 Канал готов! **\`[${parseMs(Date.now() - preparationStart)}]\`**`).catch(() => null) &&
+                else alert?.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => null) &&
                     setTimeout(() => deleteMessage(alert), 20000);
             };
         };

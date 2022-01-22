@@ -1,6 +1,7 @@
 require("nodejs-better-console").overrideConsole();
 const Discord = require("discord.js");
 const config = require("../config");
+const prettyms = require("pretty-ms");
 const commandHandler = require("./handlers/commands");
 const interactionHandler = require("./handlers/interactions/");
 const lavaHandler = require("./handlers/lava");
@@ -33,7 +34,7 @@ const client = new Discord.Client({
         status: "dnd",
         activities: [{
             type: "WATCHING",
-            name: "загрузочный экран",
+            name: "Loading...",
         }]
     }
 });
@@ -47,7 +48,7 @@ require("discord-logs")(client);
 
 global.sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 global.parse = require("./constants/resolvers").parseTime;
-global.parseMs = require("pretty-ms");
+global.prettyms = require("pretty-ms");
 module.exports.client = client;
 global.client = client;
 global.db = db;
@@ -94,7 +95,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     client.loading = false;
     await tickers(client);
 
-    console.log(`${shard} Ready in ${((Date.now() - start) / 1000).toFixed(3)}s`);
+    console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);
 });
 
 const linkRate = new Set();
