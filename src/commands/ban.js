@@ -51,6 +51,8 @@ module.exports.run = async (interaction) => {
     if (getPermissionLevel(member) >= 1)
         return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
 
+    await interaction.deferReply();
+
     let dmsent = false;
     let time = 0;
     let reason = interaction.options.getString("reason")?.trim();
@@ -59,16 +61,16 @@ module.exports.run = async (interaction) => {
     else time = Date.now() + parseTime(interaction.options.getString("time"));
 
     const dmemb = new MessageEmbed()
-        .setAuthor(
-            interaction.guild.name,
-            interaction.guild.iconURL({ dynamic: true })
-        )
+        .setAuthor({
+            name: interaction.guild.name,
+            iconURL: interaction.guild.iconURL({ dynamic: true })
+        })
         .setTitle("Вы были забанены")
-        .addField("Модератор", `${interaction.user.toString()} (**${interaction.user.tag.replace("*", "\\*")}**)`, true);
+        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replace("*", "\\*")}**)`, true);
     if (time != -1) dmemb.addField("Время", parseMs(parseTime(interaction.options.getString("time"))), true);
     if (reason?.length) dmemb.addField("Причина", reason);
 
-    await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
+    await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => false);
 
     await interaction.guild.bans.create(user.id, {
         reason: interaction.user.tag + (reason?.length ? ": " + reason : ""),
@@ -76,14 +78,11 @@ module.exports.run = async (interaction) => {
     }).then(() => {
         guilddb.setOnObject("bans", user.id, time);
     }).catch(() => {
-        interaction.reply({
-            content: "❌ Произошла неизвестная ошибка.",
-            ephemeral: true
-        });
+        interaction.editReply({ content: "❌ Произошла неизвестная ошибка." });
     });
 
-    return interaction.reply({
-        content: `✅ ${user.toString()} был успешно забанен.` +
+    return interaction.editReply({
+        content: `✅ ${user} был успешно забанен.` +
             (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
     });
 };
