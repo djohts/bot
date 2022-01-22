@@ -9,21 +9,22 @@ const prepareGuild = require("./handlers/prepareGuilds");
 const tickers = require("./handlers/tickers");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
+        GuildScheduledEventManager: 0,
         GuildStickerManager: 0,
         GuildInviteManager: 0,
         GuildEmojiManager: 0,
         GuildBanManager: {
-            sweepInterval: 30,
+            sweepInterval: 600,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
-                lifetime: 5
+                lifetime: 2 * 60 * 60 // 2 hours
             })
         },
         MessageManager: {
             sweepInterval: 600,
-            maxSize: 1024,
+            maxSize: 2048,
             keepOverLimit: (m) => m.author.id != m.client.user.id,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
-                lifetime: 86400
+                lifetime: 2 * 24 * 60 * 60 // 2 days
             })
         }
     }),
