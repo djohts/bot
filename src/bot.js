@@ -112,15 +112,17 @@ client.on("messageCreate", async (message) => {
     if (Object.keys(gdb.get().mutes).includes(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
 
     if (gsdb.get().detectScamLinks && linkCache.filter((i) => i.length && message.content?.replaceAll(/[а-я]/gi, "").includes(i))?.length) {
-        if (!linkRate.has(message.author.id)) await message.channel.send(
-            `${message.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
-            (message.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")
-        ).then((m) => setTimeout(() => deleteMessage(m), 10 * 1000));
+        if (!linkRate.has(message.author.id)) {
+            await message.channel.send(
+                `${message.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
+                (message.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")
+            ).then((m) => setTimeout(() => deleteMessage(m), 10 * 1000));
+
+            linkRate.add(message.author.id);
+            setTimeout(() => linkRate.delete(message.author.id), 5000);
+        };
 
         deleteMessage(message);
-
-        if (!linkRate.has(message.author.id)) linkRate.add(message.author.id);
-        setTimeout(() => linkRate.delete(message.author.id), 5000);
     };
 
     global.gdb = gdb;
