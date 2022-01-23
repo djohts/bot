@@ -32,7 +32,7 @@
         "erela.js-spotify": "^1.2.0",
         "express": "^4.17.2",
         "mongoose": "^6.1.7",
-        "node-fetch": "^2.6.6",
+        "node-fetch": "^2.6.7",
         "nodejs-better-console": "^1.0.2",
         "pretty-ms": "^7.0.1",
         "utf-8-validate": "^5.0.8",
