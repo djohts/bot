@@ -27,6 +27,10 @@ module.exports = {
                 {
                     name: "Временные голосовые каналы.",
                     value: "voices"
+                },
+                {
+                    name: "Проверка сообщений на вредоносные ссылки.",
+                    value: "detectScamLinks"
                 }
             ]
         }]
@@ -96,15 +100,15 @@ module.exports.run = async (interaction) => {
                 timestamp: Date.now(),
                 fields: [
                     {
-                        name: "Удаление сообщений замьюченых участников",
-                        value: gset.get().delMuted ?
+                        name: "Удаление закреплённых сообщений",
+                        value: gset.get().purgePinned ?
                             "<:online:887393623845507082> **`Включено`**" :
                             "<:dnd:887393623786803270> **`Выключено`**",
                         inline: true
                     },
                     {
-                        name: "Удаление закреплённых сообщений",
-                        value: gset.get().purgePinned ?
+                        name: "Удаление сообщений замьюченых участников",
+                        value: gset.get().delMuted ?
                             "<:online:887393623845507082> **`Включено`**" :
                             "<:dnd:887393623786803270> **`Выключено`**",
                         inline: true
@@ -127,6 +131,13 @@ module.exports.run = async (interaction) => {
                             "**`Не установлен`**",
                         inline: true
                     },
+                    {
+                        name: "Проверка сообщений на вредоносные ссылки.",
+                        value: gset.get().detectScamLinks ?
+                            "<:online:887393623845507082> **`Включено`**" :
+                            "<:dnd:887393623786803270> **`Выключено`**",
+                        inline: true
+                    }
                 ]
             }],
             ephemeral: (gdb.get().channel == interaction.channel.id)
@@ -170,7 +181,19 @@ module.exports.run = async (interaction) => {
                 content: idk,
                 ephemeral: (gdb.get().channel == interaction.channel.id)
             });
-        };
+        } else if (type == "detectScamLinks") {
+            gset.get().detectScamLinks ? (() => {
+                gset.set("detectScamLinks", false);
+                idk = "**`Проверка сообщений на вредоносные ссылки`** была выключена.";
+            })() : (() => {
+                gset.set("detectScamLinks", true);
+                idk = "**`Проверка сообщений на вредоносные ссылки`** была включена.";
+            })();
+            return await interaction.reply({
+                content: idk,
+                ephemeral: (gdb.get().channel == interaction.channel.id)
+            });
+        };;
     } else if (cmd == "muterole") {
         await gset.set("muteRole", interaction.options.getRole("role").id);
         return interaction.reply({
