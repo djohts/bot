@@ -24,7 +24,7 @@ manager.on("shardCreate", async (shard) => {
 if (config.port) {
     const api = express();
     api.use(cors({
-        origin: config.allowedOrigins || "*"
+        origin: config.allowedOrigins
     }));
 
     api.get("/shardinfo", async (_, res) => res.json(await updateBotInfo()));
