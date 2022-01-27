@@ -77,5 +77,5 @@ async function checkBans(client) {
             });
         }));
     }));
-    setTimeout(async () => await checkBans(client), 5000);
+    setTimeout(async () => await checkBans(client), 7000);
 };
