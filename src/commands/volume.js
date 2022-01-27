@@ -8,7 +8,7 @@ module.exports = {
         type: 4,
         required: true,
         min_value: 1,
-        max_value: 100
+        max_value: 200
     }],
     slash: true
 };
