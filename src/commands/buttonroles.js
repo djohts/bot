@@ -11,7 +11,7 @@ module.exports = {
             description: "Канал в котором будет создано РПК.",
             type: 7,
             required: true,
-            channel_types: [0]
+            channel_types: [0, 10]
         }, {
             name: "role",
             description: "Роль, которая будет выдаваться.",
