@@ -20,7 +20,9 @@ const guildObject = {
     liveboard: {},
     log: {},
     // buttonroles
-    cbrs: {}
+    brcs: {},
+    brms: {},
+    brs: {}
 };
 
 const guildSchema = Schema(guildObject, { minimize: true });

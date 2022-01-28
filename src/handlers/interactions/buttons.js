@@ -1,5 +1,6 @@
 const { ButtonInteraction } = require("discord.js");
 const { deleteMessage } = require("../../handlers/utils");
+const buttonRoles = require("../buttonroles");
 
 module.exports = async (interaction) => {
     if (!(interaction instanceof ButtonInteraction)) return;
@@ -15,4 +16,6 @@ module.exports = async (interaction) => {
     };
 
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message);
+
+    if (interaction.customId.startsWith("br:")) return buttonRoles(interaction);
 };
