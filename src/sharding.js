@@ -2,8 +2,6 @@ require("nodejs-better-console").overrideConsole();
 const { ShardingManager } = require("discord.js");
 const fetch = require("node-fetch");
 const config = require("../config");
-const express = require("express");
-const cors = require("cors");
 
 const manager = new ShardingManager(__dirname + "/bot.js", {
     totalShards: config.shards || "auto",
@@ -22,14 +20,6 @@ manager.on("shardCreate", async (shard) => {
 });
 
 if (config.port) {
-    const api = express();
-    api.use(cors({
-        origin: config.allowedOrigins
-    }));
-
-    api.get("/shardinfo", async (_, res) => res.json(await updateBotInfo()));
-
-    api.listen(config.port);
 };
 
 if (config.sdcToken) {
@@ -37,25 +27,6 @@ if (config.sdcToken) {
         await postStats();
         setInterval(postStats, 30 * 60 * 1000);
     });
-};
-
-async function updateBotInfo() {
-    const newBotInfo = await manager.broadcastEval((bot) => ({
-        status: bot.ws.status,
-        guilds: bot.guilds.cache.size,
-        cachedUsers: bot.users.cache.size,
-        users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
-        ping: bot.ws.ping,
-        loading: bot.loading
-    })).then((results) => results.reduce((info, next, index) => {
-        for (const [key, value] of Object.entries(next)) {
-            if (["guilds", "cachedUsers", "users"].includes(key)) info[key] = (info[key] || 0) + value;
-        };
-        info.shards[index] = next;
-        return info;
-    }, { shards: {} }));
-    newBotInfo.lastUpdate = Date.now();
-    return newBotInfo;
 };
 
 async function postStats() {
