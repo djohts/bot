@@ -24,7 +24,6 @@
     "dependencies": {
         "@discordjs/rest": "^0.3.0",
         "bufferutil": "^4.0.6",
-        "cors": "^2.8.5",
         "discord-api-types": "^0.26.1",
         "discord-logs": "^2.0.1",
         "discord-oauth2": "^2.9.0",
@@ -40,8 +39,8 @@
         "node-fetch": "^2.6.7",
         "nodejs-better-console": "^1.0.2",
         "path": "^0.12.7",
+        "point-of-view": "^5.0.0",
         "pretty-ms": "^7.0.1",
-        "react": "^17.0.2",
         "url": "^0.11.0",
         "utf-8-validate": "^5.0.8",
         "zlib-sync": "^0.1.7"
