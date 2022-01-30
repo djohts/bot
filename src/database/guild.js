@@ -22,7 +22,9 @@ const guildObject = {
     // buttonroles
     brcs: {},
     brms: {},
-    brs: {}
+    brs: {},
+    // dash
+    admins: []
 };
 
 const guildSchema = Schema(guildObject, { minimize: true });
