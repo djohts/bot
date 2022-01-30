@@ -66,7 +66,7 @@ module.exports.run = async (interaction) => {
             iconURL: interaction.guild.iconURL({ dynamic: true })
         })
         .setTitle("Вы были забанены")
-        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replace("*", "\\*")}**)`, true);
+        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replaceAll("*", "\\*")}**)`, true);
     if (time != -1) dmemb.addField("Время", prettyms(parseTime(interaction.options.getString("time"))), true);
     if (reason?.length) dmemb.addField("Причина", reason);
 
