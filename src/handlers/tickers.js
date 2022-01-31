@@ -1,12 +1,12 @@
 const { Client } = require("discord.js");
 const db = require("../database/")();
-const config = require("../../config");
 
 module.exports = async (client) => {
     if (!(client instanceof Client)) return;
 
+    updateAdmins(client);
+
     await updatePresence(client);
-    await updateAdmins(client);
     await checkMutes(client);
     await checkBans(client);
 
