@@ -93,7 +93,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     disabledGuilds = false;
     client.loading = false;
-    await tickers(client);
+    tickers(client);
 
     console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);
 });
