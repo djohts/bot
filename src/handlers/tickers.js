@@ -6,6 +6,7 @@ module.exports = async (client) => {
     if (!(client instanceof Client)) return;
 
     await updatePresence(client);
+    await updateAdmins(client);
     await checkMutes(client);
     await checkBans(client);
 
@@ -88,7 +89,10 @@ async function updateAdmins(client) {
         if (!guild.available) return;
 
         const gdb = await db.guild(guild.id);
-        const admins = await guild.members.fetch().then((members) => members.filter((m) => !m.user.bot && m.permissions.has("ADMINISTRATOR")));
+        const admins = await guild.members.fetch({
+            time: 4 * 60 * 1000
+        }).then((members) => members.filter((m) => !m.user.bot && m.permissions.has("ADMINISTRATOR")));
+        console.log(`${guild.memberCount} - ${guild.members.cache.size} - ${admins.size}`);
 
         gdb.set("admins", admins.map((_, id) => id));
     }));
