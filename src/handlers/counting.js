@@ -76,6 +76,7 @@ module.exports = async (message, gdb) => {
         countingMessage,
         gdb
     };
+
     for (const flowID of flowIDs) try {
         const flow = flows[flowID]; let success;
         for (const trigger of flow.triggers.slice(0, limitTriggers).filter((t) => t)) {
