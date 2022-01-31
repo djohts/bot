@@ -4,14 +4,11 @@ const db = require("../database/")();
 module.exports = async (client) => {
     if (!(client instanceof Client)) return;
 
-    updateAdmins(client);
-
     await updatePresence(client);
     await checkMutes(client);
     await checkBans(client);
 
     setInterval(() => updatePresence(client), 60 * 1000);
-    setInterval(() => updateAdmins(client), 5 * 60 * 1000);
 };
 
 async function updatePresence(client) {
@@ -80,20 +77,4 @@ async function checkBans(client) {
         }));
     }));
     setTimeout(async () => await checkBans(client), 7000);
-};
-
-async function updateAdmins(client) {
-    if (!(client instanceof Client)) return;
-
-    await Promise.all(client.guilds.cache.map(async (guild) => {
-        if (!guild.available) return;
-
-        const gdb = await db.guild(guild.id);
-        const admins = await guild.members.fetch({
-            time: 4 * 60 * 1000
-        }).then((members) => members.filter((m) => !m.user.bot && m.permissions.has("ADMINISTRATOR")));
-        console.log(`${guild.memberCount} - ${guild.members.cache.size} - ${admins.size}`);
-
-        gdb.set("admins", admins.map((_, id) => id));
-    }));
 };
