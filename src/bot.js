@@ -88,13 +88,13 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
         disabledGuilds.delete(guild.id);
         completed++;
     }));
+    disabledGuilds = false;
     clearInterval(presenceInterval);
     console.log(`${shard} All ${client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
 
-    disabledGuilds = false;
-    client.loading = false;
-    tickers(client);
+    await tickers(client);
 
+    client.loading = false;
     console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);
 });
 
