@@ -17,12 +17,14 @@ let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memo
 module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
-    const invite = interaction.client.generateInvite({
-        scopes: ["bot", "applications.commands"],
-        permissions: 858910174
-    });
+    const invite = [
+        "https://discord.com/oauth2/authorize",
+        `?client_id=${interaction.client.user.id}`,
+        "&scope=bot%20applications.commands",
+        "&permissions=550614986206"
+    ].join("");
     if (nextUpdate < Date.now()) {
-        nextUpdate = Date.now() + 5000;
+        nextUpdate = Date.now() + 10 * 1000;
 
         guilds = await interaction.client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, val) => prev + val, 0));
         users = await interaction.client.shard.broadcastEval((bot) =>
@@ -32,10 +34,10 @@ module.exports.run = async (interaction) => {
 
         const { rss, heapUsed } = process.memoryUsage();
 
-        memoryGlobal = rss / (1048576); // 1024 * 1024
+        memoryGlobal = rss / 1024 / 1024;
         if (memoryGlobal >= 1024) memoryUsageGlobal = (memoryGlobal / 1024).toFixed(2) + "GB";
         else memoryUsageGlobal = memoryGlobal.toFixed(2) + "MB";
-        memory = heapUsed / (1048576); // 1024 * 1024
+        memory = heapUsed / 1024 / 1024;
         if (memory >= 1024) memoryUsage = (memory / 1024).toFixed(2) + "GB";
         else memoryUsage = memory.toFixed(2) + "MB";
     };
