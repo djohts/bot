@@ -6,7 +6,6 @@ module.exports = async (client) => {
     if (!(client instanceof Client)) return;
 
     await updatePresence(client);
-    await updateAdmins(client);
     await checkMutes(client);
     await checkBans(client);
 
