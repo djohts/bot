@@ -132,8 +132,8 @@ client.on("messageCreate", async (message) => {
     let { channel } = gdb.get();
 
     if (message.content.startsWith(config.prefix) || message.content.match(`^<@!?${client.user.id}> `)) return commandHandler(message, config.prefix, gdb, db);
-    if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => null);
     if (channel == message.channel.id) return countingHandler(message);
+    if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => false);
 });
 
 client.on("messageDelete", async (deleted) => {
