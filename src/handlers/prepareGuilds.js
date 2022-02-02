@@ -10,9 +10,9 @@ module.exports = async (guild, db) => {
     try {
         let channel = guild.channels.cache.get(channelId);
         if (channel) {
-            let messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => null);
+            let messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => false);
             if (messages.size) {
-                alert = await channel.send("💢 Идёт подготовка канала.").catch(() => null);
+                alert = await channel.send("💢 Идёт подготовка канала.").catch(() => false);
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone) || { allow: new Set(), deny: new Set() };
                 let oldPermission = null;
                 if (defaultPermissions.allow.has("SEND_MESSAGES")) oldPermission = true;
@@ -23,11 +23,11 @@ module.exports = async (guild, db) => {
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
                 while (processing && !fail) {
-                    messages = messages.filter((m) => m.id != alert.id);
+                    messages = messages.filter((m) => m.id != alert.id && m.id != messageId);
                     if (!messages.size) processing = false;
                     else {
                         await channel.bulkDelete(messages).catch(() => fail = true);
-                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => null);
+                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => false);
                     };
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => fail = true);
@@ -36,8 +36,8 @@ module.exports = async (guild, db) => {
                 };
 
                 if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission });
-                if (fail) alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
-                else alert?.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => null) &&
+                if (fail) await alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => false);
+                else await alert?.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => false) &&
                     setTimeout(() => deleteMessage(alert), 20000);
             };
         };

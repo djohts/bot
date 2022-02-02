@@ -1,7 +1,9 @@
 const { getPermissionLevel, limitFlows, flow: { triggers: allTriggers, actions: allActions }, limitTriggers, limitActions } = require("../constants/");
 const { deleteMessage } = require("./utils");
+const db = require("../database/")();
 
-module.exports = async (message, gdb) => {
+module.exports = async (message) => {
+    const gdb = await db.guild(message.guild.id);
     const permissionLevel = getPermissionLevel(message.member), content = message.content;
     if (content.startsWith("!") && permissionLevel >= 1) return;
     let { count, user, modules, flows, users: scores, mutes } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
@@ -36,7 +38,6 @@ module.exports = async (message, gdb) => {
     };
 
     count++;
-    gdb.addToCount(message.member);
 
     let countingMessage = message;
     if (modules.includes("webhook")) try {
@@ -67,7 +68,7 @@ module.exports = async (message, gdb) => {
         deleteMessage(message);
     } catch (e) { };
 
-    gdb.set("message", countingMessage.id);
+    gdb.addToCount(message.member, countingMessage);
 
     const countData = {
         count,
@@ -78,7 +79,8 @@ module.exports = async (message, gdb) => {
     };
 
     for (const flowID of flowIDs) try {
-        const flow = flows[flowID]; let success;
+        const flow = flows[flowID];
+        let success;
         for (const trigger of flow.triggers.slice(0, limitTriggers).filter((t) => t)) {
             success = await allTriggers[trigger.type].check(countData, trigger.data);
             if (success) break;

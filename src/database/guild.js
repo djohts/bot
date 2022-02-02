@@ -113,10 +113,12 @@ module.exports = () => (async (guildid) => {
 
             return dbCache.get(guildid);
         },
-        addToCount: (member) => {
+        addToCount: (member, message) => {
             let guildCache = dbCache.get(guildid);
             guildCache.count++;
             guildCache.user = member.id;
+
+            guildCache.message = message.id;
 
             if (!guildCache.users[member.id]) guildCache.users[member.id] = 0;
             guildCache.users[member.id]++;
@@ -128,7 +130,7 @@ module.exports = () => (async (guildid) => {
             };
             guildCache.log[dateFormat] += 1;
 
-            save(guildid, ["count", "user", "users", "log"]);
+            save(guildid, ["count", "user", "users", "log", "message"]);
 
             return dbCache.get(guildid);
         }
