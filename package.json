@@ -17,7 +17,7 @@
     "bugs": {
         "url": "https://github.com/itzJOHv/djohbot/issues"
     },
-    "homepage": "https://github.com/itzJOHv/djohbot#readme",
+    "homepage": "https://github.com/itzJOHv/djohbot",
     "engines": {
         "node": ">=16"
     },
@@ -31,6 +31,7 @@
         "ejs": "^3.1.6",
         "erela.js": "^2.3.3",
         "erela.js-spotify": "^1.2.0",
+        "erlpack": "github:discord/erlpack",
         "express": "^4.17.2",
         "fastify": "^3.27.1",
         "fastify-cookie": "^5.5.0",
