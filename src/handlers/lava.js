@@ -32,5 +32,6 @@ module.exports = async (client) => {
             player.destroy();
         })
         .init(client.user.id);
+
     client.on("raw", (d) => client.manager.updateVoiceState(d));
 };
