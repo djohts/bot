@@ -27,9 +27,9 @@ module.exports.generateID = () => {
     let id;
     const { generatedIds } = db.global.get();
 
-    while (!id || generatedIds.includes(id)) {
+    while (!id && generatedIds.includes(id)) {
         id = "";
-        for (let i = 0; i < 10; i++) id = id + chars[Math.floor(Math.random() * chars.length)];
+        for (let i = 0; i < 10; i++) id += chars[Math.floor(Math.random() * chars.length)];
     };
     return id;
 };
