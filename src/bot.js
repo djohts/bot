@@ -98,8 +98,8 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);
 });
 
+const { checkMessage } = require("stop-discord-phishing");
 const linkRate = new Set();
-const linkCache = require("./constants/badlinks");
 client.on("messageCreate", async (message) => {
     if (
         !message.guild ||
@@ -111,7 +111,7 @@ client.on("messageCreate", async (message) => {
 
     if (Object.keys(gdb.get().mutes).includes(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
 
-    if (gsdb.get().detectScamLinks && linkCache.filter((i) => i.length && message.content?.replaceAll(/[а-я]/gi, "").includes(i))?.length) {
+    if (gsdb.get().detectScamLinks && await checkMessage(message.content, true)) {
         if (!linkRate.has(message.author.id)) {
             await message.channel.send(
                 `${message.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
@@ -122,7 +122,7 @@ client.on("messageCreate", async (message) => {
             setTimeout(() => linkRate.delete(message.author.id), 5000);
         };
 
-        deleteMessage(message);
+        return deleteMessage(message);
     };
 
     global.gdb = gdb;
