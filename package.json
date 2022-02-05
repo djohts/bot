@@ -41,6 +41,7 @@
         "nodejs-better-console": "^1.0.2",
         "point-of-view": "^5.1.0",
         "pretty-ms": "^7.0.1",
+        "stop-discord-phishing": "^0.2.0",
         "utf-8-validate": "^5.0.8",
         "zlib-sync": "^0.1.7"
     }
