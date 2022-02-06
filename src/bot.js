@@ -166,16 +166,18 @@ client.on("channelDelete", async (channel) => {
 client.on("messageUpdate", async (original, updated) => {
     const gdb = await db.guild(updated.guild.id);
     const gsdb = await db.settings(updated.guild.id);
-    if (gsdb.get().detectScamLinks && linkCache.filter((i) => i.length && updated.content?.replaceAll(/ |[а-я]/gi, "").includes(i))?.length) {
-        if (!linkRate.has(updated.author.id)) await updated.channel.send(
-            `${updated.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
-            (updated.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")
-        ).then((m) => setTimeout(() => deleteMessage(m), 10 * 1000));
+    if (gsdb.get().detectScamLinks && await checkMessage(updated.content, true)) {
+        if (!linkRate.has(updated.author.id)) {
+            await updated.channel.send(
+                `${updated.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
+                (updated.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")
+            ).then((m) => setTimeout(() => deleteMessage(updated), 10 * 1000));
 
-        deleteMessage(updated);
+            linkRate.add(updated.author.id);
+            setTimeout(() => linkRate.delete(updated.author.id), 5000);
+        };
 
-        if (!linkRate.has(updated.author.id)) linkRate.add(updated.author.id);
-        setTimeout(() => linkRate.delete(updated.author.id), 5000);
+        return deleteMessage(updated);
     };
 
     let { modules, channel, message, count } = gdb.get();
