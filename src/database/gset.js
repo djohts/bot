@@ -5,11 +5,11 @@ const dbCache = new Map(), dbSaveQueue = new Map();
 const gSetObject = {
     guildid: "",
     //
-    delMuted: Boolean(),
-    purgePinned: Boolean(),
-    detectScamLinks: Boolean(),
+    delMuted: false,
+    purgePinned: false,
+    detectScamLinks: false,
     muteRole: "",
-    voices: { enabled: Boolean(), lobby: "", parent: "" }
+    voices: { enabled: false, lobby: "", parent: "" }
 };
 
 const gSetSchema = Schema(gSetObject, { minimize: true });

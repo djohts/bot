@@ -3,7 +3,8 @@ const { Schema, model } = require("mongoose");
 const dbCache = new Map(), dbSaveQueue = new Map();
 
 const globalObject = {
-    maintenance: Boolean(),
+    maintenance: false,
+    debug: false,
     generatedIds: []
 };
 
