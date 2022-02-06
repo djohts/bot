@@ -1,5 +1,5 @@
 const { Client } = require("discord.js");
-const { formatScore } = require("../constants/index");
+const { formatScore } = require("../constants/");
 const db = require("../database/")();
 
 module.exports = (client) => {
@@ -10,17 +10,16 @@ module.exports = (client) => {
         const { liveboard: { channel: channelId, message: messageId }, users } = gdb.get();
 
         if (channelId && messageId) {
-            const channel = client.channels.resolve(channelId);
+            const channel = await client.channels.fetch(channelId).catch(() => false);
             if (!channel) return;
-            const message = await channel.messages.fetch(messageId).catch(() => null);
+            const message = await channel.messages.fetch(messageId).catch(() => false);
             if (!message) return;
 
-            const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);
-            const top = sorted.slice(0, 25);
+            const top = Object.keys(users).sort((a, b) => users[b] - users[a]).slice(0, 25);
             const leaderboard = top.map((id, index) => formatScore(id, index, users, message.author.id));
             const description = leaderboard.join("\n");
 
-            message.edit({
+            return await message.edit({
                 content: null,
                 embeds: [{
                     author: {
@@ -30,7 +29,7 @@ module.exports = (client) => {
                     description,
                     timestamp: Date.now()
                 }]
-            }).catch(() => null);
+            }).catch(() => false);
         }
     }));
 };
