@@ -36,7 +36,7 @@
         "fastify": "^3.27.1",
         "fastify-cookie": "^5.5.0",
         "fastify-session": "^5.2.1",
-        "mongoose": "^6.2.0",
+        "mongoose": "^6.2.1",
         "node-fetch": "^2.6.7",
         "nodejs-better-console": "^1.0.2",
         "point-of-view": "^5.1.0",
