@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/util/bootstrap.min.css">
+</head>
+
+<%- include("../partials/nav.ejs") %>
+
+    <body>
+        <div id="guildList" style="text-align: center; margin-top: 100px; color: #fff;">
+            <!--
+                <div class="this-guild">
+                    <img src="url" class="guild-icon" />
+
+                    <div class="manage-guild">
+                        <a id="this-href" href="/dashboard/guild/id">
+                            <button class="gen-button" id="manage-button">Manage</button>
+                        </a>
+                    </div>
+                </div>
+                -->
+        </div>
+    </body>
+    <script>
+        window.onload = async () => {
+            await fetch("/api/user/guilds").then((r) => r.json()).then((r) => {
+                console.log(r)
+                document.getElementById("guildList").innerHTML = "не готово";
+            }).catch((e) => {
+                console.log(e);
+                document.getElementById("guildList").innerText = "произошла ашибка";
+            });
+        };
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0c10;
+        }
+
+        .guild-icon {
+            border-radius: 32px;
+            padding: 8px 8px;
+            width: 128px;
+            height: 128px;
+        }
+
+        .this-guild {
+            display: inline-block;
+            margin-left: 15px;
+            margin-top: 10px;
+            background: #1f2833;
+            border-radius: 24px;
+        }
+
+        #manage-button {
+            border: 0;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #1f2833;
+            color: #66fcf1;
+            font-size: 18px;
+            padding: 1px 10px;
+        }
+
+        #manage-button:hover {
+            background: #45a29e;
+            color: #ffffff;
+        }
+    </style>
+
+</html>

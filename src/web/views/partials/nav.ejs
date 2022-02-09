@@ -1,0 +1,83 @@
+<header class="header">
+    <nav class="navbar navbar-expand-lg fixed-top py-3">
+        <div class="container">
+            <a href="/" class="navbar-brand text-uppercase font-weight-bold">
+                <img style="border-radius: 24px; width: 64px; height: 64px;"
+                    src="https://cdn.discordapp.com/avatars/889214509544247306/bf97e7126038700abdea273003824d54.png">
+                djoh'o'bot
+            </a>
+
+            <div id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link text-uppercase font-weight-bold">Dash</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/stats" class="nav-link text-uppercase font-weight-bold">Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <% if (!user) { %>
+                            <a href="/api/login" class="nav-link text-uppercase font-weight-bold">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                            <% } else { %>
+                                <a href="/api/logout" class="nav-link text-uppercase font-weight-bold">
+                                    <%= `${user.username}#${user.discriminator}` %>
+                                </a>
+                                <% } %>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+    $(function () {
+        $(window).on("scroll", () => {
+            if ($(window).scrollTop() > 10) {
+                $(".navbar").addClass("active");
+            } else {
+                $(".navbar").removeClass("active");
+            };
+        });
+    });
+</script>
+
+<style>
+    .navbar {
+        transition: all 0.4s;
+    }
+
+    .navbar .nav-link {
+        color: #66fcf1;
+    }
+
+    .navbar .nav-link:hover,
+    .navbar .nav-link:focus {
+        color: #66fcf1;
+    }
+
+    .navbar .navbar-brand {
+        color: #66fcf1;
+    }
+
+    .navbar.active {
+        background: #45a29e;
+        box-shadow: 1px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar.active .nav-link {
+        color: #fff;
+    }
+
+    .navbar.active .nav-link:hover,
+    .navbar.active .nav-link:focus {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .navbar.active .navbar-brand {
+        color: #fff;
+    }
+</style>

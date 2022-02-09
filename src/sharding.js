@@ -20,6 +20,7 @@ manager.on("shardCreate", async (shard) => {
 });
 
 if (config.port) {
+    require("./web/")(manager);
 };
 
 if (config.sdcToken) {
