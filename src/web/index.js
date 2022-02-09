@@ -10,7 +10,7 @@ module.exports = async (sharding) => {
     const app = fastify({ logger: true });
     app.register(fastifyCookie);
     app.register(fastifySession, {
-        secret: "quZcGyQwEkxdWftZzgzkbWLPn7t5U27RG3FFRNnJraACHYbGF89pKXrDA5TEfb8L",
+        secret: config.secretsomething,
         saveUninitialized: true,
         cookie: {
             secure: false,
