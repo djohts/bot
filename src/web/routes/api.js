@@ -57,8 +57,8 @@ module.exports = (fastify, _, done) => {
         if (!user) return res.status(401).send();
 
         const allGuilds = await sharding.broadcastEval((bot, { userId }) => bot.guilds.cache.filter(async (g) => {
-            const member = await g.members.fetch(userId).then(() => true).catch(() => false);
-            return member;
+            //const member = await g.members.fetch(userId).then(() => true).catch(() => false);
+            return g.members.cache.has(userId);
         }).map((g) => g), { context: { userId: user.id } }).then((a) => a.flat().map((guild) => ({
             id: guild.id,
             name: guild.name,
@@ -67,8 +67,8 @@ module.exports = (fastify, _, done) => {
                 : "https://cdn.iconscout.com/icon/free/png-256/discord-3215389-2673807.png"
         })));
         const managedGuilds = await sharding.broadcastEval((bot, { userId }) => bot.guilds.cache.filter(async (g) => {
-            const member = await g.members.fetch(userId).then((m) => m.permissions.has("ADMINISTRATOR")).catch(() => false);
-            return member;
+            //const member = await g.members.fetch(userId).then((m) => m.permissions.has("ADMINISTRATOR")).catch(() => false);
+            return g.members.cache.get(userId)?.permissions.has("ADMINISTRATOR");
         }).map((g) => g), { context: { userId: user.id } }).then((a) => a.flat().map((guild) => ({
             id: guild.id,
             name: guild.name,
