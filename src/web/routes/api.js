@@ -50,6 +50,8 @@ module.exports = (fastify, _, done) => {
     });
 
     fastify.get("/user/guilds", async (req, res) => {
+        return res.status(423).send();
+
         const { sharding } = require("../index");
         if (!(sharding instanceof ShardingManager)) return;
 
