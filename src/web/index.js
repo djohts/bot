@@ -7,7 +7,7 @@ const fastifyCookie = require("fastify-cookie");
 module.exports = async (sharding) => {
     module.exports.sharding = sharding;
     if (!(sharding instanceof ShardingManager)) return;
-    const app = fastify({ logger: true });
+    const app = fastify();
     app.register(fastifyCookie);
     app.register(fastifySession, {
         secret: config.secretsomething,
