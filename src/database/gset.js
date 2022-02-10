@@ -14,7 +14,6 @@ const gSetObject = {
 
 const gSetSchema = Schema(gSetObject, { minimize: true });
 const GSet = model("GSet", gSetSchema);
-module.exports.GSet = GSet;
 global.GSet = GSet;
 
 const get = (guildid) => new Promise((resolve, reject) => GSet.findOne({ guildid }, (err, guild) => {
