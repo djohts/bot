@@ -11,8 +11,6 @@ const manager = new ShardingManager(__dirname + "/bot.js", {
 
 manager.on("shardCreate", async (shard) => {
     shard.on("message", (m) => {
-        console.log(`[Manager] Message recieved from Shard ${shard.id}: `, m);
-
         if (m == "respawn") {
             console.warn(`[Manager] Shard ${shard.id} has requested a restart.`);
             shard.respawn();
