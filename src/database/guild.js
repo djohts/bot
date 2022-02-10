@@ -27,7 +27,7 @@ const guildObject = {
 
 const guildSchema = Schema(guildObject, { minimize: true });
 const Guild = model("Guild", guildSchema);
-module.exports = Guild;
+module.exports.Guild = Guild;
 global.Guild = Guild;
 
 const get = (guildid) => new Promise((resolve, reject) => Guild.findOne({ guildid }, (err, guild) => {
