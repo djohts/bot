@@ -10,6 +10,7 @@ const globalObject = {
 
 const globalSchema = Schema(globalObject, { minimize: true });
 const Global = model("Global", globalSchema);
+module.exports = Global;
 global.Global = Global;
 
 const get = () => new Promise((resolve, reject) => Global.findOne({}, (err, global) => {
