@@ -11,19 +11,23 @@ const tickers = require("./handlers/tickers");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
         GuildScheduledEventManager: 0,
+        BaseGuildEmojiManager: 0,
+        ReactionUserManager: 0,
         GuildStickerManager: 0,
         GuildInviteManager: 0,
         GuildEmojiManager: 0,
+        GuildMemberManager: 8192,
+        UserManager: 32768,
         GuildBanManager: {
             sweepInterval: 600,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
-                lifetime: 2 * 60 * 60 // 2 hours
+                lifetime: 1 * 60 * 60 // 1 hour
             })
         },
         MessageManager: {
             sweepInterval: 600,
             maxSize: 2048,
-            keepOverLimit: (m) => m.author.id != m.client.user.id,
+            keepOverLimit: (m) => m.author.id == m.client.user.id,
             sweepFilter: Discord.LimitedCollection.filterByLifetime({
                 lifetime: 2 * 24 * 60 * 60 // 2 days
             })
