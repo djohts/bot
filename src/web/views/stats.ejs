@@ -35,16 +35,18 @@
         </div>
     </body>
     <script>
-        fetch("/api/shards").then((res) => res.json()).then((res) => {
-            document.getElementById("userCount").innerText = res["users"];
-            document.getElementById("guildCount").innerText = res["guilds"];
-            document.getElementById("shardCount").innerText = Object.keys(res["shards"]).length;
-        }).catch((e) => {
-            console.log(e);
-            document.getElementById("userCount").innerText = "null";
-            document.getElementById("guildCount").innerText = "null";
-            document.getElementById("shardCount").innerText = "null";
-        });
+        window.onload = async () => {
+            await fetch("/api/shards").then((res) => res.json()).then((res) => {
+                document.getElementById("userCount").innerText = res["users"];
+                document.getElementById("guildCount").innerText = res["guilds"];
+                document.getElementById("shardCount").innerText = Object.keys(res["shards"]).length;
+            }).catch((e) => {
+                console.log(e);
+                document.getElementById("userCount").innerText = "null";
+                document.getElementById("guildCount").innerText = "null";
+                document.getElementById("shardCount").innerText = "null";
+            });
+        };
     </script>
 
     <style>
