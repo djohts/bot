@@ -7,7 +7,7 @@ module.exports = async (interaction) => {
     const guild = interaction.guild;
     if (!guild.me.permissions.has("MANAGE_ROLES")) {
         return await interaction.reply({
-            content: "❌ У меня нет прав на управление ролями (в т.ч. их выдачу).",
+            content: "❌ У меня нет прав на изменение ролей.",
             ephemeral: true
         });
     };
@@ -28,18 +28,14 @@ module.exports = async (interaction) => {
     };
 
     if (interaction.member.roles.cache.has(role.id)) {
-        return await interaction.member.roles.remove(role).then(async () => {
-            return await interaction.editReply(`✅ Роль ${role} убрана.`);
-        }).catch(async (e) => {
+        await interaction.member.roles.remove(role).then(async () => await interaction.editReply(`✅ Роль ${role} убрана.`)).catch(async (e) => {
             console.log(e);
-            return await interaction.editReply("❌ Произошла неизвестная ошибка. Скажите Администрации связаться с разработчиком на сервере поддержки.");
+            await interaction.editReply("❌ Произошла неизвестная ошибка.");
         });
     } else {
-        return await interaction.member.roles.add(role).then(async () => {
-            return await interaction.editReply(`✅ Роль ${role} выдана.`);
-        }).catch(async (e) => {
+        await interaction.member.roles.add(role).then(async () => await interaction.editReply(`✅ Роль ${role} выдана.`)).catch(async (e) => {
             console.log(e);
-            return await interaction.editReply("❌ Произошла неизвестная ошибка. Скажите Администрации связаться с разработчиком на сервере поддержки.");
+            await interaction.editReply("❌ Произошла неизвестная ошибка.");
         });
     };
 };
