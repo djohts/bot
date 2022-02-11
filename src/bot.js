@@ -2,7 +2,6 @@ require("nodejs-better-console").overrideConsole();
 const Discord = require("discord.js");
 const config = require("../config");
 const prettyms = require("pretty-ms");
-const commandHandler = require("./handlers/commands");
 const interactionHandler = require("./handlers/interactions/");
 const lavaHandler = require("./handlers/lava");
 const countingHandler = require("./handlers/counting");
@@ -135,7 +134,6 @@ client.on("messageCreate", async (message) => {
 
     let { channel } = gdb.get();
 
-    if (message.content.startsWith(config.prefix) || message.content.match(`^<@!?${client.user.id}> `)) return commandHandler(message, config.prefix, gdb, db);
     if (channel == message.channel.id) return countingHandler(message);
     if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => false);
 });

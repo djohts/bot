@@ -1,9 +1,11 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "modules",
-    description: "Настроить модули счёта.",
-    permissionRequired: 2,
-    opts: [],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("modules")
+        .setDescription("Настроить модули счёта.")
+        .toJSON(),
+    permission: 2
 };
 
 const db = require("../database/")();

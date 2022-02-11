@@ -1,9 +1,11 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "stop",
-    description: "Остановить плеер?",
-    permissionRequired: 0,
-    opts: [],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("stop")
+        .setDescription("Остановить плеер.")
+        .toJSON(),
+    permission: 0
 };
 
 const { CommandInteraction } = require("discord.js");

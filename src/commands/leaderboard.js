@@ -1,9 +1,11 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "leaderboard",
-    description: "Список лидеров счёта.",
-    permissionRequired: 0,
-    opts: [],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("leaderboard")
+        .setDescription("Список лидеров счёта.")
+        .toJSON(),
+    permission: 0
 };
 
 const db = require("../database/")();

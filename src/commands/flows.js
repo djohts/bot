@@ -1,27 +1,17 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "flows",
-    description: "Настройки потоков.",
-    permissionRequired: 2,
-    opts: [{
-        name: "create",
-        description: "Создать новый поток.",
-        type: 1
-    }, {
-        name: "list",
-        description: "Посмотреть список созданных на этом сервере потоков.",
-        type: 1
-    }, {
-        name: "delete",
-        description: "Удалить ранее созданный поток.",
-        type: 1,
-        options: [{
-            name: "id",
-            description: "Id потока, который нужно удалить. (/flows list)",
-            type: 3,
-            required: true
-        }]
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("flows")
+        .setDescription("Настройки потоков.")
+        .addSubcommand((c) => c.setName("create").setDescription("Создать новый поток."))
+        .addSubcommand((c) => c.setName("list").setDescription("Посмотреть список созданных на этом сервере потоков."))
+        .addSubcommand((c) =>
+            c.setName("delete").setDescription("Удалить ранее созданный поток.")
+                .addStringOption((o) => o.setName("id").setDescription("Id потока, который нужно удалить. (/flows list)").setRequired(true))
+        )
+        .toJSON(),
+    permission: 2
 };
 
 const db = require("../database/")();

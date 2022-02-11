@@ -1,31 +1,15 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "ban",
-    description: "Забанить участника.",
-    permissionRequired: 1,
-    opts: [{
-        name: "user",
-        description: "Пользователь, которого надо забанить, или его ID.",
-        type: 6,
-        required: true
-    },
-    {
-        name: "time",
-        description: "Время, на которое участника надо забанить.",
-        type: 3
-    },
-    {
-        name: "reason",
-        description: "Причина выдачи бана.",
-        type: 3
-    },
-    {
-        name: "purgedays",
-        description: "Удаление сообщений пользователя за указанное время, в днях. От 1 до 7.",
-        type: 4,
-        min_value: 1,
-        max_value: 7
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("ban")
+        .setDescription("Забанить участника.")
+        .addUserOption((o) => o.setName("member").setDescription("Пользователь, которого надо забанить.").setRequired(true))
+        .addStringOption((o) => o.setName("duration").setDescription("Время, на которое участник будет забанен."))
+        .addStringOption((o) => o.setName("reason").setDescription("Причина выдачи бана."))
+        .addIntegerOption((o) => o.setName("purgedays").setDescription("Удаление сообщений пользователя за указанное время, в днях.").setMaxValue(7).setMinValue(1))
+        .toJSON(),
+    permission: 1
 };
 
 const { CommandInteraction, MessageEmbed } = require("discord.js");

@@ -1,21 +1,13 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "purge",
-    description: "Удалить указанное количество сообщений в канале.",
-    permissionRequired: 1,
-    opts: [{
-        name: "amount",
-        description: "Количество сообщений которое надо удалить. От 2 до 100.",
-        type: 4,
-        min_value: 2,
-        max_value: 100,
-        required: true
-    },
-    {
-        name: "member",
-        description: "Участник, чьи сообщения должны быть очищены.",
-        type: 6
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("purge")
+        .setDescription("Удалить указанное количество сообщений в канале.")
+        .addIntegerOption((o) => o.setName("amount").setDescription("Количество сообщений которое надо удалить.").setRequired(true).setMinValue(2).setMaxValue(100))
+        .addUserOption((o) => o.setName("member").setDescription("Участник, чьи сообщения должны быть очищены."))
+        .toJSON(),
+    permission: 1
 };
 
 const cooldowns = new Set();

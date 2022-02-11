@@ -1,52 +1,33 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    aliases: ["ev"],
-    permissionRequired: 5,
-    checkArgs: (args) => !!args.length
+    options: new SlashCommandBuilder()
+        .setName("eval")
+        .setDescription("Evaluate JavaScript.")
+        .addStringOption((o) => o.setName("script").setDescription("Script that'd be ran.").setRequired(true))
+        .toJSON(),
+    permission: 4
 };
 
-const { Message } = require("discord.js");
+const { CommandInteraction } = require("discord.js");
 
-module.exports.run = async (message, args = [""]) => {
-    if (!(message instanceof Message)) return;
+module.exports.run = async (interaction) => {
+    if (!(interaction instanceof CommandInteraction)) return;
 
-    let content = args.join(" ");
+    await interaction.deferReply();
+
     try {
-        let evaled = await eval(content);
+        let evaled = await eval(interaction.options.getString("script"));
         if (typeof evaled != "string") evaled = require("util").inspect(evaled);
 
-        message.reply({
-            content: `\`\`\`js\n${evaled}\n\`\`\``,
-            components: [{
-                type: 1,
-                components: [{
-                    type: 2,
-                    emoji: {
-                        name: "🗑"
-                    },
-                    style: 4,
-                    custom_id: "reply:delete"
-                }]
-            }]
-        }).catch(() => message.react("✅").catch(() => false));
+        if (evaled.length >= 2000) return await interaction.editReply("✅");
+
+        return await interaction.editReply(`\`\`\`js\n${evaled}\n\`\`\``);
     } catch (e) {
         let err;
-        if (typeof e == "string") err = e.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
+        if (typeof e == "string") err = e.replace(/`/g, "`" + String.fromCharCode(8203));
         else err = e;
 
-        message.reply({
-            content: `\`\`\`fix\n${err}\n\`\`\``,
-            components: [{
-                type: 1,
-                components: [{
-                    type: 2,
-                    emoji: {
-                        id: null,
-                        name: "🗑"
-                    },
-                    style: 4,
-                    custom_id: "reply:delete"
-                }]
-            }]
-        }).catch(() => message.react("✅").catch(() => false));
+        return await interaction.editReply(`\`\`\`fix\n${err}\n\`\`\``);
     };
 };

@@ -1,16 +1,12 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "volume",
-    description: "Установить громкость плеера?",
-    permissionRequired: 0,
-    opts: [{
-        name: "volume",
-        description: "Громкость.",
-        type: 4,
-        required: true,
-        min_value: 1,
-        max_value: 200
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("volume")
+        .setDescription("Установить громкость плеера.")
+        .addIntegerOption((o) => o.setName("volume").setDescription("Новая громкость плеера.").setRequired(true).setMinValue(1).setMaxValue(200))
+        .toJSON(),
+    permission: 0
 };
 
 const { CommandInteraction } = require("discord.js");

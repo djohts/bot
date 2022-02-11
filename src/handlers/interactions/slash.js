@@ -1,4 +1,4 @@
-const { CommandInteraction, Guild, Client } = require("discord.js");
+const { CommandInteraction, Client } = require("discord.js");
 const { getPermissionLevel } = require("../../constants/");
 
 module.exports = async (interaction = CommandInteraction) => {
@@ -10,7 +10,7 @@ module.exports = async (interaction = CommandInteraction) => {
         const commandFile = require(`../../commands/${commandName}.js`);
 
         const permissionLevel = getPermissionLevel(interaction.member);
-        if (permissionLevel < commandFile.permissionRequired) return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
+        if (permissionLevel < commandFile.permission) return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
 
         return commandFile.run(interaction);
     };
@@ -24,28 +24,19 @@ const commands = [];
 const rest = new REST({ version: "9" }).setToken(require("../../../config").token);
 
 module.exports.registerCommands = async (client = new Client) => {
-    return fs.readdir(__dirname + "/../../commands/", async (err, files) => {
-        if (err) return console.error(err);
+    const files = fs.readdirSync(__dirname + "/../../commands/");
 
-        for (let filename of files) {
-            let file = require(`../../commands/${filename}`);
-            const name = file.name || "";
+    for (let filename of files) {
+        let file = require(`../../commands/${filename}`);
 
-            if (file.slash && name.length) {
-                commands.push({
-                    name: name,
-                    description: file.description || "none",
-                    options: file.opts || null,
-                });
-            };
-        };
+        file.options ? commands.push(file.options) : "";
+    };
 
-        client.slashes = commands;
+    client.slashes = commands;
 
-        await Promise.all(client.guilds.cache.map(async (guild = new Guild) => {
-            return await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch((err) => {
-                if (!err.message.toLowerCase().includes("missing")) console.error(err);
-            });
-        }));
-    });
+    await Promise.all(client.guilds.cache.map(async (guild) => {
+        return await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch((err) => {
+            if (!err.message.toLowerCase().includes("missing")) console.error(err);
+        });
+    }));
 };

@@ -1,9 +1,11 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "skip",
-    description: "Пропустить текущий трек?",
-    permissionRequired: 0,
-    opts: [],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("skip")
+        .setDescription("Пропустить текущий трек.")
+        .toJSON(),
+    permission: 0
 };
 
 const { CommandInteraction } = require("discord.js");

@@ -1,9 +1,11 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "loop",
-    description: "Поставить трек на повтор?",
-    permissionRequired: 0,
-    opts: [],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("loop")
+        .setDescription("Поставить трек на повтор.")
+        .toJSON(),
+    permission: 0
 };
 
 const { CommandInteraction } = require("discord.js");
@@ -24,7 +26,7 @@ module.exports.run = async (interaction) => {
     const player = client.manager.get(interaction.guildId);
     if (!player) {
         return await interaction.reply({
-            content: "❌ На этом сервере ничего не играет.",
+            content: "❌ На этом сервере сейчас ничего не играет.",
             ephemeral: true
         });
     };

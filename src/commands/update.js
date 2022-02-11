@@ -1,12 +1,15 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "update",
-    permissionRequired: 5,
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("update")
+        .setDescription("Pull latest updates from GitHub.")
+        .toJSON(),
+    permission: 5
 };
 
 const { exec } = require("child_process");
 const { CommandInteraction } = require("discord.js");
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;

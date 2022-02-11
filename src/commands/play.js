@@ -1,14 +1,12 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "play",
-    description: "Слушать музыку?",
-    permissionRequired: 0,
-    opts: [{
-        name: "query",
-        description: "Трек, который вы хотите послушать.",
-        required: true,
-        type: 3
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("play")
+        .setDescription("Слушать музыку.")
+        .addStringOption((o) => o.setName("query").setDescription("Трек, который вы хотите послушать.").setRequired(true))
+        .toJSON(),
+    permission: 0
 };
 
 const { CommandInteraction } = require("discord.js");

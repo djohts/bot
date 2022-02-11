@@ -1,24 +1,14 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "mute",
-    description: "Замьютить участника.",
-    permissionRequired: 1,
-    opts: [{
-        name: "member",
-        description: "Участник, которому надо выдать мьют.",
-        type: 6,
-        required: true
-    },
-    {
-        name: "time",
-        description: "Время, на которое участнику надо выдать мьют.",
-        type: 3
-    },
-    {
-        name: "reason",
-        description: "Причина выдачи мьюта.",
-        type: 3
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("mute")
+        .setDescription("Замьютить участника.")
+        .addUserOption((o) => o.setName("member").setDescription("Участник, которому надо выдать мьют.").setRequired(true))
+        .addStringOption((o) => o.setName("time").setDescription("Время, на которое участнику надо выдать мьют."))
+        .addStringOption((o) => o.setName("reason").setDescription("Причина выдачи мьюта."))
+        .toJSON(),
+    permissionRequired: 1
 };
 
 const { CommandInteraction } = require("discord.js");

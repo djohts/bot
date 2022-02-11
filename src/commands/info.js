@@ -1,9 +1,11 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "info",
-    description: "Посмотреть информацию о боте.",
-    permissionRequired: 0,
-    opts: [],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("info")
+        .setDescription("Посмотреть информацию о боте.")
+        .toJSON(),
+    permission: 0
 };
 
 const { CommandInteraction } = require("discord.js");
@@ -45,44 +47,37 @@ module.exports.run = async (interaction) => {
     return await interaction.reply({
         embeds: [{
             title: `Информация о ${interaction.client.user.tag}`,
-            timestamp: Date.now(),
-            fields: [
-                {
-                    name: "💠 Хост",
-                    value: [
-                        `**ОС**: \`${platform}\``,
-                        `**Библиотека**: \`discord.js v${version}\``,
-                        `**Исп. ОЗУ**: \`${memoryUsageGlobal}\``
-                    ].join("\n"),
-                    inline: true
-                },
-                {
-                    name: "🌀 Статистика",
-                    value: [
-                        `**Кол-во серверов**: \`${guilds}\``,
-                        `**Кол-во юзеров**: \`${users}\``,
-                        `**Кол-во шардов**: \`${shardCount}\``
-                    ].join("\n"),
-                    inline: true
-                },
-                {
-                    name: `🔷 Этот шард (${interaction.guild.shardId})`,
-                    value: [
-                        `**Кол-во серверов**: \`${interaction.client.guilds.cache.size}\``,
-                        `**Кол-во юзеров**: \`${interaction.client.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)}\``,
-                        `**Исп. ОЗУ**: \`${memoryUsage}\``
-                    ].join("\n"),
-                    inline: true
-                },
-                {
-                    name: "🌐 Ссылки",
-                    value: [
-                        `[📥 Пригласить бота](${invite})`,
-                        "[📥 Сервер поддержки](https://discord.gg/AaS4dwVHyA)"
-                    ].join("\n"),
-                    inline: false
-                }
-            ]
+            fields: [{
+                name: "💠 Хост",
+                value: [
+                    `**ОС**: \`${platform}\``,
+                    `**Библиотека**: \`discord.js v${version}\``,
+                    `**Исп. ОЗУ**: \`${memoryUsageGlobal}\``
+                ].join("\n"),
+                inline: true
+            }, {
+                name: "🌀 Статистика",
+                value: [
+                    `**Кол-во серверов**: \`${guilds}\``,
+                    `**Кол-во юзеров**: \`${users}\``,
+                    `**Кол-во шардов**: \`${shardCount}\``
+                ].join("\n"),
+                inline: true
+            }, {
+                name: `🔷 Этот шард (${interaction.guild.shard.id})`,
+                value: [
+                    `**Кол-во серверов**: \`${interaction.client.guilds.cache.size}\``,
+                    `**Кол-во юзеров**: \`${interaction.client.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)}\``,
+                    `**Исп. ОЗУ**: \`${memoryUsage}\``
+                ].join("\n"),
+                inline: true
+            }, {
+                name: "🌐 Ссылки",
+                value: [
+                    `[📥 Пригласить бота](${invite})`,
+                    "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)"
+                ].join("\n")
+            }]
         }]
     });
 };

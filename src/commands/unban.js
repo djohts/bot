@@ -1,14 +1,12 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "unban",
-    description: "Разбанить участника.",
-    permissionRequired: 1,
-    opts: [{
-        name: "user",
-        description: "Пользователь, которого надо разбанить, или его ID.",
-        type: 6,
-        required: true
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("unban")
+        .setDescription("Разбанить участника.")
+        .addUserOption((o) => o.setName("user").setDescription("Пользователь, которого надо разбанить.").setRequired(true))
+        .toJSON(),
+    permission: 1
 };
 
 const { CommandInteraction } = require("discord.js");

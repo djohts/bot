@@ -1,15 +1,12 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "setcount",
-    description: "Сменить текущий счёт.",
-    permissionRequired: 1,
-    opts: [{
-        name: "count",
-        description: "Новый счёт.",
-        type: 4,
-        min_value: 0,
-        required: true
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("setcount")
+        .setDescription("Сменить текущий счёт.")
+        .addIntegerOption((o) => o.setName("count").setDescription("Новый счёт.").setRequired(true).setMinValue(0))
+        .toJSON(),
+    permission: 1
 };
 
 const db = require("../database/")();

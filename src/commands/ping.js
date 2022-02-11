@@ -1,31 +1,43 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "ping",
-    description: "Посмотреть задержку и аптайм бота.",
-    permissionRequired: 0,
-    opts: [],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("ping")
+        .setDescription("Посмотреть задержку бота.")
+        .toJSON(),
+    permission: 0
 };
 
-const { CommandInteraction } = require("discord.js");
-const prettyms = require("pretty-ms");
 const db = require("../database/")();
+const prettyms = require("pretty-ms");
+const { CommandInteraction } = require("discord.js");
 
 module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     const gdb = await db.guild(interaction.guild.id);
+    const { channel } = gdb.get();
 
-    return await interaction.reply({
-        content: "💢 Получаю данные...",
-        ephemeral: (gdb.get().channel == interaction.channel.id),
-        fetchReply: true
-    }).then(async (m) => {
-        const uptime = prettyms(interaction.client.uptime);
-        const api = Math.round(interaction.guild.shard.ping);
-        const server = Date.now() - m.createdTimestamp;
+    await interaction.deferReply({
+        ephemeral: interaction.channel.id == channel
+    });
 
-        return await interaction.editReply({
-            content: `🏓 Задержка сервера \`${server}ms\`, пинг API \`${api}ms\`, аптайм бота \`${uptime}\`.`
-        });
+    const uptime = prettyms(interaction.client.uptime);
+    const api = Math.ceil(interaction.guild.shard.ping);
+
+    return await interaction.editReply({
+        embeds: [{
+            title: "🏓 Понг!",
+            fields: [{
+                name: "Сервер",
+                value: `\`${Date.now() - interaction.createdTimestamp}ms\``
+            }, {
+                name: "API",
+                value: `\`${api}ms\``
+            }, {
+                name: "Аптайм",
+                value: `\`${uptime}\``
+            }]
+        }]
     });
 };

@@ -1,86 +1,29 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "settings",
-    permissionRequired: 2,
-    opts: [{
-        name: "get",
-        description: "Получить настройки сервера.",
-        type: 1
-    },
-    {
-        name: "toggle",
-        description: "Изменить значение найстройки.",
-        type: 1,
-        options: [{
-            name: "setting",
-            description: "Настройка, которую надо изменить.",
-            type: 3,
-            required: true,
-            choices: [
-                {
-                    name: "Удаление сообщений замьюченых участников.",
-                    value: "delMuted"
-                },
-                {
-                    name: "Удаление закреплённых сообщений при очистке (/purge).",
-                    value: "purgePinned"
-                },
-                {
-                    name: "Временные голосовые каналы.",
-                    value: "voices"
-                },
-                {
-                    name: "Проверка сообщений на вредоносные ссылки.",
-                    value: "detectScamLinks"
-                }
-            ]
-        }]
-    },
-    {
-        name: "muterole",
-        description: "Установить роль мьюта.",
-        type: 1,
-        options: [{
-            name: "role",
-            description: "Роль.",
-            type: 8,
-            required: true
-        }]
-    },
-    {
-        name: "voice",
-        description: "Настройки модуля временных голосовых каналов.",
-        type: 2,
-        options: [{
-            name: "setlobby",
-            description: "Установить лобби для голосовых каналов.",
-            type: 1,
-            options: [{
-                name: "channel",
-                description: "Канал-генератор, в который надо зайти для создания временного канала.",
-                type: 7,
-                channel_types: [2],
-                required: true
-            }]
-        }]
-    },
-    {
-        name: "counting",
-        description: "Настройки модуля счёта.",
-        type: 2,
-        options: [{
-            name: "setchannel",
-            description: "Установить канал для счёта.",
-            type: 1,
-            options: [{
-                name: "channel",
-                description: "Текстовый канал в котором пользователи смогут считать циферки.",
-                type: 7,
-                channel_types: [0],
-                required: true
-            }]
-        }]
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("settings")
+        .setDescription("Настройки бота на сервере.")
+        .addSubcommand((c) => c.setName("get").setDescription("Получить настройки сервера."))
+        .addSubcommand((c) => c.setName("toggle").setDescription("Изменить значение найстройки.").addStringOption((o) =>
+            o.setName("setting").setDescription("Настройка, которую надо изменить.").setRequired(true).setChoices([
+                ["Удаление сообщений замьюченых участников.", "delMuted"],
+                ["Удаление закреплённых сообщений при очистке (/purge).", "purgePinned"],
+                ["Временные голосовые каналы.", "voices"],
+                ["Проверка сообщений на вредоносные ссылки.", "detectScamLinks"]
+            ])
+        ))
+        .addSubcommand((c) => c.setName("muterole").setDescription("Установить роль мьюта.").addRoleOption((o) =>
+            o.setName("role").setDescription("Роль.").setRequired(true)
+        ))
+        .addSubcommand((c) => c.setName("setlobby").setDescription("Установить лобби для голосовых каналов.").addChannelOption((o) =>
+            o.setName("channel").setDescription("Канал-генератор, в который надо зайти для создания временного канала.").setRequired(true).addChannelType(2)
+        ))
+        .addSubcommand((c) => c.setName("counting").setDescription("Настройки модуля счёта.").addChannelOption((o) =>
+            o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelType(0)
+        ))
+        .toJSON(),
+    permission: 2
 };
 
 const { CommandInteraction } = require("discord.js");

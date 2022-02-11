@@ -1,52 +1,32 @@
+const { SlashCommandBuilder } = require("@discordjs/builders");
+
 module.exports = {
-    name: "buttonroles",
-    description: "Настройки ролей по кнопкам.",
-    permissionRequired: 2,
-    opts: [{
-        name: "create",
-        description: "Создать новую РПК.",
-        type: 1,
-        options: [{
-            name: "channel",
-            description: "Канал в котором будет создано РПК.",
-            type: 7,
-            required: true,
-            channel_types: [0, 5]
-        }, {
-            name: "role",
-            description: "Роль, которая будет выдаваться.",
-            type: 8,
-            required: true
-        }, {
-            name: "emoji",
-            description: "Эмодзи. Используется для указания роли в панели и кнопке.",
-            type: 3,
-            required: true
-        }, {
-            name: "message",
-            description: "Id сообщения в которое добавить РПК. Если не указать - бот отправит новое сообщение.",
-            type: 3
-        }]
-    }, {
-        name: "list",
-        description: "Посмотреть список РПК этого сервера.",
-        type: 1
-    }, {
-        name: "refresh",
-        description: "Обновить все РПК в случае рассинхрона. (пока что не работает)",
-        type: 1
-    }, {
-        name: "delete",
-        description: "Удалить РПК.",
-        type: 1,
-        options: [{
-            name: "id",
-            description: "Id РПК, которую нужно удалить. (Id можно получить в /buttonroles list)",
-            type: 3,
-            required: true
-        }]
-    }],
-    slash: true
+    options: new SlashCommandBuilder()
+        .setName("buttonroles")
+        .setDescription("Настройки РПК.")
+        .addSubcommand((c) =>
+            c.setName("create").setDescription("Создать новую РПК.").addChannelOption((o) =>
+                o.setName("channel").setDescription("Канал в котором будет создано РПК.").setRequired(true).addChannelTypes([0, 5])
+            )
+                .addRoleOption((o) =>
+                    o.setName("role").setDescription("Роль, которая будет выдаваться.").setRequired(true)
+                )
+                .addStringOption((o) =>
+                    o.setName("emoji").setDescription("Эмодзи. Используется для указания роли в панели и кнопке.").setRequired(true)
+                )
+                .addStringOption((o) =>
+                    o.setName("message").setDescription("Id сообщения в которое добавить РПК. Если не указать - бот отправит новое сообщение.")
+                )
+        )
+        .addSubcommand((c) => c.setName("list").setDescription("Посмотреть список РПК этого сервера."))
+        //.addSubcommand((c) => c.setName("refresh").setDescription("Обновить все РПК в случае рассинхрона. (пока что не работает)"))
+        .addSubcommand((c) =>
+            c.setName("delete").setDescription("Посмотреть список РПК этого сервера.").addStringOption((o) =>
+                o.setName("id").setDescription("Id РПК, которую нужно удалить. (Id можно получить в /buttonroles list)").setRequired(true)
+            )
+        )
+        .toJSON(),
+    permission: 2
 };
 
 const db = require("../database/")();
