@@ -113,12 +113,10 @@ module.exports = () => (async (guildid) => {
 
             return dbCache.get(guildid);
         },
-        addToCount: (member, message) => {
+        addToCount: (member) => {
             let guildCache = dbCache.get(guildid);
             guildCache.count++;
             guildCache.user = member.id;
-
-            guildCache.message = message.id;
 
             if (!guildCache.users[member.id]) guildCache.users[member.id] = 0;
             guildCache.users[member.id]++;

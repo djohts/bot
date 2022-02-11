@@ -9,7 +9,7 @@ module.exports = async (message) => {
     let { count, user, modules, flows, users: scores, mutes } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
     if (
         message.client.loading ||
-        mutes[message.author.id]
+        Object.keys(mutes).includes(message.author.id)
     ) return deleteMessage(message);
 
     if (
@@ -38,11 +38,13 @@ module.exports = async (message) => {
     };
 
     count++;
+    gdb.addToCount(message.member);
 
     let countingMessage = message;
     if (modules.includes("webhook")) try {
-        let webhooks = await message.channel.fetchWebhooks(), webhook = webhooks.find((w) => w.name == "Counting");
-        if (!webhook) webhook = await message.channel.createWebhook("Counting").catch(() => null);
+        const webhooks = await message.channel.fetchWebhooks();
+        let webhook = webhooks.find((w) => w.name == "Counting");
+        if (!webhook) webhook = await message.channel.createWebhook("Counting");
 
         if (webhook) {
             countingMessage = await webhook.send({
@@ -68,7 +70,7 @@ module.exports = async (message) => {
         deleteMessage(message);
     } catch (e) { };
 
-    gdb.addToCount(message.member, countingMessage);
+    await Guild.updateOne({ guildid: message.guild.id }, { "$set": { message: countingMessage.id } });
 
     const countData = {
         count,
