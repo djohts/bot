@@ -112,7 +112,7 @@ client.on("messageCreate", async (message) => {
     const gdb = await db.guild(message.guild.id);
     const gsdb = await db.settings(message.guild.id);
 
-    if (Object.keys(gdb.get().mutes).includes(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
+    if (gdb.get().mutes.hasOwnProperty(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
 
     if (gsdb.get().detectScamLinks && await checkMessage(message.content, true)) {
         if (!linkRate.has(message.author.id)) {

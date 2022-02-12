@@ -9,7 +9,7 @@ module.exports = async (message) => {
     let { count, user, modules, flows, users: scores, mutes } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
     if (
         message.client.loading ||
-        Object.keys(mutes).includes(message.author.id)
+        mutes.hasOwnProperty(message.author.id)
     ) return deleteMessage(message);
 
     if (
