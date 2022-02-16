@@ -24,10 +24,10 @@ if (config.port) {
 };
 
 if (config.sdcToken) {
-    new Promise((res) => setTimeout(() => res(), 5 * 60 * 1000)).then(async () => {
+    setTimeout(async () => {
         await postStats();
         setInterval(postStats, 30 * 60 * 1000);
-    });
+    }, 5 * 60 * 1000);
 };
 
 async function postStats() {
