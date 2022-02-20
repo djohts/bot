@@ -27,8 +27,8 @@ module.exports.run = async (interaction) => {
 
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await db.guild(interaction.guild.id);
-    const user = interaction.options.getUser("user");
-    const member = interaction.options.getMember("user");
+    const user = interaction.options.getUser("member");
+    const member = interaction.options.getMember("member");
 
     if (guilddb.get().bans[user.id] && bans.has(user.id))
         return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
