@@ -30,7 +30,7 @@ module.exports.run = async (interaction) => {
     const user = interaction.options.getUser("member");
     const member = interaction.options.getMember("member");
 
-    if (guilddb.get().bans[user.id] && bans.has(user.id))
+    if (guilddb.get().bans.hasOwnProperty(user.id) && bans.has(user.id))
         return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
     if (getPermissionLevel(member) >= 1)
         return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
@@ -39,7 +39,7 @@ module.exports.run = async (interaction) => {
 
     let dmsent = false;
     let time = 0;
-    let reason = interaction.options.getString("reason")?.trim();
+    let reason = interaction.options.getString("reason").trim();
     let purgedays = interaction.options.getInteger("purgedays");
     if (!interaction.options.getString("time")?.length) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("time"));
@@ -57,7 +57,7 @@ module.exports.run = async (interaction) => {
     await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => false);
 
     await interaction.guild.bans.create(user.id, {
-        reason: interaction.user.tag + (reason?.length ? ": " + reason : ""),
+        reason: interaction.user.tag + (reason.length ? ": " + reason : ""),
         days: purgedays
     }).then(() => {
         guilddb.setOnObject("bans", user.id, time);
