@@ -3,10 +3,8 @@ name: Analysis and Scans
 on:
   push:
     branches:
-    - master
-  pull_request:
-    branches:
-    - master
+    - "master"
+    - "dependabot/*"
   schedule:
     - cron: '0 12 * * 3'
 
