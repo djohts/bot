@@ -5,7 +5,7 @@ module.exports = async (interaction) => {
     if (!(interaction instanceof ButtonInteraction)) return;
 
     const guild = interaction.guild;
-    if (!guild.me.permissions.has("MANAGE_ROLES")) {
+    if (!guild.me.permissions.has("MANAGE_ROLES") || !interaction.member.manageable) {
         return await interaction.reply({
             content: "❌ У меня нет прав на изменение ролей.",
             ephemeral: true
