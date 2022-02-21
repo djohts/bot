@@ -9,20 +9,6 @@ const prepareGuild = require("./handlers/prepareGuilds");
 const tickers = require("./handlers/tickers");
 const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
-        GuildScheduledEventManager: 0,
-        BaseGuildEmojiManager: 0,
-        ReactionUserManager: 0,
-        GuildStickerManager: 0,
-        GuildInviteManager: 0,
-        GuildEmojiManager: 0,
-        GuildMemberManager: 8192,
-        UserManager: 32768,
-        GuildBanManager: {
-            sweepInterval: 600,
-            sweepFilter: Discord.LimitedCollection.filterByLifetime({
-                lifetime: 1 * 60 * 60 // 1 hour
-            })
-        },
         MessageManager: {
             sweepInterval: 600,
             maxSize: 2048,
@@ -37,7 +23,7 @@ const client = new Discord.Client({
         status: "dnd",
         activities: [{
             type: "WATCHING",
-            name: "Loading...",
+            name: "the loading screen",
         }]
     }
 });
@@ -57,6 +43,7 @@ global.client = client;
 global.db = db;
 
 let shard = "[Shard N/A]";
+const linkRates = new Map();
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let start = Date.now();
     client.shardId = shardId;
@@ -79,6 +66,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await db.cacheGuilds(disabledGuilds);
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
 
+    disabledGuilds.forEach((id) => linkRates.set(id, new Set()));
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user.setPresence({
         status: "idle",
         activities: [{
@@ -102,7 +90,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 });
 
 const { checkMessage } = require("stop-discord-phishing");
-const linkRate = new Set();
 client.on("messageCreate", async (message) => {
     if (
         !message.guild ||
@@ -115,15 +102,17 @@ client.on("messageCreate", async (message) => {
     if (gdb.get().mutes.hasOwnProperty(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
 
     if (gsdb.get().detectScamLinks && await checkMessage(message.content, true)) {
-        if (!linkRate.has(message.author.id)) {
+        let guildRates = linkRates.get(message.guild.id);
+        if (!guildRates.has(message.author.id)) {
             await message.channel.send(
                 `${message.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
                 (message.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")
             ).then((m) => setTimeout(() => deleteMessage(m), 10 * 1000));
 
-            linkRate.add(message.author.id);
-            setTimeout(() => linkRate.delete(message.author.id), 5000);
+            guildRates.add(message.author.id);
+            setTimeout(() => guildRates.delete(message.author.id), 5000);
         };
+        linkRates.set(message.guild.id, guildRates);
 
         return deleteMessage(message);
     };
@@ -201,6 +190,8 @@ client.on("messageUpdate", async (original, updated) => {
 });
 
 client.on("guildCreate", async (guild) => {
+    linkRates.set(guild.id, new Set());
+
     await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch((err) => {
         if (!err.message.toLowerCase().includes("missing")) console.error(err);
     });
