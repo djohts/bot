@@ -8,9 +8,9 @@ module.exports = async (guild, db) => {
     let alert = null;
 
     try {
-        let channel = guild.channels.cache.get(channelId);
+        const channel = await guild.channels.fetch(channelId).catch(() => false);
         if (channel) {
-            let messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => false);
+            let messages = await channel.messages.fetch({ limit: 100, after: messageId });
             if (messages.size) {
                 alert = await channel.send("💢 Идёт подготовка канала.").catch(() => false);
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone) || { allow: new Set(), deny: new Set() };
@@ -18,7 +18,7 @@ module.exports = async (guild, db) => {
                 if (defaultPermissions.allow.has("SEND_MESSAGES")) oldPermission = true;
                 else if (defaultPermissions.deny.has("SEND_MESSAGES")) oldPermission = false;
 
-                if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }, "Подготовка канала.");
+                if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }, "Подготовка канала.").catch(() => false);
 
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
@@ -35,13 +35,14 @@ module.exports = async (guild, db) => {
                     };
                 };
 
-                if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission });
+                if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission }).catch(() => false);
                 if (fail) await alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => false);
                 else await alert?.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => false) &&
-                    setTimeout(() => deleteMessage(alert), 20000);
+                    setTimeout(() => deleteMessage(alert), 20 * 1000);
             };
         };
     } catch (e) {
-        await alert?.edit("❌ Что-то пошло не так при подготовке канала.");
+        console.log(e);
+        await alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => false);
     };
 };
