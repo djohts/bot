@@ -1,6 +1,7 @@
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const { deleteMessage } = require("./utils");
 const prettyms = require("pretty-ms");
+const { TextChannel } = require("discord.js");
 
 module.exports = async (guild, db) => {
     const gdb = await db.guild(guild.id);
@@ -9,7 +10,7 @@ module.exports = async (guild, db) => {
 
     try {
         const channel = await guild.channels.fetch(channelId).catch(() => false);
-        if (channel) {
+        if (channel instanceof TextChannel) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId });
             if (messages.size) {
                 alert = await channel.send("💢 Идёт подготовка канала.").catch(() => false);
