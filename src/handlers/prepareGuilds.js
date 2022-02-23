@@ -9,7 +9,7 @@ module.exports = async (guild, db) => {
     let alert = null;
 
     try {
-        const channel = await guild.channels.fetch(channelId).catch(() => false);
+        const channel = guild.channels.cache.get(channelId);
         if (channel instanceof TextChannel) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId });
             if (messages.size) {
