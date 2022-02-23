@@ -94,9 +94,6 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 const commandFiles = fs.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
 commandFiles.forEach((filename) => {
     const file = require(`./events/${filename}`);
-    if (!file.name) return;
-    console.log(`loaded ${file.name}`);
-
     if (file.once) {
         client.once(file.name, (...args) => file.run(client, ...args));
     } else {
