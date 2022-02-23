@@ -9,11 +9,11 @@ const manager = new ShardingManager(__dirname + "/bot.js", {
     mode: "worker"
 });
 
-manager.on("shardCreate", async (shard) => {
-    shard.on("message", (m) => {
+manager.on("shardCreate", (shard) => {
+    shard.on("message", async (m) => {
         if (m == "respawn") {
             console.warn(`[Manager] Shard ${shard.id} has requested a restart.`);
-            shard.respawn();
+            await shard.respawn();
         };
     });
     console.log(`[Manager] Shard ${shard.id} is starting.`);

@@ -3,10 +3,10 @@ const { Manager } = require("erela.js");
 const Spotify = require("erela.js-spotify");
 const { lava: { nodes, spotify: { clientID, clientSecret } } } = require("../../config");
 
-module.exports = async (client) => {
+module.exports = (client) => {
     if (!(client instanceof Client)) return;
 
-    client.manager = new Manager({
+    return new Manager({
         nodes: nodes,
         plugins: [new Spotify({ clientID, clientSecret })],
         send(id, payload) {
@@ -32,6 +32,4 @@ module.exports = async (client) => {
             player.destroy();
         })
         .init(client.user.id);
-
-    client.on("raw", (d) => client.manager.updateVoiceState(d));
 };
