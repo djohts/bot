@@ -67,7 +67,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await db.cacheGuilds(disabledGuilds);
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
 
-    disabledGuilds.forEach((id) => linkRates.set(id, new Set()));
+    for (const id of disabledGuilds) linkRates.set(id, new Set());
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user.setPresence({
         status: "idle",
         activities: [{
@@ -94,7 +94,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 });
 
 const commandFiles = fs.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
-for (const filename in commandFiles) {
+for (const filename of commandFiles) {
     const file = require(`./events/${filename}`);
     if (file.once) {
         client.once(file.name, (...args) => file.run(client, ...args));
