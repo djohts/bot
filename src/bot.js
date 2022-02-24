@@ -36,6 +36,8 @@ global.parse = require("./constants/resolvers").parseTime;
 global.prettyms = require("pretty-ms");
 module.exports.client = client;
 global.client = client;
+const util = require("util");
+global.util = util;
 global.db = db;
 
 let shard = "[Shard N/A]";
@@ -92,22 +94,22 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 });
 
 const commandFiles = fs.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
-commandFiles.forEach((filename) => {
+for (const filename in commandFiles) {
     const file = require(`./events/${filename}`);
     if (file.once) {
         client.once(file.name, (...args) => file.run(client, ...args));
     } else {
         client.on(file.name, (...args) => file.run(client, ...args));
     };
-});
+};
 
 client.on("voiceChannelJoin", voicesJoin);
 client.on("voiceChannelLeave", voicesLeave);
 client.on("voiceChannelSwitch", voicesSwitch);
-client.on("error", (err) => console.error(`${shard} Client error. ${err}`));
+client.on("error", (err) => console.error(`${shard} Client error. ${util.inspect(err)}`));
 client.on("rateLimit", (rateLimitInfo) => console.warn(`${shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
 client.on("shardDisconnected", ({ code, reason }) => console.warn(`${shard} Disconnected. (${code} - ${reason})`));
-client.on("shardError", (err) => console.error(`${shard} Error. ${err}`));
+client.on("shardError", (err) => console.error(`${shard} Error. ${util.inspect(err)}`));
 client.on("shardResume", (_, replayedEvents) => console.log(`${shard} Resumed. ${replayedEvents} replayed events.`));
 client.on("warn", (info) => console.warn(`${shard} Warning. ${info}`));
 client.login(config.token);
