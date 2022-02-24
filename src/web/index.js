@@ -1,8 +1,8 @@
 const { ShardingManager } = require("discord.js");
 const config = require("../../config");
-const fastify = require("fastify");
-const fastifySession = require("fastify-session");
-const fastifyCookie = require("fastify-cookie");
+const fastify = require("fastify").default;
+const fastifySession = require("fastify-session").default;
+const fastifyCookie = require("fastify-cookie").default;
 
 module.exports = async (sharding) => {
     module.exports.sharding = sharding;
@@ -11,10 +11,8 @@ module.exports = async (sharding) => {
     app.register(fastifyCookie);
     app.register(fastifySession, {
         secret: config.secretsomething,
-        saveUninitialized: true,
         cookie: {
             secure: false,
-            httpOnly: true,
             sameSite: false,
             maxAge: 2 * 60 * 60 * 1000
         }
