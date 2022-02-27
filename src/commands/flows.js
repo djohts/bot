@@ -38,32 +38,30 @@ module.exports.run = async (interaction) => {
 
         const flowId = generateID();
         const channel = await interaction.guild.channels.create("dob-flow-editor", {
-            permissionOverwrites: [
-                {
-                    id: interaction.client.user.id,
-                    allow: [
-                        "VIEW_CHANNEL",
-                        "SEND_MESSAGES",
-                        "MANAGE_MESSAGES",
-                        "EMBED_LINKS",
-                        "READ_MESSAGE_HISTORY"
-                    ]
-                },
-                {
-                    id: interaction.user.id,
-                    allow: [
-                        "VIEW_CHANNEL",
-                        "SEND_MESSAGES",
-                        "READ_MESSAGE_HISTORY"
-                    ]
-                },
-                {
-                    id: interaction.guild.roles.everyone,
-                    deny: [
-                        "VIEW_CHANNEL"
-                    ]
-                }
-            ]
+            permissionOverwrites: [{
+                id: interaction.client.user.id,
+                allow: [
+                    "VIEW_CHANNEL",
+                    "SEND_MESSAGES",
+                    "MANAGE_MESSAGES",
+                    "EMBED_LINKS",
+                    "READ_MESSAGE_HISTORY"
+                ]
+            },
+            {
+                id: interaction.user.id,
+                allow: [
+                    "VIEW_CHANNEL",
+                    "SEND_MESSAGES",
+                    "READ_MESSAGE_HISTORY"
+                ]
+            },
+            {
+                id: interaction.guild.roles.everyone,
+                deny: [
+                    "VIEW_CHANNEL"
+                ]
+            }]
         });
         await interaction.reply({
             content: `🌀 Перейдите в ${channel} для настройки нового потока.`,
@@ -80,34 +78,32 @@ module.exports.run = async (interaction) => {
                 "Триггер - то, что задействует \"действие\". Действие, это то, что выполнится после задействования потока.",
                 `Вы можете создать ${limitTriggers} триггеров и ${limitActions} действий на поток.`
             ].join("\n\n"),
-            fields: [
-                {
-                    name: "Команды",
-                    value: [
-                        "• `edit <trigger или action> <слот>`: Изменить слот триггера или действия.",
-                        "• `save`: Сохранить поток и удалить канал.",
-                        "• `cancel`: Отменить создание потока и удалить канал."
-                    ].join("\n")
-                },
-                {
-                    name: "Действия",
-                    value: cutFieldValue(await Promise.all(
-                        newFlow.actions.map(async (action, index) =>
-                            `${index + 1} - ${action ? `${await formatExplanation(action)}` : "**Пусто**"}`
-                        )
-                    )),
-                    inline: true
-                },
-                {
-                    name: "Триггеры",
-                    value: cutFieldValue(await Promise.all(
-                        newFlow.triggers.map(async (trigger, index) =>
-                            `${index + 1} - ${trigger ? `${await formatExplanation(trigger)}` : "**Пусто**"}`
-                        )
-                    )),
-                    inline: true
-                }
-            ]
+            fields: [{
+                name: "Команды",
+                value: [
+                    "• `edit <trigger или action> <слот>`: Изменить слот триггера или действия.",
+                    "• `save`: Сохранить поток и удалить канал.",
+                    "• `cancel`: Отменить создание потока и удалить канал."
+                ].join("\n")
+            },
+            {
+                name: "Действия",
+                value: cutFieldValue(await Promise.all(
+                    newFlow.actions.map(async (action, index) =>
+                        `${index + 1} - ${action ? `${await formatExplanation(action)}` : "**Пусто**"}`
+                    )
+                )),
+                inline: true
+            },
+            {
+                name: "Триггеры",
+                value: cutFieldValue(await Promise.all(
+                    newFlow.triggers.map(async (trigger, index) =>
+                        `${index + 1} - ${trigger ? `${await formatExplanation(trigger)}` : "**Пусто**"}`
+                    )
+                )),
+                inline: true
+            }]
         });
         const pinned = await channel.send("Загрузка...");
 
@@ -118,8 +114,9 @@ module.exports.run = async (interaction) => {
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
             db.global.addToArray("generatedIds", flowId);
-        };
-        return interaction;
+
+            return await interaction.editReply("✅ Поток был успешно создан.");
+        } else return await interaction.editReply("❌ Создание потока было отменено.");
     } else if (cmd === "delete") {
         const flowId = interaction.options.getString("id");
         if (!flows[flowId])

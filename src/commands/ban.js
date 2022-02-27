@@ -21,19 +21,17 @@ module.exports.run = async (interaction) => {
     if (!(interaction instanceof CommandInteraction)) return;
 
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
-        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / выдачи банов.", ephemeral: true });
-    if (interaction.options.getString("time")?.length && !parseTime(interaction.options.getString("time")))
-        return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
+        return await interaction.reply({ content: "❌ У меня нет прав для выдачи банов.", ephemeral: true });
+    if (interaction.options.getString("time") && !parseTime(interaction.options.getString("time")))
+        return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await db.guild(interaction.guild.id);
-    const user = interaction.options.getUser("member");
     const member = interaction.options.getMember("member");
 
-    if (guilddb.get().bans.hasOwnProperty(user.id) && bans.has(user.id))
-        return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
+    if (bans.has(member.user.id)) return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
     if (getPermissionLevel(member) >= 1)
-        return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
+        return await interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
 
     await interaction.deferReply();
 
@@ -41,7 +39,7 @@ module.exports.run = async (interaction) => {
     let time = 0;
     let reason = interaction.options.getString("reason").trim();
     let purgedays = interaction.options.getInteger("purgedays");
-    if (!interaction.options.getString("time")?.length) time = -1;
+    if (!interaction.options.getString("time")) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("time"));
 
     const dmemb = new MessageEmbed()
@@ -51,22 +49,21 @@ module.exports.run = async (interaction) => {
         })
         .setTitle("Вы были забанены")
         .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replaceAll("*", "\\*")}**)`, true);
-    if (time != -1) dmemb.addField("Время", prettyms(parseTime(interaction.options.getString("time"))), true);
-    if (reason?.length) dmemb.addField("Причина", reason);
+    if (time != -1) dmemb.addField("Время", `\`${prettyms(parseTime(interaction.options.getString("time")))}\``, true);
+    if (reason) dmemb.addField("Причина", reason);
 
-    await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => false);
+    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => false);
 
-    await interaction.guild.bans.create(user.id, {
-        reason: interaction.user.tag + (reason.length ? ": " + reason : ""),
+    await interaction.guild.bans.create(member.id, {
+        reason: `${interaction.user.tag}: ${reason || "Не указана."}`,
         days: purgedays
-    }).then(() => {
-        guilddb.setOnObject("bans", user.id, time);
-    }).catch(() => {
-        interaction.editReply({ content: "❌ Произошла неизвестная ошибка." });
-    });
-
-    return interaction.editReply({
-        content: `✅ ${user} был успешно забанен.` +
-            (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
+    }).then(async () => {
+        guilddb.setOnObject("bans", member.user.id, time);
+        await interaction.editReply({
+            content: `✅ ${member} был успешно забанен.` +
+                (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
+        });
+    }).catch(async () => {
+        await interaction.editReply({ content: "❌ Произошла неизвестная ошибка." });
     });
 };
