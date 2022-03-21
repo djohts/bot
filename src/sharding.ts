@@ -1,5 +1,6 @@
 require("nodejs-better-console").overrideConsole();
 import { ShardingManager } from "discord.js";
+import fetch from "node-fetch";
 import config from "../config";
 
 export const manager = new ShardingManager(__dirname + "/bot.js", {

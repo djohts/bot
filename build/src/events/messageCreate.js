@@ -40,7 +40,7 @@ async function run(client, message) {
     if (channel == message.channel.id)
         return (0, counting_1.default)(message);
     if (message.content.match(`^<@!?${client.user.id}>`))
-        return message.react("👋").catch(() => false);
+        return message.react("👋").catch(() => null);
 }
 exports.run = run;
 ;

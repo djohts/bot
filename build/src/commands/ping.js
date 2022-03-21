@@ -12,28 +12,29 @@ exports.options = new builders_1.SlashCommandBuilder()
 exports.permission = 0;
 const database_1 = __importDefault(require("../database/"));
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
+const mongoose_1 = require("mongoose");
 async function run(interaction) {
     const gdb = await database_1.default.guild(interaction.guild.id);
     const { channel } = gdb.get();
-    await interaction.deferReply({
-        ephemeral: interaction.channel.id == channel
-    });
+    const server = Date.now() - interaction.createdTimestamp;
     const uptime = (0, pretty_ms_1.default)(interaction.client.uptime);
     const api = Math.ceil(interaction.guild.shard.ping);
-    return await interaction.editReply({
+    let dbping = Date.now();
+    await (0, mongoose_1.model)("Guild").find();
+    dbping = Date.now() - dbping;
+    await interaction.reply({
         embeds: [{
                 title: "🏓 Понг!",
-                fields: [{
-                        name: "Сервер",
-                        value: `\`${Date.now() - interaction.createdTimestamp}ms\``
-                    }, {
-                        name: "API",
-                        value: `\`${api}ms\``
-                    }, {
-                        name: "Аптайм",
-                        value: `\`${uptime}\``
-                    }]
-            }]
+                description: [
+                    "```",
+                    `Сервер   :: ${server}ms`,
+                    `API      :: ${api}ms`,
+                    `DB       :: ${dbping}ms`,
+                    `Аптайм   :: ${uptime}`,
+                    "```"
+                ].join("\n")
+            }],
+        ephemeral: interaction.channel.id == channel
     });
 }
 exports.run = run;

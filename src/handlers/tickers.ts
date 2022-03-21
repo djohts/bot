@@ -32,7 +32,7 @@ function checkMutes(client: Client) {
         if (!ids.length) return;
 
         await Promise.all(ids.map(async (key) => {
-            const member = await guild.members.fetch(key).catch(() => false);
+            const member = await guild.members.fetch(key).catch(() => null);
             if (
                 !(member instanceof GuildMember) ||
                 !member?.manageable ||
@@ -43,7 +43,7 @@ function checkMutes(client: Client) {
 
             await member.roles.remove(muteRole).then(() => {
                 return gdb.removeFromObject("mutes", key);
-            }).catch(() => false);
+            }).catch(() => null);
         }));
     })).then(() => setTimeout(() => checkMutes(client), 2000));
 };

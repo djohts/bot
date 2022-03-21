@@ -15,7 +15,7 @@ module.exports = async (interaction) => {
         });
     }
     ;
-    await interaction.deferReply({ ephemeral: true }).catch(() => false);
+    await interaction.deferReply({ ephemeral: true }).catch(() => null);
     const gdb = await database_1.default.guild(guild.id);
     const { brs } = gdb.get();
     const iId = interaction.customId.slice(3);

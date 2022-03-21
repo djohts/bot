@@ -122,8 +122,8 @@ async function run(interaction) {
         const brc = gdb.get().brcs[brId];
         const brm = gdb.get().brms[brId];
         const br = gdb.get().brs[brId];
-        await interaction.deferReply({ ephemeral: true }).catch(() => false);
-        const channel = await interaction.guild.channels.fetch(brc).catch(() => false);
+        await interaction.deferReply({ ephemeral: true }).catch(() => null);
+        const channel = await interaction.guild.channels.fetch(brc).catch(() => null);
         if (!channel ||
             !(channel instanceof discord_js_1.TextChannel))
             return await interaction.editReply(`✅ РПК \`${brId}\` было удалено.`).then(() => {

@@ -9,31 +9,32 @@ export const permission = 0;
 import db from "../database/";
 import prettyms from "pretty-ms";
 import { CommandInteraction } from "discord.js";
+import { model } from "mongoose";
 
 export async function run(interaction: CommandInteraction) {
     const gdb = await db.guild(interaction.guild.id);
     const { channel } = gdb.get();
 
-    await interaction.deferReply({
-        ephemeral: interaction.channel.id == channel
-    });
-
+    const server = Date.now() - interaction.createdTimestamp;
     const uptime = prettyms(interaction.client.uptime);
     const api = Math.ceil(interaction.guild.shard.ping);
 
-    return await interaction.editReply({
+    let dbping = Date.now();
+    await model("Guild").find();
+    dbping = Date.now() - dbping;
+
+    await interaction.reply({
         embeds: [{
             title: "🏓 Понг!",
-            fields: [{
-                name: "Сервер",
-                value: `\`${Date.now() - interaction.createdTimestamp}ms\``
-            }, {
-                name: "API",
-                value: `\`${api}ms\``
-            }, {
-                name: "Аптайм",
-                value: `\`${uptime}\``
-            }]
-        }]
+            description: [
+                "```",
+                `Сервер   :: ${server}ms`,
+                `API      :: ${api}ms`,
+                `DB       :: ${dbping}ms`,
+                `Аптайм   :: ${uptime}`,
+                "```"
+            ].join("\n")
+        }],
+        ephemeral: interaction.channel.id == channel
     });
 };

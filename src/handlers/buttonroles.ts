@@ -12,7 +12,7 @@ export = async (interaction: ButtonInteraction) => {
         });
     };
 
-    await interaction.deferReply({ ephemeral: true }).catch(() => false);
+    await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
     const gdb = await db.guild(guild.id);
     const { brs } = gdb.get();

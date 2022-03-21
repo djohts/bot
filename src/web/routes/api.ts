@@ -62,7 +62,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
 
         // @ts-ignore
         const allGuilds = await sharding.broadcastEval((bot, { userId }) => bot.guilds.cache.filter(async (g) => {
-            //const member = await g.members.fetch(userId).then(() => true).catch(() => false);
+            //const member = await g.members.fetch(userId).then(() => true).catch(() => null);
             return g.members.cache.has(userId);
             // @ts-ignore
         }).map((g) => g), { context: { userId: user.id } }).then((a) => a.flat().map((guild) => ({
@@ -78,7 +78,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         })));
         // @ts-ignore
         const managedGuilds = await sharding.broadcastEval((bot, { userId }) => bot.guilds.cache.filter(async (g) => {
-            //const member = await g.members.fetch(userId).then((m) => m.permissions.has("ADMINISTRATOR")).catch(() => false);
+            //const member = await g.members.fetch(userId).then((m) => m.permissions.has("ADMINISTRATOR")).catch(() => null);
             return g.members.cache.get(userId)?.permissions.has("ADMINISTRATOR");
             // @ts-ignore
         }).map((g) => g), { context: { userId: user.id } }).then((a) => a.flat().map((guild) => ({

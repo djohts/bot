@@ -136,9 +136,9 @@ export async function run(interaction: CommandInteraction) {
         const brm = gdb.get().brms[brId];
         const br = gdb.get().brs[brId];
 
-        await interaction.deferReply({ ephemeral: true }).catch(() => false);
+        await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
-        const channel = await interaction.guild.channels.fetch(brc).catch(() => false);
+        const channel = await interaction.guild.channels.fetch(brc).catch(() => null);
         if (
             !channel ||
             !(channel instanceof TextChannel)

@@ -34,7 +34,7 @@ export async function run(interaction: CommandInteraction) {
 
     let dmsent = false;
     let time = 0;
-    let reason = interaction.options.getString("reason").trim();
+    let reason = interaction.options.getString("reason")?.trim();
     let purgedays = interaction.options.getInteger("purgedays");
     if (!interaction.options.getString("time")) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("time"));
@@ -49,7 +49,7 @@ export async function run(interaction: CommandInteraction) {
     if (time != -1) dmemb.addField("Время", `\`${prettyms(parseTime(interaction.options.getString("time")))}\``, true);
     if (reason) dmemb.addField("Причина", reason);
 
-    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => false);
+    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
 
     await interaction.guild.bans.create(member.id, {
         reason: `${interaction.user.tag}: ${reason || "Не указана."}`,

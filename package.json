@@ -1,6 +1,6 @@
 {
     "name": "djohbot",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "djoh's random discord bot idk",
     "main": "build/src/sharding",
     "scripts": {
@@ -39,7 +39,7 @@
         "fastify-session": "^5.2.1",
         "mongoose": "^6.2.7",
         "node-abort-controller": "^3.0.1",
-        "node-fetch": "^2.6.7",
+        "node-fetch": "2.6.7",
         "nodejs-better-console": "^1.0.2",
         "point-of-view": "^5.1.0",
         "pretty-ms": "^7.0.1",

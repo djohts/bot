@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.manager = void 0;
 require("nodejs-better-console").overrideConsole();
 const discord_js_1 = require("discord.js");
+const node_fetch_1 = __importDefault(require("node-fetch"));
 const config_1 = __importDefault(require("../config"));
 exports.manager = new discord_js_1.ShardingManager(__dirname + "/bot.js", {
     token: config_1.default.token,
@@ -37,7 +38,7 @@ async function postStats() {
         guildCount: await exports.manager.broadcastEval((bot) => bot.guilds.cache.size).then((x) => x.reduce((prev, now) => prev + now, 0)),
         shardCount: exports.manager.shards.size
     };
-    await fetch("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
+    await (0, node_fetch_1.default)("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
         method: "post",
         body: JSON.stringify(statsObject),
         headers: {

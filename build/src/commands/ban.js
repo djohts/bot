@@ -34,7 +34,7 @@ async function run(interaction) {
     await interaction.deferReply();
     let dmsent = false;
     let time = 0;
-    let reason = interaction.options.getString("reason").trim();
+    let reason = interaction.options.getString("reason")?.trim();
     let purgedays = interaction.options.getInteger("purgedays");
     if (!interaction.options.getString("time"))
         time = -1;
@@ -51,7 +51,7 @@ async function run(interaction) {
         dmemb.addField("Время", `\`${(0, pretty_ms_1.default)((0, resolvers_1.parseTime)(interaction.options.getString("time")))}\``, true);
     if (reason)
         dmemb.addField("Причина", reason);
-    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => false);
+    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
     await interaction.guild.bans.create(member.id, {
         reason: `${interaction.user.tag}: ${reason || "Не указана."}`,
         days: purgedays

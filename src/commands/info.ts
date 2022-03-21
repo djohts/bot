@@ -68,7 +68,7 @@ export async function run(interaction: CommandInteraction) {
                         "https://discord.com/oauth2/authorize",
                         `?client_id=${interaction.client.user.id}`,
                         "&scope=bot%20applications.commands",
-                        "&permissions=550614986206"
+                        "&permissions=1375450033182"
                     ].join("")})`,
                     "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)"
                 ].join("\n")

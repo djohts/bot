@@ -43,5 +43,5 @@ export async function run(client: ModifiedClient, message: Message) {
     const { channel } = gdb.get();
 
     if (channel == message.channel.id) return countingHandler(message);
-    if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => false);
+    if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => null);
 };
