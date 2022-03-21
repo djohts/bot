@@ -19,9 +19,9 @@ async function run(interaction) {
     const server = Date.now() - interaction.createdTimestamp;
     const uptime = (0, pretty_ms_1.default)(interaction.client.uptime);
     const api = Math.ceil(interaction.guild.shard.ping);
-    let dbping = Date.now();
+    let a = Date.now();
     await (0, mongoose_1.model)("Guild").find();
-    dbping = Date.now() - dbping;
+    const dbping = Date.now() - a;
     await interaction.reply({
         embeds: [{
                 title: "🏓 Понг!",

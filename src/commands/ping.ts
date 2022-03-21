@@ -19,9 +19,9 @@ export async function run(interaction: CommandInteraction) {
     const uptime = prettyms(interaction.client.uptime);
     const api = Math.ceil(interaction.guild.shard.ping);
 
-    let dbping = Date.now();
+    let a = Date.now();
     await model("Guild").find();
-    dbping = Date.now() - dbping;
+    const dbping = Date.now() - a;
 
     await interaction.reply({
         embeds: [{
