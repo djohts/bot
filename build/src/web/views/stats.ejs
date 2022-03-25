@@ -25,8 +25,8 @@
         </div>
     </body>
     <script>
-        window.onload = async () => {
-            await fetch("/api/shards").then((res) => res.json()).then((res) => {
+        window.onload = () => {
+            fetch("/api/shards").then((res) => res.json()).then((res) => {
                 document.getElementById("userCount").innerText = res["users"];
                 document.getElementById("guildCount").innerText = res["guilds"];
                 document.getElementById("shardCount").innerText = Object.keys(res["shards"]).length;

@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const config_1 = __importDefault(require("../../../config"));
 const discord_oauth2_1 = __importDefault(require("discord-oauth2"));
 const sharding_1 = require("../../sharding");
+const discord_js_1 = require("discord.js");
 const oauth2 = new discord_oauth2_1.default({
     clientId: config_1.default.client.id,
     clientSecret: config_1.default.client.secret,
@@ -49,47 +50,23 @@ module.exports = (fastify, _, done) => {
             return res.redirect("/api/login");
         const user = await oauth2.getUser(a.access_token);
         req.session.user = user;
+        req.session.user.guilds = await oauth2.getUserGuilds(a.access_token);
         res.redirect(req.session.lastPage);
     });
     fastify.get("/user/guilds", async (req, res) => {
-        return res.status(423).send();
-        const sharding = require("../../sharding").manager;
-        const { user } = req.session;
+        const user = req.session.user;
         if (!user)
-            return res.status(401).send();
-        // @ts-ignore
-        const allGuilds = await sharding.broadcastEval((bot, { userId }) => bot.guilds.cache.filter(async (g) => {
-            //const member = await g.members.fetch(userId).then(() => true).catch(() => null);
-            return g.members.cache.has(userId);
-            // @ts-ignore
-        }).map((g) => g), { context: { userId: user.id } }).then((a) => a.flat().map((guild) => ({
-            // @ts-ignore
-            id: guild.id,
-            // @ts-ignore
-            name: guild.name,
-            // @ts-ignore
-            iconUrl: guild.icon
-                // @ts-ignore
-                ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
-                : "https://cdn.iconscout.com/icon/free/png-256/discord-3215389-2673807.png"
-        })));
-        // @ts-ignore
-        const managedGuilds = await sharding.broadcastEval((bot, { userId }) => bot.guilds.cache.filter(async (g) => {
-            //const member = await g.members.fetch(userId).then((m) => m.permissions.has("ADMINISTRATOR")).catch(() => null);
-            return g.members.cache.get(userId)?.permissions.has("ADMINISTRATOR");
-            // @ts-ignore
-        }).map((g) => g), { context: { userId: user.id } }).then((a) => a.flat().map((guild) => ({
-            // @ts-ignore
-            id: guild.id,
-            // @ts-ignore
-            name: guild.name,
-            // @ts-ignore
-            iconUrl: guild.icon
-                // @ts-ignore
-                ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`
-                : "https://cdn.iconscout.com/icon/free/png-256/discord-3215389-2673807.png"
-        })));
-        res.send({ allGuilds, managedGuilds });
+            return res.redirect("/api/login");
+        const guilds = [];
+        await Promise.all(user.guilds.map(async (rawguild) => {
+            guilds.push({
+                id: rawguild.id,
+                name: rawguild.name,
+                iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
+                managed: new discord_js_1.Permissions().add(rawguild.permissions_new).has("ADMINISTRATOR")
+            });
+        }));
+        res.send(guilds);
     });
     done();
 };

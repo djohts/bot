@@ -29,7 +29,7 @@ export = () => {
 
     app.register(require("./routes/api"), { prefix: "/api" });
     app.register(require("./routes/util"), { prefix: "/util" });
-    app.register(require("./routes/dash"), { prefix: "/dashboard" });
+    app.register(require("./routes/dash"), { prefix: "/dash" });
     app.register(require("./routes/root"), { prefix: "/" });
 
     app.listen(config.port, "0.0.0.0");

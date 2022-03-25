@@ -30,6 +30,36 @@ export interface SlashCommand {
     run(interaction: CommandInteraction): Promise<void>
 };
 
+export interface SessionUser {
+    id: string,
+    username: string,
+    avatar: string | null,
+    discriminator: string,
+    public_flags: number,
+    flags: number,
+    banner: string | null,
+    banner_color: string | null,
+    accent_color: number,
+    locale: string,
+    mfa_enabled: boolean,
+    guilds: {
+        id: string,
+        name: string,
+        icon: string | null,
+        owner: boolean,
+        permissions: bigint,
+        features: string[],
+        permissions_new: string
+    }[]
+};
+
+export interface CustomGuild {
+    id: string,
+    name: string,
+    iconUrl: string | null,
+    managed: boolean
+};
+
 export class ModifiedClient extends Client {
     loading: boolean;
     manager: Manager;

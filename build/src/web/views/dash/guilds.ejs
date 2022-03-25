@@ -18,10 +18,19 @@
         </div>
     </body>
     <script>
-        window.onload = async () => {
-            await fetch("/api/user/guilds").then((r) => r.json()).then((r) => {
+        window.onload = () => {
+            fetch("/api/user/guilds").then((r) => r.json()).then((r) => {
                 console.log(r)
-                document.getElementById("guildList").innerHTML = "не готово";
+                document.getElementById("guildList").innerHTML = r.filter((g) => g.managed).map((g) => `
+                    <div class="this-guild">
+                        <img src="${g.iconUrl || "/util/defaultavatar.png"}" title="${g.name}" class="guild-icon" />
+
+                        <div class="manage-guild">
+                            <a id="this-href" href="/dash/guild/${g.id}">
+                                <button class="gen-button" id="manage-button">Manage</button>
+                            </a>
+                        </div>
+                    </div>`).join("")
             }).catch((e) => {
                 console.log(e);
                 document.getElementById("guildList").innerText = "произошла ашибка";
@@ -32,6 +41,8 @@
     <style>
         body {
             background-color: #0b0c10;
+            padding-left: 15vw;
+            padding-right: 15vw;
         }
 
         .guild-icon {
