@@ -19,7 +19,7 @@ import db from "../database/";
 export async function run(interaction: CommandInteraction) {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return await interaction.reply({ content: "❌ У меня нет прав для выдачи банов.", ephemeral: true });
-    if (interaction.options.getString("time") && !parseTime(interaction.options.getString("time")))
+    if (interaction.options.getString("duration") && !parseTime(interaction.options.getString("duration")))
         return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
@@ -36,8 +36,8 @@ export async function run(interaction: CommandInteraction) {
     let time = 0;
     let reason = interaction.options.getString("reason")?.trim();
     let purgedays = interaction.options.getInteger("purgedays");
-    if (!interaction.options.getString("time")) time = -1;
-    else time = Date.now() + parseTime(interaction.options.getString("time"));
+    if (!interaction.options.getString("duration")) time = -1;
+    else time = Date.now() + parseTime(interaction.options.getString("duration"));
 
     const dmemb = new MessageEmbed()
         .setAuthor({
@@ -46,7 +46,7 @@ export async function run(interaction: CommandInteraction) {
         })
         .setTitle("Вы были забанены")
         .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replaceAll("*", "\\*")}**)`, true);
-    if (time != -1) dmemb.addField("Время", `\`${prettyms(parseTime(interaction.options.getString("time")))}\``, true);
+    if (time != -1) dmemb.addField("Время", `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``, true);
     if (reason) dmemb.addField("Причина", reason);
 
     await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
