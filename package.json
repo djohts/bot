@@ -45,7 +45,7 @@
         "pretty-ms": "^7.0.1",
         "sanitize-filename": "^1.6.3",
         "stop-discord-phishing": "^0.2.0",
-        "undici": "^4.16.0",
+        "undici": "^5.0.0",
         "utf-8-validate": "^5.0.9",
         "zlib-sync": "^0.1.7"
     },
