@@ -1,7 +1,7 @@
 {
     "name": "djohbot",
     "version": "2.0.1",
-    "description": "djoh's random discord bot idk",
+    "description": "djoh's random discord bot",
     "main": "build/src/sharding",
     "scripts": {
         "launch": "npm run build && npm run start",
@@ -50,6 +50,7 @@
         "zlib-sync": "^0.1.7"
     },
     "devDependencies": {
+        "@types/ejs": "^3.1.0",
         "typescript": "4.6.3"
     }
 }
