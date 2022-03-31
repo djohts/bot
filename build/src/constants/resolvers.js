@@ -13,7 +13,7 @@ exports.paginate = paginate;
 ;
 function parseTime(input, outputType = "ms") {
     const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
-    let parse;
+    let parse = {};
     parse.nanosecond =
         parse.ns = 1 / 1e6;
     parse["µs"] =

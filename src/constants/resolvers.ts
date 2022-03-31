@@ -11,7 +11,7 @@ export function paginate(arr = [], size = 4) {
 export function parseTime(input: string, outputType = "ms") {
     const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
 
-    let parse: any;
+    let parse: any = {};
 
     parse.nanosecond =
         parse.ns = 1 / 1e6;
