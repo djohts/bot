@@ -16,7 +16,6 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         const guild: Guild | null = await manager.broadcastEval((bot: ModifiedClient, { id }) => {
             const { inspect } = require("util");
             const guild = bot.guilds.cache.get(id);
-            console.log(id, guild)
             return guild ? inspect(guild) : null;
         }, {
             shard: ShardClientUtil.shardIdForGuildId(id, manager.shards.size),

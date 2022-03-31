@@ -13,7 +13,6 @@ module.exports = (fastify, _, done) => {
         const guild = await sharding_1.manager.broadcastEval((bot, { id }) => {
             const { inspect } = require("util");
             const guild = bot.guilds.cache.get(id);
-            console.log(id, guild);
             return guild ? inspect(guild) : null;
         }, {
             shard: discord_js_1.ShardClientUtil.shardIdForGuildId(id, sharding_1.manager.shards.size),
