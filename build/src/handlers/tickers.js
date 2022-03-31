@@ -8,7 +8,7 @@ function updatePresence(client) {
     client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
         client.user.setPresence({
-            status: "idle",
+            status: "invisible",
             activities: [{ type: "PLAYING", name: `350? -> | ${gc} guilds` }],
         });
         setTimeout(() => updatePresence(client), 5 * 60 * 1000);
