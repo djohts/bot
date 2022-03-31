@@ -11,7 +11,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         if (
             !id ||
             !user ||
-            !new Permissions().add((user.guilds.find((guild) => guild.id === id).permissions) || "0" as any).has("ADMINISTRATOR")
+            !new Permissions().add(user.guilds.find((guild) => guild.id === id)?.permissions || "0" as any).has("ADMINISTRATOR")
         ) return res.redirect("/dash/guilds");
         const guild: Guild | null = await manager.broadcastEval((bot: ModifiedClient, { id }) => {
             const { inspect } = require("util");
