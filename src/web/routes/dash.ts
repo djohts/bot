@@ -6,12 +6,12 @@ import { ModifiedClient, SessionUser } from "../../constants/types";
 export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/", (req, res): any => res.redirect("/dash/guilds"));
     fastify.get("/guild/:id", async (req: any, res) => {
-        const id = req.params.id;
-        const user = req.session.user as SessionUser | null;
+        const id = req.params.id as string | undefined;
+        const user = req.session.user as SessionUser | undefined;
         if (
             !id ||
             !user ||
-            !new Permissions().add(user.guilds.find((guild) => guild.id === id).permissions as any).has("ADMINISTRATOR")
+            !new Permissions().add((user.guilds.find((guild) => guild.id === id).permissions) || "0" as any).has("ADMINISTRATOR")
         ) return res.redirect("/dash/guilds");
         const guild: Guild | null = await manager.broadcastEval((bot: ModifiedClient, { id }) => {
             const { inspect } = require("util");
