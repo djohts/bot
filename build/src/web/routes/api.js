@@ -63,10 +63,39 @@ module.exports = (fastify, _, done) => {
                 id: rawguild.id,
                 name: rawguild.name,
                 iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
-                managed: new discord_js_1.Permissions().add(rawguild.permissions_new).has("ADMINISTRATOR")
+                managed: new discord_js_1.Permissions().add(rawguild.permissions).has("ADMINISTRATOR")
             });
         }));
         res.send(guilds);
+    });
+    fastify.get("/bot/isinuguild/:guild", async (req, res) => {
+        const guildid = req.params.guild;
+        if (!guildid)
+            return res.send({ isinuguild: false });
+        const guild = await sharding_1.manager.broadcastEval((bot, { guildid }) => bot.guilds.cache.get(guildid) || null, {
+            shard: discord_js_1.ShardClientUtil.shardIdForGuildId(guildid, sharding_1.manager.shards.size),
+            context: { guildid }
+        });
+        if (!guild)
+            return res.send({ isinuguild: false });
+        res.send({ isinuguild: true });
+    });
+    fastify.get("/invite/:guildid", async (req, res) => {
+        const guildid = req.params.guildid;
+        const botid = config_1.default.client.id;
+        guildid ? res.redirect([
+            "https://discord.com/oauth2/authorize",
+            `?client_id=${botid}`,
+            `&guild_id=${guildid}`,
+            "&disable_guild_select=true",
+            "&scope=bot%20applications.commands",
+            "&permissions=1375450033182"
+        ].join("")) : res.redirect([
+            "https://discord.com/oauth2/authorize",
+            `?client_id=${botid}`,
+            "&scope=bot%20applications.commands",
+            "&permissions=1375450033182"
+        ].join(""));
     });
     done();
 };

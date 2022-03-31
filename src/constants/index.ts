@@ -2,7 +2,7 @@ import { GuildMember } from "discord.js";
 import config from "../../config";
 import db from "../database/";
 
-export function getPermissionLevel(member: GuildMember) {
+export const getPermissionLevel = (member: GuildMember, gdb?: any): 5 | 4 | 3 | 2 | 1 | 0 => {
     if (config.admins[0] == member.user.id) return 5; // bot owner
     if (config.admins.includes(member.user.id)) return 4; // bot admin
     if (member.guild.ownerId == member.user.id) return 3; // server owner
@@ -11,7 +11,7 @@ export function getPermissionLevel(member: GuildMember) {
 };
 
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-export function generateID() {
+export const generateID = (): string => {
     let id: string;
     const { generatedIds } = db.global.get();
 
@@ -25,13 +25,13 @@ export function generateID() {
 const medals = {
     "1й": "🥇", "2й": "🥈", "3й": "🥉"
 };
-const formatNumberSuffix = (n) => {
+const formatNumberSuffix = (n: number): string => {
     let str = `${n}`;
     if (str == "0") return "N/A";
     return str + "й";
 };
 
-export function formatScore(id: string, index: number, users: object, userid?: string) {
+export const formatScore = (id: string, index: number, users: object, userid?: string): string => {
     let suffix = formatNumberSuffix(index + 1);
     suffix = medals[suffix] || `**${suffix}**:`;
     if (userid == id) return `${suffix} *__<@${id}>, **счёт:** ${(users[id] || 0)}__*`;

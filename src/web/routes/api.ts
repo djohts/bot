@@ -3,7 +3,7 @@ import config from "../../../config";
 import discordoauth2 from "discord-oauth2";
 import { manager } from "../../sharding";
 import { ModifiedClient, SessionUser, CustomGuild } from "../../constants/types";
-import { Permissions } from "discord.js";
+import { Permissions, ShardClientUtil } from "discord.js";
 const oauth2 = new discordoauth2({
     clientId: config.client.id,
     clientSecret: config.client.secret,
@@ -53,7 +53,6 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         req.session.user.guilds = await oauth2.getUserGuilds(a.access_token);
         res.redirect(req.session.lastPage);
     });
-
     fastify.get("/user/guilds", async (req: any, res) => {
         const user = req.session.user as SessionUser | null;
         if (!user) return res.redirect("/api/login");
@@ -65,11 +64,38 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 id: rawguild.id,
                 name: rawguild.name,
                 iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
-                managed: new Permissions().add(rawguild.permissions_new as any).has("ADMINISTRATOR")
+                managed: new Permissions().add(rawguild.permissions as any).has("ADMINISTRATOR")
             });
         }));
 
         res.send(guilds);
     });
+    fastify.get("/bot/isinuguild/:guild", async (req: any, res) => {
+        const guildid = req.params.guild;
+        if (!guildid) return res.send({ isinuguild: false });
+        const guild = await manager.broadcastEval((bot: ModifiedClient, { guildid }) => bot.guilds.cache.get(guildid) || null, {
+            shard: ShardClientUtil.shardIdForGuildId(guildid, manager.shards.size),
+            context: { guildid }
+        });
+        if (!guild) return res.send({ isinuguild: false });
+        res.send({ isinuguild: true });
+    });
+    fastify.get("/invite/:guildid", async (req: any, res) => {
+        const guildid = req.params.guildid;
+        const botid = config.client.id;
+        guildid ? res.redirect([
+            "https://discord.com/oauth2/authorize",
+            `?client_id=${botid}`,
+            `&guild_id=${guildid}`,
+            "&disable_guild_select=true",
+            "&scope=bot%20applications.commands",
+            "&permissions=1375450033182"
+        ].join("")) : res.redirect([
+            "https://discord.com/oauth2/authorize",
+            `?client_id=${botid}`,
+            "&scope=bot%20applications.commands",
+            "&permissions=1375450033182"
+        ].join(""));
+    })
     done();
 };

@@ -32,7 +32,7 @@ export = async (guild: Guild) => {
                         await alert?.edit(`💢 Идёт подготовка канала. **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => null);
                     };
                     if (processing && !fail) {
-                        messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { fail = true; return null });
+                        messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { fail = true; return null; });
                         if (messages.filter((m) => m.id != alert.id).size) await sleep(3500);
                     };
                 };
@@ -40,14 +40,14 @@ export = async (guild: Guild) => {
                 if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission }).catch(() => null);
                 if (fail) await alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
                 else await alert?.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`)
-                    .then(() => setTimeout(() => deleteMessage(alert), 20 * 1000))
+                    .then(() => setTimeout(() => deleteMessage(alert), 10 * 1000))
                     .catch(() => null);
             };
         };
     } catch (e) {
         console.log(e);
         alert?.edit("❌ Что-то пошло не так при подготовке канала.")
-            .then(() => setTimeout(() => deleteMessage(alert), 20 * 1000))
+            .then(() => setTimeout(() => deleteMessage(alert), 10 * 1000))
             .catch(() => null);
     };
 };

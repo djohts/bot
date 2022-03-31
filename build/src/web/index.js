@@ -7,6 +7,7 @@ const fastify_1 = __importDefault(require("fastify"));
 const fastify_session_1 = __importDefault(require("fastify-session"));
 const fastify_cookie_1 = __importDefault(require("fastify-cookie"));
 const point_of_view_1 = __importDefault(require("point-of-view"));
+const ejs_1 = __importDefault(require("ejs"));
 module.exports = () => {
     const app = (0, fastify_1.default)();
     app.register(fastify_cookie_1.default);
@@ -19,9 +20,7 @@ module.exports = () => {
         }
     });
     app.register(point_of_view_1.default, {
-        engine: {
-            ejs: require("ejs")
-        },
+        engine: { ejs: ejs_1.default },
         root: __dirname + "/views/"
     });
     app.addHook("preHandler", (req, _, next) => {

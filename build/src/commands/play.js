@@ -33,8 +33,11 @@ async function run(interaction) {
         textChannel: interaction.channelId,
         selfDeafen: true
     });
-    if (player.state != "CONNECTED")
+    if (player.state != "CONNECTED") {
         player.connect();
+        player.setVolume(20);
+    }
+    ;
     if (player.queue.totalSize + 1 > 25)
         return await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");
     else

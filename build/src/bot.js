@@ -6,12 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.linkRates = exports.shard = exports.client = void 0;
 require("nodejs-better-console").overrideConsole();
 const fs_1 = __importDefault(require("fs"));
+const database_1 = __importDefault(require("./database/"));
 const discord_js_1 = __importDefault(require("discord.js"));
-const config_1 = __importDefault(require("../config"));
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
+const tickers_1 = __importDefault(require("./handlers/tickers"));
 const lava_1 = __importDefault(require("./handlers/lava"));
 const prepareGuilds_1 = __importDefault(require("./handlers/prepareGuilds"));
-const tickers_1 = __importDefault(require("./handlers/tickers"));
+const slash_1 = require("./handlers/interactions/slash");
 exports.client = new discord_js_1.default.Client({
     makeCache: discord_js_1.default.Options.cacheWithLimits({
         MessageManager: {
@@ -31,10 +32,9 @@ exports.client = new discord_js_1.default.Client({
             }]
     }
 });
-const database_1 = __importDefault(require("./database/"));
-const callbacks_1 = require("./constants/callbacks");
+exports.client.db = database_1.default;
 require("discord-logs")(exports.client);
-const util_1 = __importDefault(require("util"));
+const util_1 = require("util");
 exports.shard = "[Shard N/A]";
 exports.linkRates = new Map();
 exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
@@ -42,7 +42,7 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     exports.shard = `[Shard ${shardId}]`;
     exports.client.loading = true;
     let slashPostStart = Date.now();
-    require("./handlers/interactions/slash").registerCommands(exports.client).then(() => {
+    (0, slash_1.registerCommands)(exports.client).then(() => {
         console.log(`${exports.shard} Refreshed slash commands. [${(0, pretty_ms_1.default)(Date.now() - slashPostStart)}]`);
     });
     console.log(`${exports.shard} Ready as ${exports.client.user?.tag}! Caching guilds.`);
@@ -54,7 +54,7 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     for (const id of disabledGuilds)
         exports.linkRates.set(id, new Set());
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => exports.client.user?.setPresence({
-        status: "idle",
+        status: "dnd",
         activities: [{
                 type: "WATCHING",
                 name: `${Math.floor((completed / exports.client.guilds.cache.size) * 100)}%`
@@ -74,8 +74,8 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     exports.client.manager = (0, lava_1.default)(exports.client);
     exports.client.on("raw", (d) => exports.client.manager.updateVoiceState(d));
 });
-const commandFiles = fs_1.default.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
-for (const filename of commandFiles) {
+const eventFiles = fs_1.default.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
+for (const filename of eventFiles) {
     const file = require(`./events/${filename}`);
     if (file.once) {
         exports.client.once(file.name, (...args) => file.run(exports.client, ...args));
@@ -86,18 +86,18 @@ for (const filename of commandFiles) {
     ;
 }
 ;
-exports.client.on("voiceChannelJoin", callbacks_1.voicesJoin);
-exports.client.on("voiceChannelLeave", callbacks_1.voicesLeave);
-exports.client.on("voiceChannelSwitch", callbacks_1.voicesSwitch);
-exports.client.on("error", (err) => console.error(`${exports.shard} Client error. ${util_1.default.inspect(err)}`));
-exports.client.on("rateLimit", (rateLimitInfo) => console.warn(`${exports.shard} Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
-exports.client.on("shardDisconnected", ({ code, reason }) => console.warn(`${exports.shard} Disconnected. (${code} - ${reason})`));
-exports.client.on("shardError", (err) => console.error(`${exports.shard} Error. ${util_1.default.inspect(err)}`));
-exports.client.on("shardResume", (_, replayedEvents) => console.log(`${exports.shard} Resumed. ${replayedEvents} replayed events.`));
-exports.client.on("warn", (info) => console.warn(`${exports.shard} Warning. ${info}`));
-database_1.default.connection.then(() => exports.client.login(config_1.default.token)).catch(() => exports.client.shard.send("respawn"));
-process.on("unhandledRejection", (e) => console.error(exports.shard, e));
-process.on("uncaughtException", (e) => {
+exports.client.on("error", (err) => console.error(exports.shard, `Client error. ${(0, util_1.inspect)(err)}`));
+exports.client.on("rateLimit", (rateLimitInfo) => console.warn(exports.shard, `Rate limited.\n${(0, util_1.inspect)(rateLimitInfo)}`));
+exports.client.on("shardDisconnected", ({ code, reason }) => console.warn(exports.shard, `Disconnected. (${code} - ${reason})`));
+exports.client.on("shardError", (err) => console.error(exports.shard, `Error. ${(0, util_1.inspect)(err)}`));
+exports.client.on("shardResume", (_, replayedEvents) => console.warn(exports.shard, `Resumed. ${replayedEvents} replayed events.`));
+exports.client.on("warn", (info) => console.warn(exports.shard, `Warning. ${info}`));
+database_1.default.connection.then(() => exports.client.login()).catch((e) => {
     console.error(exports.shard, e);
+    exports.client.shard.send("respawn");
+});
+process.on("unhandledRejection", (e) => console.error(exports.shard, "unhandledRejection:", e));
+process.on("uncaughtException", (e) => {
+    console.error(exports.shard, "uncaughtException", e);
     exports.client.shard.send("respawn");
 });

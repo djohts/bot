@@ -9,15 +9,13 @@ function updatePresence(client) {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
         client.user.setPresence({
             status: "idle",
-            activities: [{ type: "PLAYING", name: `300? -> | ${gc} guilds` }],
+            activities: [{ type: "PLAYING", name: `350? -> | ${gc} guilds` }],
         });
         setTimeout(() => updatePresence(client), 5 * 60 * 1000);
     });
 }
 ;
 function checkMutes(client) {
-    if (!(client instanceof discord_js_1.Client))
-        return;
     Promise.all(client.guilds.cache.map(async (guild) => {
         if (!guild.available)
             return;
@@ -44,8 +42,6 @@ function checkMutes(client) {
 }
 ;
 function checkBans(client) {
-    if (!(client instanceof discord_js_1.Client))
-        return;
     Promise.all(client.guilds.cache.map(async (guild) => {
         if (!guild.available)
             return;

@@ -4,11 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const erela_js_1 = require("erela.js");
 const erela_js_spotify_1 = __importDefault(require("erela.js-spotify"));
-const { lava: { nodes, spotify: { clientID, clientSecret } } } = require("../../config");
+const config_1 = __importDefault(require("../../config"));
+const { lava: { nodes, spotify: { clientID, clientSecret } } } = config_1.default;
 const bot_1 = require("../bot");
 module.exports = (client) => new erela_js_1.Manager({
     nodes: nodes,
     plugins: [new erela_js_spotify_1.default({ clientID, clientSecret })],
+    defaultSearchPlatform: "youtube",
     send(id, payload) {
         client.guilds.cache.get(id)?.shard.send(payload);
     }
@@ -33,9 +35,9 @@ module.exports = (client) => new erela_js_1.Manager({
     ;
     text?.send(`Играю:\n\`${track.title}\``).catch(() => null);
 })
-    .on("queueEnd", async ({ textChannel, destroy }) => {
-    const text = client.channels.cache.get(textChannel);
+    .on("queueEnd", async (player) => {
+    const text = client.channels.cache.get(player.textChannel);
     text?.send("Очередь пуста. Останавливаю плеер.").catch(() => null);
-    destroy();
+    player.destroy();
 })
     .init(client.user.id);

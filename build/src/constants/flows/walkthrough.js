@@ -29,7 +29,7 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
             await pinned.edit({ content: null, embeds: [await generateEmbed()] });
             const inputs = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
             const input = inputs.first(), messagesToDelete = [input];
-            const args = input.content?.split(" ");
+            const args = input?.content.split(" ");
             const command = args.shift().toLowerCase();
             if (command == "edit" && ["trigger", "action"].includes(args[0]) && parseInt(args[1])) {
                 const slot = parseInt(args[1]);
@@ -45,7 +45,7 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
                                     timestamp: Date.now()
                                 }]
                         }));
-                        const selections = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 1800000, errors: ["time"] });
+                        const selections = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
                         const selection = selections.first(), newTriggerIndex = parseInt(selection.content);
                         messagesToDelete.push(selection);
                         if (newTriggerIndex == 0) {
@@ -72,7 +72,9 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
                                             timestamp: Date.now()
                                         }]
                                 }));
-                                const values = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 1800000, errors: ["time"] });
+                                const values = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
                                 const value = values.first(), convertedValue = await property.convert(value.content, { guild });
                                 messagesToDelete.push(value);
                                 if (convertedValue == null) {
@@ -99,7 +101,9 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
                                             timestamp: Date.now()
                                         }]
                                 }));
-                                const confirmations = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 1800000, errors: ["time"] });
+                                const confirmations = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
                                 const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() == "да";
                                 messagesToDelete.push(confirmation);
                                 if (confirmed) {
@@ -137,7 +141,9 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
                                     timestamp: Date.now()
                                 }]
                         }));
-                        const selections = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 1800000, errors: ["time"] });
+                        const selections = await channel.awaitMessages({
+                            filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                        });
                         const selection = selections.first(), newActionIndex = parseInt(selection.content);
                         messagesToDelete.push(selection);
                         if (newActionIndex == 0) {
@@ -164,7 +170,9 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
                                             timestamp: Date.now()
                                         }]
                                 }));
-                                const values = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 1800000, errors: ["time"] });
+                                const values = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
                                 const value = values.first(), convertedValue = await property.convert(value.content, { guild });
                                 messagesToDelete.push(value);
                                 if (convertedValue == null) {
@@ -191,7 +199,9 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
                                             timestamp: Date.now()
                                         }]
                                 }));
-                                const confirmations = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 1800000, errors: ["time"] });
+                                const confirmations = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
                                 const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() == "да";
                                 messagesToDelete.push(confirmation);
                                 if (confirmed) {
@@ -246,3 +256,4 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
     return successStatus;
 }
 exports.flowWalkthrough = flowWalkthrough;
+;

@@ -34,7 +34,10 @@ export async function run(interaction: CommandInteraction) {
         selfDeafen: true
     });
 
-    if (player.state != "CONNECTED") player.connect();
+    if (player.state != "CONNECTED") {
+        player.connect();
+        player.setVolume(20);
+    };
     if (player.queue.totalSize + 1 > 25) return await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");
     else player.queue.add(res.tracks[0]);
     await interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);

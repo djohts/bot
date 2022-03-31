@@ -1,26 +1,25 @@
-import { Client, GuildMember } from "discord.js";
+import { GuildMember } from "discord.js";
+import { ModifiedClient } from "../constants/types";
 import db from "../database/";
 
-export = (client: Client) => {
+export = (client: ModifiedClient) => {
     updatePresence(client);
     checkMutes(client);
     checkBans(client);
 };
 
-function updatePresence(client: Client) {
+function updatePresence(client: ModifiedClient) {
     client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
         client.user.setPresence({
             status: "idle",
-            activities: [{ type: "PLAYING", name: `300? -> | ${gc} guilds` }],
+            activities: [{ type: "PLAYING", name: `350? -> | ${gc} guilds` }],
         });
         setTimeout(() => updatePresence(client), 5 * 60 * 1000);
     });
 };
 
-function checkMutes(client: Client) {
-    if (!(client instanceof Client)) return;
-
+function checkMutes(client: ModifiedClient) {
     Promise.all(client.guilds.cache.map(async (guild) => {
         if (!guild.available) return;
 
@@ -48,9 +47,7 @@ function checkMutes(client: Client) {
     })).then(() => setTimeout(() => checkMutes(client), 2000));
 };
 
-function checkBans(client: Client) {
-    if (!(client instanceof Client)) return;
-
+function checkBans(client: ModifiedClient) {
     Promise.all(client.guilds.cache.map(async (guild) => {
         if (!guild.available) return;
 

@@ -22,7 +22,7 @@ const database_1 = __importDefault(require("../database/"));
 async function run(interaction) {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return await interaction.reply({ content: "❌ У меня нет прав для выдачи банов.", ephemeral: true });
-    if (interaction.options.getString("time") && !(0, resolvers_1.parseTime)(interaction.options.getString("time")))
+    if (interaction.options.getString("duration") && !(0, resolvers_1.parseTime)(interaction.options.getString("duration")))
         return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await database_1.default.guild(interaction.guild.id);
@@ -36,10 +36,10 @@ async function run(interaction) {
     let time = 0;
     let reason = interaction.options.getString("reason")?.trim();
     let purgedays = interaction.options.getInteger("purgedays");
-    if (!interaction.options.getString("time"))
+    if (!interaction.options.getString("duration"))
         time = -1;
     else
-        time = Date.now() + (0, resolvers_1.parseTime)(interaction.options.getString("time"));
+        time = Date.now() + (0, resolvers_1.parseTime)(interaction.options.getString("duration"));
     const dmemb = new discord_js_1.MessageEmbed()
         .setAuthor({
         name: interaction.guild.name,
@@ -48,7 +48,7 @@ async function run(interaction) {
         .setTitle("Вы были забанены")
         .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replaceAll("*", "\\*")}**)`, true);
     if (time != -1)
-        dmemb.addField("Время", `\`${(0, pretty_ms_1.default)((0, resolvers_1.parseTime)(interaction.options.getString("time")))}\``, true);
+        dmemb.addField("Время", `\`${(0, pretty_ms_1.default)((0, resolvers_1.parseTime)(interaction.options.getString("duration")))}\``, true);
     if (reason)
         dmemb.addField("Причина", reason);
     await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);

@@ -3,34 +3,30 @@
 <%- include("../partials/nav.ejs") %>
 
     <body>
-        <div id="guildList" style="text-align: center; margin-top: 100px; color: #fff;">
-            <!--
-                <div class="this-guild">
-                    <img src="url" class="guild-icon" />
-
-                    <div class="manage-guild">
-                        <a id="this-href" href="/dashboard/guild/id">
-                            <button class="gen-button" id="manage-button">Manage</button>
-                        </a>
-                    </div>
-                </div>
-                -->
-        </div>
+        <div id="guildList" style="text-align: center; margin-top: 100px; color: #fff;"></div>
     </body>
     <script>
         window.onload = () => {
-            fetch("/api/user/guilds").then((r) => r.json()).then((r) => {
+            fetch("/api/user/guilds").then((r) => r.json()).then(async (r) => {
                 console.log(r)
-                document.getElementById("guildList").innerHTML = r.filter((g) => g.managed).map((g) => `
-                    <div class="this-guild">
-                        <img src="${g.iconUrl || "/util/defaultavatar.png"}" title="${g.name}" class="guild-icon" />
+                const x = await Promise.all(r.filter((g) => g.managed).map(async (g) => {
+                    const isbotintheguild = await fetch(`/api/bot/isinuguild/${g.id}`).then((r) => r.json()).then((r) => r.isinuguild);
+
+                    const str = `<div class="this-guild">
+                        <img src="${g.iconUrl || "//bots.server-discord.com/img/defaultavatar.png"}" title="${g.name}" class="guild-icon" />
 
                         <div class="manage-guild">
-                            <a id="this-href" href="/dash/guild/${g.id}">
+                            ${isbotintheguild ? `<a id="this-href" href="/dash/guild/${g.id}">
                                 <button class="gen-button" id="manage-button">Manage</button>
-                            </a>
+                            </a>` : `<a id="this-href" target="_blank" href="/api/invite/${g.id}">
+                                <button class="gen-button" id="manage-button">Invite</button>
+                            </a>`}
                         </div>
-                    </div>`).join("")
+                    </div>`;
+
+                    return str;
+                })).then((a) => a.join(""));
+                document.getElementById("guildList").innerHTML = x;
             }).catch((e) => {
                 console.log(e);
                 document.getElementById("guildList").innerText = "произошла ашибка";

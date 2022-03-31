@@ -3,7 +3,8 @@ import config from "../../config";
 import fastify from "fastify";
 import fastifySession from "fastify-session";
 import fastifyCookie from "fastify-cookie";
-import pov from "point-of-view"
+import pov from "point-of-view";
+import ejs from "ejs";
 
 export = () => {
     const app: FastifyInstance = fastify();
@@ -17,9 +18,7 @@ export = () => {
         }
     });
     app.register(pov, {
-        engine: {
-            ejs: require("ejs")
-        },
+        engine: { ejs },
         root: __dirname + "/views/"
     });
     app.addHook("preHandler", (req, _, next) => {

@@ -47,9 +47,8 @@ export interface SessionUser {
         name: string,
         icon: string | null,
         owner: boolean,
-        permissions: bigint,
-        features: string[],
-        permissions_new: string
+        permissions: string,
+        features: string[]
     }[]
 };
 
@@ -61,6 +60,7 @@ export interface CustomGuild {
 };
 
 export class ModifiedClient extends Client {
+    db: typeof import("../database/");
     loading: boolean;
     manager: Manager;
     slashes: SlashCommand[];

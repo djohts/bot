@@ -50,7 +50,7 @@ module.exports = async (guild) => {
                     await alert?.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
                 else
                     await alert?.edit(`🔰 Канал готов! **\`[${(0, pretty_ms_1.default)(Date.now() - preparationStart)}]\`**`)
-                        .then(() => setTimeout(() => (0, utils_1.deleteMessage)(alert), 20 * 1000))
+                        .then(() => setTimeout(() => (0, utils_1.deleteMessage)(alert), 10 * 1000))
                         .catch(() => null);
             }
             ;
@@ -60,7 +60,7 @@ module.exports = async (guild) => {
     catch (e) {
         console.log(e);
         alert?.edit("❌ Что-то пошло не так при подготовке канала.")
-            .then(() => setTimeout(() => (0, utils_1.deleteMessage)(alert), 20 * 1000))
+            .then(() => setTimeout(() => (0, utils_1.deleteMessage)(alert), 10 * 1000))
             .catch(() => null);
     }
     ;

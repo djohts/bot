@@ -2,12 +2,14 @@ import { TextChannel, VoiceBasedChannel } from "discord.js";
 import { ModifiedClient } from "../constants/types";
 import { Manager } from "erela.js";
 import Spotify from "erela.js-spotify";
-const { lava: { nodes, spotify: { clientID, clientSecret } } } = require("../../config");
+import config from "../../config";
+const { lava: { nodes, spotify: { clientID, clientSecret } } } = config;
 import { shard } from "../bot";
 
 export = (client: ModifiedClient) => new Manager({
     nodes: nodes,
     plugins: [new Spotify({ clientID, clientSecret })],
+    defaultSearchPlatform: "youtube",
     send(id, payload) {
         client.guilds.cache.get(id)?.shard.send(payload);
     }
@@ -35,10 +37,10 @@ export = (client: ModifiedClient) => new Manager({
 
         text?.send(`Играю:\n\`${track.title}\``).catch(() => null);
     })
-    .on("queueEnd", async ({ textChannel, destroy }) => {
-        const text = client.channels.cache.get(textChannel) as TextChannel;
+    .on("queueEnd", async (player) => {
+        const text = client.channels.cache.get(player.textChannel) as TextChannel;
         text?.send("Очередь пуста. Останавливаю плеер.").catch(() => null);
 
-        destroy();
+        player.destroy();
     })
     .init(client.user.id);
