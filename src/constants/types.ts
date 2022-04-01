@@ -4,7 +4,6 @@ import { Manager, NodeOptions } from "erela.js";
 
 export interface Config {
     token: string,
-    sdcToken?: string,
     database_uri: string,
     admins: string[],
     lava: {
