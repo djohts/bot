@@ -19,17 +19,17 @@ module.exports = (client) => new erela_js_1.Manager({
     const text = client.channels.cache.get(textChannel);
     text?.send(`An error occured when trying to play \`${title}\`: ${error.exception?.cause || error.error}`).catch(() => null);
 })
-    .on("trackStuck", ({ textChannel }, { title }, error) => {
-    const text = client.channels.cache.get(textChannel);
+    .on("trackStuck", (player, { title }, error) => {
+    const text = client.channels.cache.get(player.textChannel);
     text?.send(`\`${title}\` got stuck.`).catch(() => null);
 })
     .on("nodeConnect", ({ options }) => console.log(`${bot_1.shard} Lava ${options.host}:${options.port} connected.`))
     .on("nodeError", ({ options }, error) => console.log(`${bot_1.shard} Lava ${options.host}:${options.port} had an error: ${error.message}`))
-    .on("trackStart", async ({ voiceChannel, textChannel, destroy }, track) => {
-    const voice = client.channels.cache.get(voiceChannel);
-    const text = client.channels.cache.get(textChannel);
+    .on("trackStart", async (player, track) => {
+    const voice = client.channels.cache.get(player.voiceChannel);
+    const text = client.channels.cache.get(player.textChannel);
     if (!voice?.members.filter((m) => m.user.id != client.user.id).size) {
-        destroy();
+        player.destroy();
         return text?.send("Все участники покинули голосовой канал. Останавливаю плеер.").catch(() => null);
     }
     ;
