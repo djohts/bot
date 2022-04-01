@@ -25,7 +25,7 @@ exports.client = new discord_js_1.default.Client({
     }),
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
     presence: {
-        status: "invisible",
+        status: "dnd",
         activities: [{
                 type: "WATCHING",
                 name: "the loading screen",
@@ -54,7 +54,7 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     for (const id of disabledGuilds)
         exports.linkRates.set(id, new Set());
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => exports.client.user?.setPresence({
-        status: "invisible",
+        status: "dnd",
         activities: [{
                 type: "WATCHING",
                 name: `${Math.floor((completed / exports.client.guilds.cache.size) * 100)}%`
