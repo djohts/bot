@@ -14,8 +14,8 @@ export = (client: ModifiedClient) => new Manager({
         client.guilds.cache.get(id)?.shard.send(payload);
     }
 })
-    .on("trackError", ({ textChannel }, { title }, error) => {
-        const text = client.channels.cache.get(textChannel) as TextChannel;
+    .on("trackError", (player, { title }, error) => {
+        const text = client.channels.cache.get(player.textChannel) as TextChannel;
 
         text?.send(`An error occured when trying to play \`${title}\`: ${error.exception?.cause || error.error}`).catch(() => null);
     })

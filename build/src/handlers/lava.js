@@ -15,8 +15,8 @@ module.exports = (client) => new erela_js_1.Manager({
         client.guilds.cache.get(id)?.shard.send(payload);
     }
 })
-    .on("trackError", ({ textChannel }, { title }, error) => {
-    const text = client.channels.cache.get(textChannel);
+    .on("trackError", (player, { title }, error) => {
+    const text = client.channels.cache.get(player.textChannel);
     text?.send(`An error occured when trying to play \`${title}\`: ${error.exception?.cause || error.error}`).catch(() => null);
 })
     .on("trackStuck", (player, { title }, error) => {
