@@ -234,7 +234,7 @@ function generateMessage(interaction, pages, page) {
         embeds: [
             new discord_js_1.MessageEmbed()
                 .setTitle(`Список РПК - ${interaction.guild.name}`)
-                .setDescription(pages[page].join("\n"))
+                .setDescription(pages[page]?.join("\n") || "Нет РПК")
                 .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
         ],
         fetchReply: true,

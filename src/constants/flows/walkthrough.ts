@@ -25,7 +25,7 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
             const input = inputs.first(), messagesToDelete = [input];
 
             const args = input?.content.split(" ");
-            const command = args.shift().toLowerCase();
+            const command = args?.shift().toLowerCase();
 
             if (command == "edit" && ["trigger", "action"].includes(args[0]) && parseInt(args[1])) {
                 const slot = parseInt(args[1]);

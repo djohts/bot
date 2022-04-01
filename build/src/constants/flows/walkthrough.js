@@ -30,7 +30,7 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
             const inputs = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
             const input = inputs.first(), messagesToDelete = [input];
             const args = input?.content.split(" ");
-            const command = args.shift().toLowerCase();
+            const command = args?.shift().toLowerCase();
             if (command == "edit" && ["trigger", "action"].includes(args[0]) && parseInt(args[1])) {
                 const slot = parseInt(args[1]);
                 if (args[0] == "trigger") {

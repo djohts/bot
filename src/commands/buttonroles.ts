@@ -247,7 +247,7 @@ function generateMessage(interaction: CommandInteraction, pages: string[][], pag
         embeds: [
             new MessageEmbed()
                 .setTitle(`Список РПК - ${interaction.guild.name}`)
-                .setDescription(pages[page].join("\n"))
+                .setDescription(pages[page]?.join("\n") || "Нет РПК")
                 .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
         ],
         fetchReply: true,
