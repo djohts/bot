@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
 const builders_1 = require("@discordjs/builders");
+const database_1 = __importDefault(require("../database/"));
 exports.options = new builders_1.SlashCommandBuilder()
     .setName("settings")
     .setDescription("Настройки бота на сервере.")
@@ -20,13 +21,12 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addSubcommand((c) => c.setName("counting").setDescription("Настройки модуля счёта.").addChannelOption((o) => o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelType(0)))
     .toJSON();
 exports.permission = 2;
-const database_1 = __importDefault(require("../database/"));
-async function run(interaction) {
+const run = async (interaction) => {
     const cmd = interaction.options.getSubcommand();
     const gset = await database_1.default.settings(interaction.guild.id);
     const gdb = await database_1.default.guild(interaction.guild.id);
     if (cmd == "get") {
-        return await interaction.reply({
+        await interaction.reply({
             embeds: [{
                     title: "Настройки " + interaction.guild.name,
                     timestamp: Date.now(),
@@ -64,8 +64,7 @@ async function run(interaction) {
                                 "<:dnd:887393623786803270> **`Выключено`**",
                             inline: true
                         }]
-                }],
-            ephemeral: (gdb.get().channel == interaction.channel.id)
+                }]
         });
     }
     else if (cmd == "toggle") {
@@ -79,10 +78,7 @@ async function run(interaction) {
                 gset.set("delMuted", true);
                 idk = "**`Удаление сообщений замьюченых участников`** было включено.";
             })();
-            return await interaction.reply({
-                content: idk,
-                ephemeral: (gdb.get().channel == interaction.channel.id)
-            });
+            await interaction.reply({ content: idk });
         }
         else if (type == "purgePinned") {
             gset.get().purgePinned ? (() => {
@@ -92,10 +88,7 @@ async function run(interaction) {
                 gset.set("purgePinned", true);
                 idk = "**`Удаление закреплённых сообщений`** было включено.";
             })();
-            return await interaction.reply({
-                content: idk,
-                ephemeral: (gdb.get().channel == interaction.channel.id)
-            });
+            await interaction.reply({ content: idk });
         }
         else if (type == "voices") {
             gset.get().voices.enabled ? (() => {
@@ -105,10 +98,7 @@ async function run(interaction) {
                 gset.setOnObject("voices", "enabled", true);
                 idk = "**`Временные голосовые каналы`** были включены.";
             })();
-            return await interaction.reply({
-                content: idk,
-                ephemeral: (gdb.get().channel == interaction.channel.id)
-            });
+            await interaction.reply({ content: idk });
         }
         else if (type == "detectScamLinks") {
             gset.get().detectScamLinks ? (() => {
@@ -118,10 +108,7 @@ async function run(interaction) {
                 gset.set("detectScamLinks", true);
                 idk = "**`Проверка сообщений на вредоносные ссылки`** была включена.";
             })();
-            return await interaction.reply({
-                content: idk,
-                ephemeral: (gdb.get().channel == interaction.channel.id)
-            });
+            await interaction.reply({ content: idk });
         }
         ;
         ;
@@ -129,21 +116,16 @@ async function run(interaction) {
     else if (cmd == "muterole") {
         const role = interaction.options.getRole("role");
         gset.set("muteRole", role.id);
-        return interaction.reply({
-            content: "✅ Роль мьюта была установлена." +
-                (interaction.guild.me.roles.cache.sort((a, b) => b.position - a.position).first().rawPosition <=
-                    role.rawPosition ?
-                    "\n⚠️ Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**" : ""),
-            ephemeral: true
+        await interaction.reply({
+            content: "✅ Роль мьюта была установлена." + (interaction.guild.me.roles.highest.rawPosition <= role.rawPosition
+                ? "\n⚠️ Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**"
+                : "")
         });
     }
     else if (cmd == "setlobby") {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);
-        return interaction.reply({
-            content: `✅ Лобби было установлено. (${lobby})`,
-            ephemeral: (gdb.get().channel == interaction.channel.id)
-        });
+        await interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
     }
     else if (cmd == "setchannel") {
         let counting = interaction.options.getChannel("channel");
@@ -151,14 +133,10 @@ async function run(interaction) {
             channel: counting.id,
             count: 0,
             user: "",
-            message: (parseInt(interaction.id) + 1).toString()
+            message: `${parseInt(interaction.id) + 1}`
         });
-        interaction.reply({
-            content: `✅ Канал счёта был установлен. (${counting})`,
-            ephemeral: (gdb.get().channel == interaction.channel.id)
-        });
+        await interaction.reply({ content: `✅ Канал счёта был установлен. (${counting})` });
     }
     ;
-}
+};
 exports.run = run;
-;

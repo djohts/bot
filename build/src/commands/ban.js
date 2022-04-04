@@ -19,7 +19,7 @@ const constants_1 = require("../constants/");
 const resolvers_1 = require("../constants/resolvers");
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
 const database_1 = __importDefault(require("../database/"));
-async function run(interaction) {
+const run = async (interaction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return await interaction.reply({ content: "❌ У меня нет прав для выдачи банов.", ephemeral: true });
     if (interaction.options.getString("duration") && !(0, resolvers_1.parseTime)(interaction.options.getString("duration")))
@@ -64,6 +64,5 @@ async function run(interaction) {
     }).catch(async () => {
         await interaction.editReply({ content: "❌ Произошла неизвестная ошибка." });
     });
-}
+};
 exports.run = run;
-;

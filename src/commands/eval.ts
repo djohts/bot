@@ -7,9 +7,9 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 4;
 
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, MessageActionRow, MessageButton } from "discord.js";
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     await interaction.deferReply();
 
     try {
@@ -18,12 +18,20 @@ export async function run(interaction: CommandInteraction) {
 
         if (evaled.length >= 2000) return await interaction.editReply("✅");
 
-        return await interaction.editReply(`\`\`\`js\n${evaled}\n\`\`\``);
+        return await interaction.editReply({
+            content: `\`\`\`js\n${evaled}\n\`\`\``,
+            components: [
+                new MessageActionRow().setComponents([
+                    new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                ])]
+        });
     } catch (e) {
         let err;
         if (typeof e == "string") err = e.replace(/`/g, "`" + String.fromCharCode(8203));
         else err = e;
 
-        return await interaction.editReply(`\`\`\`fix\n${err}\n\`\`\``);
+        return await interaction.editReply({
+            content: `\`\`\`fix\n${err}\n\`\`\``
+        });
     };
 };

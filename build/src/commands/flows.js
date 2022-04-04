@@ -20,18 +20,18 @@ const constants_1 = require("../constants/");
 const walkthrough_1 = require("../constants/flows/walkthrough");
 const flows_1 = __importDefault(require("../constants/flows/"));
 const { limitFlows, limitTriggers, limitActions } = flows_1.default;
-async function run(interaction) {
+const run = async (interaction) => {
     const gdb = await database_1.default.guild(interaction.guild.id);
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
     if (cmd == "create") {
         if (Object.keys(flows).length >= limitFlows)
-            return interaction.reply({
+            return await interaction.reply({
                 content: `❌ Вы можете иметь только ${limitFlows} потоков.`,
                 ephemeral: true
             });
         if (!interaction.guild.me.permissions.has("MANAGE_CHANNELS"))
-            return interaction.reply({
+            return await interaction.reply({
                 content: "❌ У бота нету прав на создание каналов.",
                 ephemeral: true
             });
@@ -117,15 +117,14 @@ async function run(interaction) {
             return await interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
         gdb.removeFromObject("flows", flowId);
         database_1.default.global.removeFromArray("generatedIds", flowId);
-        return interaction.reply({
-            content: `✅ Поток \`${flowId}\` был удалён.`,
-            ephemeral: (gdb.get().channel == interaction.channel.id)
+        await interaction.reply({
+            content: `✅ Поток \`${flowId}\` был удалён.`
         });
     }
     else if (cmd === "list") {
         const flowIds = Object.keys(flows).slice(0, limitFlows);
         if (flowIds.length) {
-            return interaction.reply({
+            await interaction.reply({
                 embeds: [{
                         title: "Список потоков",
                         description: `У Вас использовано ${flowIds.length} из ${limitFlows} потоков.`,
@@ -145,37 +144,30 @@ async function run(interaction) {
                     }],
                 components: [
                     new discord_js_1.MessageActionRow().setComponents([
-                        new discord_js_1.MessageButton()
-                            .setCustomId("reply:delete")
-                            .setStyle("DANGER")
-                            .setEmoji("🗑")
+                        new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                     ])
                 ]
             });
         }
         else
-            return interaction.reply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
+            await interaction.reply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
     }
     ;
-}
+};
 exports.run = run;
-;
-function cutFieldValue(value) {
+const cutFieldValue = (value) => {
     if (Array.isArray(value))
         value = value.join("\n");
     if (value.length > 1024)
         return value.slice(0, 1014) + " **[...]**";
     else
         return value;
-}
-;
-async function formatTriggers(flow) {
+};
+const formatTriggers = async (flow) => {
     const formatted = await Promise.all(flow.triggers.slice(0, limitTriggers).filter((t) => t).map(async (trigger) => `• ${await (0, walkthrough_1.formatExplanation)(trigger)}`));
     return formatted.join("\n");
-}
-;
-async function formatActions(flow) {
+};
+const formatActions = async (flow) => {
     const formatted = await Promise.all(flow.actions.slice(0, limitActions).filter((a) => a).map(async (action) => `• ${await (0, walkthrough_1.formatExplanation)(action)}`));
     return formatted.join("\n");
-}
-;
+};

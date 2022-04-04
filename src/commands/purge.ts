@@ -1,4 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+const cooldowns = new Set();
+import { CommandInteraction } from "discord.js";
+import db from "../database/";
 
 export const options = new SlashCommandBuilder()
     .setName("purge")
@@ -8,15 +11,11 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 1;
 
-const cooldowns = new Set();
-import { CommandInteraction } from "discord.js";
-import db from "../database/";
-
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     if (interaction.channel.type == "DM") return;
     if (cooldowns.has(interaction.channel.id))
-        return interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
-    else cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 4000);
+        return await interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
+    else cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 3500);
 
     const gsdb = await db.settings(interaction.guild.id);
 
@@ -32,7 +31,7 @@ export async function run(interaction: CommandInteraction) {
 
     const purged = await interaction.channel.bulkDelete(toDelete, true);
 
-    return await interaction.reply({
+    await interaction.reply({
         content: (
             purged.size ?
                 "✅ Удалено " + (
@@ -43,7 +42,6 @@ export async function run(interaction: CommandInteraction) {
                             purged.size + " сообщений"
                 ) :
                 "Произошла ошибка при подсчёте удалённых сообщений."
-        ),
-        ephemeral: true
+        )
     });
 };

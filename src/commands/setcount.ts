@@ -1,4 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { CommandInteraction } from "discord.js";
+import db from "../database/";
 
 export const options = new SlashCommandBuilder()
     .setName("setcount")
@@ -7,17 +9,11 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 1;
 
-import { CommandInteraction } from "discord.js";
-import db from "../database/";
-
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     const gdb = await db.guild(interaction.guild.id);
     const count = interaction.options.getInteger("count");
 
     gdb.set("count", count);
 
-    return interaction.reply({
-        content: `✅ Новый текущий счёт - **\`${count}\`**.`,
-        ephemeral: (gdb.get().channel == interaction.channel.id)
-    });
+    await interaction.reply({ content: `✅ Новый текущий счёт - **\`${count}\`**.` });
 };

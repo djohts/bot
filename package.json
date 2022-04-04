@@ -1,6 +1,6 @@
 {
     "name": "djohbot",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "description": "djoh's random discord bot",
     "main": "build/src/sharding",
     "scripts": {

@@ -19,9 +19,9 @@ export = async (message: Message) => {
     ) return deleteMessage(message);
 
     if (
-        (!modules.includes("allow-spam") && message.author.id == user) ||
-        (!modules.includes("talking") && content != (count + 1).toString()) ||
-        content.split(" ")[0] != (count + 1).toString()
+        (!modules.includes("allow-spam") && message.author.id === user) ||
+        (!modules.includes("talking") && content !== `${count + 1}`) ||
+        content.split(" ")[0] != `${count + 1}`
     ) {
         const countData = {
             count,
@@ -53,7 +53,7 @@ export = async (message: Message) => {
     ) return;
     if (modules.includes("webhook")) try {
         const webhooks = await message.channel.fetchWebhooks();
-        let webhook: Webhook = webhooks.find((w: Webhook) => w.name == "Counting");
+        let webhook: Webhook | null = webhooks.find((w: Webhook) => w.name === "Counting");
         if (!webhook) webhook = await message.channel.createWebhook("Counting");
 
         if (webhook) {

@@ -10,17 +10,17 @@ import { CommandInteraction, GuildMember } from "discord.js";
 import { ModifiedClient } from "../constants/types";
 import db from "../database/";
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     const client = interaction.client as ModifiedClient;
     const member = interaction.member as GuildMember;
     const gdb = await db.guild(interaction.guild.id);
-    if (gdb.get().channel == interaction.channelId) return interaction.reply({ content: "❌ Эта команда недоступна в данном канале.", ephemeral: true });
 
-    if (!member.voice.channel) return interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
+    if (!member.voice.channel)
+        return await interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
     if (
         interaction.guild.me.voice.channel &&
-        member.voice.channel.id != interaction.guild.me.voice.channel.id
-    ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
+        member.voice.channel.id !== interaction.guild.me.voice.channel.id
+    ) return await interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
 
     const player = client.manager.get(interaction.guildId);
     if (!player) {

@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
 const builders_1 = require("@discordjs/builders");
+const cooldowns = new Set();
+const database_1 = __importDefault(require("../database/"));
 exports.options = new builders_1.SlashCommandBuilder()
     .setName("purge")
     .setDescription("Удалить указанное количество сообщений в канале.")
@@ -12,15 +14,13 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addUserOption((o) => o.setName("member").setDescription("Участник, чьи сообщения должны быть очищены."))
     .toJSON();
 exports.permission = 1;
-const cooldowns = new Set();
-const database_1 = __importDefault(require("../database/"));
-async function run(interaction) {
+const run = async (interaction) => {
     if (interaction.channel.type == "DM")
         return;
     if (cooldowns.has(interaction.channel.id))
-        return interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
+        return await interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
     else
-        cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 4000);
+        cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 3500);
     const gsdb = await database_1.default.settings(interaction.guild.id);
     if (!interaction.channel.permissionsFor(interaction.guild.me).has("MANAGE_MESSAGES"))
         return await interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
@@ -33,16 +33,14 @@ async function run(interaction) {
     if (!toDelete.size)
         return await interaction.reply({ content: "❌ Не удалось найти сообщений для удаления.", ephemeral: true });
     const purged = await interaction.channel.bulkDelete(toDelete, true);
-    return await interaction.reply({
+    await interaction.reply({
         content: (purged.size ?
             "✅ Удалено " + (purged.size == 1 ?
                 purged.size + " сообщение" :
                 [2, 3, 4].includes(purged.size) ?
                     purged.size + " сообщения" :
                     purged.size + " сообщений") :
-            "Произошла ошибка при подсчёте удалённых сообщений."),
-        ephemeral: true
+            "Произошла ошибка при подсчёте удалённых сообщений.")
     });
-}
+};
 exports.run = run;
-;

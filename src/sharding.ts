@@ -23,5 +23,5 @@ if (config.port) {
 
 manager.spawn();
 
-process.on("unhandledRejection", (e) => console.error("[Manager]", e));
-process.on("uncaughtException", (e) => console.error("[Manager]", e));
+process.on("unhandledRejection", (e) => console.error("[Manager]", "unhandledRejection:", e));
+process.on("uncaughtException", (e) => console.error("[Manager]", "uncaughtException:", e));

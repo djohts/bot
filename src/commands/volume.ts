@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, GuildMember } from "discord.js";
 import { ModifiedClient } from "../constants/types";
-import db from "../database/";
 
 export const options = new SlashCommandBuilder()
     .setName("volume")
@@ -10,18 +9,23 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 0;
 
-export async function run(interaction: CommandInteraction) {
-    if (!(interaction.member instanceof GuildMember)) return;
+export const run = async (interaction: CommandInteraction): Promise<any> => {
+    const member = interaction.member as GuildMember;
     const client = interaction.client as ModifiedClient;
-    const gdb = await db.guild(interaction.guild.id);
+    const volume = interaction.options.getInteger("volume");
 
-    if (gdb.get().channel == interaction.channelId) return interaction.reply({ content: "❌ Эта команда недоступна в данном канале.", ephemeral: true });
-
-    if (!interaction.member.voice.channel) return interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
+    if (!member.voice.channel)
+        return await interaction.reply({
+            content: "❌ Вы должны находится в голосовом канале.",
+            ephemeral: true
+        });
     if (
         interaction.guild.me.voice.channel &&
-        interaction.member.voice.channel.id != interaction.guild.me.voice.channel.id
-    ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
+        member.voice.channel.id !== interaction.guild.me.voice.channel.id
+    ) return await interaction.reply({
+        content: "❌ Вы должны находится в том же голосовом канале, что и я.",
+        ephemeral: true
+    });
 
     const player = client.manager.get(interaction.guildId);
     if (!player) {
@@ -31,6 +35,5 @@ export async function run(interaction: CommandInteraction) {
         });
     };
 
-    await interaction.reply(`Новая громкость - \`${interaction.options.getInteger("volume")}%\``)
-        .then(() => player.setVolume(interaction.options.getInteger("volume")));
+    await interaction.reply(`Новая громкость - \`${volume}%\``).then(() => player.setVolume(volume));
 };

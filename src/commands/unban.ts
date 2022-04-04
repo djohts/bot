@@ -9,9 +9,9 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 1;
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
-        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
+        return await interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
     const gdb = await db.guild(interaction.guild.id);
@@ -21,7 +21,7 @@ export async function run(interaction: CommandInteraction) {
         return await interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true })
             .then(() => gdb.removeFromObject("bans", user.id));
 
-    interaction.guild.bans.remove(user.id).then(async () => {
+    await interaction.guild.bans.remove(user.id).then(async () => {
         gdb.removeFromObject("bans", user.id);
         await interaction.reply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
     });

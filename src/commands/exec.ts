@@ -10,7 +10,7 @@ export const permission = 4;
 import { exec } from "child_process";
 import { CommandInteraction } from "discord.js";
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     await interaction.deferReply();
 
     exec(interaction.options.getString("script"), async (error, stdout) => {

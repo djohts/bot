@@ -1,4 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import prettyms from "pretty-ms";
+import { CommandInteraction } from "discord.js";
+import { model } from "mongoose";
 
 export const options = new SlashCommandBuilder()
     .setName("ping")
@@ -6,18 +9,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 0;
 
-import db from "../database/";
-import prettyms from "pretty-ms";
-import { CommandInteraction } from "discord.js";
-import { model } from "mongoose";
-
-export async function run(interaction: CommandInteraction) {
-    const gdb = await db.guild(interaction.guild.id);
-    const { channel } = gdb.get();
-
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     const server = Date.now() - interaction.createdTimestamp;
     const uptime = prettyms(interaction.client.uptime);
-    const api = Math.ceil(interaction.guild.shard.ping);
+    const api = interaction.guild.shard.ping;
 
     let a = Date.now();
     await model("Guild").find();
@@ -34,7 +29,6 @@ export async function run(interaction: CommandInteraction) {
                 `Аптайм   :: ${uptime}`,
                 "```"
             ].join("\n")
-        }],
-        ephemeral: interaction.channel.id == channel
+        }]
     });
 };

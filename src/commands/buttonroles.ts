@@ -33,7 +33,7 @@ import { generateID } from "../constants/";
 import { paginate } from "../constants/resolvers";
 import { deleteMessage } from "../handlers/utils";
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     const gdb = await db.guild(interaction.guild.id);
     const addToGlobal = db.global.addToArray;
     const cmd = interaction.options.getSubcommand();
@@ -129,7 +129,10 @@ export async function run(interaction: CommandInteraction) {
             gdb.setOnObject("brs", id, role.id);
 
             await interaction.editReply("✅ Готово.");
-        }).catch(async () => await interaction.reply(""));
+        }).catch(async (e) => {
+            console.error(e);
+            await interaction.reply("❌ Произошла ошибка.");
+        });
     } else if (cmd == "delete") {
         const brId = interaction.options.getString("id");
         const brc = gdb.get().brcs[brId];
@@ -215,7 +218,7 @@ export async function run(interaction: CommandInteraction) {
         const paginated = paginate(formattedArray, 1);
         let page = 0;
 
-        return await interaction.reply(generateMessage(interaction, paginated, page)).then((m: any) => {
+        await interaction.reply(generateMessage(interaction, paginated, page)).then((m: any) => {
             const collector = (m as Message).createMessageComponentCollector({
                 componentType: "BUTTON",
                 filter: (x: ButtonInteraction) => x.user.id == interaction.user.id,
@@ -242,21 +245,21 @@ export async function run(interaction: CommandInteraction) {
     };
 };
 
-function generateMessage(interaction: CommandInteraction, pages: string[][], page: number): InteractionReplyOptions {
+const generateMessage = (interaction: CommandInteraction, pages: string[][], page: number): InteractionReplyOptions => {
     return {
         embeds: [
             new MessageEmbed()
                 .setTitle(`Список РПК - ${interaction.guild.name}`)
-                .setDescription(pages[page]?.join("\n") || "Нет РПК")
+                .setDescription(pages[page]?.join("\n") || "Тут пусто")
                 .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
         ],
         fetchReply: true,
         components: [
             new MessageActionRow().setComponents([
-                new MessageButton().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle("SECONDARY").setDisabled(page == 0),
-                new MessageButton().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle("SECONDARY").setDisabled(page == 0),
-                new MessageButton().setCustomId("brlist:page:next").setEmoji("▶️").setStyle("SECONDARY").setDisabled(pages.length - 1 == page),
-                new MessageButton().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle("SECONDARY").setDisabled(pages.length - 1 == page)
+                new MessageButton().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle("SECONDARY").setDisabled(page <= 0),
+                new MessageButton().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle("SECONDARY").setDisabled(page <= 0),
+                new MessageButton().setCustomId("brlist:page:next").setEmoji("▶️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page),
+                new MessageButton().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page)
             ])
         ]
     };

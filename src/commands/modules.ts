@@ -16,29 +16,13 @@ const names = {
     "webhook": "Webhook"
 };
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     const gdb = await db.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
 
     const m = await interaction.reply({
         content: "​", // U+200b
         fetchReply: true,
-        /*components: [{
-            type: 1,
-            components: [{
-                placeholder: "Выберите модули",
-                type: 3,
-                custom_id: "modules_menu",
-                min_values: 0,
-                max_values: 4,
-                options: Object.keys(allModules).map((module) => ({
-                    label: names[module],
-                    value: module,
-                    description: allModules[module].short,
-                    default: oldModules.includes(module)
-                }))
-            }]
-        }]*/
         components: [
             new MessageActionRow().setComponents([
                 new MessageSelectMenu()
@@ -53,8 +37,7 @@ export async function run(interaction: CommandInteraction) {
                         default: oldModules.includes(module)
                     })))
             ])
-        ],
-        ephemeral: (gdb.get().channel == interaction.channel.id)
+        ]
     }) as Message;
 
     const collector = m.createMessageComponentCollector({
@@ -69,15 +52,11 @@ export async function run(interaction: CommandInteraction) {
             content: "Время вышло.",
             components: [
                 new MessageActionRow().setComponents([
-                    new MessageButton()
-                        .setCustomId("reply:delete")
-                        .setStyle("DANGER")
-                        .setEmoji("🗑")
+                    new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                 ])
             ]
         });
         else {
-
             const newModules = a.first()?.values;
 
             if (newModules.includes("embed") && newModules.includes("webhook"))
@@ -85,10 +64,7 @@ export async function run(interaction: CommandInteraction) {
                     content: "Модули **Embed** и **Webhook** несовместимы.",
                     components: [
                         new MessageActionRow().setComponents([
-                            new MessageButton()
-                                .setCustomId("reply:delete")
-                                .setStyle("DANGER")
-                                .setEmoji("🗑")
+                            new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                         ])
                     ]
                 });
@@ -99,16 +75,13 @@ export async function run(interaction: CommandInteraction) {
             gdb.set("modules", newModules);
             await a.first().update({
                 content: [
-                    "​- **Изменения:**",
+                    "​> **Изменения:**",
                     `Прошлые модули: **${oldList}**`,
                     `Новые модули: **${newList}**`
                 ].join("\n"),
                 components: [
                     new MessageActionRow().setComponents([
-                        new MessageButton()
-                            .setCustomId("reply:delete")
-                            .setStyle("DANGER")
-                            .setEmoji("🗑")
+                        new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                     ])
                 ]
             });

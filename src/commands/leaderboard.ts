@@ -10,7 +10,7 @@ import db from "../database/";
 import { CommandInteraction } from "discord.js";
 import { formatScore } from "../constants/";
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     const gdb = await db.guild(interaction.guild.id);
     const { users, channel } = gdb.get();
     const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);
@@ -27,6 +27,6 @@ export async function run(interaction: CommandInteraction) {
             title: `Таблица лидеров ${interaction.guild.name}`,
             description
         }],
-        ephemeral: (channel == interaction.channel.id)
+        ephemeral: (channel === interaction.channel.id)
     });
 };

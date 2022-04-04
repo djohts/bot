@@ -12,19 +12,18 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addUserOption((o) => o.setName("user").setDescription("Пользователь, которого надо разбанить.").setRequired(true))
     .toJSON();
 exports.permission = 1;
-async function run(interaction) {
+const run = async (interaction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
-        return interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
+        return await interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
     const bans = await interaction.guild.bans.fetch();
     const gdb = await database_1.default.guild(interaction.guild.id);
     const user = interaction.options.getUser("user");
     if (!bans.has(user.id))
         return await interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true })
             .then(() => gdb.removeFromObject("bans", user.id));
-    interaction.guild.bans.remove(user.id).then(async () => {
+    await interaction.guild.bans.remove(user.id).then(async () => {
         gdb.removeFromObject("bans", user.id);
         await interaction.reply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
     });
-}
+};
 exports.run = run;
-;

@@ -98,6 +98,6 @@ database_1.default.connection.then(() => exports.client.login()).catch((e) => {
 });
 process.on("unhandledRejection", (e) => console.error(exports.shard, "unhandledRejection:", e));
 process.on("uncaughtException", (e) => {
-    console.error(exports.shard, "uncaughtException", e);
+    console.error(exports.shard, "uncaughtException:", e);
     exports.client.shard.send("respawn");
 });

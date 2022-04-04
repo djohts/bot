@@ -22,7 +22,7 @@ const discord_js_1 = require("discord.js");
 const constants_1 = require("../constants/");
 const resolvers_1 = require("../constants/resolvers");
 const utils_1 = require("../handlers/utils");
-async function run(interaction) {
+const run = async (interaction) => {
     const gdb = await database_1.default.guild(interaction.guild.id);
     const addToGlobal = database_1.default.global.addToArray;
     const cmd = interaction.options.getSubcommand();
@@ -115,7 +115,10 @@ async function run(interaction) {
             gdb.setOnObject("brms", id, m.id);
             gdb.setOnObject("brs", id, role.id);
             await interaction.editReply("✅ Готово.");
-        }).catch(async () => await interaction.reply(""));
+        }).catch(async (e) => {
+            console.error(e);
+            await interaction.reply("❌ Произошла ошибка.");
+        });
     }
     else if (cmd == "delete") {
         const brId = interaction.options.getString("id");
@@ -197,7 +200,7 @@ async function run(interaction) {
         });
         const paginated = (0, resolvers_1.paginate)(formattedArray, 1);
         let page = 0;
-        return await interaction.reply(generateMessage(interaction, paginated, page)).then((m) => {
+        await interaction.reply(generateMessage(interaction, paginated, page)).then((m) => {
             const collector = m.createMessageComponentCollector({
                 componentType: "BUTTON",
                 filter: (x) => x.user.id == interaction.user.id,
@@ -226,26 +229,24 @@ async function run(interaction) {
         });
     }
     ;
-}
+};
 exports.run = run;
-;
-function generateMessage(interaction, pages, page) {
+const generateMessage = (interaction, pages, page) => {
     return {
         embeds: [
             new discord_js_1.MessageEmbed()
                 .setTitle(`Список РПК - ${interaction.guild.name}`)
-                .setDescription(pages[page]?.join("\n") || "Нет РПК")
+                .setDescription(pages[page]?.join("\n") || "Тут пусто")
                 .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
         ],
         fetchReply: true,
         components: [
             new discord_js_1.MessageActionRow().setComponents([
-                new discord_js_1.MessageButton().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle("SECONDARY").setDisabled(page == 0),
-                new discord_js_1.MessageButton().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle("SECONDARY").setDisabled(page == 0),
-                new discord_js_1.MessageButton().setCustomId("brlist:page:next").setEmoji("▶️").setStyle("SECONDARY").setDisabled(pages.length - 1 == page),
-                new discord_js_1.MessageButton().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle("SECONDARY").setDisabled(pages.length - 1 == page)
+                new discord_js_1.MessageButton().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle("SECONDARY").setDisabled(page <= 0),
+                new discord_js_1.MessageButton().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle("SECONDARY").setDisabled(page <= 0),
+                new discord_js_1.MessageButton().setCustomId("brlist:page:next").setEmoji("▶️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page),
+                new discord_js_1.MessageButton().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page)
             ])
         ]
     };
-}
-;
+};

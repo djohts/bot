@@ -14,7 +14,7 @@ import { version } from "discord.js";
 
 let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;
 
@@ -70,7 +70,8 @@ export async function run(interaction: CommandInteraction) {
                         "&scope=bot%20applications.commands",
                         "&permissions=1375450033182"
                     ].join("")})`,
-                    "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)"
+                    "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)",
+                    "[📰 Сайт бота](https://dob.djoh.xyz)"
                 ].join("\n")
             }]
         }]

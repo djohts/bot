@@ -19,28 +19,12 @@ const names = {
     "talking": "Talking",
     "webhook": "Webhook"
 };
-async function run(interaction) {
+const run = async (interaction) => {
     const gdb = await database_1.default.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
     const m = await interaction.reply({
         content: "​",
         fetchReply: true,
-        /*components: [{
-            type: 1,
-            components: [{
-                placeholder: "Выберите модули",
-                type: 3,
-                custom_id: "modules_menu",
-                min_values: 0,
-                max_values: 4,
-                options: Object.keys(allModules).map((module) => ({
-                    label: names[module],
-                    value: module,
-                    description: allModules[module].short,
-                    default: oldModules.includes(module)
-                }))
-            }]
-        }]*/
         components: [
             new discord_js_1.MessageActionRow().setComponents([
                 new discord_js_1.MessageSelectMenu()
@@ -55,8 +39,7 @@ async function run(interaction) {
                     default: oldModules.includes(module)
                 })))
             ])
-        ],
-        ephemeral: (gdb.get().channel == interaction.channel.id)
+        ]
     });
     const collector = m.createMessageComponentCollector({
         filter: (i) => i.customId == "modules_menu" && i.user.id == interaction.user.id,
@@ -71,10 +54,7 @@ async function run(interaction) {
                 content: "Время вышло.",
                 components: [
                     new discord_js_1.MessageActionRow().setComponents([
-                        new discord_js_1.MessageButton()
-                            .setCustomId("reply:delete")
-                            .setStyle("DANGER")
-                            .setEmoji("🗑")
+                        new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                     ])
                 ]
             });
@@ -85,10 +65,7 @@ async function run(interaction) {
                     content: "Модули **Embed** и **Webhook** несовместимы.",
                     components: [
                         new discord_js_1.MessageActionRow().setComponents([
-                            new discord_js_1.MessageButton()
-                                .setCustomId("reply:delete")
-                                .setStyle("DANGER")
-                                .setEmoji("🗑")
+                            new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                         ])
                     ]
                 });
@@ -97,22 +74,18 @@ async function run(interaction) {
             gdb.set("modules", newModules);
             await a.first().update({
                 content: [
-                    "​- **Изменения:**",
+                    "​> **Изменения:**",
                     `Прошлые модули: **${oldList}**`,
                     `Новые модули: **${newList}**`
                 ].join("\n"),
                 components: [
                     new discord_js_1.MessageActionRow().setComponents([
-                        new discord_js_1.MessageButton()
-                            .setCustomId("reply:delete")
-                            .setStyle("DANGER")
-                            .setEmoji("🗑")
+                        new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                     ])
                 ]
             });
         }
         ;
     });
-}
+};
 exports.run = run;
-;

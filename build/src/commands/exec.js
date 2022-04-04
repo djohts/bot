@@ -9,11 +9,10 @@ exports.options = new builders_1.SlashCommandBuilder()
     .toJSON();
 exports.permission = 4;
 const child_process_1 = require("child_process");
-async function run(interaction) {
+const run = async (interaction) => {
     await interaction.deferReply();
     (0, child_process_1.exec)(interaction.options.getString("script"), async (error, stdout) => {
         return await interaction.editReply(`\`\`\`\n${(error || stdout).toString().slice(0, 1990)}\n\`\`\``);
     });
-}
+};
 exports.run = run;
-;

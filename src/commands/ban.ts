@@ -16,7 +16,7 @@ import { parseTime } from "../constants/resolvers";
 import prettyms from "pretty-ms";
 import db from "../database/";
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return await interaction.reply({ content: "❌ У меня нет прав для выдачи банов.", ephemeral: true });
     if (interaction.options.getString("duration") && !parseTime(interaction.options.getString("duration")))
@@ -26,7 +26,8 @@ export async function run(interaction: CommandInteraction) {
     const guilddb = await db.guild(interaction.guild.id);
     const member = interaction.options.getMember("member") as GuildMember;
 
-    if (bans.has(member.user.id)) return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
+    if (bans.has(member.user.id))
+        return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
     if (getPermissionLevel(member) >= 1)
         return await interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
 

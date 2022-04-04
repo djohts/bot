@@ -9,7 +9,7 @@ function updatePresence(client) {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
         client.user.setPresence({
             status: "idle",
-            activities: [{ type: "PLAYING", name: `350? -> | ${gc} guilds` }],
+            activities: [{ type: "PLAYING", name: `400? -> | ${gc} guilds` }],
         });
         setTimeout(() => updatePresence(client), 5 * 60 * 1000);
     });
@@ -23,7 +23,7 @@ function checkMutes(client) {
         const gsdb = await database_1.default.settings(guild.id);
         const { muteRole } = gsdb.get();
         const { mutes } = gdb.get();
-        const ids = Object.keys(mutes || {}).filter((key) => mutes[key] != -1 && mutes[key] < Date.now());
+        const ids = Object.keys(mutes).filter((key) => mutes[key] != -1 && mutes[key] < Date.now());
         if (!ids.length)
             return;
         await Promise.all(ids.map(async (key) => {

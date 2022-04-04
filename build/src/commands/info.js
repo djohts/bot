@@ -14,7 +14,7 @@ const os_1 = __importDefault(require("os"));
 const platform = `${os_1.default.type()} (${os_1.default.release()})`;
 const discord_js_1 = require("discord.js");
 let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
-async function run(interaction) {
+const run = async (interaction) => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;
         guilds = await interaction.client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, val) => prev + val, 0));
@@ -69,11 +69,11 @@ async function run(interaction) {
                                 "&scope=bot%20applications.commands",
                                 "&permissions=1375450033182"
                             ].join("")})`,
-                            "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)"
+                            "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)",
+                            "[📰 Сайт бота](https://dob.djoh.xyz)"
                         ].join("\n")
                     }]
             }]
     });
-}
+};
 exports.run = run;
-;

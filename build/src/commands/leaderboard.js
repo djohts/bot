@@ -12,7 +12,7 @@ exports.options = new builders_1.SlashCommandBuilder()
 exports.permission = 0;
 const database_1 = __importDefault(require("../database/"));
 const constants_1 = require("../constants/");
-async function run(interaction) {
+const run = async (interaction) => {
     const gdb = await database_1.default.guild(interaction.guild.id);
     const { users, channel } = gdb.get();
     const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);
@@ -30,8 +30,7 @@ async function run(interaction) {
                 title: `Таблица лидеров ${interaction.guild.name}`,
                 description
             }],
-        ephemeral: (channel == interaction.channel.id)
+        ephemeral: (channel === interaction.channel.id)
     });
-}
+};
 exports.run = run;
-;

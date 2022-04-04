@@ -8,7 +8,8 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addStringOption((o) => o.setName("script").setDescription("Script that'd be ran.").setRequired(true))
     .toJSON();
 exports.permission = 4;
-async function run(interaction) {
+const discord_js_1 = require("discord.js");
+const run = async (interaction) => {
     await interaction.deferReply();
     try {
         let evaled = await eval(interaction.options.getString("script"));
@@ -16,7 +17,14 @@ async function run(interaction) {
             evaled = require("util").inspect(evaled);
         if (evaled.length >= 2000)
             return await interaction.editReply("✅");
-        return await interaction.editReply(`\`\`\`js\n${evaled}\n\`\`\``);
+        return await interaction.editReply({
+            content: `\`\`\`js\n${evaled}\n\`\`\``,
+            components: [
+                new discord_js_1.MessageActionRow().setComponents([
+                    new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                ])
+            ]
+        });
     }
     catch (e) {
         let err;
@@ -24,9 +32,10 @@ async function run(interaction) {
             err = e.replace(/`/g, "`" + String.fromCharCode(8203));
         else
             err = e;
-        return await interaction.editReply(`\`\`\`fix\n${err}\n\`\`\``);
+        return await interaction.editReply({
+            content: `\`\`\`fix\n${err}\n\`\`\``
+        });
     }
     ;
-}
+};
 exports.run = run;
-;

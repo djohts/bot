@@ -19,9 +19,9 @@ module.exports = async (message) => {
     if (message.client.loading ||
         mutes.hasOwnProperty(message.author.id))
         return (0, utils_1.deleteMessage)(message);
-    if ((!modules.includes("allow-spam") && message.author.id == user) ||
-        (!modules.includes("talking") && content != (count + 1).toString()) ||
-        content.split(" ")[0] != (count + 1).toString()) {
+    if ((!modules.includes("allow-spam") && message.author.id === user) ||
+        (!modules.includes("talking") && content !== `${count + 1}`) ||
+        content.split(" ")[0] != `${count + 1}`) {
         const countData = {
             count,
             score: scores[message.author.id] || 0,
@@ -55,7 +55,7 @@ module.exports = async (message) => {
     if (modules.includes("webhook"))
         try {
             const webhooks = await message.channel.fetchWebhooks();
-            let webhook = webhooks.find((w) => w.name == "Counting");
+            let webhook = webhooks.find((w) => w.name === "Counting");
             if (!webhook)
                 webhook = await message.channel.createWebhook("Counting");
             if (webhook) {

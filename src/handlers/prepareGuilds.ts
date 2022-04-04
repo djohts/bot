@@ -17,7 +17,7 @@ export = async (guild: Guild) => {
                 alert = await channel.send("💢 Идёт подготовка канала.").catch(() => null);
 
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone.id) || { allow: new Set(), deny: new Set() };
-                let oldPermission = null;
+                let oldPermission: boolean | null = null;
                 if (defaultPermissions.allow.has("SEND_MESSAGES")) oldPermission = true;
                 else if (defaultPermissions.deny.has("SEND_MESSAGES")) oldPermission = false;
                 if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => null);

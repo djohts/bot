@@ -28,14 +28,18 @@ export = async (interaction: ButtonInteraction) => {
     };
 
     if (interaction.member.roles.cache.has(role.id)) {
-        await interaction.member.roles.remove(role).then(async () => await interaction.editReply(`✅ Роль ${role} убрана.`)).catch(async (e) => {
-            console.log(e);
-            await interaction.editReply("❌ Произошла неизвестная ошибка.");
-        });
+        await interaction.member.roles.remove(role)
+            .then(async () => await interaction.editReply(`✅ Роль ${role} убрана.`))
+            .catch(async (e) => {
+                console.log(e);
+                await interaction.editReply("❌ Произошла ошибка.");
+            });
     } else {
-        await interaction.member.roles.add(role).then(async () => await interaction.editReply(`✅ Роль ${role} выдана.`)).catch(async (e) => {
-            console.log(e);
-            await interaction.editReply("❌ Произошла неизвестная ошибка.");
-        });
+        await interaction.member.roles.add(role)
+            .then(async () => await interaction.editReply(`✅ Роль ${role} выдана.`))
+            .catch(async (e) => {
+                console.log(e);
+                await interaction.editReply("❌ Произошла ошибка.");
+            });
     };
 };

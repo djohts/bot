@@ -19,18 +19,19 @@ import { flowWalkthrough, formatExplanation } from "../constants/flows/walkthrou
 import limits from "../constants/flows/";
 const { limitFlows, limitTriggers, limitActions } = limits;
 
-export async function run(interaction: CommandInteraction) {
+export const run = async (interaction: CommandInteraction): Promise<any> => {
     const gdb = await db.guild(interaction.guild.id);
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
     if (cmd == "create") {
-        if (Object.keys(flows).length >= limitFlows) return interaction.reply({
-            content: `❌ Вы можете иметь только ${limitFlows} потоков.`,
-            ephemeral: true
-        });
+        if (Object.keys(flows).length >= limitFlows)
+            return await interaction.reply({
+                content: `❌ Вы можете иметь только ${limitFlows} потоков.`,
+                ephemeral: true
+            });
 
         if (!interaction.guild.me.permissions.has("MANAGE_CHANNELS"))
-            return interaction.reply({
+            return await interaction.reply({
                 content: "❌ У бота нету прав на создание каналов.",
                 ephemeral: true
             });
@@ -124,15 +125,14 @@ export async function run(interaction: CommandInteraction) {
         gdb.removeFromObject("flows", flowId);
         db.global.removeFromArray("generatedIds", flowId);
 
-        return interaction.reply({
-            content: `✅ Поток \`${flowId}\` был удалён.`,
-            ephemeral: (gdb.get().channel == interaction.channel.id)
+        await interaction.reply({
+            content: `✅ Поток \`${flowId}\` был удалён.`
         });
     } else if (cmd === "list") {
         const flowIds = Object.keys(flows).slice(0, limitFlows);
 
         if (flowIds.length) {
-            return interaction.reply({
+            await interaction.reply({
                 embeds: [{
                     title: "Список потоков",
                     description: `У Вас использовано ${flowIds.length} из ${limitFlows} потоков.`,
@@ -152,29 +152,28 @@ export async function run(interaction: CommandInteraction) {
                 }],
                 components: [
                     new MessageActionRow().setComponents([
-                        new MessageButton()
-                            .setCustomId("reply:delete")
-                            .setStyle("DANGER")
-                            .setEmoji("🗑")
+                        new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
                     ])
                 ]
             });
-        } else return interaction.reply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
+        } else await interaction.reply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
     };
 };
 
-function cutFieldValue(value: string[] | string) {
+const cutFieldValue = (value: string | string[]): string => {
     if (Array.isArray(value)) value = value.join("\n");
     if (value.length > 1024) return value.slice(0, 1014) + " **[...]**";
     else return value;
 };
-
-async function formatTriggers(flow: any) {
-    const formatted = await Promise.all(flow.triggers.slice(0, limitTriggers).filter((t: any) => t).map(async (trigger: any) => `• ${await formatExplanation(trigger)}`));
+const formatTriggers = async (flow: any): Promise<string> => {
+    const formatted: string[] = await Promise.all(
+        flow.triggers.slice(0, limitTriggers).filter((t: any) => t).map(async (trigger: any) => `• ${await formatExplanation(trigger)}`)
+    );
     return formatted.join("\n");
 };
-
-async function formatActions(flow: any) {
-    const formatted = await Promise.all(flow.actions.slice(0, limitActions).filter((a: any) => a).map(async (action: any) => `• ${await formatExplanation(action)}`));
+const formatActions = async (flow: any): Promise<string> => {
+    const formatted: string[] = await Promise.all(
+        flow.actions.slice(0, limitActions).filter((a: any) => a).map(async (action: any) => `• ${await formatExplanation(action)}`)
+    );
     return formatted.join("\n");
 };
