@@ -10,14 +10,14 @@ import prepareGuild from "./handlers/prepareGuilds";
 import { registerCommands } from "./handlers/interactions/slash";
 export const client = new Discord.Client({
     makeCache: Discord.Options.cacheWithLimits({
-        MessageManager: {
-            sweepInterval: 600,
-            maxSize: 2048,
-            sweepFilter: Discord.LimitedCollection.filterByLifetime({
-                lifetime: 2 * 24 * 60 * 60 // 2 days
-            })
-        }
+        MessageManager: 4096
     }),
+    sweepers: {
+        messages: {
+            interval: 300,
+            lifetime: 24 * 60 * 60 // 24 hours
+        }
+    },
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
     presence: {
         status: "dnd",

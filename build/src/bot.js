@@ -16,14 +16,14 @@ const prepareGuilds_1 = __importDefault(require("./handlers/prepareGuilds"));
 const slash_1 = require("./handlers/interactions/slash");
 exports.client = new discord_js_1.default.Client({
     makeCache: discord_js_1.default.Options.cacheWithLimits({
-        MessageManager: {
-            sweepInterval: 600,
-            maxSize: 2048,
-            sweepFilter: discord_js_1.default.LimitedCollection.filterByLifetime({
-                lifetime: 2 * 24 * 60 * 60
-            })
-        }
+        MessageManager: 4096
     }),
+    sweepers: {
+        messages: {
+            interval: 300,
+            lifetime: 24 * 60 * 60
+        }
+    },
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
     presence: {
         status: "dnd",
