@@ -41,8 +41,8 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     client.loading = true;
 
     let slashPostStart = Date.now();
-    registerCommands(client).then(() => {
-        console.log(`${shard} Refreshed slash commands. [${prettyms(Date.now() - slashPostStart)}]`);
+    registerCommands(client).then((a) => {
+        console.log(`${shard} Refreshed slash commands for ${a.length}/${client.guilds.cache.size} guilds. [${prettyms(Date.now() - slashPostStart)}]`);
     });
 
     console.log(`${shard} Ready as ${client.user?.tag}! Caching guilds.`);

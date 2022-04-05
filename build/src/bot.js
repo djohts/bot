@@ -42,8 +42,8 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     exports.shard = `[Shard ${shardId}]`;
     exports.client.loading = true;
     let slashPostStart = Date.now();
-    (0, slash_1.registerCommands)(exports.client).then(() => {
-        console.log(`${exports.shard} Refreshed slash commands. [${(0, pretty_ms_1.default)(Date.now() - slashPostStart)}]`);
+    (0, slash_1.registerCommands)(exports.client).then((a) => {
+        console.log(`${exports.shard} Refreshed slash commands for ${a.length}/${exports.client.guilds.cache.size} guilds. [${(0, pretty_ms_1.default)(Date.now() - slashPostStart)}]`);
     });
     console.log(`${exports.shard} Ready as ${exports.client.user?.tag}! Caching guilds.`);
     let disabledGuilds = new Set([...Array.from(unavailable), ...exports.client.guilds.cache.map((g) => g.id)]);
