@@ -7,17 +7,17 @@ exports.run = exports.name = void 0;
 const stop_discord_phishing_1 = require("stop-discord-phishing");
 const counting_1 = __importDefault(require("../handlers/counting"));
 const bot_1 = require("../bot");
-const database_1 = __importDefault(require("../database/"));
 const utils_1 = require("../handlers/utils");
+const Util_1 = __importDefault(require("../util/Util"));
 exports.name = "messageCreate";
-async function run(client, message) {
+async function run(message) {
     if (!message.guild ||
         message.author.bot ||
-        message.channel.type == "DM" ||
-        message.channel.name == "dob-flow-editor")
+        message.channel.type === "DM" ||
+        message.channel.name === "dob-flow-editor")
         return;
-    const gdb = await database_1.default.guild(message.guild.id);
-    const gsdb = await database_1.default.settings(message.guild.id);
+    const gdb = await Util_1.default.database.guild(message.guild.id);
+    const gsdb = await Util_1.default.database.settings(message.guild.id);
     if (gdb.get().mutes.hasOwnProperty(message.author.id) && gsdb.get().delMuted)
         return (0, utils_1.deleteMessage)(message);
     if (gsdb.get().detectScamLinks && await (0, stop_discord_phishing_1.checkMessage)(message.content, true)) {
@@ -35,12 +35,12 @@ async function run(client, message) {
     ;
     global.gdb = gdb;
     global.gsdb = gsdb;
-    global.gldb = database_1.default.global;
+    global.gldb = Util_1.default.database.global;
     const { channel } = gdb.get();
-    if (channel == message.channel.id)
-        return (0, counting_1.default)(message);
-    if (message.content.match(`^<@!?${client.user.id}>`))
-        return message.react("👋").catch(() => null);
+    if (channel === message.channel.id)
+        return await (0, counting_1.default)(message);
+    if (message.content.match(`^<@!?${Util_1.default.client.user.id}>`))
+        return await message.react("👋").catch(() => null);
 }
 exports.run = run;
 ;

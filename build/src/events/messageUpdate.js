@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.name = void 0;
 const utils_1 = require("../handlers/utils");
-const database_1 = __importDefault(require("../database"));
+const Util_1 = __importDefault(require("../util/Util"));
 exports.name = "messageUpdate";
-async function run(client, original, updated) {
-    const gdb = await database_1.default.guild(updated.guild.id);
+async function run(original, updated) {
+    const gdb = await Util_1.default.database.guild(updated.guild.id);
     const { modules, channel, message, count } = gdb.get();
     if (channel == updated.channel.id &&
         message == updated.id &&
@@ -24,3 +24,4 @@ async function run(client, original, updated) {
     ;
 }
 exports.run = run;
+;

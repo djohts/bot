@@ -3,21 +3,18 @@ import { linkRates } from "../bot";
 import config from "../../config";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { ModifiedClient } from "../constants/types";
 import { commands } from "../handlers/interactions/slash";
+import Util from "../util/Util";
 const rest = new REST({ version: "9" }).setToken(config.token);
 
 export const name = "guildCreate";
-export async function run(client: ModifiedClient, guild: Guild) {
+export async function run(guild: Guild) {
     linkRates.set(guild.id, new Set());
 
-    rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch((err) => {
-        if (!err.message.toLowerCase().includes("missing")) console.error(err);
-    });
     const members = await guild.members.fetch();
-    const owner = await client.users.fetch(guild.ownerId);
+    const owner = await Util.client.users.fetch(guild.ownerId);
 
-    client.users.fetch("419892040726347776").then((u) => u.send({
+    Util.client.users.fetch("419892040726347776").then((u) => u.send({
         content: "<a:pepeD:904171928091234344> new guild <a:pepeD:904171928091234344>",
         embeds: [{
             title: `${guild.name} - ${guild.id}`,
@@ -38,4 +35,8 @@ export async function run(client: ModifiedClient, guild: Guild) {
             }]
         }]
     }));
+
+    await rest.put(Routes.applicationGuildCommands(Util.client.user.id, guild.id), { body: commands }).catch((err) => {
+        if (!err.message.toLowerCase().includes("missing")) console.error(err);
+    });
 };

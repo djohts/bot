@@ -1,18 +1,18 @@
 import { AnyChannel, TextChannel } from "discord.js";
-import { ModifiedClient } from "../constants/types";
+import Util from "../util/Util";
 
 export const name = "channelDelete";
-export async function run(client: ModifiedClient, channel: AnyChannel) {
-    if (channel.type == "DM") return;
+export const run = async (channel: AnyChannel): Promise<any> => {
+    if (channel.type === "DM") return;
 
-    const player = client.manager.get(channel.guild.id);
+    const player = Util.client.manager.get(channel.guild.id);
 
     if (
-        player?.voiceChannel == channel.id
+        player?.voiceChannel === channel.id
     ) {
-        const text = client.channels.cache.get(player.textChannel) as TextChannel;
+        const text = Util.client.channels.cache.get(player.textChannel) as TextChannel;
 
-        text.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
         player.destroy();
+        await text.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
     };
 };

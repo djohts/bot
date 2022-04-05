@@ -2,21 +2,20 @@ import { Message } from "discord.js";
 import { checkMessage } from "stop-discord-phishing";
 import countingHandler from "../handlers/counting";
 import { linkRates } from "../bot";
-import db from "../database/";
-import { ModifiedClient } from "../constants/types";
 import { deleteMessage } from "../handlers/utils";
+import Util from "../util/Util";
 
 export const name = "messageCreate";
-export async function run(client: ModifiedClient, message: Message) {
+export async function run(message: Message) {
     if (
         !message.guild ||
         message.author.bot ||
-        message.channel.type == "DM" ||
-        message.channel.name == "dob-flow-editor"
+        message.channel.type === "DM" ||
+        message.channel.name === "dob-flow-editor"
     ) return;
 
-    const gdb = await db.guild(message.guild.id);
-    const gsdb = await db.settings(message.guild.id);
+    const gdb = await Util.database.guild(message.guild.id);
+    const gsdb = await Util.database.settings(message.guild.id);
 
     if (gdb.get().mutes.hasOwnProperty(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
 
@@ -38,10 +37,10 @@ export async function run(client: ModifiedClient, message: Message) {
 
     (global as any).gdb = gdb;
     (global as any).gsdb = gsdb;
-    (global as any).gldb = db.global;
+    (global as any).gldb = Util.database.global;
 
     const { channel } = gdb.get();
 
-    if (channel == message.channel.id) return countingHandler(message);
-    if (message.content.match(`^<@!?${client.user.id}>`)) return message.react("👋").catch(() => null);
+    if (channel === message.channel.id) return await countingHandler(message);
+    if (message.content.match(`^<@!?${Util.client.user.id}>`)) return await message.react("👋").catch(() => null);
 };

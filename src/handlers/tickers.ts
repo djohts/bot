@@ -1,4 +1,3 @@
-import { GuildMember } from "discord.js";
 import { ModifiedClient } from "../constants/types";
 import db from "../database/";
 
@@ -27,24 +26,24 @@ function checkMutes(client: ModifiedClient) {
         const gsdb = await db.settings(guild.id);
         const { muteRole } = gsdb.get();
         const { mutes } = gdb.get();
-        const ids = Object.keys(mutes).filter((key) => mutes[key] != -1 && mutes[key] < Date.now());
+        const ids = Object.keys(mutes).filter((key) => mutes[key] !== -1 && mutes[key] < Date.now());
         if (!ids.length) return;
 
         await Promise.all(ids.map(async (key) => {
             const member = await guild.members.fetch(key).catch(() => null);
             if (
-                !(member instanceof GuildMember) ||
-                !member?.manageable ||
+                !member ||
+                !member.manageable ||
                 !guild.me.permissions.has("MANAGE_ROLES")
             ) return;
 
             if (!member.roles.cache.has(muteRole)) return gdb.removeFromObject("mutes", key);
 
-            await member.roles.remove(muteRole).then(() => {
-                return gdb.removeFromObject("mutes", key);
-            }).catch(() => null);
+            await member.roles.remove(muteRole)
+                .then(() => gdb.removeFromObject("mutes", key))
+                .catch(() => gdb.removeFromObject("mutes", key));
         }));
-    })).then(() => setTimeout(() => checkMutes(client), 2000));
+    })).then(() => setTimeout(() => checkMutes(client), 5 * 1000));
 };
 
 function checkBans(client: ModifiedClient) {
@@ -53,17 +52,15 @@ function checkBans(client: ModifiedClient) {
 
         const gdb = await db.guild(guild.id);
         let { bans } = gdb.get();
-        let ids = Object.keys(bans || {}).filter((key) => bans[key] != -1 && bans[key] < Date.now());
+        let ids = Object.keys(bans).filter((key) => bans[key] !== -1 && bans[key] < Date.now());
         if (!ids.length) return;
 
         await Promise.all(ids.map(async (key) => {
             if (!guild.me.permissions.has("BAN_MEMBERS")) return;
 
-            await guild.bans.remove(key).then(() => {
-                return gdb.removeFromObject("bans", key);
-            }).catch(() => {
-                return gdb.removeFromObject("bans", key);
-            });
+            await guild.bans.remove(key)
+                .then(() => gdb.removeFromObject("bans", key))
+                .catch(() => gdb.removeFromObject("bans", key));
         }));
     })).then(() => setTimeout(() => checkBans(client), 10 * 1000));
 };

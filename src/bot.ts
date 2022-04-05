@@ -3,6 +3,7 @@ import fs from "fs";
 import db from "./database/";
 import Discord from "discord.js";
 import prettyms from "pretty-ms";
+import Util from "./util/Util";
 import tickers from "./handlers/tickers";
 import lavaHandler from "./handlers/lava";
 import prepareGuild from "./handlers/prepareGuilds";
@@ -26,7 +27,7 @@ export const client = new Discord.Client({
         }]
     }
 }) as ModifiedClient;
-client.db = db;
+Util.setClient(client).setDatabase(db);
 require("discord-logs")(client);
 
 import { inspect } from "util";
@@ -84,9 +85,9 @@ const eventFiles = fs.readdirSync(__dirname + "/events/").filter((x) => x.endsWi
 for (const filename of eventFiles) {
     const file = require(`./events/${filename}`);
     if (file.once) {
-        client.once(file.name, (...args) => file.run(client, ...args));
+        client.once(file.name, file.run);
     } else {
-        client.on(file.name, (...args) => file.run(client, ...args));
+        client.on(file.name, file.run);
     };
 };
 

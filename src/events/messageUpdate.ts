@@ -1,11 +1,10 @@
-import { Message } from "discord.js";
 import { deleteMessage } from "../handlers/utils";
-import db from "../database";
-import { ModifiedClient } from "../constants/types";
+import { Message } from "discord.js";
+import Util from "../util/Util";
 
 export const name = "messageUpdate";
-export async function run(client: ModifiedClient, original: Message, updated: Message) {
-    const gdb = await db.guild(updated.guild.id);
+export async function run(original: Message, updated: Message) {
+    const gdb = await Util.database.guild(updated.guild.id);
 
     const { modules, channel, message, count } = gdb.get();
     if (channel == updated.channel.id &&
@@ -21,4 +20,4 @@ export async function run(client: ModifiedClient, original: Message, updated: Me
         gdb.set("message", newMessage.id);
         deleteMessage(original);
     };
-}
+};

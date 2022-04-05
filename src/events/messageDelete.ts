@@ -1,14 +1,13 @@
 import { Message } from "discord.js";
-import { ModifiedClient } from "../constants/types";
 import db from "../database/";
 
 export const name = "messageDelete";
-export async function run(client: ModifiedClient, deleted: Message) {
+export async function run(deleted: Message) {
     const gdb = await db.guild(deleted.guild.id);
     const { modules, channel, message, user, count } = gdb.get();
     if (
-        channel == deleted.channel.id &&
-        message == deleted.id &&
+        channel === deleted.channel.id &&
+        message === deleted.id &&
         !modules.includes("embed") &&
         !modules.includes("webhook")
     ) {

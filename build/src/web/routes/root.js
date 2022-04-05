@@ -12,8 +12,14 @@ module.exports = (fastify, _, done) => {
         req.session.lastPage = "/stats";
         res.view("stats.ejs", { user: req.session.user });
     });
+    fastify.get("/tos", (req, res) => {
+        res.view("tos.ejs", { user: req.session.user });
+    });
+    fastify.get("/pp", (req, res) => {
+        res.view("pp.ejs", { user: req.session.user });
+    });
     fastify.get("/favicon.ico", async (req, res) => {
-        const stream = fs_1.default.createReadStream(__dirname + "/../views/favicon.ico");
+        const stream = fs_1.default.readFileSync(__dirname + "/../views/favicon.ico");
         res.send(stream);
     });
     done();

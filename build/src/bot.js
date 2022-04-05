@@ -9,6 +9,7 @@ const fs_1 = __importDefault(require("fs"));
 const database_1 = __importDefault(require("./database/"));
 const discord_js_1 = __importDefault(require("discord.js"));
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
+const Util_1 = __importDefault(require("./util/Util"));
 const tickers_1 = __importDefault(require("./handlers/tickers"));
 const lava_1 = __importDefault(require("./handlers/lava"));
 const prepareGuilds_1 = __importDefault(require("./handlers/prepareGuilds"));
@@ -32,7 +33,7 @@ exports.client = new discord_js_1.default.Client({
             }]
     }
 });
-exports.client.db = database_1.default;
+Util_1.default.setClient(exports.client).setDatabase(database_1.default);
 require("discord-logs")(exports.client);
 const util_1 = require("util");
 exports.shard = "[Shard N/A]";
@@ -78,10 +79,10 @@ const eventFiles = fs_1.default.readdirSync(__dirname + "/events/").filter((x) =
 for (const filename of eventFiles) {
     const file = require(`./events/${filename}`);
     if (file.once) {
-        exports.client.once(file.name, (...args) => file.run(exports.client, ...args));
+        exports.client.once(file.name, file.run);
     }
     else {
-        exports.client.on(file.name, (...args) => file.run(exports.client, ...args));
+        exports.client.on(file.name, file.run);
     }
     ;
 }

@@ -21,7 +21,7 @@ export = async (message: Message) => {
     if (
         (!modules.includes("allow-spam") && message.author.id === user) ||
         (!modules.includes("talking") && content !== `${count + 1}`) ||
-        content.split(" ")[0] != `${count + 1}`
+        content.split(" ")[0] !== `${count + 1}`
     ) {
         const countData = {
             count,
@@ -35,7 +35,7 @@ export = async (message: Message) => {
 
         for (const flowId of flowIDs) try {
             const flow = flows[flowId];
-            if (flow.triggers.slice(0, limitTriggers).find((t) => t.type == "countfail"))
+            if (flow.triggers.slice(0, limitTriggers).find((t) => t.type === "countfail"))
                 for (const action of flow.actions.slice(0, limitActions).filter((a) => a)) try {
                     await allActions[action.type].run(countData, action.data);
                 } catch (e) { };
@@ -48,7 +48,7 @@ export = async (message: Message) => {
 
     let countingMessage = message;
     if (
-        message.channel.type == "DM" ||
+        message.channel.type === "DM" ||
         message.channel instanceof ThreadChannel
     ) return;
     if (modules.includes("webhook")) try {

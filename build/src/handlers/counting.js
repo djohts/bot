@@ -21,7 +21,7 @@ module.exports = async (message) => {
         return (0, utils_1.deleteMessage)(message);
     if ((!modules.includes("allow-spam") && message.author.id === user) ||
         (!modules.includes("talking") && content !== `${count + 1}`) ||
-        content.split(" ")[0] != `${count + 1}`) {
+        content.split(" ")[0] !== `${count + 1}`) {
         const countData = {
             count,
             score: scores[message.author.id] || 0,
@@ -33,7 +33,7 @@ module.exports = async (message) => {
         for (const flowId of flowIDs)
             try {
                 const flow = flows[flowId];
-                if (flow.triggers.slice(0, limitTriggers).find((t) => t.type == "countfail"))
+                if (flow.triggers.slice(0, limitTriggers).find((t) => t.type === "countfail"))
                     for (const action of flow.actions.slice(0, limitActions).filter((a) => a))
                         try {
                             await allActions[action.type].run(countData, action.data);
@@ -49,7 +49,7 @@ module.exports = async (message) => {
     count++;
     gdb.addToCount(message.member);
     let countingMessage = message;
-    if (message.channel.type == "DM" ||
+    if (message.channel.type === "DM" ||
         message.channel instanceof discord_js_1.ThreadChannel)
         return;
     if (modules.includes("webhook"))

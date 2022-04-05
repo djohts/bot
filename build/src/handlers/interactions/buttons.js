@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const utils_1 = require("../../handlers/utils");
 const buttonroles_1 = __importDefault(require("../buttonroles"));
 module.exports = async (interaction) => {
-    if (interaction.message.type == "APPLICATION_COMMAND") {
-        if (interaction.user.id != interaction.message.interaction.user.id) {
+    if (interaction.message.type === "APPLICATION_COMMAND") {
+        if (interaction.user.id !== interaction.message.interaction.user.id) {
             return await interaction.reply({ content: "❌ Вы не можете использовать это.", ephemeral: true });
         }
         ;

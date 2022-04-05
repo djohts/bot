@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.name = void 0;
 const database_1 = __importDefault(require("../database/"));
 exports.name = "messageDelete";
-async function run(client, deleted) {
+async function run(deleted) {
     const gdb = await database_1.default.guild(deleted.guild.id);
     const { modules, channel, message, user, count } = gdb.get();
-    if (channel == deleted.channel.id &&
-        message == deleted.id &&
+    if (channel === deleted.channel.id &&
+        message === deleted.id &&
         !modules.includes("embed") &&
         !modules.includes("webhook")) {
         const newMessage = await deleted.channel.send(`${deleted.author || `<@${user}>`}: ${deleted.content || count}`);

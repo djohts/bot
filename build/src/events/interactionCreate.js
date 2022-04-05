@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.name = void 0;
 const interactions_1 = __importDefault(require("../handlers/interactions/"));
 exports.name = "interactionCreate";
-function run(client, interaction) {
+function run(interaction) {
     (0, interactions_1.default)(interaction);
 }
 exports.run = run;

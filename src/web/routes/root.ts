@@ -10,8 +10,14 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         req.session.lastPage = "/stats";
         res.view("stats.ejs", { user: req.session.user });
     });
+    fastify.get("/tos", (req: any, res) => {
+        res.view("tos.ejs", { user: req.session.user });
+    })
+    fastify.get("/pp", (req: any, res) => {
+        res.view("pp.ejs", { user: req.session.user });
+    })
     fastify.get("/favicon.ico", async (req, res) => {
-        const stream = fs.createReadStream(__dirname + "/../views/favicon.ico");
+        const stream = fs.readFileSync(__dirname + "/../views/favicon.ico");
         res.send(stream);
     });
     done();
