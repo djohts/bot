@@ -8,11 +8,12 @@ const bot_1 = require("../bot");
 const config_1 = __importDefault(require("../../config"));
 const rest_1 = require("@discordjs/rest");
 const v9_1 = require("discord-api-types/v9");
+const slash_1 = require("../handlers/interactions/slash");
 const rest = new rest_1.REST({ version: "9" }).setToken(config_1.default.token);
 exports.name = "guildCreate";
 async function run(client, guild) {
     bot_1.linkRates.set(guild.id, new Set());
-    await rest.put(v9_1.Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch((err) => {
+    rest.put(v9_1.Routes.applicationGuildCommands(client.user.id, guild.id), { body: slash_1.commands }).catch((err) => {
         if (!err.message.toLowerCase().includes("missing"))
             console.error(err);
     });

@@ -62,7 +62,6 @@ export class ModifiedClient extends Client {
     db: typeof import("../database/");
     loading: boolean;
     manager: Manager;
-    slashes: SlashCommand[];
 };
 
 export interface GuildObject {

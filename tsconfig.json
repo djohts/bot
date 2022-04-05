@@ -1,8 +1,6 @@
 {
     "compilerOptions": {
-        "allowJs": true,
-        "checkJs": true,
-        "downlevelIteration": true,
+        "allowJs": false,
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "incremental": true,

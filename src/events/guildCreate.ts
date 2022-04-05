@@ -4,13 +4,14 @@ import config from "../../config";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { ModifiedClient } from "../constants/types";
+import { commands } from "../handlers/interactions/slash";
 const rest = new REST({ version: "9" }).setToken(config.token);
 
 export const name = "guildCreate";
 export async function run(client: ModifiedClient, guild: Guild) {
     linkRates.set(guild.id, new Set());
 
-    await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: client.slashes }).catch((err) => {
+    rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands }).catch((err) => {
         if (!err.message.toLowerCase().includes("missing")) console.error(err);
     });
     const members = await guild.members.fetch();

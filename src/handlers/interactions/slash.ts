@@ -25,7 +25,7 @@ import { Routes } from "discord-api-types/v9";
 import fs from "fs";
 import { ModifiedClient, SlashCommand } from "../../constants/types";
 import config from "../../../config";
-const commands: SlashCommand[] = [];
+export const commands: SlashCommand[] = [];
 const registeredGuilds: string[] = [];
 const rest = new REST({ version: "9" }).setToken(config.token);
 
