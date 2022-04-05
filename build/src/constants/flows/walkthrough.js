@@ -244,11 +244,10 @@ async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, p
             else
                 messagesToDelete.push(await channel.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));
             if (editing)
-                setTimeout(() => channel.bulkDelete(messagesToDelete), 5000);
+                setTimeout(async () => await channel.bulkDelete(messagesToDelete).catch(() => null), 5000);
         }
         catch (e) {
             editing = false;
-            console.log(e);
         }
         ;
     }

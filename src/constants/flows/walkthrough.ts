@@ -223,10 +223,9 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
             else if (["help", "?"].includes(command)) messagesToDelete.push(await channel.send(`🔗 Проверьте закреплённое сообщение для помощи! ${pinned.url}`));
             else messagesToDelete.push(await channel.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));
 
-            if (editing) setTimeout(() => channel.bulkDelete(messagesToDelete), 5000);
+            if (editing) setTimeout(async () => await channel.bulkDelete(messagesToDelete).catch(() => null), 5000);
         } catch (e) {
             editing = false;
-            console.log(e);
         };
     };
     return successStatus;
