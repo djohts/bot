@@ -8,14 +8,14 @@ const config_1 = __importDefault(require("../../config"));
 const database_1 = __importDefault(require("../database/"));
 const getPermissionLevel = (member, gdb) => {
     if (config_1.default.admins[0] == member.user.id)
-        return 5; // bot owner
+        return 5;
     if (config_1.default.admins.includes(member.user.id))
-        return 4; // bot admin
+        return 4;
     if (member.guild.ownerId == member.user.id)
-        return 3; // server owner
+        return 3;
     if (member.permissions.has("MANAGE_GUILD"))
-        return 2; // server admin
-    return 0; // server member
+        return 2;
+    return 0;
 };
 exports.getPermissionLevel = getPermissionLevel;
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

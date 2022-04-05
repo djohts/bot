@@ -6,11 +6,9 @@ const time_1 = require("../constants/time");
 const dbCache = new Map(), dbSaveQueue = new Map();
 const guildObject = {
     guildid: "",
-    // moderation data
     voices: {},
     mutes: {},
     bans: {},
-    // counting
     channel: "",
     count: 0,
     user: "",
@@ -20,7 +18,6 @@ const guildObject = {
     users: {},
     liveboard: {},
     log: {},
-    // buttonroles
     brcs: {},
     brms: {},
     brs: {}

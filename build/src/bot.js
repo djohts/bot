@@ -20,7 +20,7 @@ exports.client = new discord_js_1.default.Client({
             sweepInterval: 600,
             maxSize: 2048,
             sweepFilter: discord_js_1.default.LimitedCollection.filterByLifetime({
-                lifetime: 2 * 24 * 60 * 60 // 2 days
+                lifetime: 2 * 24 * 60 * 60
             })
         }
     }),

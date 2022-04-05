@@ -14,6 +14,7 @@
         "strict": false,
         "strictPropertyInitialization": false,
         "target": "ES2020",
+        "removeComments": true,
     },
     "include": [
         "./src"

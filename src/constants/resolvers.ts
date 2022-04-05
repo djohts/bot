@@ -52,43 +52,42 @@ export function parseTime(input: string, outputType = "ms") {
         parse.yr =
         parse.y = parse.d * 365.25;
 
-    parse["с"] = parse["second"];
-    parse["сек"] = parse["second"];
-    parse["секунд"] = parse["second"];
-    parse["секунды"] = parse["second"];
-    parse["м"] = parse["minute"];
-    parse["мин"] = parse["minute"];
-    parse["минут"] = parse["minute"];
-    parse["минуты"] = parse["minute"];
-    parse["ч"] = parse["hour"];
-    parse["час"] = parse["hour"];
-    parse["часа"] = parse["hour"];
-    parse["часов"] = parse["hour"];
-    parse["н"] = parse["week"];
-    parse["нед"] = parse["week"];
-    parse["недели"] = parse["week"];
-    parse["неделя"] = parse["week"];
-    parse["недель"] = parse["week"];
-    parse["мес"] = parse["month"];
-    parse["месяц"] = parse["month"];
-    parse["месяца"] = parse["month"];
-    parse["месяцев"] = parse["month"];
-    parse["г"] = parse["year"];
-    parse["год"] = parse["year"];
-    parse["года"] = parse["year"];
-    parse["годов"] = parse["year"];
+    parse["с"] =
+        parse["сек"] =
+        parse["секунд"] =
+        parse["секунды"] = parse["second"];
+    parse["м"] =
+        parse["мин"] =
+        parse["минут"] =
+        parse["минуты"] = parse["minute"];
+    parse["ч"] =
+        parse["час"] =
+        parse["часа"] =
+        parse["часов"] = parse["hour"];
+    parse["н"] =
+        parse["нед"] =
+        parse["недели"] =
+        parse["неделя"] =
+        parse["недель"] = parse["week"];
+    parse["мес"] =
+        parse["месяц"] =
+        parse["месяца"] =
+        parse["месяцев"] = parse["month"];
+    parse["г"] =
+        parse["год"] =
+        parse["года"] =
+        parse["годов"] = parse["year"];
 
     let result = 0;
     input = (input + "").replace(/(\d)[,_](\d)/g, "$1$2");
-    // @ts-ignore
-    input.replace(durationRE, (_, n, units) => {
-        units = unitRatio(units);
+    input.replace(durationRE, (_, n: string, units: string | number): any => {
+        units = unitRatio(units as string);
         if (units) result = (result || 0) + parseFloat(n) * units;
     });
 
     return result && (result / (unitRatio(outputType) || 1));
 
-    function unitRatio(str: string) {
+    function unitRatio(str: string): number {
         return parse[str] || parse[str.toLowerCase().replace(/s$/, "")];
     };
 };

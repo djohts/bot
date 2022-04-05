@@ -13,7 +13,6 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addStringOption((o) => o.setName("emoji").setDescription("Эмодзи. Используется для указания роли в панели и кнопке.").setRequired(true))
     .addStringOption((o) => o.setName("message").setDescription("Id сообщения в которое добавить РПК. Если не указать - бот отправит новое сообщение.")))
     .addSubcommand((c) => c.setName("list").setDescription("Посмотреть список РПК этого сервера."))
-    //.addSubcommand((c) => c.setName("refresh").setDescription("Обновить все РПК в случае рассинхрона. (пока что не работает)"))
     .addSubcommand((c) => c.setName("delete").setDescription("Удалить РПК.").addStringOption((o) => o.setName("id").setDescription("Id РПК, которую нужно удалить. (Id можно получить в /buttonroles list)").setRequired(true)))
     .toJSON();
 exports.permission = 2;
