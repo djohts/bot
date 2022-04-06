@@ -7,12 +7,10 @@ export const run = async (channel: AnyChannel): Promise<any> => {
 
     const player = Util.client.manager.get(channel.guild.id);
 
-    if (
-        player?.voiceChannel === channel.id
-    ) {
-        const text = Util.client.channels.cache.get(player.textChannel) as TextChannel;
+    if (player?.options.voiceChannel === channel.id) {
+        const text = Util.client.channels.cache.get(player.options.textChannel) as TextChannel;
 
         player.destroy();
-        await text.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
+        await text?.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
     };
 };

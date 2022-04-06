@@ -10,10 +10,10 @@ const run = async (channel) => {
     if (channel.type === "DM")
         return;
     const player = Util_1.default.client.manager.get(channel.guild.id);
-    if (player?.voiceChannel === channel.id) {
-        const text = Util_1.default.client.channels.cache.get(player.textChannel);
+    if (player?.options.voiceChannel === channel.id) {
+        const text = Util_1.default.client.channels.cache.get(player.options.textChannel);
         player.destroy();
-        await text.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
+        await text?.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
     }
     ;
 };
