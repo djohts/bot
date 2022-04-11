@@ -127,7 +127,7 @@ const run = async (interaction) => {
         gset.setOnObject("voices", "lobby", lobby.id);
         await interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
     }
-    else if (cmd == "setchannel") {
+    else if (cmd == "counting") {
         let counting = interaction.options.getChannel("channel");
         gdb.setMultiple({
             channel: counting.id,
