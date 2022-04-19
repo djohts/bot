@@ -4,9 +4,9 @@
     "description": "djoh's random discord bot",
     "main": "build/src/sharding",
     "scripts": {
-        "launch": "npm run build && npm run start",
-        "start": "node .",
-        "build": "npx tsc && npm run copy",
+        "launch": "npm run build && node .",
+        "build": "npx tsc && npm run copy && npm run minify",
+        "minify": "node minify.js",
         "copy": "npx copyfiles \"src/web/views/**/*!(.ts)\" build",
         "watch": "tsc -w"
     },
@@ -50,6 +50,8 @@
     },
     "devDependencies": {
         "@types/ejs": "3.1.0",
+        "recursive-readdir-synchronous": "^0.0.4",
+        "terser": "^5.12.1",
         "typescript": "4.6.3"
     }
 }

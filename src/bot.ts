@@ -104,7 +104,4 @@ db.connection.then(() => client.login()).catch((e) => {
 });
 
 process.on("unhandledRejection", (e) => console.error(shard, "unhandledRejection:", e));
-process.on("uncaughtException", (e) => {
-    console.error(shard, "uncaughtException:", e);
-    client.shard.send("respawn");
-});
+process.on("uncaughtException", (e) => console.error(shard, "uncaughtException:", e));

@@ -1,18 +1,1 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.name = void 0;
-const Util_1 = __importDefault(require("../util/Util"));
-exports.name = "voiceChannelLeave";
-async function run(member, channel) {
-    const gdb = await Util_1.default.database.guild(member.guild.id);
-    if (gdb.get().voices[channel.id] === member.user.id) {
-        await channel.delete().catch(() => null);
-        gdb.removeFromObject("voices", channel.id);
-    }
-    ;
-}
-exports.run = run;
-;
+"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.run=exports.name=void 0;const Util_1=__importDefault(require("../util/Util"));async function run(e,t){const i=await Util_1.default.database.guild(e.guild.id);i.get().voices[t.id]===e.user.id&&(await t.delete().catch((()=>null)),i.removeFromObject("voices",t.id))}exports.name="voiceChannelLeave",exports.run=run;

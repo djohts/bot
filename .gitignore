@@ -210,7 +210,6 @@ $RECYCLE.BIN/
 # custom
 
 node_modules/
-config.ts
+**/config*
 .idea
 target/
-build/config.js
