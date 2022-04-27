@@ -11,7 +11,7 @@ function updatePresence(client: ModifiedClient) {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
         client.user.setPresence({
             status: "idle",
-            activities: [{ type: "PLAYING", name: `400? -> | ${gc} guilds` }],
+            activities: [{ type: "PLAYING", name: `500? -> | ${gc} guilds` }],
         });
         setTimeout(() => updatePresence(client), 5 * 60 * 1000);
     });
