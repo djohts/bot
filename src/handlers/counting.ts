@@ -12,11 +12,8 @@ export = async (message: Message) => {
     const gdb = await db.guild(message.guild.id);
     const permissionLevel = getPermissionLevel(message.member), content = message.content;
     if (content.startsWith("!") && permissionLevel >= 1) return;
-    let { count, user, modules, flows, users: scores, mutes } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
-    if (
-        (message.client as ModifiedClient).loading ||
-        mutes.hasOwnProperty(message.author.id)
-    ) return deleteMessage(message);
+    let { count, user, modules, flows, users: scores } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
+    if ((message.client as ModifiedClient).loading) return deleteMessage(message);
 
     if (
         (!modules.includes("allow-spam") && message.author.id === user) ||

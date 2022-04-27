@@ -1,7 +1,6 @@
 import { Guild } from "discord.js";
 import Util from "../util/Util";
 
-export const name = "guildDelete";
 export async function run(guild: Guild) {
     const owner = await Util.client.users.fetch(guild.ownerId);
 

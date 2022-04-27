@@ -1,6 +1,5 @@
-import { FastifyInstance } from "fastify";
+import fastify, { FastifyInstance } from "fastify";
 import config from "../../config";
-import fastify from "fastify";
 import fastifySession from "fastify-session";
 import fastifyCookie from "fastify-cookie";
 import pov from "point-of-view";

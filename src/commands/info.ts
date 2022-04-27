@@ -7,11 +7,9 @@ export const options = new SlashCommandBuilder()
 export const permission = 0;
 
 import { CommandInteraction } from "discord.js";
-
 import os from "os";
 const platform = `${os.type()} (${os.release()})`;
 import { version } from "discord.js";
-
 let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {

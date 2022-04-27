@@ -1,8 +1,23 @@
 import { CommandInteraction, GuildMember } from "discord.js";
 import { getPermissionLevel } from "../../constants/";
 import db from "../../database/";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
+import fs from "fs";
+import { ModifiedClient, SlashCommand } from "../../constants/types";
+import config from "../../../config";
+export const commands: SlashCommand[] = [];
+const registeredGuilds: string[] = [];
+const rest = new REST({ version: "9" }).setToken(config.token);
 
 export default async (interaction: CommandInteraction) => {
+    if (
+        !(interaction.client as ModifiedClient).cfg?.enslash &&
+        !config.admins.includes(interaction.user.id)
+    ) return await interaction.reply({
+        content: "❌ Команды были выключены разработчиком. Если вы считаете, что это ошибка, обратитесь к нам: https://discord.gg/AaS4dwVHyA",
+        ephemeral: true
+    });
     const gdb = await db.guild(interaction.guild.id);
     if (gdb.get().channel === interaction.channel.id)
         return await interaction.reply({ content: "❌ Команды недоступны в этом канале", ephemeral: true });
@@ -19,15 +34,6 @@ export default async (interaction: CommandInteraction) => {
         console.error(`Error in ${commandName}:`, e);
     };
 };
-
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import fs from "fs";
-import { ModifiedClient, SlashCommand } from "../../constants/types";
-import config from "../../../config";
-export const commands: SlashCommand[] = [];
-const registeredGuilds: string[] = [];
-const rest = new REST({ version: "9" }).setToken(config.token);
 
 export const registerCommands = async (client: ModifiedClient) => {
     const files = fs.readdirSync(__dirname + "/../../commands/");

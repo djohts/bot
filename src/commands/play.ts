@@ -1,6 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, GuildMember } from "discord.js";
-import { ModifiedClient } from "../constants/types";
 
 export const options = new SlashCommandBuilder()
     .setName("play")
@@ -9,8 +7,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 0;
 
+import { CommandInteraction, GuildMember } from "discord.js";
+import Util from "../util/Util";
+
 export const run = async (interaction: CommandInteraction): Promise<any> => {
-    const client = interaction.client as ModifiedClient;
     const member = interaction.member as GuildMember;
 
     if (!member.voice.channel)
@@ -22,10 +22,10 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
 
     await interaction.deferReply();
 
-    const res = await client.manager.search(interaction.options.getString("query"), interaction.user);
+    const res = await Util.lava.search(interaction.options.getString("query"), interaction.user);
     if (!res.tracks.length) return await interaction.editReply("❌ По вашему запросу не удалось ничего найти.");
 
-    const player = client.manager.create({
+    const player = Util.lava.create({
         guild: interaction.guildId,
         voiceChannel: member.voice.channelId,
         textChannel: interaction.channelId,

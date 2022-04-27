@@ -1,5 +1,6 @@
 import { ModifiedClient } from "../constants/types";
 import { inspect } from "util";
+import { Manager } from "erela.js";
 
 let util: Util | null = null;
 
@@ -9,8 +10,9 @@ class Util {
         util = this;
     };
 
-    private _client: ModifiedClient;
-    private _database: typeof import("../database/");
+    private _client: ModifiedClient | null;
+    private _database: typeof import("../database/") | null;
+    private _lavaManager: Manager | null;
     public static inspect = inspect;
 
     public setClient(client: ModifiedClient): Util {
@@ -23,11 +25,19 @@ class Util {
         return this;
     };
 
+    public setLavaManager(lavaManager: Manager): Util {
+        this._lavaManager = lavaManager;
+        return this;
+    };
+
     get client() {
         return this._client;
     };
     get database() {
         return this._database;
+    };
+    get lava() {
+        return this._lavaManager;
     };
 };
 

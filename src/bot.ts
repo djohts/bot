@@ -1,20 +1,22 @@
 require("nodejs-better-console").overrideConsole();
 import fs from "fs";
 import db from "./database/";
+import { inspect } from "util";
+import Util from "./util/Util";
 import Discord from "discord.js";
 import prettyms from "pretty-ms";
-import Util from "./util/Util";
 import tickers from "./handlers/tickers";
 import lavaHandler from "./handlers/lava";
+import { ModifiedClient } from "./constants/types";
 import prepareGuild from "./handlers/prepareGuilds";
 import { registerCommands } from "./handlers/interactions/slash";
-export const client = new Discord.Client({
+export const client = new ModifiedClient({
     makeCache: Discord.Options.cacheWithLimits({
         MessageManager: 4096
     }),
     sweepers: {
         messages: {
-            interval: 300,
+            interval: 600,
             lifetime: 24 * 60 * 60 // 24 hours
         }
     },
@@ -26,16 +28,18 @@ export const client = new Discord.Client({
             name: "the loading screen",
         }]
     }
-}) as ModifiedClient;
+});
 Util.setClient(client).setDatabase(db);
 require("discord-logs")(client);
-
-import { inspect } from "util";
-import { ModifiedClient } from "./constants/types";
 
 export let shard = "[Shard N/A]";
 export const linkRates = new Map<string, Set<string>>();
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
+    client.cfg = {
+        enslash: true,
+        enbr: true
+    };
+    Util.setLavaManager(lavaHandler(client));
     let start = Date.now();
     shard = `[Shard ${shardId}]`;
 
@@ -76,32 +80,25 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     client.loading = false;
     console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);
-
-    client.manager = lavaHandler(client);
-    client.on("raw", (d) => client.manager.updateVoiceState(d));
 });
 
 const eventFiles = fs.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
 for (const filename of eventFiles) {
     const file = require(`./events/${filename}`);
+    const name = filename.split(".")[0];
     if (file.once) {
-        client.once(file.name, file.run);
+        client.once(name, file.run);
     } else {
-        client.on(file.name, file.run);
+        client.on(name, file.run);
     };
 };
 
 client.on("error", (err) => console.error(shard, `Client error. ${inspect(err)}`));
-client.on("rateLimit", (rateLimitInfo) => console.warn(shard, `Rate limited.\n${inspect(rateLimitInfo)}`));
+client.on("rateLimit", (rateLimitInfo) => console.warn(shard, `Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
 client.on("shardDisconnected", ({ code, reason }) => console.warn(shard, `Disconnected. (${code} - ${reason})`));
-client.on("shardError", (err) => console.error(shard, `Error. ${inspect(err)}`));
-client.on("shardResume", (_, replayedEvents) => console.warn(shard, `Resumed. ${replayedEvents} replayed events.`));
 client.on("warn", (info) => console.warn(shard, `Warning. ${info}`));
 
-db.connection.then(() => client.login()).catch((e) => {
-    console.error(shard, e);
-    client.shard.send("respawn");
-});
+db.connection.then(() => client.login()).catch((e) => console.error(shard, e));
 
 process.on("unhandledRejection", (e) => console.error(shard, "unhandledRejection:", e));
 process.on("uncaughtException", (e) => console.error(shard, "uncaughtException:", e));

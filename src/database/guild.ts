@@ -9,7 +9,6 @@ const guildObject = {
     guildid: "",
     // moderation data
     voices: {},
-    mutes: {},
     bans: {},
     // counting
     channel: "",

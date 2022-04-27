@@ -1,13 +1,14 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import prettyms from "pretty-ms";
-import { CommandInteraction } from "discord.js";
-import { model } from "mongoose";
 
 export const options = new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Посмотреть задержку бота.")
     .toJSON();
 export const permission = 0;
+
+import prettyms from "pretty-ms";
+import { CommandInteraction } from "discord.js";
+import { model } from "mongoose";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     const server = Date.now() - interaction.createdTimestamp;

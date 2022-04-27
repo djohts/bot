@@ -1,6 +1,4 @@
-import { CommandInteraction, MessageActionRow, MessageButton } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import _Util from "../util/Util";
 
 export const options = new SlashCommandBuilder()
     .setName("eval")
@@ -8,6 +6,9 @@ export const options = new SlashCommandBuilder()
     .addStringOption((o) => o.setName("script").setDescription("Script that'd be ran.").setRequired(true))
     .toJSON();
 export const permission = 4;
+
+import { CommandInteraction, MessageActionRow, MessageButton } from "discord.js";
+import _Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     await interaction.deferReply();

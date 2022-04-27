@@ -5,7 +5,7 @@ export const options = new SlashCommandBuilder()
     .setDescription("Настройки РПК.")
     .addSubcommand((c) =>
         c.setName("create").setDescription("Создать новую РПК.").addChannelOption((o) =>
-            o.setName("channel").setDescription("Канал в котором будет создано РПК.").setRequired(true).addChannelTypes([0, 5])
+            o.setName("channel").setDescription("Канал в котором будет создано РПК.").setRequired(true).addChannelTypes(0, 5)
         )
             .addRoleOption((o) =>
                 o.setName("role").setDescription("Роль, которая будет выдаваться.").setRequired(true)
@@ -18,7 +18,6 @@ export const options = new SlashCommandBuilder()
             )
     )
     .addSubcommand((c) => c.setName("list").setDescription("Посмотреть список РПК этого сервера."))
-    //.addSubcommand((c) => c.setName("refresh").setDescription("Обновить все РПК в случае рассинхрона. (пока что не работает)"))
     .addSubcommand((c) =>
         c.setName("delete").setDescription("Удалить РПК.").addStringOption((o) =>
             o.setName("id").setDescription("Id РПК, которую нужно удалить. (Id можно получить в /buttonroles list)").setRequired(true)

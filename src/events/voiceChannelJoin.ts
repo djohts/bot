@@ -1,7 +1,6 @@
 import { GuildMember, VoiceChannel, StageChannel } from "discord.js";
 import Util from "../util/Util";
 
-export const name = "voiceChannelJoin";
 export async function run(member: GuildMember, channel: VoiceChannel | StageChannel) {
     const gset = await Util.database.settings(member.guild.id);
     const { voices } = gset.get();
@@ -16,8 +15,10 @@ export async function run(member: GuildMember, channel: VoiceChannel | StageChan
             allow: ["MANAGE_CHANNELS", "PRIORITY_SPEAKER", "STREAM", "CONNECT", "SPEAK"]
         }]
     })
-        .then(async (ch) => await member.voice.setChannel(ch.id)
-            .then(() => gdb.setOnObject("voices", ch.id, member.user.id))
-            .catch(() => null))
+        .then(async (ch) =>
+            await member.voice.setChannel(ch.id)
+                .then(() => gdb.setOnObject("voices", ch.id, member.user.id))
+                .catch(() => ch.delete().catch(() => null))
+        )
         .catch(() => null);
 };

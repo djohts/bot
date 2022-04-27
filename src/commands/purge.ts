@@ -1,7 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-const cooldowns = new Set();
-import { CommandInteraction } from "discord.js";
-import db from "../database/";
 
 export const options = new SlashCommandBuilder()
     .setName("purge")
@@ -10,6 +7,10 @@ export const options = new SlashCommandBuilder()
     .addUserOption((o) => o.setName("member").setDescription("Участник, чьи сообщения должны быть очищены."))
     .toJSON();
 export const permission = 1;
+
+const cooldowns = new Set();
+import { CommandInteraction } from "discord.js";
+import db from "../database/";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     if (interaction.channel.type == "DM") return;

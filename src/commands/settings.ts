@@ -1,30 +1,30 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, Role } from "discord.js";
-import db from "../database/";
 
 export const options = new SlashCommandBuilder()
     .setName("settings")
     .setDescription("Настройки бота на сервере.")
     .addSubcommand((c) => c.setName("get").setDescription("Получить настройки сервера."))
     .addSubcommand((c) => c.setName("toggle").setDescription("Изменить значение найстройки.").addStringOption((o) =>
-        o.setName("setting").setDescription("Настройка, которую надо изменить.").setRequired(true).setChoices([
-            ["Удаление сообщений замьюченых участников.", "delMuted"],
-            ["Удаление закреплённых сообщений при очистке (/purge).", "purgePinned"],
-            ["Временные голосовые каналы.", "voices"],
-            ["Проверка сообщений на вредоносные ссылки.", "detectScamLinks"]
-        ])
-    ))
-    .addSubcommand((c) => c.setName("muterole").setDescription("Установить роль мьюта.").addRoleOption((o) =>
-        o.setName("role").setDescription("Роль.").setRequired(true)
+        o.setName("setting").setDescription("Настройка, которую надо изменить.").setRequired(true)
+            .setChoices({
+                name: "Удаление закреплённых сообщений при очистке (/purge).", value: "purgePinned"
+            }, {
+                name: "Временные голосовые каналы.", value: "voices"
+            }, {
+                name: "Проверка сообщений на вредоносные ссылки.", value: "detectScamLinks"
+            })
     ))
     .addSubcommand((c) => c.setName("setlobby").setDescription("Установить лобби для голосовых каналов.").addChannelOption((o) =>
-        o.setName("channel").setDescription("Канал-генератор, в который надо зайти для создания временного канала.").setRequired(true).addChannelType(2)
+        o.setName("channel").setDescription("Канал-генератор, в который надо зайти для создания временного канала.").setRequired(true).addChannelTypes(2)
     ))
     .addSubcommand((c) => c.setName("counting").setDescription("Настройки модуля счёта.").addChannelOption((o) =>
-        o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelType(0)
+        o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelTypes(0)
     ))
     .toJSON();
 export const permission = 2;
+
+import { CommandInteraction } from "discord.js";
+import db from "../database/";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     const cmd = interaction.options.getSubcommand();
@@ -42,15 +42,6 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
                         "<:online:887393623845507082> **`Включено`**" :
                         "<:dnd:887393623786803270> **`Выключено`**",
                     inline: true
-                }, {
-                    name: "Удаление сообщений замьюченых участников",
-                    value: gset.get().delMuted ?
-                        "<:online:887393623845507082> **`Включено`**" :
-                        "<:dnd:887393623786803270> **`Выключено`**",
-                    inline: true
-                }, {
-                    name: "Роль мьюта",
-                    value: gset.get().muteRole ? `<@&${gset.get().muteRole}>` : "**`Не установлена`**"
                 }, {
                     name: "Временные голосовые каналы",
                     value: gset.get().voices.enabled ?
@@ -75,16 +66,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     } else if (cmd == "toggle") {
         let idk = "";
         const type = interaction.options.getString("setting");
-        if (type == "delMuted") {
-            gset.get().delMuted ? (() => {
-                gset.set("delMuted", false);
-                idk = "**`Удаление сообщений замьюченых участников`** было выключено.";
-            })() : (() => {
-                gset.set("delMuted", true);
-                idk = "**`Удаление сообщений замьюченых участников`** было включено.";
-            })();
-            await interaction.reply({ content: idk });
-        } else if (type == "purgePinned") {
+        if (type == "purgePinned") {
             gset.get().purgePinned ? (() => {
                 gset.set("purgePinned", false);
                 idk = "**`Удаление закреплённых сообщений`** было выключено.";
@@ -112,16 +94,6 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
             })();
             await interaction.reply({ content: idk });
         };;
-    } else if (cmd == "muterole") {
-        const role = interaction.options.getRole("role") as Role;
-        gset.set("muteRole", role.id);
-        await interaction.reply({
-            content: "✅ Роль мьюта была установлена." + (
-                interaction.guild.me.roles.highest.rawPosition <= role.rawPosition
-                    ? "\n⚠️ Установленная роль находится выше моей. Имейте ввиду, что команда мьюта при таком условии **работать не будет**"
-                    : ""
-            )
-        });
     } else if (cmd == "setlobby") {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);

@@ -1,4 +1,4 @@
-import { ActionRow, SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 export const options = new SlashCommandBuilder()
     .setName("modules")

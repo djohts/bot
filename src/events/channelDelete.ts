@@ -5,7 +5,7 @@ export const name = "channelDelete";
 export const run = async (channel: AnyChannel): Promise<any> => {
     if (channel.type === "DM") return;
 
-    const player = Util.client.manager.get(channel.guild.id);
+    const player = Util.lava.get(channel.guild.id);
 
     if (player?.options.voiceChannel === channel.id) {
         const text = Util.client.channels.cache.get(player.options.textChannel) as TextChannel;

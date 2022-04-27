@@ -1,6 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
-import db from "../database";
 
 export const options = new SlashCommandBuilder()
     .setName("unban")
@@ -8,6 +6,9 @@ export const options = new SlashCommandBuilder()
     .addUserOption((o) => o.setName("user").setDescription("Пользователь, которого надо разбанить.").setRequired(true))
     .toJSON();
 export const permission = 1;
+
+import { CommandInteraction } from "discord.js";
+import db from "../database";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))

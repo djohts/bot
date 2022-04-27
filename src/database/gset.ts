@@ -8,7 +8,6 @@ const gSetObject = {
     delMuted: false,
     purgePinned: false,
     detectScamLinks: false,
-    muteRole: "",
     voices: { enabled: false, lobby: "", parent: "" }
 } as GSetObject;
 
@@ -51,14 +50,14 @@ export default () => (async (guildid: string) => {
         reload: () => load(guildid),
         unload: () => dbCache.delete(guildid),
 
-        get: () => Object.assign({}, dbCache.get(guildid)),
-        set: (key: string, value: string | number | object | boolean) => {
+        get: (): GSetObject => Object.assign({}, dbCache.get(guildid)),
+        set: (key: string, value: string | number | object | boolean): GSetObject => {
             dbCache.get(guildid)[key] = value;
             save(guildid, [key]);
 
             return dbCache.get(guildid);
         },
-        setMultiple: (changes: object) => {
+        setMultiple: (changes: object): GSetObject => {
             let guildCache = dbCache.get(guildid);
             Object.assign(guildCache, changes);
 
@@ -66,31 +65,31 @@ export default () => (async (guildid: string) => {
 
             return dbCache.get(guildid);
         },
-        addToArray: (array: string, value: string | number | object | boolean) => {
+        addToArray: (array: string, value: string | number | object | boolean): GSetObject => {
             dbCache.get(guildid)[array].push(value);
             save(guildid, [array]);
 
             return dbCache.get(guildid);
         },
-        removeFromArray: (array: string, value: string | number | object | boolean) => {
+        removeFromArray: (array: string, value: string | number | object | boolean): GSetObject => {
             dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter((aValue: string | number | object | boolean) => aValue !== value);
             save(guildid, [array]);
 
             return dbCache.get(guildid);
         },
-        setOnObject: (object: string, key: string, value: string | number | object | boolean) => {
+        setOnObject: (object: string, key: string, value: string | number | object | boolean): GSetObject => {
             dbCache.get(guildid)[object][key] = value;
             save(guildid, [object]);
 
             return dbCache.get(guildid);
         },
-        removeFromObject: (object: string, key: string) => {
+        removeFromObject: (object: string, key: string): GSetObject => {
             delete dbCache.get(guildid)[object][key];
             save(guildid, [object]);
 
             return dbCache.get(guildid);
         },
-        reset: () => {
+        reset: (): GSetObject => {
             let guildCache = dbCache.get(guildid);
             Object.assign(guildCache, gSetObject);
             guildCache.guildid = guildid;

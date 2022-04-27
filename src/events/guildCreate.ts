@@ -7,7 +7,6 @@ import { commands } from "../handlers/interactions/slash";
 import Util from "../util/Util";
 const rest = new REST({ version: "9" }).setToken(config.token);
 
-export const name = "guildCreate";
 export async function run(guild: Guild) {
     linkRates.set(guild.id, new Set());
 

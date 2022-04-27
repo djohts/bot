@@ -1,6 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
-import db from "../database/";
 
 export const options = new SlashCommandBuilder()
     .setName("setcount")
@@ -8,6 +6,9 @@ export const options = new SlashCommandBuilder()
     .addIntegerOption((o) => o.setName("count").setDescription("Новый счёт.").setRequired(true).setMinValue(0))
     .toJSON();
 export const permission = 1;
+
+import { CommandInteraction } from "discord.js";
+import db from "../database/";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     const gdb = await db.guild(interaction.guild.id);

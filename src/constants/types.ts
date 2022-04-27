@@ -60,13 +60,15 @@ export interface CustomGuild {
 
 export class ModifiedClient extends Client {
     loading: boolean;
-    manager: Manager;
+    cfg: {
+        enslash: true,
+        enbr: true
+    };
 };
 
 export interface GuildObject {
     guildid: string,
     voices: object,
-    mutes: object,
     bans: object,
     channel: string,
     count: number,
@@ -84,10 +86,8 @@ export interface GuildObject {
 
 export interface GSetObject {
     guildid: string,
-    delMuted: boolean,
     purgePinned: boolean,
     detectScamLinks: boolean,
-    muteRole: string,
     voices: { enabled: boolean, lobby: string, parent: string }
 };
 

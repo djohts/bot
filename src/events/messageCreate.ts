@@ -5,7 +5,6 @@ import { linkRates } from "../bot";
 import { deleteMessage } from "../handlers/utils";
 import Util from "../util/Util";
 
-export const name = "messageCreate";
 export async function run(message: Message) {
     if (
         !message.guild ||
@@ -16,8 +15,6 @@ export async function run(message: Message) {
 
     const gdb = await Util.database.guild(message.guild.id);
     const gsdb = await Util.database.settings(message.guild.id);
-
-    if (gdb.get().mutes.hasOwnProperty(message.author.id) && gsdb.get().delMuted) return deleteMessage(message);
 
     if (gsdb.get().detectScamLinks && await checkMessage(message.content, true)) {
         let guildRates = linkRates.get(message.guild.id);
@@ -34,10 +31,6 @@ export async function run(message: Message) {
 
         return deleteMessage(message);
     };
-
-    (global as any).gdb = gdb;
-    (global as any).gsdb = gsdb;
-    (global as any).gldb = Util.database.global;
 
     const { channel } = gdb.get();
 

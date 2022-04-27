@@ -1,7 +1,6 @@
 import { GuildMember, VoiceChannel, StageChannel } from "discord.js";
 import Util from "../util/Util";
 
-export const name = "voiceChannelLeave";
 export async function run(member: GuildMember, channel: VoiceChannel | StageChannel) {
     const gdb = await Util.database.guild(member.guild.id);
 
