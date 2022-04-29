@@ -138,7 +138,7 @@ export default () => (async (guildid: string) => {
 export async function cacheGuilds(guilds: Set<string>) {
     let gdbs = await Guild.find({ $or: [...guilds].map((guildid) => ({ guildid })) });
     return await Promise.all([...guilds].map(async (guildid) => {
-        const guild = gdbs.find((db) => db.guildid == guildid) || { guildid };
+        const guild = gdbs.find((db) => db.guildid === guildid) || { guildid };
         const guildCache = {};
         const freshGuildObject = guildObject;
 

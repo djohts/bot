@@ -41,7 +41,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     }) as Message;
 
     const collector = m.createMessageComponentCollector({
-        filter: (i) => i.customId == "modules_menu" && i.user.id == interaction.user.id,
+        filter: (i) => i.customId === "modules_menu" && i.user.id === interaction.user.id,
         componentType: "SELECT_MENU",
         time: 60 * 1000,
         idle: 30 * 1000

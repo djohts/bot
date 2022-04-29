@@ -21,15 +21,15 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
     while (editing) {
         try {
             await pinned.edit({ content: null, embeds: [await generateEmbed()] });
-            const inputs = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
+            const inputs = await channel.awaitMessages({ filter: (m) => m.author.id === author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
             const input = inputs.first(), messagesToDelete = [input];
 
             const args = input?.content.split(" ");
             const command = args?.shift().toLowerCase();
 
-            if (command == "edit" && ["trigger", "action"].includes(args[0]) && parseInt(args[1])) {
+            if (command === "edit" && ["trigger", "action"].includes(args[0]) && parseInt(args[1])) {
                 const slot = parseInt(args[1]);
-                if (args[0] == "trigger") {
+                if (args[0] === "trigger") {
                     if (slot > limits.limitTriggers)
                         messagesToDelete.push(await channel.send(`❌ Вы можете иметь только ${limits.limitTriggers} триггера(-ов) на поток.`));
                     else {
@@ -44,10 +44,10 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                                 timestamp: Date.now()
                             }]
                         }));
-                        const selections = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
+                        const selections = await channel.awaitMessages({ filter: (m) => m.author.id === author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
                         const selection = selections.first(), newTriggerIndex = parseInt(selection.content);
                         messagesToDelete.push(selection);
-                        if (newTriggerIndex == 0) {
+                        if (newTriggerIndex === 0) {
                             newFlow.triggers[slot - 1] = null;
                             messagesToDelete.push(await channel.send({
                                 embeds: [{
@@ -72,11 +72,11 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                                     }]
                                 }));
                                 const values = await channel.awaitMessages({
-                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                    filter: (m) => m.author.id === author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
                                 });
                                 const value = values.first(), convertedValue = await property.convert(value.content, { guild });
                                 messagesToDelete.push(value);
-                                if (convertedValue == null) {
+                                if (!convertedValue) {
                                     messagesToDelete.push(await channel.send({
                                         embeds: [{
                                             title: "❌ Неверное значение. Изменение триггера отменено.",
@@ -86,7 +86,7 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                                     break;
                                 } else newTrigger.data.push(convertedValue);
                             };
-                            if (newTrigger.data.length == (trigger as any).properties.length) {
+                            if (newTrigger.data.length === (trigger as any).properties.length) {
                                 messagesToDelete.push(await channel.send({
                                     embeds: [{
                                         title: `💨 Подтвердите триггер ${slot}`,
@@ -98,9 +98,9 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                                     }]
                                 }));
                                 const confirmations = await channel.awaitMessages({
-                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                    filter: (m) => m.author.id === author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
                                 });
-                                const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() == "да";
+                                const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() === "да";
                                 messagesToDelete.push(confirmation);
                                 if (confirmed) {
                                     newFlow.triggers[slot - 1] = newTrigger;
@@ -135,11 +135,11 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                             }]
                         }));
                         const selections = await channel.awaitMessages({
-                            filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                            filter: (m) => m.author.id === author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
                         });
                         const selection = selections.first(), newActionIndex = parseInt(selection.content);
                         messagesToDelete.push(selection);
-                        if (newActionIndex == 0) {
+                        if (newActionIndex === 0) {
                             newFlow.actions[slot - 1] = null;
                             messagesToDelete.push(await channel.send({
                                 embeds: [{
@@ -164,11 +164,11 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                                     }]
                                 }));
                                 const values = await channel.awaitMessages({
-                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                    filter: (m) => m.author.id === author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
                                 });
                                 const value = values.first(), convertedValue = await property.convert(value.content, { guild });
                                 messagesToDelete.push(value);
-                                if (convertedValue == null) {
+                                if (!convertedValue) {
                                     messagesToDelete.push(await channel.send({
                                         embeds: [{
                                             title: "❌ Неверное значение. Изменение действия отменено.",
@@ -178,7 +178,7 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                                     break;
                                 } else newAction.data.push(convertedValue);
                             };
-                            if (newAction.data.length == (action as any).properties.length) {
+                            if (newAction.data.length === (action as any).properties.length) {
                                 messagesToDelete.push(await channel.send({
                                     embeds: [{
                                         title: `💨 Подтвердите действие ${slot}`,
@@ -190,9 +190,9 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                                     }]
                                 }));
                                 const confirmations = await channel.awaitMessages({
-                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                    filter: (m) => m.author.id === author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
                                 });
-                                const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() == "да";
+                                const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() === "да";
                                 messagesToDelete.push(confirmation);
                                 if (confirmed) {
                                     newFlow.actions[slot - 1] = newAction;
@@ -213,13 +213,13 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
                     };
                 };
             }
-            else if (command == "save") {
+            else if (command === "save") {
                 if (newFlow.triggers.find((t) => t) && newFlow.actions.find((a) => a)) {
                     editing = false;
                     successStatus = true;
                 } else messagesToDelete.push(await channel.send("❌ Вы должны указать как минимум один триггер и одно действие!"));
             }
-            else if (command == "cancel") editing = false;
+            else if (command === "cancel") editing = false;
             else if (["help", "?"].includes(command)) messagesToDelete.push(await channel.send(`🔗 Проверьте закреплённое сообщение для помощи! ${pinned.url}`));
             else messagesToDelete.push(await channel.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));
 

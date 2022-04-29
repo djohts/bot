@@ -13,7 +13,7 @@ import { CommandInteraction } from "discord.js";
 import db from "../database/";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
-    if (interaction.channel.type == "DM") return;
+    if (interaction.channel.type === "DM") return;
     if (cooldowns.has(interaction.channel.id))
         return await interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
     else cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 3500);
@@ -27,7 +27,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
 
     let toDelete = await interaction.channel.messages.fetch({ limit: limit });
     if (!gsdb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
-    if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id == interaction.options.getUser("member").id);
+    if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id === interaction.options.getUser("member").id);
     if (!toDelete.size) return await interaction.reply({ content: "❌ Не удалось найти сообщений для удаления.", ephemeral: true });
 
     const purged = await interaction.channel.bulkDelete(toDelete, true);
@@ -36,7 +36,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
         content: (
             purged.size ?
                 "✅ Удалено " + (
-                    purged.size == 1 ?
+                    purged.size === 1 ?
                         purged.size + " сообщение" :
                         [2, 3, 4].includes(purged.size) ?
                             purged.size + " сообщения" :

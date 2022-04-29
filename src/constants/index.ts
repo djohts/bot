@@ -3,9 +3,9 @@ import config from "../../config";
 import db from "../database/";
 
 export const getPermissionLevel = (member: GuildMember): 5 | 4 | 3 | 2 | 1 | 0 => {
-    if (config.admins[0] == member.user.id) return 5; // bot owner
+    if (config.admins[0] === member.user.id) return 5; // bot owner
     if (config.admins.includes(member.user.id)) return 4; // bot admin
-    if (member.guild.ownerId == member.user.id) return 3; // server owner
+    if (member.guild.ownerId === member.user.id) return 3; // server owner
     if (member.permissions.has("MANAGE_GUILD")) return 2; // server admin
     return 0; // server member
 };
@@ -27,7 +27,7 @@ const medals = {
 };
 const formatNumberSuffix = (n: number): string => {
     let str = `${n}`;
-    if (str == "0") return "N/A";
+    if (str === "0") return "N/A";
     return str + "й";
 };
 

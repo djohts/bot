@@ -31,7 +31,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     const gset = await db.settings(interaction.guild.id);
     const gdb = await db.guild(interaction.guild.id);
 
-    if (cmd == "get") {
+    if (cmd === "get") {
         await interaction.reply({
             embeds: [{
                 title: "Настройки " + interaction.guild.name,
@@ -63,10 +63,10 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
                 }]
             }]
         });
-    } else if (cmd == "toggle") {
+    } else if (cmd === "toggle") {
         let idk = "";
         const type = interaction.options.getString("setting");
-        if (type == "purgePinned") {
+        if (type === "purgePinned") {
             gset.get().purgePinned ? (() => {
                 gset.set("purgePinned", false);
                 idk = "**`Удаление закреплённых сообщений`** было выключено.";
@@ -75,7 +75,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
                 idk = "**`Удаление закреплённых сообщений`** было включено.";
             })();
             await interaction.reply({ content: idk });
-        } else if (type == "voices") {
+        } else if (type === "voices") {
             gset.get().voices.enabled ? (() => {
                 gset.setOnObject("voices", "enabled", false);
                 idk = "**`Временные голосовые каналы`** были выключены.";
@@ -84,7 +84,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
                 idk = "**`Временные голосовые каналы`** были включены.";
             })();
             await interaction.reply({ content: idk });
-        } else if (type == "detectScamLinks") {
+        } else if (type === "detectScamLinks") {
             gset.get().detectScamLinks ? (() => {
                 gset.set("detectScamLinks", false);
                 idk = "**`Проверка сообщений на вредоносные ссылки`** была выключена.";
@@ -94,11 +94,11 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
             })();
             await interaction.reply({ content: idk });
         };;
-    } else if (cmd == "setlobby") {
+    } else if (cmd === "setlobby") {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);
         await interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
-    } else if (cmd == "counting") {
+    } else if (cmd === "counting") {
         let counting = interaction.options.getChannel("channel");
         gdb.setMultiple({
             channel: counting.id,
