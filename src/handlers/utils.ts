@@ -1,5 +1,4 @@
-
-import { Collection, Guild, GuildMember, Message, TextChannel } from "discord.js";
+import { Guild, Message, TextChannel } from "discord.js";
 import db from "../database";
 const bulks = new Map<string, Message[]>(), rates = new Map<string, number>();
 

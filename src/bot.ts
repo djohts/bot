@@ -37,7 +37,8 @@ export const linkRates = new Map<string, Set<string>>();
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
     client.cfg = {
         enslash: true,
-        enbr: true
+        enbr: true,
+        debug: false
     };
     Util.setLavaManager(lavaHandler(client));
     let start = Date.now();

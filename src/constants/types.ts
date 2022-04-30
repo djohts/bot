@@ -1,10 +1,14 @@
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { Client, CommandInteraction } from "discord.js";
-import { Manager, NodeOptions } from "erela.js";
+import { NodeOptions } from "erela.js";
 
 export interface Config {
     token: string,
     database_uri: string,
+    monitoring: {
+        sdc: string,
+        bc: string
+    },
     admins: string[],
     lava: {
         nodes: NodeOptions[],
@@ -61,8 +65,9 @@ export interface CustomGuild {
 export class ModifiedClient extends Client {
     loading: boolean;
     cfg: {
-        enslash: true,
-        enbr: true
+        enslash: boolean,
+        enbr: boolean,
+        debug: boolean
     };
 };
 
