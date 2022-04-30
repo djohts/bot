@@ -104,7 +104,7 @@ export default () => (async (guildid: string) => {
 export async function cacheGSets(guilds: Set<string>) {
     let gsdbs = await GSet.find({ $or: [...guilds].map((guildid) => ({ guildid })) });
     return await Promise.all([...guilds].map(async (guildid) => {
-        const guild = gsdbs.find((db) => db.guildid === guildid) || { guildid };
+        const guild = gsdbs.find((db) => db.guildid == guildid) || { guildid };
         const guildCache = {};
         const freshGuildObject = gSetObject;
 

@@ -37,7 +37,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     const addToGlobal = db.global.addToArray;
     const cmd = interaction.options.getSubcommand();
 
-    if (cmd === "create") {
+    if (cmd == "create") {
         const channel = interaction.options.getChannel("channel") as TextChannel;
         const messageId = interaction.options.getString("message");
         if (!(
@@ -54,7 +54,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
         if (
             role.rawPosition > interaction.guild.me.roles.highest.rawPosition ||
             role.managed ||
-            interaction.guild.id === role.id
+            interaction.guild.id == role.id
         ) {
             return await interaction.reply({
                 content: "❌ Эту роль невозможно выдать.",
@@ -132,7 +132,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
             console.error(e);
             await interaction.reply("❌ Произошла ошибка.");
         });
-    } else if (cmd === "delete") {
+    } else if (cmd == "delete") {
         const brId = interaction.options.getString("id");
         const brc = gdb.get().brcs[brId];
         const brm = gdb.get().brms[brId];
@@ -182,7 +182,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
                 gdb.removeFromObject("brs", brId);
             });
         });
-    } else if (cmd === "list") {
+    } else if (cmd == "list") {
         const { brcs: brcs1, brms: brms1, brs: brs1 } = gdb.get();
         const brcs = new Collection<string, string>();
         const brms = new Collection<string, string>();
@@ -197,13 +197,13 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
         const channelsFlat = [...new Set(brcs.values())];
 
         channelsFlat.map((channelId) => {
-            const channelBrIds = [...brcs.filter((v) => v === channelId).keys()];
+            const channelBrIds = [...brcs.filter((v) => v == channelId).keys()];
             channelBrIds.map((i) => {
                 const messageId = brms.get(i);
-                const messageBrIds = [...brms.filter((v) => v === messageId).keys()];
+                const messageBrIds = [...brms.filter((v) => v == messageId).keys()];
                 messageObject.set(messageId, brs.filter((_, x) => messageBrIds.includes(x)).map((roleId, brId) => `${brId}.${roleId}`));
             });
-            channelObject.set(channelId, messageObject.filter((_, messageId) => channelBrIds.includes(brms.findKey((v) => v === messageId))));
+            channelObject.set(channelId, messageObject.filter((_, messageId) => channelBrIds.includes(brms.findKey((v) => v == messageId))));
         });
 
         const formattedArray = channelObject.map((messages, channelId) => {
@@ -220,21 +220,21 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
         await interaction.reply(generateMessage(interaction, paginated, page)).then((m: any) => {
             const collector = (m as Message).createMessageComponentCollector({
                 componentType: "BUTTON",
-                filter: (x: ButtonInteraction) => x.user.id === interaction.user.id,
+                filter: (x: ButtonInteraction) => x.user.id == interaction.user.id,
                 idle: 60 * 1000
             });
 
             collector.on("collect", async (i: ButtonInteraction) => {
-                if (i.customId === "brlist:page:first") {
+                if (i.customId == "brlist:page:first") {
                     page = 0;
                     await i.update(generateMessage(interaction, paginated, page));
-                } else if (i.customId === "brlist:page:prev") {
+                } else if (i.customId == "brlist:page:prev") {
                     page--;
                     await i.update(generateMessage(interaction, paginated, page));
-                } else if (i.customId === "brlist:page:next") {
+                } else if (i.customId == "brlist:page:next") {
                     page++;
                     await i.update(generateMessage(interaction, paginated, page));
-                } else if (i.customId === "brlist:page:last") {
+                } else if (i.customId == "brlist:page:last") {
                     page = paginated.length - 1;
                     await i.update(generateMessage(interaction, paginated, page));
                 };
