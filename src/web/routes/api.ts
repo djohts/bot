@@ -2,8 +2,9 @@ import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
 import config from "../../../config";
 import discordoauth2 from "discord-oauth2";
 import { manager } from "../../sharding";
-import { ModifiedClient, SessionUser, CustomGuild } from "../../constants/types";
-import { Permissions, ShardClientUtil } from "discord.js";
+import { ModifiedClient, SessionUser, CustomGuild, BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
+import { Permissions, ShardClientUtil, WebhookClient } from "discord.js";
+const wh = new WebhookClient({ url: config.notifications_webhook });
 const oauth2 = new discordoauth2({
     clientId: config.client.id,
     clientSecret: config.client.secret,
@@ -15,6 +16,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         const newBotInfo = await manager.broadcastEval((bot) => ({
             status: bot.ws.status,
             guilds: bot.guilds.cache.size,
+            channels: bot.channels.cache.size,
             cachedUsers: bot.users.cache.size,
             users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
             ping: bot.ws.ping,
@@ -29,12 +31,12 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         newBotInfo.lastUpdate = Date.now();
         res.send(newBotInfo);
     });
-    fastify.get("/login", (_, res): any => res.redirect(
-        oauth2.generateAuthUrl({
+    fastify.get("/login", (_, res) => {
+        res.redirect(oauth2.generateAuthUrl({
             scope: ["identify", "guilds"],
             responseType: "code",
-        })
-    ));
+        }));
+    });
     fastify.get("/logout", (req: any, res) => {
         req.session.user = null;
         res.redirect(req.session.lastPage);
@@ -53,20 +55,20 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         req.session.user.guilds = await oauth2.getUserGuilds(a.access_token);
         res.redirect(req.session.lastPage);
     });
-    fastify.get("/user/guilds", async (req: any, res) => {
+    fastify.get("/user/guilds", (req: any, res): any => {
         const user = req.session.user as SessionUser | null;
         if (!user) return res.redirect("/api/login");
 
         const guilds: CustomGuild[] = [];
 
-        await Promise.all(user.guilds.map(async (rawguild) => {
+        user.guilds.map((rawguild) => {
             guilds.push({
                 id: rawguild.id,
                 name: rawguild.name,
                 iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
                 managed: new Permissions().add(rawguild.permissions as any).has("ADMINISTRATOR")
             });
-        }));
+        });
 
         res.send(guilds);
     });
@@ -77,10 +79,9 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             shard: ShardClientUtil.shardIdForGuildId(guildid, manager.shards.size),
             context: { guildid }
         });
-        if (!guild) return res.send({ isinuguild: false });
-        res.send({ isinuguild: true });
+        res.send({ isinuguild: !!guild });
     });
-    fastify.get("/invite/:guildid", async (req: any, res) => {
+    fastify.get("/invite/:guildid", (req: any, res) => {
         const guildid = req.params.guildid;
         const botid = config.client.id;
         guildid ? res.redirect([
@@ -96,6 +97,57 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             "&scope=bot%20applications.commands",
             "&permissions=1375450033182"
         ].join(""));
-    })
+    });
+    fastify.post("/webhook/boticord", async (req, res) => {
+        if (req.headers["X-Hook-Key"] !== config.monitoring.bc_hook_key) return res.status(403).send();
+        const options = JSON.parse(req.body as string) as BcBotBumpAction | BcBotCommentAction;
+
+        switch (options.type) {
+            case "new_bot_bump":
+                await wh.send({
+                    content: [
+                        `<@${options.data.user}>, спасибо за ап на \`boticord.top\`!`,
+                        `Вы можете сделать повторный ап <t:${Math.round(options.data.at / 1000) + 4 * 60 * 60}:R>.`
+                    ].join("\n"),
+                    username: "Апы",
+                });
+            case "new_bot_comment":
+                await wh.send({
+                    embeds: [{
+                        title: "Новый комментарий к боту",
+                        description: [
+                            `<@${options.data.user}> оставил комментарий к боту:`,
+                            (options as BcBotCommentAction).data.comment.new
+                        ].join("\n"),
+                        timestamp: options.data.at,
+                        fields: [{
+                            name: "Оценка",
+                            value: !(options as BcBotCommentAction).data.comment.vote.new
+                                ? "Нейтральная" : (options as BcBotCommentAction).data.comment.vote.new === -1
+                                    ? "Негативная" : "Позитивная"
+                        }]
+                    }],
+                    username: "Комментарии"
+                });
+            case "edit_bot_comment":
+                await wh.send({
+                    embeds: [{
+                        title: "Новый комментарий к боту",
+                        description: [
+                            `<@${options.data.user}> изменил комментарий к боту:`,
+                            (options as BcBotCommentAction).data.comment.new
+                        ].join("\n"),
+                        timestamp: options.data.at,
+                        fields: [{
+                            name: "Оценка",
+                            value: !(options as BcBotCommentAction).data.comment.vote.new
+                                ? "Нейтральная" : (options as BcBotCommentAction).data.comment.vote.new === -1
+                                    ? "Негативная" : "Позитивная"
+                        }]
+                    }],
+                    username: "Комментарии"
+                });
+        };
+    });
     done();
 };

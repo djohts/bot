@@ -7,8 +7,10 @@ export interface Config {
     database_uri: string,
     monitoring?: {
         sdc: string,
-        bc: string
+        bc: string,
+        bc_hook_key: string
     },
+    notifications_webhook?: string,
     admins: string[],
     lava: {
         nodes: NodeOptions[],
@@ -100,4 +102,29 @@ export interface GlobalObject {
     maintenance: boolean,
     debug: boolean,
     generatedIds: string[]
+};
+
+export interface BcBotBumpAction {
+    type: "new_bot_bump",
+    data: {
+        user: string,
+        at: number
+    }
+};
+
+export interface BcBotCommentAction {
+    type: "new_bot_comment" | "edit_bot_comment" | "delete_bot_comment" | "new_server_comment" | "edit_server_comment" | "delete_server_comment",
+    data: {
+        user: string,
+        at: number,
+        reason: "self" | "moderation"
+        comment: {
+            vote: {
+                old: -1 | 1 | null,
+                new: -1 | 1 | null
+            },
+            old: string | null,
+            new: string | null
+        }
+    }
 };
