@@ -105,26 +105,28 @@ async function postStats() {
     await fetch("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
         method: "POST",
         headers: {
-            "Authorization": `SDC ${config.monitoring.sdc}`
+            "Authorization": `SDC ${config.monitoring.sdc}`,
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(stats.sdc)
     }).then(async (res) => {
         if (res.status !== 200) {
-            console.error(`[Manager] Failed to post stats to SDC: ${res.status} ${await res.text()}`);
+            return console.error(`[Manager] Failed to post stats to SDC: ${res.status} ${await res.text()}`);
         };
     });
     await fetch("https://api.boticord.top/v1/stats", {
         method: "POST",
         headers: {
-            "Authorization": config.monitoring.bc
+            "Authorization": config.monitoring.bc,
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(stats.bc)
     }).then(async (res) => {
         if (res.status !== 200) {
-            console.error(`[Manager] Failed to post stats to BC: ${res.status} ${await res.text()}`);
+            return console.error(`[Manager] Failed to post stats to BC: ${res.status} ${await res.text()}`);
         };
         if (!(await res.json()).ok) {
-            console.error(`[Manager] Failed to post stats to BC: ${await res.text()}`);
+            return console.error(`[Manager] Failed to post stats to BC: ${await res.text()}`);
         };
     });
 };
