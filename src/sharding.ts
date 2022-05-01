@@ -29,10 +29,13 @@ if (config.port) {
 };
 
 manager.spawn().then(() => {
-    setTimeout(() => {
-        if (config.monitoring.sdc && config.monitoring.bc) setInterval(async () => {
+    setTimeout(async () => {
+        if (config.monitoring.sdc && config.monitoring.bc) {
+            setInterval(async () => {
+                await postStats();
+            }, 1 * 60 * 60 * 1000);
             await postStats();
-        }, 1 * 60 * 60 * 1000);
+        };
     }, 1 * 60 * 1000);
 });
 
@@ -110,7 +113,7 @@ async function postStats() {
             console.error(`[Manager] Failed to post stats to SDC: ${res.status} ${await res.text()}`);
         };
     });
-    await fetch("https://api.boticord.top/stats", {
+    await fetch("https://api.boticord.top/v1/stats", {
         method: "POST",
         headers: {
             "Authorization": config.monitoring.bc
@@ -119,6 +122,9 @@ async function postStats() {
     }).then(async (res) => {
         if (res.status !== 200) {
             console.error(`[Manager] Failed to post stats to BC: ${res.status} ${await res.text()}`);
+        };
+        if (!(await res.json()).ok) {
+            console.error(`[Manager] Failed to post stats to BC: ${await res.text()}`);
         };
     });
 };
