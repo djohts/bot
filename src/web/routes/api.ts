@@ -100,9 +100,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     });
     fastify.post("/webhook/boticord", async (req, res) => {
         if (req.headers["x-hook-key"] != config.monitoring.bc_hook_key) return res.status(403).send();
-        console.log(req.body)
         const options = req.body as BcBotBumpAction | BcBotCommentAction;
-        console.log(options)
 
         switch (options.type) {
             case "new_bot_bump":
@@ -111,7 +109,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                         `<@${options.data.user}>, спасибо за ап на \`boticord.top\`!`,
                         `Вы можете сделать повторный ап <t:${Math.round(options.data.at / 1000) + 4 * 60 * 60}:R>.`
                     ].join("\n"),
-                    username: "Апы",
+                    username: "ботикорд",
                 });
             case "new_bot_comment":
                 await wh.send({
@@ -129,7 +127,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                                     ? "Негативная" : "Позитивная"
                         }]
                     }],
-                    username: "Комментарии"
+                    username: "ботикорд"
                 });
             case "edit_bot_comment":
                 await wh.send({
@@ -147,7 +145,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                                     ? "Негативная" : "Позитивная"
                         }]
                     }],
-                    username: "Комментарии"
+                    username: "ботикорд"
                 });
         };
     });
