@@ -114,9 +114,9 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             case "new_bot_comment":
                 await wh.send({
                     embeds: [{
-                        title: "Новый комментарий к боту",
+                        title: "Новый комментарий",
                         description: [
-                            `<@${options.data.user}> оставил комментарий к боту:`,
+                            `<@${options.data.user}>:`,
                             (options as BcBotCommentAction).data.comment.new
                         ].join("\n"),
                         timestamp: options.data.at,
@@ -132,9 +132,9 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             case "edit_bot_comment":
                 await wh.send({
                     embeds: [{
-                        title: "Новый комментарий к боту",
+                        title: "Комментарий изменён",
                         description: [
-                            `<@${options.data.user}> изменил комментарий к боту:`,
+                            `<@${options.data.user}>:`,
                             (options as BcBotCommentAction).data.comment.new
                         ].join("\n"),
                         timestamp: options.data.at,
