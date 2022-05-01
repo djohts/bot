@@ -5,7 +5,7 @@ import { NodeOptions } from "erela.js";
 export interface Config {
     token: string,
     database_uri: string,
-    monitoring: {
+    monitoring?: {
         sdc: string,
         bc: string
     },

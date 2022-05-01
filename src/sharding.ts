@@ -1,6 +1,7 @@
 require("nodejs-better-console").overrideConsole();
 import { ShardingManager } from "discord.js";
 import readline from "readline";
+import fetch from "node-fetch";
 import config from "../config";
 import { inspect } from "util";
 const read = readline.createInterface({
@@ -27,7 +28,13 @@ if (config.port) {
     require("./web/")();
 };
 
-manager.spawn();
+manager.spawn().then(() => {
+    setTimeout(() => {
+        if (config.monitoring.sdc && config.monitoring.bc) setInterval(async () => {
+            await postStats();
+        }, 1 * 60 * 60 * 1000);
+    }, 1 * 60 * 1000);
+});
 
 process.on("unhandledRejection", (e) => console.error("[Manager]", "unhandledRejection:", e));
 process.on("uncaughtException", (e) => console.error("[Manager]", "uncaughtException:", e));
@@ -77,3 +84,41 @@ read.on("line", async (line) => {
         };
     };
 });
+
+async function postStats() {
+    const stats = {
+        sdc: {
+            shards: manager.shards.size,
+            servers: await manager.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((acc, val) => acc + val, 0))
+        },
+        bc: {
+            servers: await manager.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((acc, val) => acc + val, 0)),
+            shards: manager.shards.size,
+            users: await manager.broadcastEval((bot) =>
+                bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)
+            ).then((res) => res.reduce((prev, val) => prev + val, 0))
+        }
+    };
+    await fetch("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
+        method: "POST",
+        headers: {
+            "Authorization": `SDC ${config.monitoring.sdc}`
+        },
+        body: JSON.stringify(stats.sdc)
+    }).then(async (res) => {
+        if (res.status !== 200) {
+            console.error(`[Manager] Failed to post stats to SDC: ${res.status} ${await res.text()}`);
+        };
+    });
+    await fetch("https://api.boticord.top/stats", {
+        method: "POST",
+        headers: {
+            "Authorization": config.monitoring.bc
+        },
+        body: JSON.stringify(stats.bc)
+    }).then(async (res) => {
+        if (res.status !== 200) {
+            console.error(`[Manager] Failed to post stats to BC: ${res.status} ${await res.text()}`);
+        };
+    });
+};
