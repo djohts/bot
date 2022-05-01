@@ -130,6 +130,10 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                     username: "ботикорд"
                 });
             case "edit_bot_comment":
+                let vote: string;
+                if ((options as BcBotCommentAction).data.comment.vote.new == 1) vote = "Позитивная";
+                else if ((options as BcBotCommentAction).data.comment.vote.new == -1) vote = "Негативная";
+                else vote = "Нейтральная";
                 await wh.send({
                     embeds: [{
                         title: "Комментарий изменён",
@@ -140,9 +144,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                         timestamp: options.data.at,
                         fields: [{
                             name: "Оценка",
-                            value: !(options as BcBotCommentAction).data.comment.vote.new
-                                ? "Нейтральная" : (options as BcBotCommentAction).data.comment.vote.new === -1
-                                    ? "Негативная" : "Позитивная"
+                            value: vote
                         }]
                     }],
                     username: "ботикорд"
