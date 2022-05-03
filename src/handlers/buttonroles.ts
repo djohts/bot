@@ -5,7 +5,7 @@ export = async (interaction: ButtonInteraction) => {
     const member = interaction.member as GuildMember;
     const guild = interaction.guild;
 
-    if (!member.manageable || !guild.me.permissions.has("MANAGE_ROLES"))
+    if (!guild.me.permissions.has("MANAGE_ROLES"))
         return await interaction.reply({ content: "❌ У меня нет прав на изменение ролей.", ephemeral: true });
 
     await interaction.deferReply({ ephemeral: true }).catch(() => null);
