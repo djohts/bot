@@ -17,18 +17,23 @@ import prettyms from "pretty-ms";
 import db from "../database/";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
-    if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
-        return await interaction.reply({ content: "❌ У меня нет прав для выдачи банов.", ephemeral: true });
-    if (interaction.options.getString("duration") && !parseTime(interaction.options.getString("duration")))
-        return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
+    const member = interaction.options.getMember("member") as GuildMember;
+
+    if (
+        !interaction.guild.me.permissions.has("BAN_MEMBERS") ||
+        !member.manageable
+    ) return await interaction.reply({ content: "❌ Я не могу забанить этого участника.", ephemeral: true });
+    if (
+        interaction.options.getString("duration") &&
+        !parseTime(interaction.options.getString("duration"))
+    ) return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await db.guild(interaction.guild.id);
-    const member = interaction.options.getMember("member") as GuildMember;
 
     if (bans.has(member.user.id))
         return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
-    if (getPermissionLevel(member) >= 1)
+    if (getPermissionLevel(member) >= getPermissionLevel(interaction.member as GuildMember))
         return await interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
 
     await interaction.deferReply();
