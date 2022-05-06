@@ -29,11 +29,11 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
         guild: interaction.guildId,
         voiceChannel: member.voice.channelId,
         textChannel: interaction.channelId,
-        selfDeafen: true
+        selfDeafen: true,
+        volume: 20
     });
     if (player.state !== "CONNECTED") {
         player.connect();
-        player.setVolume(20);
     };
 
     if (player.queue.totalSize + 1 > 25) return await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");

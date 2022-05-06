@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import { checkMessage } from "stop-discord-phishing";
-import countingHandler from "../handlers/counting";
+import countingHandler from "../handlers/counting/handler";
 import { linkRates } from "../bot";
 import { deleteMessage } from "../handlers/utils";
 import Util from "../util/Util";

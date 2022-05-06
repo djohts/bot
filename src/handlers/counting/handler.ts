@@ -1,12 +1,12 @@
 import { Message, ThreadChannel, Webhook } from "discord.js";
-import { ModifiedClient } from "../constants/types";
-import { flow as _flow } from "../constants/flows/flow";
+import { ModifiedClient } from "../../constants/types";
+import { flow as _flow } from "../../constants/flows/flow";
 const { triggers: allTriggers, actions: allActions } = _flow;
-import { getPermissionLevel } from "../constants";
-import limits from "../constants/flows/";
+import { getPermissionLevel } from "../../constants";
+import limits from "../../constants/flows/";
 const { limitFlows, limitTriggers, limitActions } = limits;
-import { deleteMessage } from "./utils";
-import db from "../database/";
+import { deleteMessage } from "./../utils";
+import db from "../../database/";
 
 export = async (message: Message) => {
     const gdb = await db.guild(message.guild.id);

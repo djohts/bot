@@ -1,6 +1,6 @@
 import { Client, Message, TextChannel } from "discord.js";
-import { formatScore } from "../constants/";
-import db from "../database/";
+import { formatScore } from "../../constants/";
+import db from "../../database/";
 
 export = (client: Client) => Promise.all(client.guilds.cache.map(async (guild) => {
     const gdb = await db.guild(guild.id);

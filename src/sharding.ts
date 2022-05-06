@@ -28,7 +28,7 @@ if (config.port) {
     require("./web/")();
 };
 
-manager.spawn().then(() => {
+manager.spawn({ timeout: -1 }).then(() => {
     setTimeout(async () => {
         if (config.monitoring.sdc && config.monitoring.bc) {
             setInterval(async () => {
