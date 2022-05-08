@@ -36,4 +36,5 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     };
 
     await interaction.reply(`Новая громкость - \`${volume}%\``).then(() => player.setVolume(volume));
+    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
 };

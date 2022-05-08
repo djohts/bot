@@ -25,4 +25,5 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     };
 
     await interaction.reply("Плеер был остановлен.").then(() => player.destroy());
+    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
 };

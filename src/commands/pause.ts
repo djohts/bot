@@ -27,4 +27,5 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     player.paused
         ? await interaction.reply("Пауза выключена.").then(() => player.pause(false))
         : await interaction.reply("Пауза включёна.").then(() => player.pause(true));
+    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
 };

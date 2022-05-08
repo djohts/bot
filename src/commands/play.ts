@@ -45,4 +45,5 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
         !player.paused &&
         (!player.queue.size || player.queue.totalSize === res.tracks.length)
     ) player.play();
+    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
 };

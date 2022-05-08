@@ -30,4 +30,5 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     player.trackRepeat
         ? await interaction.reply("Повтор выключен.").then(() => player.setTrackRepeat(false))
         : await interaction.reply("Повтор включён.").then(() => player.setTrackRepeat(true));
+    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
 };

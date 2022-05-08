@@ -25,12 +25,16 @@ manager.on("shardCreate", (shard) => {
 });
 
 if (config.port) {
-    require("./web/")();
+    try {
+        require("./web/")();
+    } catch (e) {
+        console.error(e);
+    };
 };
 
 manager.spawn({ timeout: -1 }).then(() => {
     setTimeout(async () => {
-        if (config.monitoring.sdc && config.monitoring.bc) {
+        if (config.monitoring?.sdc && config.monitoring?.bc) {
             setInterval(async () => {
                 await postStats();
             }, 1 * 60 * 60 * 1000);
