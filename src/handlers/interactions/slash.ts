@@ -12,7 +12,7 @@ const rest = new REST({ version: "9" }).setToken(config.token);
 
 export default async (interaction: CommandInteraction) => {
     if (
-        !(interaction.client as ModifiedClient).cfg?.enslash &&
+        !(interaction.client as ModifiedClient).cfg.enslash &&
         !config.admins.includes(interaction.user.id)
     ) return await interaction.reply({
         content: "❌ Команды были выключены разработчиком. Если вы считаете, что это ошибка, обратитесь к нам: https://discord.gg/AaS4dwVHyA",
@@ -29,13 +29,13 @@ export default async (interaction: CommandInteraction) => {
         return await interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
 
     try {
-        commandFile.run(interaction);
+        await commandFile.run(interaction);
     } catch (e) {
         console.error(`Error in ${commandName}:`, e);
     };
 };
 
-export const registerCommands = async (client: ModifiedClient) => {
+export const registerCommands = async (client: ModifiedClient): Promise<string[]> => {
     const files = fs.readdirSync(__dirname + "/../../commands/");
 
     for (let filename of files) {

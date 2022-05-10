@@ -15,6 +15,6 @@ export = (interaction: Interaction) => {
         ephemeral: true
     });
 
-    if (interaction.isCommand()) return handleCommand(interaction as any);
+    if (interaction.isCommand()) return handleCommand(interaction);
     if (interaction.isButton()) return handleButton(interaction);
 };

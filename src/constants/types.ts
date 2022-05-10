@@ -15,7 +15,7 @@ export interface Config {
     lava: {
         nodes: NodeOptions[],
         spotify: {
-            clientID: string,
+            clientId: string,
             clientSecret: string
         }
     },

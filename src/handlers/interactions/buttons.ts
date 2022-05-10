@@ -10,6 +10,5 @@ export = async (interaction: ButtonInteraction) => {
     };
 
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message as Message);
-
     if (interaction.customId.startsWith("br:")) return buttonRoles(interaction);
 };

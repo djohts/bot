@@ -1,16 +1,18 @@
 import { TextChannel, VoiceBasedChannel, Message } from "discord.js";
 import { ModifiedClient } from "../constants/types";
 import { Manager } from "erela.js";
-import Spotify from "erela.js-spotify";
+import Spotify from "better-erela.js-spotify";
 import { splitBar } from "string-progressbar";
 import config from "../../config";
-const { lava: { nodes, spotify: { clientID, clientSecret } } } = config;
+const { lava: { nodes, spotify: { clientId, clientSecret } } } = config;
 import { shard } from "../bot";
 import prettyms from "pretty-ms";
 
 export = (client: ModifiedClient) => new Manager({
     nodes: nodes,
-    plugins: [new Spotify({ clientID, clientSecret })],
+    plugins: [
+        new Spotify({ clientId, clientSecret })
+    ],
     defaultSearchPlatform: "youtube",
     send(id, payload) {
         client.guilds.cache.get(id)?.shard.send(payload);

@@ -13,16 +13,14 @@ import Util from "../util/Util";
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     const member = interaction.member as GuildMember;
 
-    if (!member.voice.channel)
-        return await interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
     if (
         interaction.guild.me.voice.channel &&
-        member.voice.channel.id !== interaction.guild.me.voice.channel.id
+        member.voice.channel?.id !== interaction.guild.me.voice.channel.id
     ) return await interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
 
     await interaction.deferReply();
 
-    const res = await Util.lava.search(interaction.options.getString("query"), interaction.user);
+    const res = await Util.lava.search(interaction.options.getString("query").trim(), interaction.user);
     if (!res.tracks.length) return await interaction.editReply("❌ По вашему запросу не удалось ничего найти.");
 
     const player = Util.lava.create({
@@ -32,7 +30,10 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
         selfDeafen: true,
         volume: 20
     });
-    if (player.state !== "CONNECTED") {
+    if (
+        player.state !== "CONNECTED" &&
+        player.state !== "CONNECTING"
+    ) {
         player.connect();
     };
 
