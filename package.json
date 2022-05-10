@@ -39,7 +39,7 @@
         "mongoose": "^6.2.9",
         "node-abort-controller": "^3.0.1",
         "nodejs-better-console": "^1.0.2",
-        "point-of-view": "^5.2.0",
+        "point-of-view": "^6.0.0",
         "pretty-ms": "^7.0.1",
         "sanitize-filename": "^1.6.3",
         "stop-discord-phishing": "^0.2.0",
