@@ -1,5 +1,5 @@
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-import { checkGuildBans,  deleteMessage } from "./utils";
+import { checkGuildBans, deleteMessage } from "./utils";
 import prettyms from "pretty-ms";
 import { Guild, Message, TextChannel } from "discord.js";
 import db from "../database/";
@@ -25,7 +25,7 @@ export = async (guild: Guild) => {
                 let oldPermission: boolean | null = null;
                 if (defaultPermissions.allow.has("SEND_MESSAGES")) oldPermission = true;
                 else if (defaultPermissions.deny.has("SEND_MESSAGES")) oldPermission = false;
-                if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => null);
+                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => null);
 
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
@@ -42,7 +42,7 @@ export = async (guild: Guild) => {
                     };
                 };
 
-                if (oldPermission) await channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission }).catch(() => null);
+                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission }).catch(() => null);
                 if (fail) await alert.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
                 else await alert.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`)
                     .then(() => setTimeout(() => deleteMessage(alert), 10 * 1000))

@@ -50,66 +50,6 @@ export = (client: ModifiedClient) => new Manager({
             let message = player.get("message") as Message | undefined;
             if (!message) message = await text.send("⏳ Загрузка...");
             player.set("message", message);
-
-            const duration = Math.floor(track.duration / 1000) * 1000;
-            const position = Math.floor(player.position / 1000) * 1000;
-            const progressComponent = [
-                splitBar(duration, position, 20)[0],
-                ` [`,
-                prettyms(position, { colonNotation: true, compact: true }),
-                ` / `,
-                prettyms(duration, { colonNotation: true, compact: true }),
-                `]`
-            ].join("");
-            await message.edit({
-                content: `🎶 Сейчас играет: ${track.title}`,
-                embeds: [{
-                    title: track.title,
-                    url: track.uri,
-                    thumbnail: {
-                        url: track.thumbnail
-                    },
-                    fields: [{
-                        name: "Автор",
-                        value: track.author,
-                        inline: true
-                    }, {
-                        name: "Прогресс",
-                        value: progressComponent,
-                    }]
-                }]
-            });
-            const interval = setInterval(async () => {
-                const duration = Math.floor(track.duration / 1000) * 1000;
-                const position = Math.floor(player.position / 1000) * 1000;
-                const progressComponent = [
-                    splitBar(duration, position, 20)[0],
-                    ` [`,
-                    prettyms(position, { colonNotation: true, compact: true }),
-                    ` / `,
-                    prettyms(duration, { colonNotation: true, compact: true }),
-                    `]`
-                ].join("");
-                await message.edit({
-                    content: `🎶 Сейчас играет: ${track.title}`,
-                    embeds: [{
-                        title: track.title,
-                        url: track.uri,
-                        thumbnail: {
-                            url: track.thumbnail
-                        },
-                        fields: [{
-                            name: "Автор",
-                            value: track.author,
-                            inline: true
-                        }, {
-                            name: "Прогресс",
-                            value: progressComponent,
-                        }]
-                    }]
-                });
-            }, 5000);
-            setTimeout(() => clearInterval(interval), track.duration);
         } catch { };
     })
     .on("queueEnd", async (player) => {

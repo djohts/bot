@@ -13,7 +13,6 @@ import { CommandInteraction } from "discord.js";
 import db from "../database/";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
-    if (interaction.channel.type == "DM") return;
     if (cooldowns.has(interaction.channel.id))
         return await interaction.reply({ content: "❌ Подождите несколько секунд перед повторным использованем команды.", ephemeral: true });
     else cooldowns.add(interaction.channel.id) && setTimeout(() => cooldowns.delete(interaction.channel.id), 3500);

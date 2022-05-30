@@ -61,9 +61,9 @@ read.on("line", async (line) => {
         };
     } else if (cmd === "beval") {
         let shard = parseInt(args[0]);
-        if (isNaN(shard)) shard = undefined;
+        if (isNaN(shard)) shard = null;
         const script = args.slice(1).join(" ");
-        console.log(`[Manager CLI] Evaluating on ${shard !== undefined ? `shard ${shard}` : "all shards"}: ${script}`);
+        console.log(`[Manager CLI] Evaluating on ${shard ? `shard ${shard}` : "all shards"}: ${script}`);
         try {
             const result = await _manager.broadcastEval(async (bot, { script }) => await eval(script), { shard, context: { script } });
             console.log(`[Manager CLI] Result:`, inspect(result, { depth: 2 }));

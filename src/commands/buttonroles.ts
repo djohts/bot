@@ -26,8 +26,20 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 2;
 
+import {
+    CommandInteraction,
+    Collection,
+    TextChannel,
+    Message,
+    Role,
+    MessageActionRow,
+    MessageButton,
+    ButtonInteraction,
+    MessageEmbed,
+    InteractionReplyOptions,
+    InteractionUpdateOptions
+} from "discord.js";
 import db from "../database/";
-import { CommandInteraction, Collection, TextChannel, Message, Role, MessageActionRow, MessageButton, ButtonInteraction, MessageEmbed, MessageOptions, MessagePayload, InteractionReplyOptions } from "discord.js";
 import { generateID } from "../constants/";
 import { paginate } from "../constants/resolvers";
 import { deleteMessage } from "../handlers/utils";
@@ -244,7 +256,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
     };
 };
 
-const generateMessage = (interaction: CommandInteraction, pages: string[][], page: number): InteractionReplyOptions => {
+const generateMessage = (interaction: CommandInteraction, pages: string[][], page: number): InteractionReplyOptions & InteractionUpdateOptions => {
     return {
         embeds: [
             new MessageEmbed()
