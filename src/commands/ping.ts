@@ -8,16 +8,11 @@ export const permission = 0;
 
 import prettyms from "pretty-ms";
 import { CommandInteraction } from "discord.js";
-import { model } from "mongoose";
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     const server = Date.now() - interaction.createdTimestamp;
     const uptime = prettyms(interaction.client.uptime);
     const api = interaction.guild.shard.ping;
-
-    let a = Date.now();
-    await model("Guild").find();
-    const dbping = Date.now() - a;
 
     await interaction.reply({
         embeds: [{
@@ -26,7 +21,6 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
                 "```",
                 `Сервер   :: ${server}ms`,
                 `API      :: ${api}ms`,
-                `DB       :: ${dbping}ms`,
                 `Аптайм   :: ${uptime}`,
                 "```"
             ].join("\n")
