@@ -12,7 +12,7 @@ export async function run(original: Message, updated: Message) {
         !modules.includes("webhook") &&
         (
             modules.includes("talking")
-                ? (original.content || `${count}`).split(" ")[0] !== updated.content.split(" ")[0]
+                ? (original.content || `${count}`).split(/\s/)[0] !== updated.content.split(/\s/)[0]
                 : (original.content || `${count}`) !== updated.content
         )) {
         const newMessage = await updated.channel.send(`${updated.author}: ${original.content || count}`);

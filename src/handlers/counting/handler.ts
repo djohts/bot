@@ -18,7 +18,7 @@ export = async (message: Message) => {
     if (
         (!modules.includes("allow-spam") && message.author.id === user) ||
         (!modules.includes("talking") && content !== `${count + 1}`) ||
-        content.split(" ")[0] !== `${count + 1}`
+        content.split(/\s/)[0] !== `${count + 1}`
     ) {
         const countData = {
             count,

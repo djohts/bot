@@ -1,7 +1,7 @@
 import { ModifiedClient } from "../constants/types";
 import { inspect } from "util";
 import { Manager, Player } from "erela.js";
-import { Message, TextChannel } from "discord.js";
+import { Message } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 
@@ -56,6 +56,7 @@ class Util {
     }
 
     public setClient(client: ModifiedClient): Util {
+        client.util = this;
         this._client = client;
         return this;
     };

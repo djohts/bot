@@ -1,6 +1,7 @@
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { Client, CommandInteraction } from "discord.js";
 import { NodeOptions } from "erela.js";
+import Util from "../util/Util";
 
 export interface Config {
     token: string,
@@ -71,6 +72,7 @@ export class ModifiedClient extends Client {
         enbr: boolean,
         debug: boolean
     };
+    util: typeof Util;
 };
 
 export interface GuildObject {
