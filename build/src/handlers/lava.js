@@ -1,1 +1,72 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};const erela_js_1=require("erela.js"),better_erela_js_spotify_1=__importDefault(require("better-erela.js-spotify")),config_1=__importDefault(require("../../config")),{lava:{nodes:nodes,spotify:{clientId:clientId,clientSecret:clientSecret}}}=config_1.default,bot_1=require("../bot");module.exports=e=>new erela_js_1.Manager({nodes:nodes,plugins:[new better_erela_js_spotify_1.default({clientId:clientId,clientSecret:clientSecret})],defaultSearchPlatform:"youtube",send(t,n){e.guilds.cache.get(t)?.shard.send(n)}}).on("trackError",(async(t,{title:n},a)=>{const s=e.channels.cache.get(t.textChannel);try{await s.send(`An error occured when trying to play \`${n}\`: ${a.exception?.cause||a.error}`)}catch{}})).on("trackStuck",(async(t,{title:n},a)=>{const s=e.channels.cache.get(t.textChannel);try{await(s?.send(`\`${n}\` got stuck.`))}catch{}})).on("nodeConnect",(({options:e})=>console.log(`${bot_1.shard} Lava ${e.host}:${e.port} connected.`))).on("nodeError",(({options:e},t)=>console.log(`${bot_1.shard} Lava ${e.host}:${e.port} had an error: ${t.message}`))).on("trackStart",(async(t,n)=>{const a=e.channels.cache.get(t.voiceChannel),s=e.channels.cache.get(t.textChannel);if(a?.members.filter((t=>t.user.id!==e.user.id)).size)try{let e=t.get("message");e||(e=await s.send("⏳ Загрузка...")),t.set("message",e)}catch{}else{t.destroy();try{await s.send("Все участники покинули голосовой канал. Останавливаю плеер.")}catch{}}})).on("queueEnd",(async t=>{const n=e.channels.cache.get(t.textChannel);try{let e=t.get("message");e||await n.send({content:"Очередь пуста. Останавливаю плеер.",embeds:[]}),await e.edit({content:"Очередь пуста. Останавливаю плеер.",embeds:[]})}catch{}t.destroy()})).init(e.user.id);
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const erela_js_1 = require("erela.js");
+const better_erela_js_spotify_1 = __importDefault(require("better-erela.js-spotify"));
+const config_1 = __importDefault(require("../../config"));
+const { lava: { nodes, spotify: { clientId, clientSecret } } } = config_1.default;
+const bot_1 = require("../bot");
+module.exports = (client) => new erela_js_1.Manager({
+    nodes: nodes,
+    plugins: [
+        new better_erela_js_spotify_1.default({ clientId, clientSecret })
+    ],
+    defaultSearchPlatform: "youtube",
+    send(id, payload) {
+        client.guilds.cache.get(id)?.shard.send(payload);
+    }
+})
+    .on("trackError", async (player, { title }, error) => {
+    const text = client.channels.cache.get(player.textChannel);
+    try {
+        await text.send(`An error occured when trying to play \`${title}\`: ${error.exception?.cause || error.error}`);
+    }
+    catch { }
+    ;
+})
+    .on("trackStuck", async (player, { title }, error) => {
+    const text = client.channels.cache.get(player.textChannel);
+    try {
+        await text?.send(`\`${title}\` got stuck.`);
+    }
+    catch { }
+    ;
+})
+    .on("nodeConnect", ({ options }) => console.log(`${bot_1.shard} Lava ${options.host}:${options.port} connected.`))
+    .on("nodeError", ({ options }, error) => console.log(`${bot_1.shard} Lava ${options.host}:${options.port} had an error: ${error.message}`))
+    .on("trackStart", async (player, track) => {
+    const voice = client.channels.cache.get(player.voiceChannel);
+    const text = client.channels.cache.get(player.textChannel);
+    if (!voice?.members.filter((m) => m.user.id !== client.user.id).size) {
+        player.destroy();
+        try {
+            await text.send("Все участники покинули голосовой канал. Останавливаю плеер.");
+        }
+        catch { }
+        ;
+        return;
+    }
+    ;
+    try {
+        let message = player.get("message");
+        if (!message)
+            message = await text.send("⏳ Загрузка...");
+        player.set("message", message);
+    }
+    catch { }
+    ;
+})
+    .on("queueEnd", async (player) => {
+    const text = client.channels.cache.get(player.textChannel);
+    try {
+        let message = player.get("message");
+        if (!message)
+            await text.send({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
+        await message.edit({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
+    }
+    catch { }
+    ;
+    player.destroy();
+})
+    .init(client.user.id);

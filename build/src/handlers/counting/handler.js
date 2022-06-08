@@ -1,1 +1,116 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};const discord_js_1=require("discord.js"),flow_1=require("../../constants/flows/flow"),{triggers:allTriggers,actions:allActions}=flow_1.flow,constants_1=require("../../constants"),flows_1=__importDefault(require("../../constants/flows/")),{limitFlows:limitFlows,limitTriggers:limitTriggers,limitActions:limitActions}=flows_1.default,utils_1=require("./../utils"),database_1=__importDefault(require("../../database/"));module.exports=async t=>{const e=await database_1.default.guild(t.guild.id),s=(0,constants_1.getPermissionLevel)(t.member),i=t.content;if(i.startsWith("!")&&s>=1)return;let{count:a,user:o,modules:r,flows:l,users:n}=e.get(),c=Object.keys(l).slice(0,limitFlows);if(t.client.loading)return(0,utils_1.deleteMessage)(t);if(!r.includes("allow-spam")&&t.author.id===o||!r.includes("talking")&&i!==`${a+1}`||i.split(" ")[0]!==`${a+1}`){const s={count:a,score:n[t.author.id]||0,message:t,countingMessage:t,gdb:e};(0,utils_1.deleteMessage)(t);for(const t of c)try{const e=l[t];if(e.triggers.slice(0,limitTriggers).find((t=>"countfail"===t.type)))for(const t of e.actions.slice(0,limitActions).filter((t=>t)))try{await allActions[t.type].run(s,t.data)}catch(t){}}catch(t){}return}a++,e.addToCount(t.member);let u=t;if("DM"===t.channel.type||t.channel instanceof discord_js_1.ThreadChannel)return;if(r.includes("webhook"))try{let e=(await t.channel.fetchWebhooks()).find((t=>"Counting"===t.name));e||(e=await t.channel.createWebhook("Counting")),e&&(u=await e.send({content:i,username:t.author.username,avatarURL:t.author.displayAvatarURL({dynamic:!0}),allowedMentions:{users:[],roles:[],parse:[]}}),(0,utils_1.deleteMessage)(t))}catch(t){}else if(r.includes("embed"))try{u=await t.channel.send({embeds:[{description:`${t.author}: ${i}`,color:t.member.displayColor||3553598}]}),(0,utils_1.deleteMessage)(t)}catch(t){}e.set("message",u.id);const d={count:a,score:n[t.author.id]||0,message:t,countingMessage:u,gdb:e};for(const t of c)try{const e=l[t];let s;for(const t of e.triggers.slice(0,limitTriggers).filter((t=>t)))if(s=await allTriggers[t.type].check(d,t.data),s)break;if(s)for(const t of e.actions.slice(0,limitActions).filter((t=>t)))try{await allActions[t.type].run(d,t.data)}catch(t){}}catch(t){}};
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const discord_js_1 = require("discord.js");
+const flow_1 = require("../../constants/flows/flow");
+const { triggers: allTriggers, actions: allActions } = flow_1.flow;
+const constants_1 = require("../../constants");
+const flows_1 = __importDefault(require("../../constants/flows/"));
+const { limitFlows, limitTriggers, limitActions } = flows_1.default;
+const utils_1 = require("./../utils");
+const database_1 = __importDefault(require("../../database/"));
+module.exports = async (message) => {
+    const gdb = await database_1.default.guild(message.guild.id);
+    const permissionLevel = (0, constants_1.getPermissionLevel)(message.member), content = message.content;
+    if (content.startsWith("!") && permissionLevel >= 1)
+        return;
+    let { count, user, modules, flows, users: scores } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
+    if (message.client.loading)
+        return (0, utils_1.deleteMessage)(message);
+    if ((!modules.includes("allow-spam") && message.author.id === user) ||
+        (!modules.includes("talking") && content !== `${count + 1}`) ||
+        content.split(/\s/)[0] !== `${count + 1}`) {
+        const countData = {
+            count,
+            score: scores[message.author.id] || 0,
+            message,
+            countingMessage: message,
+            gdb
+        };
+        (0, utils_1.deleteMessage)(message);
+        for (const flowId of flowIDs)
+            try {
+                const flow = flows[flowId];
+                if (flow.triggers.slice(0, limitTriggers).find((t) => t.type === "countfail"))
+                    for (const action of flow.actions.slice(0, limitActions).filter((a) => a))
+                        try {
+                            await allActions[action.type].run(countData, action.data);
+                        }
+                        catch (e) { }
+                ;
+            }
+            catch (e) { }
+        ;
+        return;
+    }
+    ;
+    count++;
+    gdb.addToCount(message.member);
+    let countingMessage = message;
+    if (message.channel.type === "DM" ||
+        message.channel instanceof discord_js_1.ThreadChannel)
+        return;
+    if (modules.includes("webhook"))
+        try {
+            const webhooks = await message.channel.fetchWebhooks();
+            let webhook = webhooks.find((w) => w.name === "Counting");
+            if (!webhook)
+                webhook = await message.channel.createWebhook("Counting");
+            if (webhook) {
+                countingMessage = await webhook.send({
+                    content: content,
+                    username: message.author.username,
+                    avatarURL: message.author.displayAvatarURL({ dynamic: true }),
+                    allowedMentions: {
+                        users: [],
+                        roles: [],
+                        parse: [],
+                    }
+                });
+                (0, utils_1.deleteMessage)(message);
+            }
+            ;
+        }
+        catch (e) { }
+    else if (modules.includes("embed"))
+        try {
+            countingMessage = await message.channel.send({
+                embeds: [{
+                        description: `${message.author}: ${content}`,
+                        color: message.member.displayColor || 3553598
+                    }]
+            });
+            (0, utils_1.deleteMessage)(message);
+        }
+        catch (e) { }
+    ;
+    gdb.set("message", countingMessage.id);
+    const countData = {
+        count,
+        score: scores[message.author.id] || 0,
+        message,
+        countingMessage,
+        gdb
+    };
+    for (const flowID of flowIDs)
+        try {
+            const flow = flows[flowID];
+            let success;
+            for (const trigger of flow.triggers.slice(0, limitTriggers).filter((t) => t)) {
+                success = await allTriggers[trigger.type].check(countData, trigger.data);
+                if (success)
+                    break;
+            }
+            ;
+            if (success)
+                for (const action of flow.actions.slice(0, limitActions).filter((a) => a))
+                    try {
+                        await allActions[action.type].run(countData, action.data);
+                    }
+                    catch (e) { }
+            ;
+        }
+        catch (e) { }
+    ;
+};

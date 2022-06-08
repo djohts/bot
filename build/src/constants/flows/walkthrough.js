@@ -1,1 +1,258 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.flowWalkthrough=exports.formatExplanation=void 0;const flow_1=require("./flow"),_1=__importDefault(require("./"));async function formatExplanation({type:t,data:e}){let{properties:i,explanation:a}=flow_1.flow.triggers[t]||flow_1.flow.actions[t];for(const t in i)a=a.replace(`{${t}}`,await i[t].format(e[t]));return a}exports.formatExplanation=formatExplanation;const allActionTypes=Object.keys(flow_1.flow.actions),allActions=Object.values(flow_1.flow.actions),allTriggerTypes=Object.keys(flow_1.flow.triggers),allTriggers=Object.values(flow_1.flow.triggers);async function flowWalkthrough(t,e,i,a,s,n){for(;a.triggers.length<_1.default.limitTriggers;)a.triggers.push(null);for(;a.actions.length<_1.default.limitActions;)a.actions.push(null);let o=!0,r=!1;for(;o;)try{await n.edit({content:null,embeds:[await s()]});const l=(await i.awaitMessages({filter:t=>t.author.id==e.id,max:1,time:12e4,errors:["time"]})).first(),p=[l],m=l?.content.split(" "),d=m?.shift().toLowerCase();if("edit"==d&&["trigger","action"].includes(m[0])&&parseInt(m[1])){const s=parseInt(m[1]);if("trigger"==m[0])if(s>_1.default.limitTriggers)p.push(await i.send(`❌ Вы можете иметь только ${_1.default.limitTriggers} триггера(-ов) на поток.`));else{p.push(await i.send({embeds:[{title:`📝 Выберите триггер на слот ${s}`,description:"0 - **Очистить**\n\n"+allTriggers.map(((t,e)=>`${e+1} - **${t.short}**${t.long?`\n${t.long}`:""}`)).join("\n\n"),timestamp:Date.now()}]}));const n=(await i.awaitMessages({filter:t=>t.author.id==e.id,max:1,time:12e4,errors:["time"]})).first(),o=parseInt(n.content);if(p.push(n),0==o)a.triggers[s-1]=null,p.push(await i.send({embeds:[{title:`✅ Триггер ${s} очищен!`,timestamp:Date.now()}]}));else if(!o||o>allTriggerTypes.length)p.push(await i.send("✴️ Неверный триггер. Отменено."));else{let n=allTriggers[o-1],r={type:allTriggerTypes[o-1],data:[]};for(const a of n.properties){p.push(await i.send({embeds:[{title:`✏️ Укажите ${a.short}`,description:a.help||void 0,timestamp:Date.now()}]}));const s=(await i.awaitMessages({filter:t=>t.author.id==e.id,max:1,time:12e4,errors:["time"]})).first(),n=await a.convert(s.content,{guild:t});if(p.push(s),null==n){p.push(await i.send({embeds:[{title:"❌ Неверное значение. Изменение триггера отменено.",timestamp:Date.now()}]}));break}r.data.push(n)}if(r.data.length==n.properties.length){p.push(await i.send({embeds:[{title:`💨 Подтвердите триггер ${s}`,description:["**Это правильно? Напишите `да` или `нет`.**",`${(await formatExplanation(r)).split("\n").map((t=>`> ${t}`)).join("\n")}`].join("\n"),timestamp:Date.now()}]}));const t=(await i.awaitMessages({filter:t=>t.author.id==e.id,max:1,time:12e4,errors:["time"]})).first(),n="да"==t.content.toLowerCase();p.push(t),n?(a.triggers[s-1]=r,p.push(await i.send({embeds:[{title:`✅ Триггер ${s} был изменён!`,timestamp:Date.now()}]}))):p.push(await i.send({embeds:[{title:`✴️ Изменение триггера ${s} было отменено.`,timestamp:Date.now()}]}))}}}else if(s>_1.default.limitActions)p.push(await i.send(`❌ Вы можете иметь только ${_1.default.limitActions} действия(-ий) на поток.`));else{p.push(await i.send({embeds:[{title:`📝 Выберите действие на слот ${s}`,description:"0 - **Очистить**\n\n"+allActions.map(((t,e)=>`${e+1} - **${t.short}**${t.long?`\n${t.long}`:""}`)).join("\n\n"),timestamp:Date.now()}]}));const n=(await i.awaitMessages({filter:t=>t.author.id==e.id,max:1,time:12e4,errors:["time"]})).first(),o=parseInt(n.content);if(p.push(n),0==o)a.actions[s-1]=null,p.push(await i.send({embeds:[{title:`✅ Действие ${s} очищено!`,timestamp:Date.now()}]}));else if(!o||o>allActionTypes.length)p.push(await i.send("✴️ Неверное действие. Отменено."));else{let n=allActions[o-1],r={type:allActionTypes[o-1],data:[]};for(const a of n.properties){p.push(await i.send({embeds:[{title:`✏️ Укажите ${a.short}`,description:a.help||void 0,timestamp:Date.now()}]}));const s=(await i.awaitMessages({filter:t=>t.author.id==e.id,max:1,time:12e4,errors:["time"]})).first(),n=await a.convert(s.content,{guild:t});if(p.push(s),null==n){p.push(await i.send({embeds:[{title:"❌ Неверное значение. Изменение действия отменено.",timestamp:Date.now()}]}));break}r.data.push(n)}if(r.data.length==n.properties.length){p.push(await i.send({embeds:[{title:`💨 Подтвердите действие ${s}`,description:["**Это правильно? Напишите `да` или `нет`.**",`${(await formatExplanation(r)).split("\n").map((t=>`> ${t}`)).join("\n")}`].join("\n"),timestamp:Date.now()}]}));const t=(await i.awaitMessages({filter:t=>t.author.id==e.id,max:1,time:12e4,errors:["time"]})).first(),n="да"==t.content.toLowerCase();p.push(t),n?(a.actions[s-1]=r,p.push(await i.send({embeds:[{title:`✅ Действие ${s} было изменено!`,timestamp:Date.now()}]}))):p.push(await i.send({embeds:[{title:`✴️ Изменение действия ${s} было отменено.`,timestamp:Date.now()}]}))}}}}else"save"==d?a.triggers.find((t=>t))&&a.actions.find((t=>t))?(o=!1,r=!0):p.push(await i.send("❌ Вы должны указать как минимум один триггер и одно действие!")):"cancel"==d?o=!1:["help","?"].includes(d)?p.push(await i.send(`🔗 Проверьте закреплённое сообщение для помощи! ${n.url}`)):p.push(await i.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));o&&setTimeout((async()=>await i.bulkDelete(p).catch((()=>null))),5e3)}catch(t){o=!1}return r}exports.flowWalkthrough=flowWalkthrough;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.flowWalkthrough = exports.formatExplanation = void 0;
+const flow_1 = require("./flow");
+const _1 = __importDefault(require("./"));
+async function formatExplanation({ type, data }) {
+    let { properties, explanation } = flow_1.flow.triggers[type] || flow_1.flow.actions[type];
+    for (const i in properties)
+        explanation = explanation.replace(`{${i}}`, await properties[i].format(data[i]));
+    return explanation;
+}
+exports.formatExplanation = formatExplanation;
+;
+const allActionTypes = Object.keys(flow_1.flow.actions);
+const allActions = Object.values(flow_1.flow.actions);
+const allTriggerTypes = Object.keys(flow_1.flow.triggers);
+const allTriggers = Object.values(flow_1.flow.triggers);
+async function flowWalkthrough(guild, author, channel, newFlow, generateEmbed, pinned) {
+    while (newFlow.triggers.length < _1.default.limitTriggers)
+        newFlow.triggers.push(null);
+    while (newFlow.actions.length < _1.default.limitActions)
+        newFlow.actions.push(null);
+    let editing = true, successStatus = false;
+    while (editing) {
+        try {
+            await pinned.edit({ content: null, embeds: [await generateEmbed()] });
+            const inputs = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
+            const input = inputs.first(), messagesToDelete = [input];
+            const args = input?.content.split(" ");
+            const command = args?.shift().toLowerCase();
+            if (command == "edit" && ["trigger", "action"].includes(args[0]) && parseInt(args[1])) {
+                const slot = parseInt(args[1]);
+                if (args[0] == "trigger") {
+                    if (slot > _1.default.limitTriggers)
+                        messagesToDelete.push(await channel.send(`❌ Вы можете иметь только ${_1.default.limitTriggers} триггера(-ов) на поток.`));
+                    else {
+                        messagesToDelete.push(await channel.send({
+                            embeds: [{
+                                    title: `📝 Выберите триггер на слот ${slot}`,
+                                    description: "0 - **Очистить**\n\n" +
+                                        allTriggers.map((trigger, index) => `${index + 1} - **${trigger.short}**${trigger.long ? `\n${trigger.long}` : ""}`).join("\n\n"),
+                                    timestamp: Date.now()
+                                }]
+                        }));
+                        const selections = await channel.awaitMessages({ filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"] });
+                        const selection = selections.first(), newTriggerIndex = parseInt(selection.content);
+                        messagesToDelete.push(selection);
+                        if (newTriggerIndex == 0) {
+                            newFlow.triggers[slot - 1] = null;
+                            messagesToDelete.push(await channel.send({
+                                embeds: [{
+                                        title: `✅ Триггер ${slot} очищен!`,
+                                        timestamp: Date.now()
+                                    }]
+                            }));
+                        }
+                        else if (!newTriggerIndex || newTriggerIndex > allTriggerTypes.length)
+                            messagesToDelete.push(await channel.send("✴️ Неверный триггер. Отменено."));
+                        else {
+                            let trigger = allTriggers[newTriggerIndex - 1], newTrigger = {
+                                type: allTriggerTypes[newTriggerIndex - 1],
+                                data: []
+                            };
+                            for (const property of trigger.properties) {
+                                messagesToDelete.push(await channel.send({
+                                    embeds: [{
+                                            title: `✏️ Укажите ${property.short}`,
+                                            description: property.help || undefined,
+                                            timestamp: Date.now()
+                                        }]
+                                }));
+                                const values = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
+                                const value = values.first(), convertedValue = await property.convert(value.content, { guild });
+                                messagesToDelete.push(value);
+                                if (convertedValue == null) {
+                                    messagesToDelete.push(await channel.send({
+                                        embeds: [{
+                                                title: "❌ Неверное значение. Изменение триггера отменено.",
+                                                timestamp: Date.now()
+                                            }]
+                                    }));
+                                    break;
+                                }
+                                else
+                                    newTrigger.data.push(convertedValue);
+                            }
+                            ;
+                            if (newTrigger.data.length == trigger.properties.length) {
+                                messagesToDelete.push(await channel.send({
+                                    embeds: [{
+                                            title: `💨 Подтвердите триггер ${slot}`,
+                                            description: [
+                                                "**Это правильно? Напишите `да` или `нет`.**",
+                                                `${(await formatExplanation(newTrigger)).split("\n").map((l) => `> ${l}`).join("\n")}`
+                                            ].join("\n"),
+                                            timestamp: Date.now()
+                                        }]
+                                }));
+                                const confirmations = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
+                                const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() == "да";
+                                messagesToDelete.push(confirmation);
+                                if (confirmed) {
+                                    newFlow.triggers[slot - 1] = newTrigger;
+                                    messagesToDelete.push(await channel.send({
+                                        embeds: [{
+                                                title: `✅ Триггер ${slot} был изменён!`,
+                                                timestamp: Date.now()
+                                            }]
+                                    }));
+                                }
+                                else
+                                    messagesToDelete.push(await channel.send({
+                                        embeds: [{
+                                                title: `✴️ Изменение триггера ${slot} было отменено.`,
+                                                timestamp: Date.now()
+                                            }]
+                                    }));
+                            }
+                            ;
+                        }
+                        ;
+                    }
+                    ;
+                }
+                else {
+                    if (slot > _1.default.limitActions)
+                        messagesToDelete.push(await channel.send(`❌ Вы можете иметь только ${_1.default.limitActions} действия(-ий) на поток.`));
+                    else {
+                        messagesToDelete.push(await channel.send({
+                            embeds: [{
+                                    title: `📝 Выберите действие на слот ${slot}`,
+                                    description: "0 - **Очистить**\n\n" +
+                                        allActions.map((action, index) => `${index + 1} - **${action.short}**${action.long ? `\n${action.long}` : ""}`).join("\n\n"),
+                                    timestamp: Date.now()
+                                }]
+                        }));
+                        const selections = await channel.awaitMessages({
+                            filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                        });
+                        const selection = selections.first(), newActionIndex = parseInt(selection.content);
+                        messagesToDelete.push(selection);
+                        if (newActionIndex == 0) {
+                            newFlow.actions[slot - 1] = null;
+                            messagesToDelete.push(await channel.send({
+                                embeds: [{
+                                        title: `✅ Действие ${slot} очищено!`,
+                                        timestamp: Date.now()
+                                    }]
+                            }));
+                        }
+                        else if (!newActionIndex || newActionIndex > allActionTypes.length)
+                            messagesToDelete.push(await channel.send("✴️ Неверное действие. Отменено."));
+                        else {
+                            let action = allActions[newActionIndex - 1], newAction = {
+                                type: allActionTypes[newActionIndex - 1],
+                                data: []
+                            };
+                            for (const property of action.properties) {
+                                messagesToDelete.push(await channel.send({
+                                    embeds: [{
+                                            title: `✏️ Укажите ${property.short}`,
+                                            description: property.help || undefined,
+                                            timestamp: Date.now()
+                                        }]
+                                }));
+                                const values = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
+                                const value = values.first(), convertedValue = await property.convert(value.content, { guild });
+                                messagesToDelete.push(value);
+                                if (convertedValue == null) {
+                                    messagesToDelete.push(await channel.send({
+                                        embeds: [{
+                                                title: "❌ Неверное значение. Изменение действия отменено.",
+                                                timestamp: Date.now()
+                                            }]
+                                    }));
+                                    break;
+                                }
+                                else
+                                    newAction.data.push(convertedValue);
+                            }
+                            ;
+                            if (newAction.data.length == action.properties.length) {
+                                messagesToDelete.push(await channel.send({
+                                    embeds: [{
+                                            title: `💨 Подтвердите действие ${slot}`,
+                                            description: [
+                                                "**Это правильно? Напишите `да` или `нет`.**",
+                                                `${(await formatExplanation(newAction)).split("\n").map((l) => `> ${l}`).join("\n")}`
+                                            ].join("\n"),
+                                            timestamp: Date.now()
+                                        }]
+                                }));
+                                const confirmations = await channel.awaitMessages({
+                                    filter: (m) => m.author.id == author.id, max: 1, time: 2 * 60 * 1000, errors: ["time"]
+                                });
+                                const confirmation = confirmations.first(), confirmed = confirmation.content.toLowerCase() == "да";
+                                messagesToDelete.push(confirmation);
+                                if (confirmed) {
+                                    newFlow.actions[slot - 1] = newAction;
+                                    messagesToDelete.push(await channel.send({
+                                        embeds: [{
+                                                title: `✅ Действие ${slot} было изменено!`,
+                                                timestamp: Date.now()
+                                            }]
+                                    }));
+                                }
+                                else
+                                    messagesToDelete.push(await channel.send({
+                                        embeds: [{
+                                                title: `✴️ Изменение действия ${slot} было отменено.`,
+                                                timestamp: Date.now()
+                                            }]
+                                    }));
+                            }
+                            ;
+                        }
+                        ;
+                    }
+                    ;
+                }
+                ;
+            }
+            else if (command == "save") {
+                if (newFlow.triggers.find((t) => t) && newFlow.actions.find((a) => a)) {
+                    editing = false;
+                    successStatus = true;
+                }
+                else
+                    messagesToDelete.push(await channel.send("❌ Вы должны указать как минимум один триггер и одно действие!"));
+            }
+            else if (command == "cancel")
+                editing = false;
+            else if (["help", "?"].includes(command))
+                messagesToDelete.push(await channel.send(`🔗 Проверьте закреплённое сообщение для помощи! ${pinned.url}`));
+            else
+                messagesToDelete.push(await channel.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));
+            if (editing)
+                setTimeout(async () => await channel.bulkDelete(messagesToDelete).catch(() => null), 5000);
+        }
+        catch (e) {
+            editing = false;
+        }
+        ;
+    }
+    ;
+    return successStatus;
+}
+exports.flowWalkthrough = flowWalkthrough;
+;

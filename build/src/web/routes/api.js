@@ -1,1 +1,160 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};const config_1=__importDefault(require("../../../config")),discord_oauth2_1=__importDefault(require("discord-oauth2")),sharding_1=require("../../sharding"),discord_js_1=require("discord.js"),wh=new discord_js_1.WebhookClient({url:config_1.default.notifications_webhook}),oauth2=new discord_oauth2_1.default({clientId:config_1.default.client.id,clientSecret:config_1.default.client.secret,redirectUri:config_1.default.redirectUri});module.exports=(e,t,s)=>{e.get("/shards",(async(e,t)=>{const s=await sharding_1.manager.broadcastEval((e=>({status:e.ws.status,guilds:e.guilds.cache.size,channels:e.channels.cache.size,cachedUsers:e.users.cache.size,users:e.guilds.cache.reduce(((e,t)=>e+t.memberCount),0),ping:e.ws.ping,loading:e.loading}))).then((e=>e.reduce(((e,t,s)=>{for(const[s,i]of Object.entries(t))["guilds","cachedUsers","users"].includes(s)&&(e[s]=(e[s]||0)+i);return e.shards[s]=t,e}),{shards:{},lastUpdate:0})));s.lastUpdate=Date.now(),t.send(s)})),e.get("/login",((e,t)=>{t.redirect(oauth2.generateAuthUrl({scope:["identify","guilds"],responseType:"code"}))})),e.get("/logout",((e,t)=>{e.session.user=null,t.redirect(e.session.lastPage)})),e.get("/authorize",(async(e,t)=>{const s=await oauth2.tokenRequest({code:e.query.code,scope:["identify","guilds"],grantType:"authorization_code"}).catch((()=>t.redirect(e.session.lastPage)));if(!s.access_token)return t.redirect("/api/login");const i=await oauth2.getUser(s.access_token);e.session.user=i,e.session.user.guilds=await oauth2.getUserGuilds(s.access_token),t.redirect(e.session.lastPage)})),e.get("/user/guilds",((e,t)=>{const s=e.session.user;if(!s)return t.redirect("/api/login");const i=[];s.guilds.map((e=>{i.push({id:e.id,name:e.name,iconUrl:e.icon?`https://cdn.discordapp.com/icons/${e.id}/${e.icon}.png`:null,managed:(new discord_js_1.Permissions).add(e.permissions).has("ADMINISTRATOR")})})),t.send(i)})),e.get("/bot/isinuguild/:guild",(async(e,t)=>{const s=e.params.guild;if(!s)return t.send({isinuguild:!1});const i=await sharding_1.manager.broadcastEval(((e,{guildid:t})=>e.guilds.cache.get(t)||null),{shard:discord_js_1.ShardClientUtil.shardIdForGuildId(s,sharding_1.manager.shards.size),context:{guildid:s}});t.send({isinuguild:!!i})})),e.get("/invite/:guildid",((e,t)=>{const s=e.params.guildid,i=config_1.default.client.id;s?t.redirect(["https://discord.com/oauth2/authorize",`?client_id=${i}`,`&guild_id=${s}`,"&disable_guild_select=true","&scope=bot%20applications.commands","&permissions=1375450033182"].join("")):t.redirect(["https://discord.com/oauth2/authorize",`?client_id=${i}`,"&scope=bot%20applications.commands","&permissions=1375450033182"].join(""))})),e.post("/webhook/boticord",(async(e,t)=>{if(e.headers["x-hook-key"]!=config_1.default.monitoring.bc_hook_key)return t.status(403).send();const s=e.body;switch(s.type){case"new_bot_bump":await wh.send({content:[`<@${s.data.user}>, спасибо за ап на \`boticord.top\`!`,`Вы можете сделать повторный ап <t:${Math.round(s.data.at/1e3)+14400}:R>.`].join("\n"),username:"ботикорд"});case"new_bot_comment":await wh.send({embeds:[{title:"Новый комментарий",description:[`<@${s.data.user}>:`,s.data.comment.new].join("\n"),timestamp:s.data.at,fields:[{name:"Оценка",value:s.data.comment.vote.new?-1===s.data.comment.vote.new?"Негативная":"Позитивная":"Нейтральная"}]}],username:"ботикорд"});case"edit_bot_comment":let e;e=1==s.data.comment.vote.new?"Позитивная":-1==s.data.comment.vote.new?"Негативная":"Нейтральная",await wh.send({embeds:[{title:"Комментарий изменён",description:[`<@${s.data.user}>:`,s.data.comment.new].join("\n"),timestamp:s.data.at,fields:[{name:"Оценка",value:e}]}],username:"ботикорд"})}})),s()};
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const config_1 = __importDefault(require("../../../config"));
+const discord_oauth2_1 = __importDefault(require("discord-oauth2"));
+const sharding_1 = require("../../sharding");
+const discord_js_1 = require("discord.js");
+const wh = new discord_js_1.WebhookClient({ url: config_1.default.notifications_webhook });
+const oauth2 = new discord_oauth2_1.default({
+    clientId: config_1.default.client.id,
+    clientSecret: config_1.default.client.secret,
+    redirectUri: config_1.default.redirectUri
+});
+module.exports = (fastify, _, done) => {
+    fastify.get("/shards", async (_, res) => {
+        const newBotInfo = await sharding_1.manager.broadcastEval((bot) => ({
+            status: bot.ws.status,
+            guilds: bot.guilds.cache.size,
+            channels: bot.channels.cache.size,
+            cachedUsers: bot.users.cache.size,
+            users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
+            ping: bot.ws.ping,
+            loading: bot.loading
+        })).then((results) => results.reduce((info, next, index) => {
+            for (const [key, value] of Object.entries(next)) {
+                if (["guilds", "cachedUsers", "users"].includes(key))
+                    info[key] = (info[key] || 0) + value;
+            }
+            ;
+            info.shards[index] = next;
+            return info;
+        }, { shards: {}, lastUpdate: 0 }));
+        newBotInfo.lastUpdate = Date.now();
+        res.send(newBotInfo);
+    });
+    fastify.get("/login", (_, res) => {
+        res.redirect(oauth2.generateAuthUrl({
+            scope: ["identify", "guilds"],
+            responseType: "code",
+        }));
+    });
+    fastify.get("/logout", (req, res) => {
+        req.session.user = null;
+        res.redirect(req.session.lastPage);
+    });
+    fastify.get("/authorize", async (req, res) => {
+        const a = await oauth2.tokenRequest({
+            code: req.query.code,
+            scope: ["identify", "guilds"],
+            grantType: "authorization_code"
+        }).catch(() => res.redirect(req.session.lastPage));
+        if (!a.access_token)
+            return res.redirect("/api/login");
+        const user = await oauth2.getUser(a.access_token);
+        req.session.user = user;
+        req.session.user.guilds = await oauth2.getUserGuilds(a.access_token);
+        res.redirect(req.session.lastPage);
+    });
+    fastify.get("/user/guilds", (req, res) => {
+        const user = req.session.user;
+        if (!user)
+            return res.redirect("/api/login");
+        const guilds = [];
+        user.guilds.map((rawguild) => {
+            guilds.push({
+                id: rawguild.id,
+                name: rawguild.name,
+                iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
+                managed: new discord_js_1.Permissions().add(rawguild.permissions).has("ADMINISTRATOR")
+            });
+        });
+        res.send(guilds);
+    });
+    fastify.get("/bot/isinuguild/:guild", async (req, res) => {
+        const guildid = req.params.guild;
+        if (!guildid)
+            return res.send({ isinuguild: false });
+        const guild = await sharding_1.manager.broadcastEval((bot, { guildid }) => bot.guilds.cache.get(guildid) || null, {
+            shard: discord_js_1.ShardClientUtil.shardIdForGuildId(guildid, sharding_1.manager.shards.size),
+            context: { guildid }
+        });
+        res.send({ isinuguild: !!guild });
+    });
+    fastify.get("/invite/:guildid", (req, res) => {
+        const guildid = req.params.guildid;
+        const botid = config_1.default.client.id;
+        guildid ? res.redirect([
+            "https://discord.com/oauth2/authorize",
+            `?client_id=${botid}`,
+            `&guild_id=${guildid}`,
+            "&disable_guild_select=true",
+            "&scope=bot%20applications.commands",
+            "&permissions=1375450033182"
+        ].join("")) : res.redirect([
+            "https://discord.com/oauth2/authorize",
+            `?client_id=${botid}`,
+            "&scope=bot%20applications.commands",
+            "&permissions=1375450033182"
+        ].join(""));
+    });
+    fastify.post("/webhook/boticord", async (req, res) => {
+        if (req.headers["x-hook-key"] != config_1.default.monitoring.bc_hook_key)
+            return res.status(403).send();
+        const options = req.body;
+        switch (options.type) {
+            case "new_bot_bump":
+                await wh.send({
+                    content: [
+                        `<@${options.data.user}>, спасибо за ап на \`boticord.top\`!`,
+                        `Вы можете сделать повторный ап <t:${Math.round(options.data.at / 1000) + 4 * 60 * 60}:R>.`
+                    ].join("\n"),
+                    username: "ботикорд",
+                });
+            case "new_bot_comment":
+                await wh.send({
+                    embeds: [{
+                            title: "Новый комментарий",
+                            description: [
+                                `<@${options.data.user}>:`,
+                                options.data.comment.new
+                            ].join("\n"),
+                            timestamp: options.data.at,
+                            fields: [{
+                                    name: "Оценка",
+                                    value: !options.data.comment.vote.new
+                                        ? "Нейтральная" : options.data.comment.vote.new === -1
+                                        ? "Негативная" : "Позитивная"
+                                }]
+                        }],
+                    username: "ботикорд"
+                });
+            case "edit_bot_comment":
+                let vote;
+                if (options.data.comment.vote.new == 1)
+                    vote = "Позитивная";
+                else if (options.data.comment.vote.new == -1)
+                    vote = "Негативная";
+                else
+                    vote = "Нейтральная";
+                await wh.send({
+                    embeds: [{
+                            title: "Комментарий изменён",
+                            description: [
+                                `<@${options.data.user}>:`,
+                                options.data.comment.new
+                            ].join("\n"),
+                            timestamp: options.data.at,
+                            fields: [{
+                                    name: "Оценка",
+                                    value: vote
+                                }]
+                        }],
+                    username: "ботикорд"
+                });
+        }
+        ;
+    });
+    done();
+};

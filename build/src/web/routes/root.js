@@ -1,1 +1,26 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(s){return s&&s.__esModule?s:{default:s}};const fs_1=__importDefault(require("fs"));module.exports=(s,e,t)=>{s.get("/",((s,e)=>{s.session.lastPage="/",e.view("index.ejs",{user:s.session.user})})),s.get("/stats",((s,e)=>{s.session.lastPage="/stats",e.view("stats.ejs",{user:s.session.user})})),s.get("/tos",((s,e)=>{e.view("tos.ejs",{user:s.session.user})})),s.get("/pp",((s,e)=>{e.view("pp.ejs",{user:s.session.user})})),s.get("/favicon.ico",(async(s,e)=>{const t=fs_1.default.readFileSync(__dirname+"/../views/favicon.ico");e.send(t)})),t()};
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const fs_1 = __importDefault(require("fs"));
+module.exports = (fastify, _, done) => {
+    fastify.get("/", (req, res) => {
+        req.session.lastPage = "/";
+        res.view("index.ejs", { user: req.session.user });
+    });
+    fastify.get("/stats", (req, res) => {
+        req.session.lastPage = "/stats";
+        res.view("stats.ejs", { user: req.session.user });
+    });
+    fastify.get("/tos", (req, res) => {
+        res.view("tos.ejs", { user: req.session.user });
+    });
+    fastify.get("/pp", (req, res) => {
+        res.view("pp.ejs", { user: req.session.user });
+    });
+    fastify.get("/favicon.ico", async (req, res) => {
+        const stream = fs_1.default.readFileSync(__dirname + "/../views/favicon.ico");
+        res.send(stream);
+    });
+    done();
+};

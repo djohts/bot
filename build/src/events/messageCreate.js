@@ -1,1 +1,40 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.run=void 0;const stop_discord_phishing_1=require("stop-discord-phishing"),handler_1=__importDefault(require("../handlers/counting/handler")),bot_1=require("../bot"),utils_1=require("../handlers/utils"),Util_1=__importDefault(require("../util/Util"));async function run(e){if(!e.guild||e.author.bot||"DM"===e.channel.type||"dob-flow-editor"===e.channel.name)return;const t=await Util_1.default.database.guild(e.guild.id);if((await Util_1.default.database.settings(e.guild.id)).get().detectScamLinks&&await(0,stop_discord_phishing_1.checkMessage)(e.content,!0)){let t=bot_1.linkRates.get(e.guild.id);return t.has(e.author.id)||(await e.channel.send(`${e.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение `+(e.deletable?"будет удалено.":"не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")).then((e=>setTimeout((()=>(0,utils_1.deleteMessage)(e)),1e4))),t.add(e.author.id),setTimeout((()=>t.delete(e.author.id)),5e3)),bot_1.linkRates.set(e.guild.id,t),(0,utils_1.deleteMessage)(e)}const{channel:i}=t.get();return i===e.channel.id?await(0,handler_1.default)(e):e.content.match(`^<@!?${Util_1.default.client.user.id}>`)?await e.react("👋").catch((()=>null)):void 0}exports.run=run;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = void 0;
+const stop_discord_phishing_1 = require("stop-discord-phishing");
+const handler_1 = __importDefault(require("../handlers/counting/handler"));
+const bot_1 = require("../bot");
+const utils_1 = require("../handlers/utils");
+const Util_1 = __importDefault(require("../util/Util"));
+async function run(message) {
+    if (!message.guild ||
+        message.author.bot ||
+        message.channel.type === "DM" ||
+        message.channel.name === "dob-flow-editor")
+        return;
+    const gdb = await Util_1.default.database.guild(message.guild.id);
+    const gsdb = await Util_1.default.database.settings(message.guild.id);
+    if (gsdb.get().detectScamLinks && await (0, stop_discord_phishing_1.checkMessage)(message.content, true)) {
+        let guildRates = bot_1.linkRates.get(message.guild.id);
+        if (!guildRates.has(message.author.id)) {
+            await message.channel.send(`${message.author}, в вашем сообщении была замечена вредоносная ссылка. Сообщение ` +
+                (message.deletable ? "будет удалено." : "не будет удалено, так как у меня нет прав на удаление сообщений в этом канале.")).then((m) => setTimeout(() => (0, utils_1.deleteMessage)(m), 10 * 1000));
+            guildRates.add(message.author.id);
+            setTimeout(() => guildRates.delete(message.author.id), 5000);
+        }
+        ;
+        bot_1.linkRates.set(message.guild.id, guildRates);
+        return (0, utils_1.deleteMessage)(message);
+    }
+    ;
+    const { channel } = gdb.get();
+    if (channel === message.channel.id)
+        return await (0, handler_1.default)(message);
+    if (message.content.match(`^<@!?${Util_1.default.client.user.id}>`))
+        return await message.react("👋").catch(() => null);
+}
+exports.run = run;
+;

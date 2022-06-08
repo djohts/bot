@@ -1,1 +1,21 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};const buttons_1=__importDefault(require("./buttons")),slash_1=__importDefault(require("./slash"));module.exports=t=>{if(t.guild&&(t.isCommand()||t.isButton()))return t.client.loading?t.reply({content:"🌀 Бот ещё запускается, подождите некоторое время...",ephemeral:!0}):t.isCommand()?(0,slash_1.default)(t):t.isButton()?(0,buttons_1.default)(t):void 0};
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const buttons_1 = __importDefault(require("./buttons"));
+const slash_1 = __importDefault(require("./slash"));
+module.exports = (interaction) => {
+    if (!interaction.guild ||
+        !interaction.isCommand() &&
+            !interaction.isButton())
+        return;
+    if (interaction.client.loading)
+        return interaction.reply({
+            content: "🌀 Бот ещё запускается, подождите некоторое время...",
+            ephemeral: true
+        });
+    if (interaction.isCommand())
+        return (0, slash_1.default)(interaction);
+    if (interaction.isButton())
+        return (0, buttons_1.default)(interaction);
+};

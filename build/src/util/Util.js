@@ -1,1 +1,84 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};const util_1=require("util"),string_progressbar_1=require("string-progressbar"),pretty_ms_1=__importDefault(require("pretty-ms"));let util=null;class Util{constructor(){if(this.inspect=util_1.inspect,this.wait=t=>new Promise((e=>setTimeout(e,t))),this.func={updatePlayerMessage:async t=>{const e=t.queue.current;let i=t.get("message");if(!i||!i.editable)return;const r=1e3*Math.floor(e.duration/1e3),a=1e3*Math.floor(t.position/1e3),s=[(0,string_progressbar_1.splitBar)(r,a,20)[0]," [",(0,pretty_ms_1.default)(a,{colonNotation:!0,compact:!0})," / ",(0,pretty_ms_1.default)(r,{colonNotation:!0,compact:!0}),"]"].join("");await i.edit({content:null,embeds:[{title:e.title,url:e.uri,thumbnail:{url:e.thumbnail},fields:[{name:"Автор",value:e.author,inline:!0},{name:"Прогресс",value:s}]}]})}},util)return util;util=this}setClient(t){return this._client=t,this}setDatabase(t){return this._database=t,this}setLavaManager(t){return this._lavaManager=t,this}get client(){return this._client}get database(){return this._database}get lava(){return this._lavaManager}}module.exports=new Util;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const util_1 = require("util");
+const string_progressbar_1 = require("string-progressbar");
+const pretty_ms_1 = __importDefault(require("pretty-ms"));
+let util = null;
+class Util {
+    constructor() {
+        this.inspect = util_1.inspect;
+        this.wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+        this.func = {
+            updatePlayerMessage: async (player) => {
+                const track = player.queue.current;
+                let message = player.get("message");
+                if (!message || !message.editable)
+                    return;
+                const duration = Math.floor(track.duration / 1000) * 1000;
+                const position = Math.floor(player.position / 1000) * 1000;
+                const progressComponent = [
+                    (0, string_progressbar_1.splitBar)(duration, position, 20)[0],
+                    ` [`,
+                    (0, pretty_ms_1.default)(position, { colonNotation: true, compact: true }),
+                    ` / `,
+                    (0, pretty_ms_1.default)(duration, { colonNotation: true, compact: true }),
+                    `]`
+                ].join("");
+                await message.edit({
+                    content: null,
+                    embeds: [{
+                            title: track.title,
+                            url: track.uri,
+                            thumbnail: {
+                                url: track.thumbnail
+                            },
+                            fields: [{
+                                    name: "Автор",
+                                    value: track.author,
+                                    inline: true
+                                }, {
+                                    name: "Прогресс",
+                                    value: progressComponent,
+                                }]
+                        }]
+                });
+            }
+        };
+        if (util)
+            return util;
+        util = this;
+    }
+    ;
+    setClient(client) {
+        client.util = this;
+        this._client = client;
+        return this;
+    }
+    ;
+    setDatabase(database) {
+        this._database = database;
+        return this;
+    }
+    ;
+    setLavaManager(lavaManager) {
+        this._lavaManager = lavaManager;
+        return this;
+    }
+    ;
+    get client() {
+        return this._client;
+    }
+    ;
+    get database() {
+        return this._database;
+    }
+    ;
+    get lava() {
+        return this._lavaManager;
+    }
+    ;
+}
+;
+module.exports = new Util;

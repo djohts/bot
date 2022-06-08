@@ -1,1 +1,21 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.run=void 0;const database_1=__importDefault(require("../database/"));async function run(e){const t=await database_1.default.guild(e.guild.id),{modules:a,channel:n,message:s,user:u,count:i}=t.get();if(n===e.channel.id&&s===e.id&&!a.includes("embed")&&!a.includes("webhook")){const a=await e.channel.send(`${e.author||`<@${u}>`}: ${e.content||i}`);t.set("message",a.id)}}exports.run=run;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = void 0;
+const database_1 = __importDefault(require("../database/"));
+async function run(deleted) {
+    const gdb = await database_1.default.guild(deleted.guild.id);
+    const { modules, channel, message, user, count } = gdb.get();
+    if (channel === deleted.channel.id &&
+        message === deleted.id &&
+        !modules.includes("embed") &&
+        !modules.includes("webhook")) {
+        const newMessage = await deleted.channel.send(`${deleted.author || `<@${user}>`}: ${deleted.content || count}`);
+        gdb.set("message", newMessage.id);
+    }
+    ;
+}
+exports.run = run;
+;

@@ -1,1 +1,32 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};const utils_1=require("./utils"),Util_1=__importDefault(require("../util/Util"));function updatePresence(e){e.shard.broadcastEval((e=>e.guilds.cache.size)).then((t=>{const s=t.reduce(((e,t)=>e+t),0);e.user.setPresence({status:"idle",activities:[{type:"PLAYING",name:`500? -> | ${s} guilds`}]}),setTimeout((()=>updatePresence(e)),3e5)}))}function checkBans(e){Promise.all(e.guilds.cache.map((e=>(0,utils_1.checkGuildBans)(e)))).then((()=>setTimeout((()=>checkBans(e)),1e4)))}function updatePlayerMessages(){Promise.all(Util_1.default.lava.players.map((e=>Util_1.default.func.updatePlayerMessage(e)))).then((()=>setTimeout((()=>updatePlayerMessages()),1e4)))}module.exports=e=>{updatePresence(e),checkBans(e),updatePlayerMessages()};
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const utils_1 = require("./utils");
+const Util_1 = __importDefault(require("../util/Util"));
+function updatePresence(client) {
+    client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
+        const gc = res.reduce((prev, curr) => prev + curr, 0);
+        client.user.setPresence({
+            status: "idle",
+            activities: [{ type: "PLAYING", name: `500? -> | ${gc} guilds` }],
+        });
+        setTimeout(() => updatePresence(client), 5 * 60 * 1000);
+    });
+}
+;
+function checkBans(client) {
+    Promise.all(client.guilds.cache.map((guild) => (0, utils_1.checkGuildBans)(guild)))
+        .then(() => setTimeout(() => checkBans(client), 10 * 1000));
+}
+;
+function updatePlayerMessages() {
+    Promise.all(Util_1.default.lava.players.map((player) => Util_1.default.func.updatePlayerMessage(player)))
+        .then(() => setTimeout(() => updatePlayerMessages(), 10 * 1000));
+}
+;
+module.exports = (client) => {
+    updatePresence(client);
+    checkBans(client);
+    updatePlayerMessages();
+};

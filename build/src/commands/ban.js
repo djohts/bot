@@ -1,1 +1,70 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.run=exports.permission=exports.options=void 0;const builders_1=require("@discordjs/builders");exports.options=(new builders_1.SlashCommandBuilder).setName("ban").setDescription("Забанить участника.").addUserOption((e=>e.setName("member").setDescription("Пользователь, которого надо забанить.").setRequired(!0))).addStringOption((e=>e.setName("duration").setDescription("Время, на которое участник будет забанен."))).addStringOption((e=>e.setName("reason").setDescription("Причина выдачи бана."))).addIntegerOption((e=>e.setName("purgedays").setDescription("Удаление сообщений пользователя за указанное время, в днях.").setMaxValue(7).setMinValue(1))).toJSON(),exports.permission=1;const discord_js_1=require("discord.js"),constants_1=require("../constants/"),resolvers_1=require("../constants/resolvers"),pretty_ms_1=__importDefault(require("pretty-ms")),database_1=__importDefault(require("../database/")),run=async e=>{const t=e.options.getMember("member");if(!e.guild.me.permissions.has("BAN_MEMBERS")||!t.manageable)return await e.reply({content:"❌ Я не могу забанить этого участника.",ephemeral:!0});if(e.options.getString("duration")&&!(0,resolvers_1.parseTime)(e.options.getString("duration")))return await e.reply({content:"❌ Не удалось обработать указанное время.",ephemeral:!0});const s=await e.guild.bans.fetch(),r=await database_1.default.guild(e.guild.id);if(s.has(t.user.id))return await e.reply({content:"❌ Этот пользователь уже забанен.",ephemeral:!0});if((0,constants_1.getPermissionLevel)(t)>=(0,constants_1.getPermissionLevel)(e.member))return await e.reply({content:"❌ Вы не можете забанить этого человека.",ephemeral:!0});await e.deferReply();let i=!1,n=0,a=e.options.getString("reason")?.trim(),o=e.options.getInteger("purgedays");n=e.options.getString("duration")?Date.now()+(0,resolvers_1.parseTime)(e.options.getString("duration")):-1;const d=(new discord_js_1.MessageEmbed).setAuthor({name:e.guild.name,iconURL:e.guild.iconURL({dynamic:!0})}).setTitle("Вы были забанены").addField("Модератор",`${e.user} (**${e.user.tag.replaceAll("*","\\*")}**)`,!0);-1!=n&&d.addField("Время",`\`${(0,pretty_ms_1.default)((0,resolvers_1.parseTime)(e.options.getString("duration")))}\``,!0),a&&d.addField("Причина",a),await t.user.send({embeds:[d]}).then((()=>i=!0)).catch((()=>null)),await e.guild.bans.create(t.id,{reason:`${e.user.tag}: ${a||"Не указана."}`,days:o}).then((async()=>{r.setOnObject("bans",t.user.id,n),await e.editReply({content:`✅ ${t} был успешно забанен.`+(i?"\n[__Пользователь был уведомлён в лс__]":"")})})).catch((async()=>{await e.editReply({content:"❌ Произошла неизвестная ошибка."})}))};exports.run=run;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = exports.permission = exports.options = void 0;
+const builders_1 = require("@discordjs/builders");
+exports.options = new builders_1.SlashCommandBuilder()
+    .setName("ban")
+    .setDescription("Забанить участника.")
+    .addUserOption((o) => o.setName("member").setDescription("Пользователь, которого надо забанить.").setRequired(true))
+    .addStringOption((o) => o.setName("duration").setDescription("Время, на которое участник будет забанен."))
+    .addStringOption((o) => o.setName("reason").setDescription("Причина выдачи бана."))
+    .addIntegerOption((o) => o.setName("purgedays").setDescription("Удаление сообщений пользователя за указанное время, в днях.").setMaxValue(7).setMinValue(1))
+    .toJSON();
+exports.permission = 1;
+const discord_js_1 = require("discord.js");
+const constants_1 = require("../constants/");
+const resolvers_1 = require("../constants/resolvers");
+const pretty_ms_1 = __importDefault(require("pretty-ms"));
+const database_1 = __importDefault(require("../database/"));
+const run = async (interaction) => {
+    const member = interaction.options.getMember("member");
+    if (!interaction.guild.me.permissions.has("BAN_MEMBERS") ||
+        !member.manageable)
+        return await interaction.reply({ content: "❌ Я не могу забанить этого участника.", ephemeral: true });
+    if (interaction.options.getString("duration") &&
+        !(0, resolvers_1.parseTime)(interaction.options.getString("duration")))
+        return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
+    const bans = await interaction.guild.bans.fetch();
+    const guilddb = await database_1.default.guild(interaction.guild.id);
+    if (bans.has(member.user.id))
+        return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
+    if ((0, constants_1.getPermissionLevel)(member) >= (0, constants_1.getPermissionLevel)(interaction.member))
+        return await interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
+    await interaction.deferReply();
+    let dmsent = false;
+    let time = 0;
+    let reason = interaction.options.getString("reason")?.trim();
+    let purgedays = interaction.options.getInteger("purgedays");
+    if (!interaction.options.getString("duration"))
+        time = -1;
+    else
+        time = Date.now() + (0, resolvers_1.parseTime)(interaction.options.getString("duration"));
+    const dmemb = new discord_js_1.MessageEmbed()
+        .setAuthor({
+        name: interaction.guild.name,
+        iconURL: interaction.guild.iconURL({ dynamic: true })
+    })
+        .setTitle("Вы были забанены")
+        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replaceAll("*", "\\*")}**)`, true);
+    if (time != -1)
+        dmemb.addField("Время", `\`${(0, pretty_ms_1.default)((0, resolvers_1.parseTime)(interaction.options.getString("duration")))}\``, true);
+    if (reason)
+        dmemb.addField("Причина", reason);
+    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
+    await interaction.guild.bans.create(member.id, {
+        reason: `${interaction.user.tag}: ${reason || "Не указана."}`,
+        days: purgedays
+    }).then(async () => {
+        guilddb.setOnObject("bans", member.user.id, time);
+        await interaction.editReply({
+            content: `✅ ${member} был успешно забанен.` +
+                (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
+        });
+    }).catch(async () => {
+        await interaction.editReply({ content: "❌ Произошла неизвестная ошибка." });
+    });
+};
+exports.run = run;

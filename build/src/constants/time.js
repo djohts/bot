@@ -1,1 +1,13 @@
-"use strict";function getDateFormatted(t){let e=(t.getMonth()+1).toString(),o=t.getDate().toString(),r=t.getFullYear();return e.length<2&&(e="0"+e),o.length<2&&(o="0"+o),[r,e,o].join("-")}Object.defineProperty(exports,"__esModule",{value:!0}),exports.getDateFormatted=void 0,exports.getDateFormatted=getDateFormatted;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getDateFormatted = void 0;
+function getDateFormatted(d) {
+    let month = (d.getMonth() + 1).toString(), day = d.getDate().toString(), year = d.getFullYear();
+    if (month.length < 2)
+        month = "0" + month;
+    if (day.length < 2)
+        day = "0" + day;
+    return [year, month, day].join("-");
+}
+exports.getDateFormatted = getDateFormatted;
+;

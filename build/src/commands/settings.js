@@ -1,1 +1,115 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.run=exports.permission=exports.options=void 0;const builders_1=require("@discordjs/builders");exports.options=(new builders_1.SlashCommandBuilder).setName("settings").setDescription("Настройки бота на сервере.").addSubcommand((e=>e.setName("get").setDescription("Получить настройки сервера."))).addSubcommand((e=>e.setName("toggle").setDescription("Изменить значение найстройки.").addStringOption((e=>e.setName("setting").setDescription("Настройка, которую надо изменить.").setRequired(!0).setChoices({name:"Удаление закреплённых сообщений при очистке (/purge).",value:"purgePinned"},{name:"Временные голосовые каналы.",value:"voices"},{name:"Проверка сообщений на вредоносные ссылки.",value:"detectScamLinks"}))))).addSubcommand((e=>e.setName("setlobby").setDescription("Установить лобби для голосовых каналов.").addChannelOption((e=>e.setName("channel").setDescription("Канал-генератор, в который надо зайти для создания временного канала.").setRequired(!0).addChannelTypes(2))))).addSubcommand((e=>e.setName("counting").setDescription("Настройки модуля счёта.").addChannelOption((e=>e.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(!0).addChannelTypes(0))))).toJSON(),exports.permission=2;const database_1=__importDefault(require("../database/")),run=async e=>{const t=e.options.getSubcommand(),n=await database_1.default.settings(e.guild.id),i=await database_1.default.guild(e.guild.id);if("get"==t)await e.reply({embeds:[{title:"Настройки "+e.guild.name,timestamp:Date.now(),fields:[{name:"Удаление закреплённых сообщений",value:n.get().purgePinned?"<:online:887393623845507082> **`Включено`**":"<:dnd:887393623786803270> **`Выключено`**",inline:!0},{name:"Временные голосовые каналы",value:n.get().voices.enabled?"<:online:887393623845507082> **`Включены`**":"<:dnd:887393623786803270> **`Выключены`**",inline:!0},{name:"Лобби-канал",value:n.get().voices.lobby?`<#${n.get().voices.lobby}>`:"**`Не установлен`**",inline:!0},{name:"Проверка сообщений на вредоносные ссылки.",value:n.get().detectScamLinks?"<:online:887393623845507082> **`Включено`**":"<:dnd:887393623786803270> **`Выключено`**",inline:!0}]}]});else if("toggle"==t){let t="";const i=e.options.getString("setting");"purgePinned"==i?(n.get().purgePinned?(n.set("purgePinned",!1),t="**`Удаление закреплённых сообщений`** было выключено."):(n.set("purgePinned",!0),t="**`Удаление закреплённых сообщений`** было включено."),await e.reply({content:t})):"voices"==i?(n.get().voices.enabled?(n.setOnObject("voices","enabled",!1),t="**`Временные голосовые каналы`** были выключены."):(n.setOnObject("voices","enabled",!0),t="**`Временные голосовые каналы`** были включены."),await e.reply({content:t})):"detectScamLinks"==i&&(n.get().detectScamLinks?(n.set("detectScamLinks",!1),t="**`Проверка сообщений на вредоносные ссылки`** была выключена."):(n.set("detectScamLinks",!0),t="**`Проверка сообщений на вредоносные ссылки`** была включена."),await e.reply({content:t}))}else if("setlobby"==t){let t=e.options.getChannel("channel");n.setOnObject("voices","lobby",t.id),await e.reply({content:`✅ Лобби было установлено. (${t})`})}else if("counting"==t){let t=e.options.getChannel("channel");i.setMultiple({channel:t.id,count:0,user:"",message:`${parseInt(e.id)+1}`}),await e.reply({content:`✅ Канал счёта был установлен. (${t})`})}};exports.run=run;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = exports.permission = exports.options = void 0;
+const builders_1 = require("@discordjs/builders");
+exports.options = new builders_1.SlashCommandBuilder()
+    .setName("settings")
+    .setDescription("Настройки бота на сервере.")
+    .addSubcommand((c) => c.setName("get").setDescription("Получить настройки сервера."))
+    .addSubcommand((c) => c.setName("toggle").setDescription("Изменить значение найстройки.").addStringOption((o) => o.setName("setting").setDescription("Настройка, которую надо изменить.").setRequired(true)
+    .setChoices({
+    name: "Удаление закреплённых сообщений при очистке (/purge).", value: "purgePinned"
+}, {
+    name: "Временные голосовые каналы.", value: "voices"
+}, {
+    name: "Проверка сообщений на вредоносные ссылки.", value: "detectScamLinks"
+})))
+    .addSubcommand((c) => c.setName("setlobby").setDescription("Установить лобби для голосовых каналов.").addChannelOption((o) => o.setName("channel").setDescription("Канал-генератор, в который надо зайти для создания временного канала.").setRequired(true).addChannelTypes(2)))
+    .addSubcommand((c) => c.setName("counting").setDescription("Настройки модуля счёта.").addChannelOption((o) => o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelTypes(0)))
+    .toJSON();
+exports.permission = 2;
+const database_1 = __importDefault(require("../database/"));
+const run = async (interaction) => {
+    const cmd = interaction.options.getSubcommand();
+    const gset = await database_1.default.settings(interaction.guild.id);
+    const gdb = await database_1.default.guild(interaction.guild.id);
+    if (cmd == "get") {
+        await interaction.reply({
+            embeds: [{
+                    title: "Настройки " + interaction.guild.name,
+                    timestamp: Date.now(),
+                    fields: [{
+                            name: "Удаление закреплённых сообщений",
+                            value: gset.get().purgePinned ?
+                                "<:online:887393623845507082> **`Включено`**" :
+                                "<:dnd:887393623786803270> **`Выключено`**",
+                            inline: true
+                        }, {
+                            name: "Временные голосовые каналы",
+                            value: gset.get().voices.enabled ?
+                                "<:online:887393623845507082> **`Включены`**" :
+                                "<:dnd:887393623786803270> **`Выключены`**",
+                            inline: true
+                        }, {
+                            name: "Лобби-канал",
+                            value: gset.get().voices.lobby ?
+                                `<#${gset.get().voices.lobby}>` :
+                                "**`Не установлен`**",
+                            inline: true
+                        }, {
+                            name: "Проверка сообщений на вредоносные ссылки.",
+                            value: gset.get().detectScamLinks ?
+                                "<:online:887393623845507082> **`Включено`**" :
+                                "<:dnd:887393623786803270> **`Выключено`**",
+                            inline: true
+                        }]
+                }]
+        });
+    }
+    else if (cmd == "toggle") {
+        let idk = "";
+        const type = interaction.options.getString("setting");
+        if (type == "purgePinned") {
+            gset.get().purgePinned ? (() => {
+                gset.set("purgePinned", false);
+                idk = "**`Удаление закреплённых сообщений`** было выключено.";
+            })() : (() => {
+                gset.set("purgePinned", true);
+                idk = "**`Удаление закреплённых сообщений`** было включено.";
+            })();
+            await interaction.reply({ content: idk });
+        }
+        else if (type == "voices") {
+            gset.get().voices.enabled ? (() => {
+                gset.setOnObject("voices", "enabled", false);
+                idk = "**`Временные голосовые каналы`** были выключены.";
+            })() : (() => {
+                gset.setOnObject("voices", "enabled", true);
+                idk = "**`Временные голосовые каналы`** были включены.";
+            })();
+            await interaction.reply({ content: idk });
+        }
+        else if (type == "detectScamLinks") {
+            gset.get().detectScamLinks ? (() => {
+                gset.set("detectScamLinks", false);
+                idk = "**`Проверка сообщений на вредоносные ссылки`** была выключена.";
+            })() : (() => {
+                gset.set("detectScamLinks", true);
+                idk = "**`Проверка сообщений на вредоносные ссылки`** была включена.";
+            })();
+            await interaction.reply({ content: idk });
+        }
+        ;
+        ;
+    }
+    else if (cmd == "setlobby") {
+        let lobby = interaction.options.getChannel("channel");
+        gset.setOnObject("voices", "lobby", lobby.id);
+        await interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
+    }
+    else if (cmd == "counting") {
+        let counting = interaction.options.getChannel("channel");
+        gdb.setMultiple({
+            channel: counting.id,
+            count: 0,
+            user: "",
+            message: `${parseInt(interaction.id) + 1}`
+        });
+        await interaction.reply({ content: `✅ Канал счёта был установлен. (${counting})` });
+    }
+    ;
+};
+exports.run = run;

@@ -1,1 +1,36 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.run=exports.permission=exports.options=void 0;const builders_1=require("@discordjs/builders");exports.options=(new builders_1.SlashCommandBuilder).setName("leaderboard").setDescription("Список лидеров счёта.").toJSON(),exports.permission=0;const database_1=__importDefault(require("../database/")),constants_1=require("../constants/"),run=async e=>{const s=await database_1.default.guild(e.guild.id),{users:t,channel:r}=s.get(),i=Object.keys(t).sort(((e,s)=>t[s]-t[e])),n=i.slice(0,25),o=n.map(((s,r)=>(0,constants_1.formatScore)(s,r,t,e.user.id)));let a=o.join("\n");n.includes(e.user.id)||(o.length&&(a+="\n^^^^^^^^^^^^^^^^^^^^^^^^^\n"),a+=(0,constants_1.formatScore)(e.user.id,i.indexOf(e.user.id),t)),await e.reply({embeds:[{title:`Таблица лидеров ${e.guild.name}`,description:a}],ephemeral:r===e.channel.id})};exports.run=run;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = exports.permission = exports.options = void 0;
+const builders_1 = require("@discordjs/builders");
+exports.options = new builders_1.SlashCommandBuilder()
+    .setName("leaderboard")
+    .setDescription("Список лидеров счёта.")
+    .toJSON();
+exports.permission = 0;
+const database_1 = __importDefault(require("../database/"));
+const constants_1 = require("../constants/");
+const run = async (interaction) => {
+    const gdb = await database_1.default.guild(interaction.guild.id);
+    const { users, channel } = gdb.get();
+    const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);
+    const top = sorted.slice(0, 25);
+    const leaderboard = top.map((id, index) => (0, constants_1.formatScore)(id, index, users, interaction.user.id));
+    let description = leaderboard.join("\n");
+    if (!top.includes(interaction.user.id)) {
+        if (leaderboard.length)
+            description = description + "\n^^^^^^^^^^^^^^^^^^^^^^^^^\n";
+        description = description + (0, constants_1.formatScore)(interaction.user.id, sorted.indexOf(interaction.user.id), users);
+    }
+    ;
+    await interaction.reply({
+        embeds: [{
+                title: `Таблица лидеров ${interaction.guild.name}`,
+                description
+            }],
+        ephemeral: (channel === interaction.channel.id)
+    });
+};
+exports.run = run;

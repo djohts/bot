@@ -1,1 +1,20 @@
-"use strict";var __importDefault=this&&this.__importDefault||function(t){return t&&t.__esModule?t:{default:t}};Object.defineProperty(exports,"__esModule",{value:!0}),exports.run=exports.name=void 0;const Util_1=__importDefault(require("../util/Util"));exports.name="channelDelete";const run=async t=>{if("DM"===t.type)return;const e=Util_1.default.lava.get(t.guild.id);if(e?.options.voiceChannel===t.id){const t=Util_1.default.client.channels.cache.get(e.options.textChannel);e.destroy(),await(t?.send("Канал был удалён. Останавливаю плеер.").catch((()=>null)))}};exports.run=run;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.run = exports.name = void 0;
+const Util_1 = __importDefault(require("../util/Util"));
+exports.name = "channelDelete";
+const run = async (channel) => {
+    if (channel.type === "DM")
+        return;
+    const player = Util_1.default.lava.get(channel.guild.id);
+    if (player?.options.voiceChannel === channel.id) {
+        const text = Util_1.default.client.channels.cache.get(player.options.textChannel);
+        player.destroy();
+        await text?.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
+    }
+    ;
+};
+exports.run = run;
