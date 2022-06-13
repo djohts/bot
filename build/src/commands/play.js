@@ -14,8 +14,10 @@ exports.permission = 0;
 const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
     const member = interaction.member;
+    if (!member.voice.channel)
+        return await interaction.reply("❌ Вы должны находиться в голосовом канале.");
     if (interaction.guild.me.voice.channel &&
-        member.voice.channel?.id !== interaction.guild.me.voice.channel.id)
+        member.voice.channel?.id !== interaction.guild.me.voice.channel?.id)
         return await interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
     await interaction.deferReply();
     const res = await Util_1.default.lava.search(interaction.options.getString("query").trim(), interaction.user);
