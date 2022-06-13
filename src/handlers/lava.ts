@@ -39,14 +39,16 @@ export = (client: ModifiedClient) => new Manager({
         if (!voice?.members.filter((m) => m.user.id !== client.user.id).size) {
             player.destroy();
             try {
-                await text.send("Все участники покинули голосовой канал. Останавливаю плеер.");
+                let message = player.get("message") as Message | undefined;
+                if (!message || !message.editable) await text.send({ content: "Все участники покинули голосовой канал. Останавливаю плеер.", embeds: [] });
+                else await message.edit({ content: "Все участники покинули голосовой канал. Останавливаю плеер.", embeds: [] });
             } catch { };
             return;
         };
 
         try {
             let message = player.get("message") as Message | undefined;
-            if (!message) {
+            if (!message || !message.editable) {
                 message = await text.send("⏳ Загрузка...");
                 player.set("message", message);
             };
@@ -57,7 +59,7 @@ export = (client: ModifiedClient) => new Manager({
 
         try {
             let message = player.get("message") as Message | undefined;
-            if (!message) await text.send({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
+            if (!message || !message.editable) await text.send({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
             else await message.edit({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
         } catch { };
 

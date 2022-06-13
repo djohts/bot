@@ -41,7 +41,11 @@ module.exports = (client) => new erela_js_1.Manager({
     if (!voice?.members.filter((m) => m.user.id !== client.user.id).size) {
         player.destroy();
         try {
-            await text.send("Все участники покинули голосовой канал. Останавливаю плеер.");
+            let message = player.get("message");
+            if (!message || !message.editable)
+                await text.send({ content: "Все участники покинули голосовой канал. Останавливаю плеер.", embeds: [] });
+            else
+                await message.edit({ content: "Все участники покинули голосовой канал. Останавливаю плеер.", embeds: [] });
         }
         catch { }
         ;
@@ -50,7 +54,7 @@ module.exports = (client) => new erela_js_1.Manager({
     ;
     try {
         let message = player.get("message");
-        if (!message) {
+        if (!message || !message.editable) {
             message = await text.send("⏳ Загрузка...");
             player.set("message", message);
         }
@@ -63,7 +67,7 @@ module.exports = (client) => new erela_js_1.Manager({
     const text = client.channels.cache.get(player.textChannel);
     try {
         let message = player.get("message");
-        if (!message)
+        if (!message || !message.editable)
             await text.send({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
         else
             await message.edit({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
