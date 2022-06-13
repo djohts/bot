@@ -1,8 +1,8 @@
 import fastify, { FastifyInstance } from "fastify";
 import config from "../../config";
-import fastifySession from "fastify-session";
-import fastifyCookie from "fastify-cookie";
-import pov from "point-of-view";
+import fastifySession from "@fastify/session";
+import fastifyCookie from "@fastify/cookie";
+import pov from "@fastify/view";
 import ejs from "ejs";
 
 export = () => {
