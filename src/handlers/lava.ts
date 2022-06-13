@@ -2,11 +2,9 @@ import { TextChannel, VoiceBasedChannel, Message } from "discord.js";
 import { ModifiedClient } from "../constants/types";
 import { Manager } from "erela.js";
 import Spotify from "better-erela.js-spotify";
-import { splitBar } from "string-progressbar";
 import config from "../../config";
 const { lava: { nodes, spotify: { clientId, clientSecret } } } = config;
 import { shard } from "../bot";
-import prettyms from "pretty-ms";
 
 export = (client: ModifiedClient) => new Manager({
     nodes: nodes,
@@ -18,18 +16,18 @@ export = (client: ModifiedClient) => new Manager({
         client.guilds.cache.get(id)?.shard.send(payload);
     }
 })
-    .on("trackError", async (player, { title }, error) => {
+    .on("trackError", async (player, track, error) => {
         const text = client.channels.cache.get(player.textChannel) as TextChannel;
 
         try {
-            await text.send(`An error occured when trying to play \`${title}\`: ${error.exception?.cause || error.error}`);
+            await text.send(`An error occured when trying to play \`${track.title}\`: ${error.exception?.cause || error.error}`);
         } catch { };
     })
-    .on("trackStuck", async (player, { title }, error) => {
+    .on("trackStuck", async (player, track, error) => {
         const text = client.channels.cache.get(player.textChannel) as TextChannel;
 
         try {
-            await text?.send(`\`${title}\` got stuck.`);
+            await text?.send(`\`${track.title}\` got stuck.`);
         } catch { };
     })
     .on("nodeConnect", ({ options }) => console.log(`${shard} Lava ${options.host}:${options.port} connected.`))
@@ -48,8 +46,10 @@ export = (client: ModifiedClient) => new Manager({
 
         try {
             let message = player.get("message") as Message | undefined;
-            if (!message) message = await text.send("⏳ Загрузка...");
-            player.set("message", message);
+            if (!message) {
+                message = await text.send("⏳ Загрузка...");
+                player.set("message", message);
+            };
         } catch { };
     })
     .on("queueEnd", async (player) => {
@@ -58,7 +58,7 @@ export = (client: ModifiedClient) => new Manager({
         try {
             let message = player.get("message") as Message | undefined;
             if (!message) await text.send({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
-            await message.edit({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
+            else await message.edit({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
         } catch { };
 
         player.destroy();

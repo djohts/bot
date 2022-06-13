@@ -15,6 +15,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
 
     try {
         const Util = _Util;
+        // @ts-ignore
         const gdb = Util.database.guild(interaction.guild.id);
         let evaled = await eval(interaction.options.getString("script"));
         if (typeof evaled !== "string") evaled = require("util").inspect(evaled);

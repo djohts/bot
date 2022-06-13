@@ -100,12 +100,12 @@ module.exports = (fastify, _, done) => {
         ].join(""));
     });
     fastify.post("/webhook/boticord", async (req, res) => {
-        if (req.headers["x-hook-key"] != config_1.default.monitoring.bc_hook_key)
+        if (req.headers["x-hook-key"] !== config_1.default.monitoring.bc_hook_key)
             return res.status(403).send();
         const options = req.body;
         switch (options.type) {
             case "new_bot_bump":
-                await wh.send({
+                return await wh.send({
                     content: [
                         `<@${options.data.user}>, спасибо за ап на \`boticord.top\`!`,
                         `Вы можете сделать повторный ап <t:${Math.round(options.data.at / 1000) + 4 * 60 * 60}:R>.`
@@ -113,7 +113,7 @@ module.exports = (fastify, _, done) => {
                     username: "ботикорд",
                 });
             case "new_bot_comment":
-                await wh.send({
+                return await wh.send({
                     embeds: [{
                             title: "Новый комментарий",
                             description: [
@@ -138,7 +138,7 @@ module.exports = (fastify, _, done) => {
                     vote = "Негативная";
                 else
                     vote = "Нейтральная";
-                await wh.send({
+                return await wh.send({
                     embeds: [{
                             title: "Комментарий изменён",
                             description: [

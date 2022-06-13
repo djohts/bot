@@ -17,18 +17,18 @@ module.exports = (client) => new erela_js_1.Manager({
         client.guilds.cache.get(id)?.shard.send(payload);
     }
 })
-    .on("trackError", async (player, { title }, error) => {
+    .on("trackError", async (player, track, error) => {
     const text = client.channels.cache.get(player.textChannel);
     try {
-        await text.send(`An error occured when trying to play \`${title}\`: ${error.exception?.cause || error.error}`);
+        await text.send(`An error occured when trying to play \`${track.title}\`: ${error.exception?.cause || error.error}`);
     }
     catch { }
     ;
 })
-    .on("trackStuck", async (player, { title }, error) => {
+    .on("trackStuck", async (player, track, error) => {
     const text = client.channels.cache.get(player.textChannel);
     try {
-        await text?.send(`\`${title}\` got stuck.`);
+        await text?.send(`\`${track.title}\` got stuck.`);
     }
     catch { }
     ;
@@ -50,9 +50,11 @@ module.exports = (client) => new erela_js_1.Manager({
     ;
     try {
         let message = player.get("message");
-        if (!message)
+        if (!message) {
             message = await text.send("⏳ Загрузка...");
-        player.set("message", message);
+            player.set("message", message);
+        }
+        ;
     }
     catch { }
     ;
@@ -63,7 +65,8 @@ module.exports = (client) => new erela_js_1.Manager({
         let message = player.get("message");
         if (!message)
             await text.send({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
-        await message.edit({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
+        else
+            await message.edit({ content: "Очередь пуста. Останавливаю плеер.", embeds: [] });
     }
     catch { }
     ;

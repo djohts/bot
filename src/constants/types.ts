@@ -28,13 +28,13 @@ export interface Config {
     shards: number,
     port: number,
     redirectUri: string
-};
+}
 
 export interface SlashCommand {
     options: RESTPostAPIApplicationCommandsJSONBody,
     permissions: 0 | 1 | 2 | 3 | 4 | 5,
     run(interaction: CommandInteraction): Promise<void>
-};
+}
 
 export interface SessionUser {
     id: string,
@@ -56,14 +56,14 @@ export interface SessionUser {
         permissions: string,
         features: string[]
     }[]
-};
+}
 
 export interface CustomGuild {
     id: string,
     name: string,
     iconUrl: string | null,
     managed: boolean
-};
+}
 
 export class ModifiedClient extends Client {
     loading: boolean;
@@ -73,7 +73,7 @@ export class ModifiedClient extends Client {
         debug: boolean
     };
     util: typeof Util;
-};
+}
 
 export interface GuildObject {
     guildid: string,
@@ -91,20 +91,20 @@ export interface GuildObject {
     brcs: object,
     brms: object,
     brs: object
-};
+}
 
 export interface GSetObject {
     guildid: string,
     purgePinned: boolean,
     detectScamLinks: boolean,
     voices: { enabled: boolean, lobby: string, parent: string }
-};
+}
 
 export interface GlobalObject {
     maintenance: boolean,
     debug: boolean,
     generatedIds: string[]
-};
+}
 
 export interface BcBotBumpAction {
     type: "new_bot_bump",
@@ -112,7 +112,7 @@ export interface BcBotBumpAction {
         user: string,
         at: number
     }
-};
+}
 
 export interface BcBotCommentAction {
     type: "new_bot_comment" | "edit_bot_comment" | "delete_bot_comment" | "new_server_comment" | "edit_server_comment" | "delete_server_comment",
@@ -129,4 +129,4 @@ export interface BcBotCommentAction {
             new: string | null
         }
     }
-};
+}
