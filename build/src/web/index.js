@@ -31,5 +31,5 @@ module.exports = () => {
     app.register(require("./routes/util"), { prefix: "/util" });
     app.register(require("./routes/dash"), { prefix: "/dash" });
     app.register(require("./routes/root"), { prefix: "/" });
-    app.listen(config_1.default.port, "0.0.0.0");
+    app.listen({ port: config_1.default.port, host: "0.0.0.0" });
 };

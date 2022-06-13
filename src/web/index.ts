@@ -30,5 +30,5 @@ export = () => {
     app.register(require("./routes/dash"), { prefix: "/dash" });
     app.register(require("./routes/root"), { prefix: "/" });
 
-    app.listen(config.port, "0.0.0.0");
+    app.listen({ port: config.port, host: "0.0.0.0" });
 };
