@@ -51,7 +51,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
             iconURL: interaction.guild.iconURL({ dynamic: true })
         })
         .setTitle("Вы были забанены")
-        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replaceAll("*", "\\*")}**)`, true);
+        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`, true);
     if (time != -1) dmemb.addField("Время", `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``, true);
     if (reason) dmemb.addField("Причина", reason);
 

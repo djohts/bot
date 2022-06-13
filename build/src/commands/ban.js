@@ -48,7 +48,7 @@ const run = async (interaction) => {
         iconURL: interaction.guild.iconURL({ dynamic: true })
     })
         .setTitle("Вы были забанены")
-        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replaceAll("*", "\\*")}**)`, true);
+        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`, true);
     if (time != -1)
         dmemb.addField("Время", `\`${(0, pretty_ms_1.default)((0, resolvers_1.parseTime)(interaction.options.getString("duration")))}\``, true);
     if (reason)
