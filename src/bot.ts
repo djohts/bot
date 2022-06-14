@@ -30,7 +30,6 @@ export const client = new ModifiedClient({
     }
 });
 Util.setClient(client).setDatabase(db);
-require("discord-logs")(client);
 
 export let shard = "[Shard N/A]";
 export const linkRates = new Map<string, Set<string>>();

@@ -36,7 +36,6 @@ exports.client = new types_1.ModifiedClient({
     }
 });
 Util_1.default.setClient(exports.client).setDatabase(database_1.default);
-require("discord-logs")(exports.client);
 exports.shard = "[Shard N/A]";
 exports.linkRates = new Map();
 exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {

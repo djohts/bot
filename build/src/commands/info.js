@@ -12,8 +12,9 @@ exports.options = new builders_1.SlashCommandBuilder()
 exports.permission = 0;
 const os_1 = __importDefault(require("os"));
 const platform = `${os_1.default.type()} (${os_1.default.release()})`;
+const Util_js_1 = __importDefault(require("../util/Util.js"));
 const discord_js_1 = require("discord.js");
-let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
+let guilds = 0, users = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 const run = async (interaction) => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;
@@ -21,16 +22,8 @@ const run = async (interaction) => {
         users = await interaction.client.shard.broadcastEval((bot) => bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)).then((res) => res.reduce((prev, val) => prev + val, 0));
         shardCount = interaction.client.shard.count;
         const { rss, heapUsed } = process.memoryUsage();
-        memoryGlobal = rss / 1024 / 1024;
-        if (memoryGlobal >= 1024)
-            memoryUsageGlobal = (memoryGlobal / 1024).toFixed(2) + "GB";
-        else
-            memoryUsageGlobal = memoryGlobal.toFixed(2) + "MB";
-        memory = heapUsed / 1024 / 1024;
-        if (memory >= 1024)
-            memoryUsage = (memory / 1024).toFixed(2) + "GB";
-        else
-            memoryUsage = memory.toFixed(2) + "MB";
+        memoryUsageGlobal = Util_js_1.default.prettyBytes(rss, { maximumFractionDigits: 2 });
+        memoryUsage = Util_js_1.default.prettyBytes(heapUsed, { maximumFractionDigits: 2 });
     }
     ;
     await interaction.reply({

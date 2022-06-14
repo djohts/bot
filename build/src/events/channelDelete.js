@@ -12,8 +12,16 @@ const run = async (channel) => {
     const player = Util_1.default.lava.get(channel.guild.id);
     if (player?.options.voiceChannel === channel.id) {
         const text = Util_1.default.client.channels.cache.get(player.options.textChannel);
+        try {
+            let message = player.get("message");
+            if (!message || !message.editable)
+                await text.send({ content: "Канал был удалён. Останавливаю плеер.", embeds: [] });
+            else
+                await message.edit({ content: "Канал был удалён. Останавливаю плеер.", embeds: [] });
+        }
+        catch { }
+        ;
         player.destroy();
-        await text?.send("Канал был удалён. Останавливаю плеер.").catch(() => null);
     }
     ;
 };

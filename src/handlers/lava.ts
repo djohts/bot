@@ -37,12 +37,12 @@ export = (client: ModifiedClient) => new Manager({
         const text = client.channels.cache.get(player.textChannel) as TextChannel;
 
         if (!voice?.members.filter((m) => m.user.id !== client.user.id).size) {
-            player.destroy();
             try {
                 let message = player.get("message") as Message | undefined;
                 if (!message || !message.editable) await text.send({ content: "Все участники покинули голосовой канал. Останавливаю плеер.", embeds: [] });
                 else await message.edit({ content: "Все участники покинули голосовой канал. Останавливаю плеер.", embeds: [] });
             } catch { };
+            player.destroy();
             return;
         };
 

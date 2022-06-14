@@ -39,7 +39,6 @@ module.exports = (client) => new erela_js_1.Manager({
     const voice = client.channels.cache.get(player.voiceChannel);
     const text = client.channels.cache.get(player.textChannel);
     if (!voice?.members.filter((m) => m.user.id !== client.user.id).size) {
-        player.destroy();
         try {
             let message = player.get("message");
             if (!message || !message.editable)
@@ -49,6 +48,7 @@ module.exports = (client) => new erela_js_1.Manager({
         }
         catch { }
         ;
+        player.destroy();
         return;
     }
     ;

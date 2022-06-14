@@ -9,8 +9,9 @@ export const permission = 0;
 import { CommandInteraction } from "discord.js";
 import os from "os";
 const platform = `${os.type()} (${os.release()})`;
+import Util from "../util/Util.js";
 import { version } from "discord.js";
-let guilds = 0, users = 0, shardCount = 0, memory = 0, memoryUsage = "0MB", memoryGlobal = 0, memoryUsageGlobal = "0MB", nextUpdate = Date.now();
+let guilds = 0, users = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
 export const run = async (interaction: CommandInteraction): Promise<any> => {
     if (nextUpdate < Date.now()) {
@@ -24,12 +25,8 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
 
         const { rss, heapUsed } = process.memoryUsage();
 
-        memoryGlobal = rss / 1024 / 1024;
-        if (memoryGlobal >= 1024) memoryUsageGlobal = (memoryGlobal / 1024).toFixed(2) + "GB";
-        else memoryUsageGlobal = memoryGlobal.toFixed(2) + "MB";
-        memory = heapUsed / 1024 / 1024;
-        if (memory >= 1024) memoryUsage = (memory / 1024).toFixed(2) + "GB";
-        else memoryUsage = memory.toFixed(2) + "MB";
+        memoryUsageGlobal = Util.prettyBytes(rss, { maximumFractionDigits: 2 });
+        memoryUsage = Util.prettyBytes(heapUsed, { maximumFractionDigits: 2 });
     };
 
     await interaction.reply({
