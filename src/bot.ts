@@ -5,6 +5,7 @@ import { inspect } from "util";
 import Util from "./util/Util";
 import Discord from "discord.js";
 import prettyms from "pretty-ms";
+import Dokdo from "dokdo";
 import tickers from "./handlers/tickers";
 import lavaHandler from "./handlers/lava";
 import { ModifiedClient } from "./constants/types";
@@ -29,6 +30,7 @@ export const client = new ModifiedClient({
         }]
     }
 });
+export const dokdo = new Dokdo(client, { aliases: ["d"], prefix: "!", noPerm: () => null, owners: ["419892040726347776"] });
 Util.setClient(client).setDatabase(db);
 
 export let shard = "[Shard N/A]";

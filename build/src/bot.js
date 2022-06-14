@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkRates = exports.shard = exports.client = void 0;
+exports.linkRates = exports.shard = exports.dokdo = exports.client = void 0;
 require("nodejs-better-console").overrideConsole();
 const fs_1 = __importDefault(require("fs"));
 const database_1 = __importDefault(require("./database/"));
@@ -11,6 +11,7 @@ const util_1 = require("util");
 const Util_1 = __importDefault(require("./util/Util"));
 const discord_js_1 = __importDefault(require("discord.js"));
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
+const dokdo_1 = __importDefault(require("dokdo"));
 const tickers_1 = __importDefault(require("./handlers/tickers"));
 const lava_1 = __importDefault(require("./handlers/lava"));
 const types_1 = require("./constants/types");
@@ -35,6 +36,7 @@ exports.client = new types_1.ModifiedClient({
             }]
     }
 });
+exports.dokdo = new dokdo_1.default(exports.client, { aliases: ["d"], prefix: "!", noPerm: () => null });
 Util_1.default.setClient(exports.client).setDatabase(database_1.default);
 exports.shard = "[Shard N/A]";
 exports.linkRates = new Map();

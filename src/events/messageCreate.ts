@@ -1,9 +1,10 @@
 import { Message } from "discord.js";
 import { checkMessage } from "stop-discord-phishing";
 import countingHandler from "../handlers/counting/handler";
-import { linkRates } from "../bot";
+import { dokdo, linkRates } from "../bot";
 import { deleteMessage } from "../handlers/utils";
 import Util from "../util/Util";
+import { getPermissionLevel } from "../constants/index";
 
 export async function run(message: Message) {
     if (
@@ -35,5 +36,6 @@ export async function run(message: Message) {
     const { channel } = gdb.get();
 
     if (channel === message.channel.id) return await countingHandler(message);
+    if (getPermissionLevel(message.member) >= 5) return dokdo.run(message);
     if (message.content.match(`^<@!?${Util.client.user.id}>`)) return await message.react("👋").catch(() => null);
 };
