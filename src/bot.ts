@@ -30,7 +30,7 @@ export const client = new ModifiedClient({
         }]
     }
 });
-export const dokdo = new Dokdo(client, { aliases: ["d"], prefix: "!", noPerm: () => null, owners: ["419892040726347776"] });
+export const dokdo = new Dokdo(client, { aliases: ["d"], prefix: "!", noPerm: () => null });
 Util.setClient(client).setDatabase(db);
 
 export let shard = "[Shard N/A]";
