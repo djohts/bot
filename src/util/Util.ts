@@ -28,7 +28,7 @@ class Util {
         return `${bytes.toFixed(maximumFractionDigits)} ${suffixes[i]}`;
     };
     public func = {
-        tickMusicPlayers: async (player: Player) => {
+        tickMusicPlayers: async (player: Player): Promise<void | Message> => {
             try {
                 const track = player.queue.current;
                 const message = player.get("message") as Message | undefined;
@@ -44,7 +44,7 @@ class Util {
                     prettyms(duration, { colonNotation: true, compact: true }),
                     `]`
                 ].join("");
-                await message.edit({
+                return await message.edit({
                     content: null,
                     embeds: [{
                         title: track.title,

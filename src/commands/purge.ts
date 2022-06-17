@@ -52,7 +52,7 @@ export const run = async (interaction: CommandInteraction): Promise<any> => {
                         purged.size + " сообщения" :
                         purged.size + " сообщений"
             ) + (
-                purged.size === toDelete.size ? "" : " из " + toDelete.size + ". ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель."
+                purged.size === toDelete.size ? "" : ` из ${toDelete.size}. ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель.`
             )
     });
     setTimeout(() => interaction.deleteReply().catch(() => null), 3000);

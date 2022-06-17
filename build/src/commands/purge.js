@@ -48,7 +48,7 @@ const run = async (interaction) => {
             purged.size + " сообщение" :
             [2, 3, 4].includes(purged.size) ?
                 purged.size + " сообщения" :
-                purged.size + " сообщений") + (purged.size === toDelete.size ? "" : " из " + toDelete.size + ". ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель.")
+                purged.size + " сообщений") + (purged.size === toDelete.size ? "" : ` из ${toDelete.size}. ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель.`)
     });
     setTimeout(() => interaction.deleteReply().catch(() => null), 3000);
 };
