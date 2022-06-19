@@ -7,5 +7,10 @@ exports.options = new builders_1.SlashCommandBuilder()
     .setDescription("Документация по использованию бота.")
     .toJSON();
 exports.permission = 0;
-const run = async (interaction) => { };
+const run = async (interaction) => {
+    await interaction.reply({
+        content: "Документация: https://djoh.gitbook.io/djoho-bot",
+        ephemeral: true
+    });
+};
 exports.run = run;
