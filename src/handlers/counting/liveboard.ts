@@ -1,9 +1,9 @@
 import { Client, Message, TextChannel } from "discord.js";
 import { formatScore } from "../../constants/";
-import db from "../../database/";
+import Util from "../../util/Util";
 
 export = (client: Client) => Promise.all(client.guilds.cache.map(async (guild) => {
-    const gdb = await db.guild(guild.id);
+    const gdb = await Util.database.guild(guild.id);
     const { liveboard: { channel: channelId, message: messageId }, users } = gdb.get();
 
     if (channelId && messageId) {

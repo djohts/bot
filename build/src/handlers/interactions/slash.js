@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerCommands = exports.commands = void 0;
 const constants_1 = require("../../constants/");
-const database_1 = __importDefault(require("../../database/"));
 const rest_1 = require("@discordjs/rest");
 const v9_1 = require("discord-api-types/v9");
 const fs_1 = __importDefault(require("fs"));
 const config_1 = __importDefault(require("../../../config"));
+const Util_1 = __importDefault(require("../../util/Util"));
 exports.commands = [];
 const registeredGuilds = [];
 const rest = new rest_1.REST({ version: "9" }).setToken(config_1.default.token);
@@ -20,7 +20,7 @@ exports.default = async (interaction) => {
             content: "❌ Команды были выключены разработчиком. Если вы считаете, что это ошибка, обратитесь к нам: https://discord.gg/AaS4dwVHyA",
             ephemeral: true
         });
-    const gdb = await database_1.default.guild(interaction.guild.id);
+    const gdb = await Util_1.default.database.guild(interaction.guild.id);
     if (gdb.get().channel === interaction.channel.id)
         return await interaction.reply({ content: "❌ Команды недоступны в этом канале", ephemeral: true });
     const commandName = interaction.commandName;

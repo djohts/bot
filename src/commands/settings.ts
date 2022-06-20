@@ -24,12 +24,12 @@ export const options = new SlashCommandBuilder()
 export const permission = 2;
 
 import { CommandInteraction } from "discord.js";
-import db from "../database/";
+import Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction) => {
     const cmd = interaction.options.getSubcommand();
-    const gset = await db.settings(interaction.guild.id);
-    const gdb = await db.guild(interaction.guild.id);
+    const gset = await Util.database.settings(interaction.guild.id);
+    const gdb = await Util.database.guild(interaction.guild.id);
 
     if (cmd == "get") {
         await interaction.reply({

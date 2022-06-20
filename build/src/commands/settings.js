@@ -21,11 +21,11 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addSubcommand((c) => c.setName("counting").setDescription("Настройки модуля счёта.").addChannelOption((o) => o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelTypes(0)))
     .toJSON();
 exports.permission = 2;
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
     const cmd = interaction.options.getSubcommand();
-    const gset = await database_1.default.settings(interaction.guild.id);
-    const gdb = await database_1.default.guild(interaction.guild.id);
+    const gset = await Util_1.default.database.settings(interaction.guild.id);
+    const gdb = await Util_1.default.database.guild(interaction.guild.id);
     if (cmd == "get") {
         await interaction.reply({
             embeds: [{

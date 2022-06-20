@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 const constants_1 = require("../../constants/");
-const database_1 = __importDefault(require("../../database/"));
+const Util_1 = __importDefault(require("../../util/Util"));
 module.exports = (client) => Promise.all(client.guilds.cache.map(async (guild) => {
-    const gdb = await database_1.default.guild(guild.id);
+    const gdb = await Util_1.default.database.guild(guild.id);
     const { liveboard: { channel: channelId, message: messageId }, users } = gdb.get();
     if (channelId && messageId) {
         const channel = await client.channels.fetch(channelId).catch(() => null);

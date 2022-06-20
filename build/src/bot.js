@@ -36,16 +36,16 @@ exports.client = new types_1.ModifiedClient({
             }]
     }
 });
+exports.client.cfg = {
+    enslash: true,
+    enbr: true,
+    debug: false
+};
 exports.dokdo = new dokdo_1.default(exports.client, { aliases: ["d"], prefix: "!", noPerm: () => null });
 Util_1.default.setClient(exports.client).setDatabase(database_1.default);
 exports.shard = "[Shard N/A]";
 exports.linkRates = new Map();
 exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
-    exports.client.cfg = {
-        enslash: true,
-        enbr: true,
-        debug: false
-    };
     Util_1.default.setLavaManager((0, lava_1.default)(exports.client));
     let start = Date.now();
     exports.shard = `[Shard ${shardId}]`;
@@ -98,6 +98,10 @@ exports.client.on("error", (err) => console.error(exports.shard, `Client error. 
 exports.client.on("rateLimit", (rateLimitInfo) => console.warn(exports.shard, `Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
 exports.client.on("shardDisconnected", ({ code, reason }) => console.warn(exports.shard, `Disconnected. (${code} - ${reason})`));
 exports.client.on("warn", (info) => console.warn(exports.shard, `Warning. ${info}`));
+exports.client.on("debug", (info) => {
+    if (exports.client.cfg.debug)
+        console.debug(exports.shard, info);
+});
 database_1.default.connection.then(() => exports.client.login()).catch((e) => console.error(exports.shard, e));
 process.on("unhandledRejection", (e) => console.error(exports.shard, "unhandledRejection:", e));
 process.on("uncaughtException", (e) => console.error(exports.shard, "uncaughtException:", e));

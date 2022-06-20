@@ -14,14 +14,14 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addStringOption((o) => o.setName("id").setDescription("Id потока, который нужно удалить. (/flows list)").setRequired(true)))
     .toJSON();
 exports.permission = 2;
-const database_1 = __importDefault(require("../database/"));
 const discord_js_1 = require("discord.js");
 const constants_1 = require("../constants/");
 const walkthrough_1 = require("../constants/flows/walkthrough");
 const flows_1 = __importDefault(require("../constants/flows/"));
+const Util_1 = __importDefault(require("../util/Util"));
 const { limitFlows, limitTriggers, limitActions } = flows_1.default;
 const run = async (interaction) => {
-    const gdb = await database_1.default.guild(interaction.guild.id);
+    const gdb = await Util_1.default.database.guild(interaction.guild.id);
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
     if (cmd == "create") {
@@ -105,7 +105,7 @@ const run = async (interaction) => {
         channel.delete();
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
-            database_1.default.global.addToArray("generatedIds", flowId);
+            Util_1.default.database.global.addToArray("generatedIds", flowId);
             await interaction.editReply("✅ Поток был успешно создан.");
         }
         else
@@ -116,7 +116,7 @@ const run = async (interaction) => {
         if (!flows[flowId])
             return await interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
         gdb.removeFromObject("flows", flowId);
-        database_1.default.global.removeFromArray("generatedIds", flowId);
+        Util_1.default.database.global.removeFromArray("generatedIds", flowId);
         await interaction.reply({
             content: `✅ Поток \`${flowId}\` был удалён.`
         });

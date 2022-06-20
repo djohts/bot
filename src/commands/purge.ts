@@ -11,7 +11,7 @@ export const permission = 1;
 const cds = new Map<string, number>();
 import { Collection, CommandInteraction, Message } from "discord.js";
 import prettyMs from "pretty-ms";
-import db from "../database/";
+import Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction) => {
     if (cds.has(interaction.channel.id))
@@ -29,7 +29,7 @@ export const run = async (interaction: CommandInteraction) => {
 
     await interaction.deferReply();
 
-    const gsdb = await db.settings(interaction.guild.id);
+    const gsdb = await Util.database.settings(interaction.guild.id);
 
     const limit = interaction.options.getInteger("amount");
 

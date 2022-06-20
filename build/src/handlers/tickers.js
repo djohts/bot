@@ -2,7 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const utils_1 = require("./utils");
 const Util_1 = __importDefault(require("../util/Util"));
 function updatePresence() {
     Util_1.default.client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
@@ -17,7 +16,7 @@ function updatePresence() {
 }
 ;
 function checkBans() {
-    Promise.all(Util_1.default.client.guilds.cache.map((guild) => (0, utils_1.checkGuildBans)(guild)))
+    Promise.all(Util_1.default.client.guilds.cache.map((guild) => Util_1.default.func.checkGuildBans(guild)))
         .then(() => setTimeout(() => checkBans(), 10 * 1000));
 }
 ;

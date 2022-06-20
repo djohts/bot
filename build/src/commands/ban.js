@@ -18,7 +18,7 @@ const discord_js_1 = require("discord.js");
 const constants_1 = require("../constants/");
 const resolvers_1 = require("../constants/resolvers");
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
     const member = interaction.options.getMember("member");
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS") ||
@@ -28,7 +28,7 @@ const run = async (interaction) => {
         !(0, resolvers_1.parseTime)(interaction.options.getString("duration")))
         return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
     const bans = await interaction.guild.bans.fetch();
-    const guilddb = await database_1.default.guild(interaction.guild.id);
+    const guilddb = await Util_1.default.database.guild(interaction.guild.id);
     if (bans.has(member.user.id))
         return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
     if ((0, constants_1.getPermissionLevel)(member) >= (0, constants_1.getPermissionLevel)(interaction.member))

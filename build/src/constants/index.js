@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatScore = exports.generateID = exports.getPermissionLevel = void 0;
 const config_1 = __importDefault(require("../../config"));
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 const getPermissionLevel = (member) => {
     if (config_1.default.admins[0] == member.user.id)
         return 5;
@@ -21,7 +21,7 @@ exports.getPermissionLevel = getPermissionLevel;
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const generateID = () => {
     let id;
-    const { generatedIds } = database_1.default.global.get();
+    const { generatedIds } = Util_1.default.database.global.get();
     while (!id && generatedIds.includes(id)) {
         id = "";
         for (let i = 0; i < 10; i++)

@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 async function run(deleted) {
-    const gdb = await database_1.default.guild(deleted.guild.id);
+    const gdb = await Util_1.default.database.guild(deleted.guild.id);
     const { modules, channel, message, user, count } = gdb.get();
     if (channel === deleted.channel.id &&
         message === deleted.id &&

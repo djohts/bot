@@ -14,7 +14,7 @@ import { CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
 import { getPermissionLevel } from "../constants/";
 import { parseTime } from "../constants/resolvers";
 import prettyms from "pretty-ms";
-import db from "../database/";
+import Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
@@ -29,7 +29,7 @@ export const run = async (interaction: CommandInteraction) => {
     ) return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
-    const guilddb = await db.guild(interaction.guild.id);
+    const guilddb = await Util.database.guild(interaction.guild.id);
 
     if (bans.has(member.user.id))
         return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });

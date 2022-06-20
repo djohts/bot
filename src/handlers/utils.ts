@@ -1,5 +1,4 @@
-import { Guild, Message, TextChannel } from "discord.js";
-import db from "../database";
+import { Message, TextChannel } from "discord.js";
 const bulks = new Map<string, Message[]>(), rates = new Map<string, number>();
 
 export const deleteMessage = (message: Message) => {
@@ -20,21 +19,4 @@ export const deleteMessage = (message: Message) => {
             bulks.delete(message.channel.id);
         }, 5000);
     };
-};
-
-export const checkGuildBans = async (guild: Guild) => {
-    if (!guild.available) return;
-
-    const gdb = await db.guild(guild.id);
-    let { bans } = gdb.get();
-    let ids = Object.keys(bans).filter((key) => bans[key] !== -1 && bans[key] <= Date.now());
-    if (!ids.length) return;
-
-    await Promise.all(ids.map(async (key) => {
-        if (!guild.me.permissions.has("BAN_MEMBERS")) return;
-
-        await guild.bans.remove(key)
-            .then(() => gdb.removeFromObject("bans", key))
-            .catch(() => gdb.removeFromObject("bans", key));
-    }));
 };

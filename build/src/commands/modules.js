@@ -10,9 +10,9 @@ exports.options = new builders_1.SlashCommandBuilder()
     .setDescription("Настроить модули счёта.")
     .toJSON();
 exports.permission = 2;
-const database_1 = __importDefault(require("../database/"));
 const discord_js_1 = require("discord.js");
 const modules_1 = require("../constants/modules");
+const Util_1 = __importDefault(require("../util/Util"));
 const names = {
     "allow-spam": "Allow spam",
     "embed": "Embed",
@@ -20,7 +20,7 @@ const names = {
     "webhook": "Webhook"
 };
 const run = async (interaction) => {
-    const gdb = await database_1.default.guild(interaction.guild.id);
+    const gdb = await Util_1.default.database.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
     const m = await interaction.reply({
         content: "​",

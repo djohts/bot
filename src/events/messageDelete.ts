@@ -1,8 +1,8 @@
 import { Message } from "discord.js";
-import db from "../database/";
+import Util from "../util/Util";
 
 export async function run(deleted: Message) {
-    const gdb = await db.guild(deleted.guild.id);
+    const gdb = await Util.database.guild(deleted.guild.id);
     const { modules, channel, message, user, count } = gdb.get();
     if (
         channel === deleted.channel.id &&

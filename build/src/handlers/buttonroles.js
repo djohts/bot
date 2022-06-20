@@ -2,14 +2,14 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 module.exports = async (interaction) => {
     const member = interaction.member;
     const guild = interaction.guild;
     if (!guild.me.permissions.has("MANAGE_ROLES"))
         return await interaction.reply({ content: "❌ У меня нет прав на изменение ролей.", ephemeral: true });
     await interaction.deferReply({ ephemeral: true }).catch(() => null);
-    const gdb = await database_1.default.guild(guild.id);
+    const gdb = await Util_1.default.database.guild(guild.id);
     const { brs } = gdb.get();
     const iId = interaction.customId.slice(3);
     const rId = brs[iId];

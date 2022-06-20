@@ -17,13 +17,13 @@ exports.options = new builders_1.SlashCommandBuilder()
     .toJSON();
 exports.permission = 2;
 const discord_js_1 = require("discord.js");
-const database_1 = __importDefault(require("../database/"));
 const constants_1 = require("../constants/");
 const resolvers_1 = require("../constants/resolvers");
 const utils_1 = require("../handlers/utils");
+const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
-    const gdb = await database_1.default.guild(interaction.guild.id);
-    const addToGlobal = database_1.default.global.addToArray;
+    const gdb = await Util_1.default.database.guild(interaction.guild.id);
+    const addToGlobal = Util_1.default.database.global.addToArray;
     const cmd = interaction.options.getSubcommand();
     if (cmd == "create") {
         const channel = interaction.options.getChannel("channel");

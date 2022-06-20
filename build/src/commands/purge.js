@@ -14,7 +14,7 @@ exports.options = new builders_1.SlashCommandBuilder()
 exports.permission = 1;
 const cds = new Map();
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
     if (cds.has(interaction.channel.id))
         return await interaction.reply({
@@ -29,7 +29,7 @@ const run = async (interaction) => {
     if (!interaction.channel.permissionsFor(interaction.guild.me).has("MANAGE_MESSAGES"))
         return await interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
     await interaction.deferReply();
-    const gsdb = await database_1.default.settings(interaction.guild.id);
+    const gsdb = await Util_1.default.database.settings(interaction.guild.id);
     const limit = interaction.options.getInteger("amount");
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
     if (!gsdb.get().purgePinned)

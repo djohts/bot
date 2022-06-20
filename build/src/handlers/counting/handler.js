@@ -9,9 +9,9 @@ const constants_1 = require("../../constants");
 const flows_1 = __importDefault(require("../../constants/flows/"));
 const { limitFlows, limitTriggers, limitActions } = flows_1.default;
 const utils_1 = require("./../utils");
-const database_1 = __importDefault(require("../../database/"));
+const Util_1 = __importDefault(require("../../util/Util"));
 module.exports = async (message) => {
-    const gdb = await database_1.default.guild(message.guild.id);
+    const gdb = await Util_1.default.database.guild(message.guild.id);
     const permissionLevel = (0, constants_1.getPermissionLevel)(message.member), content = message.content;
     if (content.startsWith("!") && permissionLevel >= 1)
         return;

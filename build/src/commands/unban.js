@@ -11,12 +11,12 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addUserOption((o) => o.setName("user").setDescription("Пользователь, которого надо разбанить.").setRequired(true))
     .toJSON();
 exports.permission = 1;
-const database_1 = __importDefault(require("../database"));
+const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return await interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
     const bans = await interaction.guild.bans.fetch();
-    const gdb = await database_1.default.guild(interaction.guild.id);
+    const gdb = await Util_1.default.database.guild(interaction.guild.id);
     const user = interaction.options.getUser("user");
     if (!bans.has(user.id))
         return await interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true })

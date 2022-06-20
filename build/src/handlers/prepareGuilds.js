@@ -6,10 +6,10 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const utils_1 = require("./utils");
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
 const discord_js_1 = require("discord.js");
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 module.exports = async (guild) => {
-    await (0, utils_1.checkGuildBans)(guild);
-    const gdb = await database_1.default.guild(guild.id);
+    await Util_1.default.func.checkGuildBans(guild);
+    const gdb = await Util_1.default.database.guild(guild.id);
     const { channel: channelId, message: messageId } = gdb.get();
     let alert;
     try {

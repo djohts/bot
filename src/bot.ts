@@ -30,17 +30,17 @@ export const client = new ModifiedClient({
         }]
     }
 });
+client.cfg = {
+    enslash: true,
+    enbr: true,
+    debug: false
+};
 export const dokdo = new Dokdo(client, { aliases: ["d"], prefix: "!", noPerm: () => null });
 Util.setClient(client).setDatabase(db);
 
 export let shard = "[Shard N/A]";
 export const linkRates = new Map<string, Set<string>>();
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
-    client.cfg = {
-        enslash: true,
-        enbr: true,
-        debug: false
-    };
     Util.setLavaManager(lavaHandler(client));
     let start = Date.now();
     shard = `[Shard ${shardId}]`;
@@ -99,6 +99,10 @@ client.on("error", (err) => console.error(shard, `Client error. ${inspect(err)}`
 client.on("rateLimit", (rateLimitInfo) => console.warn(shard, `Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
 client.on("shardDisconnected", ({ code, reason }) => console.warn(shard, `Disconnected. (${code} - ${reason})`));
 client.on("warn", (info) => console.warn(shard, `Warning. ${info}`));
+
+client.on("debug", (info) => {
+    if (client.cfg.debug) console.debug(shard, info);
+});
 
 db.connection.then(() => client.login()).catch((e) => console.error(shard, e));
 

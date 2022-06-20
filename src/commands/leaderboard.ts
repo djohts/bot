@@ -6,12 +6,12 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 0
 
-import db from "../database/";
 import { CommandInteraction } from "discord.js";
 import { formatScore } from "../constants/";
+import Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction) => {
-    const gdb = await db.guild(interaction.guild.id);
+    const gdb = await Util.database.guild(interaction.guild.id);
     const { users, channel } = gdb.get();
     const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);
     const top = sorted.slice(0, 25);

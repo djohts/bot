@@ -1,5 +1,5 @@
 import { ButtonInteraction, GuildMember } from "discord.js";
-import db from "../database/";
+import Util from "../util/Util";
 
 export = async (interaction: ButtonInteraction) => {
     const member = interaction.member as GuildMember;
@@ -10,7 +10,7 @@ export = async (interaction: ButtonInteraction) => {
 
     await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
-    const gdb = await db.guild(guild.id);
+    const gdb = await Util.database.guild(guild.id);
     const { brs } = gdb.get();
     const iId = interaction.customId.slice(3);
     const rId = brs[iId];

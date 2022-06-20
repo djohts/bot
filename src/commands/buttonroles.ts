@@ -39,14 +39,14 @@ import {
     InteractionReplyOptions,
     InteractionUpdateOptions
 } from "discord.js";
-import db from "../database/";
 import { generateID } from "../constants/";
 import { paginate } from "../constants/resolvers";
 import { deleteMessage } from "../handlers/utils";
+import Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction) => {
-    const gdb = await db.guild(interaction.guild.id);
-    const addToGlobal = db.global.addToArray;
+    const gdb = await Util.database.guild(interaction.guild.id);
+    const addToGlobal = Util.database.global.addToArray;
     const cmd = interaction.options.getSubcommand();
 
     if (cmd == "create") {

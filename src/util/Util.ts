@@ -1,7 +1,7 @@
 import { ModifiedClient } from "../constants/types";
 import { inspect } from "util";
 import { Manager, Player } from "erela.js";
-import { Collection, GuildMember, Message } from "discord.js";
+import { Collection, Guild, GuildMember, Message } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 
@@ -101,6 +101,22 @@ class Util {
 
                 await channel.edit({ name: newtext });
             };
+        },
+        checkGuildBans: async (guild: Guild) => {
+            if (!guild.available) return;
+
+            const gdb = await this.database.guild(guild.id);
+            let { bans } = gdb.get();
+            let ids = Object.keys(bans).filter((key) => bans[key] !== -1 && bans[key] <= Date.now());
+            if (!ids.length) return;
+
+            await Promise.all(ids.map(async (key) => {
+                if (!guild.me.permissions.has("BAN_MEMBERS")) return;
+
+                await guild.bans.remove(key)
+                    .then(() => gdb.removeFromObject("bans", key))
+                    .catch(() => gdb.removeFromObject("bans", key));
+            }));
         }
     };
 

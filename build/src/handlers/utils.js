@@ -1,10 +1,6 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkGuildBans = exports.deleteMessage = void 0;
-const database_1 = __importDefault(require("../database"));
+exports.deleteMessage = void 0;
 const bulks = new Map(), rates = new Map();
 const deleteMessage = (message) => {
     if (!message.channel)
@@ -29,20 +25,3 @@ const deleteMessage = (message) => {
     ;
 };
 exports.deleteMessage = deleteMessage;
-const checkGuildBans = async (guild) => {
-    if (!guild.available)
-        return;
-    const gdb = await database_1.default.guild(guild.id);
-    let { bans } = gdb.get();
-    let ids = Object.keys(bans).filter((key) => bans[key] !== -1 && bans[key] <= Date.now());
-    if (!ids.length)
-        return;
-    await Promise.all(ids.map(async (key) => {
-        if (!guild.me.permissions.has("BAN_MEMBERS"))
-            return;
-        await guild.bans.remove(key)
-            .then(() => gdb.removeFromObject("bans", key))
-            .catch(() => gdb.removeFromObject("bans", key));
-    }));
-};
-exports.checkGuildBans = checkGuildBans;

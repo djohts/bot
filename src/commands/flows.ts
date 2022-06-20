@@ -12,15 +12,15 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 2;
 
-import db from "../database/";
 import { CommandInteraction, MessageActionRow, MessageButton, TextChannel } from "discord.js";
 import { generateID } from "../constants/";
 import { flowWalkthrough, formatExplanation } from "../constants/flows/walkthrough";
 import limits from "../constants/flows/";
+import Util from "../util/Util";
 const { limitFlows, limitTriggers, limitActions } = limits;
 
 export const run = async (interaction: CommandInteraction) => {
-    const gdb = await db.guild(interaction.guild.id);
+    const gdb = await Util.database.guild(interaction.guild.id);
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
     if (cmd == "create") {
@@ -114,7 +114,7 @@ export const run = async (interaction: CommandInteraction) => {
         channel.delete();
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
-            db.global.addToArray("generatedIds", flowId);
+            Util.database.global.addToArray("generatedIds", flowId);
 
             await interaction.editReply("✅ Поток был успешно создан.");
         } else await interaction.editReply("❌ Создание потока было отменено.");
@@ -123,7 +123,7 @@ export const run = async (interaction: CommandInteraction) => {
         if (!flows[flowId]) return await interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
 
         gdb.removeFromObject("flows", flowId);
-        db.global.removeFromArray("generatedIds", flowId);
+        Util.database.global.removeFromArray("generatedIds", flowId);
 
         await interaction.reply({
             content: `✅ Поток \`${flowId}\` был удалён.`

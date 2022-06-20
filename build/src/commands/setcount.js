@@ -11,9 +11,9 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addIntegerOption((o) => o.setName("count").setDescription("Новый счёт.").setRequired(true).setMinValue(0))
     .toJSON();
 exports.permission = 1;
-const database_1 = __importDefault(require("../database/"));
+const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
-    const gdb = await database_1.default.guild(interaction.guild.id);
+    const gdb = await Util_1.default.database.guild(interaction.guild.id);
     const count = interaction.options.getInteger("count");
     gdb.set("count", count);
     await interaction.reply({ content: `✅ Новый текущий счёт - **\`${count}\`**.` });

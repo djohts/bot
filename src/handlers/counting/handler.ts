@@ -6,10 +6,10 @@ import { getPermissionLevel } from "../../constants";
 import limits from "../../constants/flows/";
 const { limitFlows, limitTriggers, limitActions } = limits;
 import { deleteMessage } from "./../utils";
-import db from "../../database/";
+import Util from "../../util/Util";
 
 export = async (message: Message) => {
-    const gdb = await db.guild(message.guild.id);
+    const gdb = await Util.database.guild(message.guild.id);
     const permissionLevel = getPermissionLevel(message.member), content = message.content;
     if (content.startsWith("!") && permissionLevel >= 1) return;
     let { count, user, modules, flows, users: scores } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);

@@ -1,12 +1,12 @@
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-import { checkGuildBans, deleteMessage } from "./utils";
+import { deleteMessage } from "./utils";
 import prettyms from "pretty-ms";
 import { Guild, Message, TextChannel } from "discord.js";
-import db from "../database/";
+import Util from "../util/Util";
 
 export = async (guild: Guild) => {
-    await checkGuildBans(guild);
-    const gdb = await db.guild(guild.id);
+    await Util.func.checkGuildBans(guild);
+    const gdb = await Util.database.guild(guild.id);
     const { channel: channelId, message: messageId } = gdb.get();
     let alert: Message | null;
 

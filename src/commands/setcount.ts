@@ -8,10 +8,10 @@ export const options = new SlashCommandBuilder()
 export const permission = 1;
 
 import { CommandInteraction } from "discord.js";
-import db from "../database/";
+import Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction) => {
-    const gdb = await db.guild(interaction.guild.id);
+    const gdb = await Util.database.guild(interaction.guild.id);
     const count = interaction.options.getInteger("count");
 
     gdb.set("count", count);

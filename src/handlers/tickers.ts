@@ -1,4 +1,3 @@
-import { checkGuildBans } from "./utils";
 import Util from "../util/Util";
 
 export = () => {
@@ -21,7 +20,7 @@ function updatePresence() {
 };
 
 function checkBans() {
-    Promise.all(Util.client.guilds.cache.map((guild) => checkGuildBans(guild)))
+    Promise.all(Util.client.guilds.cache.map((guild) => Util.func.checkGuildBans(guild)))
         .then(() => setTimeout(() => checkBans(), 10 * 1000));
 };
 
