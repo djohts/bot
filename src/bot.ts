@@ -41,7 +41,6 @@ Util.setClient(client).setDatabase(db);
 export let shard = "[Shard N/A]";
 export const linkRates = new Map<string, Set<string>>();
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
-    Util.setLavaManager(lavaHandler(client));
     let start = Date.now();
     shard = `[Shard ${shardId}]`;
 
@@ -79,6 +78,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     console.log(`${shard} All ${client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
 
     tickers();
+    Util.setLavaManager(lavaHandler(client));
 
     client.loading = false;
     console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);

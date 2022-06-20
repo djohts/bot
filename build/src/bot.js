@@ -46,7 +46,6 @@ Util_1.default.setClient(exports.client).setDatabase(database_1.default);
 exports.shard = "[Shard N/A]";
 exports.linkRates = new Map();
 exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
-    Util_1.default.setLavaManager((0, lava_1.default)(exports.client));
     let start = Date.now();
     exports.shard = `[Shard ${shardId}]`;
     exports.client.loading = true;
@@ -78,6 +77,7 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     clearInterval(presenceInterval);
     console.log(`${exports.shard} All ${exports.client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
     (0, tickers_1.default)();
+    Util_1.default.setLavaManager((0, lava_1.default)(exports.client));
     exports.client.loading = false;
     console.log(`${exports.shard} Ready in ${(0, pretty_ms_1.default)(Date.now() - start)}`);
 });
