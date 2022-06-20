@@ -11,7 +11,7 @@ const gSetObject = {
     voices: { enabled: false, lobby: "", parent: "" }
 } as GSetObject;
 
-const gSetSchema = new Schema(gSetObject as any, { minimize: true });
+const gSetSchema = new Schema(gSetObject, { minimize: true });
 const GSet = model("GSet", gSetSchema);
 
 const get = (guildid: string) => new Promise((resolve, reject) => GSet.findOne({ guildid }, (err: Error, guild: any) => {

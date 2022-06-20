@@ -10,7 +10,7 @@ import db from "../database/";
 import { CommandInteraction } from "discord.js";
 import { formatScore } from "../constants/";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const gdb = await db.guild(interaction.guild.id);
     const { users, channel } = gdb.get();
     const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);

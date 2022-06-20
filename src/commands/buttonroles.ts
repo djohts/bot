@@ -44,7 +44,7 @@ import { generateID } from "../constants/";
 import { paginate } from "../constants/resolvers";
 import { deleteMessage } from "../handlers/utils";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const gdb = await db.guild(interaction.guild.id);
     const addToGlobal = db.global.addToArray;
     const cmd = interaction.options.getSubcommand();

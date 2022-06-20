@@ -10,7 +10,7 @@ export const permission = 4;
 import { CommandInteraction, MessageActionRow, MessageButton } from "discord.js";
 import _Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     await interaction.deferReply();
 
     try {

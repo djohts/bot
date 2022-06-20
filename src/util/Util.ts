@@ -1,7 +1,7 @@
 import { ModifiedClient } from "../constants/types";
 import { inspect } from "util";
 import { Manager, Player } from "erela.js";
-import { Message } from "discord.js";
+import { Collection, GuildMember, Message } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 
@@ -63,6 +63,44 @@ class Util {
                     }]
                 });
             } catch { return; };
+        },
+        updateGuildStatsChannels: async (guildId: string): Promise<void> => {
+            const guild = this.client.guilds.cache.get(guildId);
+            if (!guild) return;
+            const gdb = await this._database.guild(guildId);
+            let { statschannels } = gdb.get();
+            if (!Object.keys(statschannels).length) return;
+
+            const whethertofetchmembers = Object.values(statschannels).some((x) => x.includes("{users}") || x.includes("{bots}"));
+
+            let fetchedMembers: null | Collection<string, GuildMember> = null;
+            if (whethertofetchmembers) fetchedMembers = await guild.members.fetch({ force: true, time: 10_000 });
+
+            const statsdata = {
+                members: guild.memberCount,
+                channels: guild.channels.cache.size,
+                roles: guild.roles.cache.size,
+                users: fetchedMembers?.filter((m) => !m.user.bot).size,
+                bots: fetchedMembers?.filter((m) => m.user.bot).size
+            };
+
+            for (const [channelId, text] of Object.entries(statschannels)) {
+                const channel = guild.channels.cache.get(channelId);
+                if (!channel) {
+                    gdb.removeFromObject("statschannels", channelId);
+                    continue;
+                };
+                let newtext = text
+                    .replace(/\{members\}/g, statsdata.members.toString())
+                    .replace(/\{channels\}/g, statsdata.channels.toString())
+                    .replace(/\{roles\}/g, statsdata.roles.toString());
+
+                if (whethertofetchmembers) newtext = newtext
+                    .replace(/\{users\}/g, statsdata.users.toString())
+                    .replace(/\{bots\}/g, statsdata.bots.toString());
+
+                await channel.edit({ name: newtext });
+            };
         }
     };
 

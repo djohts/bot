@@ -26,7 +26,7 @@ export const permission = 2;
 import { CommandInteraction } from "discord.js";
 import db from "../database/";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const cmd = interaction.options.getSubcommand();
     const gset = await db.settings(interaction.guild.id);
     const gdb = await db.guild(interaction.guild.id);

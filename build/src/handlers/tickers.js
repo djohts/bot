@@ -4,21 +4,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const utils_1 = require("./utils");
 const Util_1 = __importDefault(require("../util/Util"));
-function updatePresence(client) {
-    client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
+function updatePresence() {
+    Util_1.default.client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
         const aaaaaaa = gc <= 400 ? "400" : gc <= 500 ? "500" : gc <= 600 ? "600" : gc <= 700 ? "700" : gc <= 800 ? "800" : gc <= 900 ? "900" : "1000";
-        client.user.setPresence({
+        Util_1.default.client.user.setPresence({
             status: "idle",
             activities: [{ type: "PLAYING", name: `${aaaaaaa}? -> | ${gc} guilds` }],
         });
-        setTimeout(() => updatePresence(client), 5 * 60 * 1000);
+        setTimeout(() => updatePresence(), 5 * 60 * 1000);
     });
 }
 ;
-function checkBans(client) {
-    Promise.all(client.guilds.cache.map((guild) => (0, utils_1.checkGuildBans)(guild)))
-        .then(() => setTimeout(() => checkBans(client), 10 * 1000));
+function checkBans() {
+    Promise.all(Util_1.default.client.guilds.cache.map((guild) => (0, utils_1.checkGuildBans)(guild)))
+        .then(() => setTimeout(() => checkBans(), 10 * 1000));
 }
 ;
 function tickMusicPlayers() {
@@ -26,8 +26,14 @@ function tickMusicPlayers() {
         .then(() => setTimeout(() => tickMusicPlayers(), 10 * 1000));
 }
 ;
-module.exports = (client) => {
-    updatePresence(client);
-    checkBans(client);
+function updateGuildStatsChannels() {
+    Promise.all(Util_1.default.client.guilds.cache.map((guild) => Util_1.default.func.updateGuildStatsChannels(guild.id)))
+        .then(() => setTimeout(() => updateGuildStatsChannels(), 10 * 60 * 1000));
+}
+;
+module.exports = () => {
+    updatePresence();
+    checkBans();
     tickMusicPlayers();
+    updateGuildStatsChannels();
 };

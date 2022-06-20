@@ -77,7 +77,7 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     disabledGuilds = undefined;
     clearInterval(presenceInterval);
     console.log(`${exports.shard} All ${exports.client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
-    (0, tickers_1.default)(exports.client);
+    (0, tickers_1.default)();
     exports.client.loading = false;
     console.log(`${exports.shard} Ready in ${(0, pretty_ms_1.default)(Date.now() - start)}`);
 });

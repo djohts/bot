@@ -9,7 +9,7 @@ export const permission = 0;
 import prettyms from "pretty-ms";
 import { CommandInteraction } from "discord.js";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const server = Date.now() - interaction.createdTimestamp;
     const uptime = prettyms(interaction.client.uptime);
     const api = interaction.guild.shard.ping;

@@ -13,7 +13,7 @@ import Util from "../util/Util.js";
 import { version } from "discord.js";
 let guilds = 0, users = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;
 

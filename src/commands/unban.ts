@@ -10,7 +10,7 @@ export const permission = 1;
 import { CommandInteraction } from "discord.js";
 import db from "../database";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
         return await interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
 

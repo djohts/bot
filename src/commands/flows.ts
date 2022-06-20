@@ -19,7 +19,7 @@ import { flowWalkthrough, formatExplanation } from "../constants/flows/walkthrou
 import limits from "../constants/flows/";
 const { limitFlows, limitTriggers, limitActions } = limits;
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const gdb = await db.guild(interaction.guild.id);
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();

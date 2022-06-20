@@ -16,7 +16,7 @@ import { parseTime } from "../constants/resolvers";
 import prettyms from "pretty-ms";
 import db from "../database/";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
 
     if (

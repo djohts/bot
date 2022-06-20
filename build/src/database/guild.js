@@ -19,7 +19,8 @@ const guildObject = {
     log: {},
     brcs: {},
     brms: {},
-    brs: {}
+    brs: {},
+    statschannels: {}
 };
 const guildSchema = new mongoose_1.Schema(guildObject, { minimize: true });
 const Guild = (0, mongoose_1.model)("Guild", guildSchema);

@@ -2,7 +2,7 @@ import { AnyChannel, Message, TextChannel } from "discord.js";
 import Util from "../util/Util";
 
 export const name = "channelDelete";
-export const run = async (channel: AnyChannel): Promise<any> => {
+export const run = async (channel: AnyChannel) => {
     if (channel.type === "DM") return;
 
     const player = Util.lava.get(channel.guild.id);

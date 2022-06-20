@@ -9,7 +9,7 @@ const globalObject = {
     generatedIds: []
 } as GlobalObject;
 
-const globalSchema = new Schema(globalObject as any, { minimize: true });
+const globalSchema = new Schema(globalObject, { minimize: true });
 const Global = model("Global", globalSchema);
 
 const get = () => new Promise((resolve, reject) => Global.findOne({}, (err: Error, global: any) => {

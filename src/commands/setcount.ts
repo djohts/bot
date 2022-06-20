@@ -10,7 +10,7 @@ export const permission = 1;
 import { CommandInteraction } from "discord.js";
 import db from "../database/";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const gdb = await db.guild(interaction.guild.id);
     const count = interaction.options.getInteger("count");
 

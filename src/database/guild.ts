@@ -23,10 +23,11 @@ const guildObject = {
     // buttonroles
     brcs: {},
     brms: {},
-    brs: {}
+    brs: {},
+    statschannels: {}
 } as GuildObject;
 
-const guildSchema = new Schema(guildObject as any, { minimize: true });
+const guildSchema = new Schema(guildObject, { minimize: true });
 const Guild = model("Guild", guildSchema);
 
 const get = (guildid: string) => new Promise((resolve, reject) => Guild.findOne({ guildid }, (err: Error, guild: any) => {

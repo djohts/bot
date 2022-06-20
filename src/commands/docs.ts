@@ -8,7 +8,7 @@ export const permission = 0;
 
 import { CommandInteraction } from "discord.js";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     await interaction.reply({
         content: "Документация: https://djoh.gitbook.io/djoho-bot",
         ephemeral: true

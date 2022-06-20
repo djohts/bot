@@ -10,7 +10,7 @@ export const permission = 0;
 import { CommandInteraction, GuildMember } from "discord.js";
 import Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const member = interaction.member as GuildMember;
     const volume = interaction.options.getInteger("volume");
 

@@ -91,6 +91,44 @@ class Util {
                 return;
             }
             ;
+        },
+        updateGuildStatsChannels: async (guildId) => {
+            const guild = this.client.guilds.cache.get(guildId);
+            if (!guild)
+                return;
+            const gdb = await this._database.guild(guildId);
+            let { statschannels } = gdb.get();
+            if (!Object.keys(statschannels).length)
+                return;
+            const whethertofetchmembers = Object.values(statschannels).some((x) => x.includes("{users}") || x.includes("{bots}"));
+            let fetchedMembers = null;
+            if (whethertofetchmembers)
+                fetchedMembers = await guild.members.fetch({ force: true, time: 10000 });
+            const statsdata = {
+                members: guild.memberCount,
+                channels: guild.channels.cache.size,
+                roles: guild.roles.cache.size,
+                users: fetchedMembers?.filter((m) => !m.user.bot).size,
+                bots: fetchedMembers?.filter((m) => m.user.bot).size
+            };
+            for (const [channelId, text] of Object.entries(statschannels)) {
+                const channel = guild.channels.cache.get(channelId);
+                if (!channel) {
+                    gdb.removeFromObject("statschannels", channelId);
+                    continue;
+                }
+                ;
+                let newtext = text
+                    .replace(/\{members\}/g, statsdata.members.toString())
+                    .replace(/\{channels\}/g, statsdata.channels.toString())
+                    .replace(/\{roles\}/g, statsdata.roles.toString());
+                if (whethertofetchmembers)
+                    newtext = newtext
+                        .replace(/\{users\}/g, statsdata.users.toString())
+                        .replace(/\{bots\}/g, statsdata.bots.toString());
+                await channel.edit({ name: newtext });
+            }
+            ;
         }
     };
     setClient(client) {

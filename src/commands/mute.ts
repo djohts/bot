@@ -13,7 +13,7 @@ import { CommandInteraction, GuildMember } from "discord.js";
 import { getPermissionLevel } from "../constants/";
 import { parseTime } from "../constants/resolvers";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
     const timeString = interaction.options.getString("time");
     const reason = interaction.options.getString("reason");

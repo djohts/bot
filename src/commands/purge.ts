@@ -13,7 +13,7 @@ import { Collection, CommandInteraction, Message } from "discord.js";
 import prettyMs from "pretty-ms";
 import db from "../database/";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     if (cds.has(interaction.channel.id))
         return await interaction.reply({
             content: `❌ Подождите ещё ${prettyMs(cds.get(interaction.channel.id) - Date.now())} перед повторным использованем команды.`,

@@ -10,7 +10,7 @@ export const permission = 1;
 
 import { CommandInteraction, GuildMember } from "discord.js";
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
     const reason = interaction.options.getString("reason");
 

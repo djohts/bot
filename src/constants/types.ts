@@ -90,7 +90,8 @@ export interface GuildObject {
     log: object,
     brcs: object,
     brms: object,
-    brs: object
+    brs: object,
+    statschannels: { [channelId: string]: string },
 }
 
 export interface GSetObject {

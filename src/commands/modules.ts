@@ -16,7 +16,7 @@ const names = {
     "webhook": "Webhook"
 };
 
-export const run = async (interaction: CommandInteraction): Promise<any> => {
+export const run = async (interaction: CommandInteraction) => {
     const gdb = await db.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
 
