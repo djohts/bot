@@ -74,7 +74,7 @@ class Util {
             const whethertofetchmembers = Object.values(statschannels).some((x) => x.includes("{users}") || x.includes("{bots}"));
 
             let fetchedMembers: null | Collection<string, GuildMember> = null;
-            if (whethertofetchmembers) fetchedMembers = await guild.members.fetch({ force: true, time: 10_000 });
+            if (whethertofetchmembers) fetchedMembers = await guild.members.fetch({ force: true, time: 30_000 });
 
             const statsdata = {
                 members: guild.memberCount,
