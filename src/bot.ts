@@ -77,8 +77,8 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     clearInterval(presenceInterval);
     console.log(`${shard} All ${client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
 
-    tickers();
     Util.setLavaManager(lavaHandler(client));
+    tickers();
 
     client.loading = false;
     console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);
