@@ -21,8 +21,11 @@ function checkBans() {
 }
 ;
 function tickMusicPlayers() {
-    Promise.all(Util_1.default.lava.players.map((player) => Util_1.default.func.tickMusicPlayers(player)))
-        .then(() => setTimeout(() => tickMusicPlayers(), 10 * 1000));
+    if (Util_1.default.lava)
+        Promise.all(Util_1.default.lava.players.map((player) => Util_1.default.func.tickMusicPlayers(player)))
+            .then(() => setTimeout(() => tickMusicPlayers(), 10 * 1000));
+    else
+        setTimeout(() => tickMusicPlayers(), 10 * 1000);
 }
 ;
 function updateGuildStatsChannels() {
