@@ -21,8 +21,12 @@ const run = async (interaction) => {
         return await interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
     await interaction.deferReply();
     const res = await Util_1.default.lava.search(interaction.options.getString("query").trim(), interaction.user);
-    if (!res.tracks.length)
-        return await interaction.editReply("❌ По вашему запросу не удалось ничего найти.");
+    if (!res.tracks.length) {
+        await interaction.editReply("❌ По вашему запросу не удалось ничего найти.");
+        setTimeout(async () => await interaction.deleteReply().catch(() => { }), 20 * 1000);
+        return;
+    }
+    ;
     const player = Util_1.default.lava.create({
         guild: interaction.guildId,
         voiceChannel: member.voice.channelId,
@@ -35,8 +39,11 @@ const run = async (interaction) => {
         player.connect();
     }
     ;
-    if (player.queue.totalSize + 1 > 25)
-        return await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");
+    if (player.queue.totalSize + 1 > 25) {
+        await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");
+        setTimeout(async () => await interaction.deleteReply().catch(() => { }), 20 * 1000);
+        return;
+    }
     else
         player.queue.add(res.tracks[0]);
     await interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
@@ -44,6 +51,6 @@ const run = async (interaction) => {
         !player.paused &&
         (!player.queue.size || player.queue.totalSize === res.tracks.length))
         player.play();
-    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
+    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 20 * 1000);
 };
 exports.run = run;
