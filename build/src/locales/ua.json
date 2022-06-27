@@ -1,0 +1,12 @@
+{
+    "commands": {},
+    "handlers": {
+        "prepareGuilds": {
+            "in_process": "",
+            "in_process_time": "",
+            "done": "",
+            "error": ""
+        }
+    },
+    "generic": {}
+}
