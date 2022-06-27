@@ -1,0 +1,12 @@
+{
+    "commands": {},
+    "handlers": {
+        "prepareGuilds": {
+            "in_process": "💢 Preparing this channel for counting...",
+            "in_process_time": "💢 Preparing this channel for counting... **`[{timestring}]`**",
+            "done": "🔰 Channel is ready for counting! **`[{timestring}]`**",
+            "error": "❌ Something went wrong while processing this channel."
+        }
+    },
+    "generic": {}
+}

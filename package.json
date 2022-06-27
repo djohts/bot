@@ -6,7 +6,7 @@
         "launch": "npm run build && node .",
         "build": "npx tsc && npm run copy",
         "minify": "node minify.js",
-        "copy": "npx copyfiles \"src/web/views/**/*!(.ts)\" build",
+        "copy": "npx copyfiles \"src/**/*.!(ts)\" build",
         "watch": "tsc -w"
     },
     "repository": {
@@ -25,6 +25,7 @@
     "dependencies": {
         "@discordjs/builders": "^0.15.0",
         "@discordjs/rest": "^0.5.0",
+        "@eartharoid/i18n": "^1.0.4",
         "@fastify/cookie": "^7.0.0",
         "@fastify/session": "^9.0.0",
         "@fastify/view": "^7.0.0",
@@ -33,12 +34,12 @@
         "discord-api-types": "^0.35.0",
         "discord-logs": "^2.0.1",
         "discord-oauth2": "^2.10.0",
-        "discord.js": "^13.6.0",
+        "discord.js": "^13.8.1",
         "dokdo": "^0.5.1",
         "ejs": "^3.1.6",
         "erela.js": "github:menudocs/erela.js#build",
-        "fastify": "^4.0.3",
-        "mongoose": "^6.4.0",
+        "fastify": "^4.1.0",
+        "mongoose": "^6.4.1",
         "node-abort-controller": "^3.0.1",
         "nodejs-better-console": "^1.0.2",
         "pretty-ms": "^7.0.1",
