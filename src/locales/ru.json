@@ -1,6 +1,32 @@
 {
     "commands": {},
     "handlers": {
+        "interactions": {
+            "buttons": {
+                "no": "❌ You can't use this."
+            },
+            "index": {
+                "bot_loading": "🌀 I'm still loading, please give me some time..."
+            },
+            "slash": {
+                "no_commands": "❌ Commands were disabled by developer. Join {link} for further information.",
+                "channel": "❌ Commands are disabled in this channel.",
+                "noperm": "❌ You don't have permission to use this command."
+            }
+        },
+        "buttonroles": {
+            "noperm": "❌ I don't have enough permissions to change roles.",
+            "no_role": "❌ Role not found.",
+            "rolepos": "❌ Role position is too high. Role: {role}, bot: {bot}",
+            "added": "✅ Role added: {role}.",
+            "removed": "✅ Role removed: {role}.",
+            "error": "❌ An error occured. Please contact the developer."
+        },
+        "lava": {
+            "empty_vc": "♻️ All users have left the voice channel. Stopping the player.",
+            "loading": "⏳ Loading...",
+            "empty_queue": "♻️ Player reached the end of the queue. Stopping."
+        },
         "prepareGuilds": {
             "in_process": "💢 Подготовка этого канала к счету...",
             "in_process_time": "💢 Подготовка этого канала к счёту... **`[{timestring}]`**",
