@@ -2,7 +2,7 @@
     "commands": {},
     "handlers": {
         "prepareGuilds": {
-            "in_process": "💢 Preparing this channel for counting...",
+            "in_process": "💢 Подготовка этого канала к счету...",
             "in_process_time": "💢 Preparing this channel for counting... **`[{timestring}]`**",
             "done": "🔰 Channel is ready for counting! **`[{timestring}]`**",
             "error": "❌ Что-то пошло не так во время обработки этого канала."
