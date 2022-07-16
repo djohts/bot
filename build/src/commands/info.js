@@ -22,8 +22,8 @@ const run = async (interaction) => {
         users = await interaction.client.shard.broadcastEval((bot) => bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)).then((res) => res.reduce((prev, val) => prev + val, 0));
         shardCount = interaction.client.shard.count;
         const { rss, heapUsed } = process.memoryUsage();
-        memoryUsageGlobal = Util_js_1.default.prettyBytes(rss, { maximumFractionDigits: 2 });
-        memoryUsage = Util_js_1.default.prettyBytes(heapUsed, { maximumFractionDigits: 2 });
+        memoryUsageGlobal = Util_js_1.default.prettyBytes(rss, 2);
+        memoryUsage = Util_js_1.default.prettyBytes(heapUsed, 2);
     }
     ;
     await interaction.reply({

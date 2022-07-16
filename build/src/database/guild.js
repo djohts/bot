@@ -6,6 +6,7 @@ const time_1 = require("../constants/time");
 const dbCache = new Map(), dbSaveQueue = new Map();
 const guildObject = {
     guildid: "",
+    locale: "",
     voices: {},
     bans: {},
     channel: "",

@@ -27,7 +27,7 @@ export = (client: ModifiedClient) => new Manager({
         const text = client.channels.cache.get(player.textChannel) as TextChannel;
 
         try {
-            await text?.send(`\`${track.title}\` got stuck.`);
+            await text.send(`\`${track.title}\` got stuck.`);
         } catch { };
     })
     .on("nodeConnect", ({ options }) => console.log(`${shard} Lava ${options.host}:${options.port} connected.`))

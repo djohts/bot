@@ -10,6 +10,7 @@ export async function run(member: GuildMember, oldChannel: VoiceChannel | StageC
         await oldChannel.delete().catch(() => null);
         gdb.removeFromObject("voices", oldChannel.id);
     };
+
     if (voices.lobby === newChannel.id && voices.enabled) {
         await member.guild.channels.create("Комната " + member.user.tag, {
             type: "GUILD_VOICE",

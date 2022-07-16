@@ -5,8 +5,8 @@ import { Guild, Message, TextChannel } from "discord.js";
 import Util from "../util/Util";
 
 export = async (guild: Guild) => {
-    await Util.func.checkGuildBans(guild);
     const gdb = await Util.database.guild(guild.id);
+    await Util.func.checkGuildBans(guild);
     const { channel: channelId, message: messageId } = gdb.get();
     let alert: Message | null;
 
@@ -30,7 +30,7 @@ export = async (guild: Guild) => {
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
                 while (processing && !fail) {
-                    messages = messages.filter((m) => m.id !== alert.id && m.id !== messageId);
+                    messages = messages.filter((m) => m.id !== alert.id);
                     if (!messages.size) processing = false;
                     else {
                         await channel.bulkDelete(messages).catch(() => fail = true);
@@ -38,7 +38,7 @@ export = async (guild: Guild) => {
                     };
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { fail = true; return null; });
-                        if (messages.filter((m) => m.id !== alert.id).size) await sleep(3500);
+                        if (messages?.filter((m) => m.id !== alert.id).size) await sleep(3500);
                     };
                 };
 
@@ -50,7 +50,7 @@ export = async (guild: Guild) => {
             };
         };
     } catch (e) {
-        console.log(e);
+        console.error(e);
         alert.edit("❌ Что-то пошло не так при подготовке канала.")
             .then(() => setTimeout(() => deleteMessage(alert), 10 * 1000))
             .catch(() => null);

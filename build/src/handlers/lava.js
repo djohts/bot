@@ -28,7 +28,7 @@ module.exports = (client) => new erela_js_1.Manager({
     .on("trackStuck", async (player, track, error) => {
     const text = client.channels.cache.get(player.textChannel);
     try {
-        await text?.send(`\`${track.title}\` got stuck.`);
+        await text.send(`\`${track.title}\` got stuck.`);
     }
     catch { }
     ;

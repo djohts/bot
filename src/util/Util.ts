@@ -4,6 +4,7 @@ import { Manager, Player } from "erela.js";
 import { Collection, Guild, GuildMember, Message } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
+import i18n from "./i18n";
 
 let util: Util | null = null;
 
@@ -16,9 +17,10 @@ class Util {
     private _client: ModifiedClient | null = null;
     private _database: typeof import("../database/") | null = null;
     private _lavaManager: Manager | null = null;
+    public i18n = i18n;
     public inspect = inspect;
     public wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
-    public prettyBytes = (bytes: number, { maximumFractionDigits = 2 }): string => {
+    public prettyBytes = (bytes: number, maximumFractionDigits = 2): string => {
         const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
         let i = 0;
         while (bytes >= 1024) {

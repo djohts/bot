@@ -7,8 +7,9 @@ const dbCache = new Map<string, GuildObject>(), dbSaveQueue = new Map<string, st
 
 const guildObject = {
     guildid: "",
-    // moderation data
+    locale: "",
     voices: {},
+    // moderation data
     bans: {},
     // counting
     channel: "",
@@ -24,6 +25,7 @@ const guildObject = {
     brcs: {},
     brms: {},
     brs: {},
+    // serverstats
     statschannels: {}
 } as GuildObject;
 
