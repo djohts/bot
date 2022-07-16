@@ -4,7 +4,7 @@ import handleButton from "./buttons";
 import handleCommand from "./slash";
 import handleAutocomplete from "./autocomplete";
 
-export = (interaction: Interaction) => {
+export = async (interaction: Interaction) => {
     if (
         !interaction.guild ||
         !interaction.isCommand() &&
@@ -18,12 +18,12 @@ export = (interaction: Interaction) => {
             interaction.isCommand() ||
             interaction.isButton()
         )
-    ) return interaction.reply({
+    ) return await interaction.reply({
         content: "🌀 Бот ещё запускается, подождите некоторое время...",
         ephemeral: true
     });
 
-    if (interaction.isCommand()) return handleCommand(interaction);
-    if (interaction.isButton()) return handleButton(interaction);
-    if (interaction.isAutocomplete()) return handleAutocomplete(interaction);
+    if (interaction.isCommand()) return await handleCommand(interaction);
+    if (interaction.isButton()) return await handleButton(interaction);
+    if (interaction.isAutocomplete()) return await handleAutocomplete(interaction);
 };

@@ -28,6 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const util_1 = require("util");
 const string_progressbar_1 = require("string-progressbar");
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
+const i18n_1 = __importDefault(require("./i18n"));
 let util = null;
 class Util {
     constructor() {
@@ -39,9 +40,10 @@ class Util {
     _client = null;
     _database = null;
     _lavaManager = null;
+    i18n = i18n_1.default;
     inspect = util_1.inspect;
     wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-    prettyBytes = (bytes, { maximumFractionDigits = 2 }) => {
+    prettyBytes = (bytes, maximumFractionDigits = 2) => {
         const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
         let i = 0;
         while (bytes >= 1024) {

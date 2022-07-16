@@ -1,7 +1,9 @@
-import { ButtonInteraction, GuildMember } from "discord.js";
+import { ButtonInteraction, GuildMember, Role } from "discord.js";
 import Util from "../util/Util";
 
 export = async (interaction: ButtonInteraction) => {
+    const gdb = await Util.database.guild(interaction.guild.id);
+    const { brs } = gdb.get();
     const member = interaction.member as GuildMember;
     const guild = interaction.guild;
 
@@ -10,12 +12,10 @@ export = async (interaction: ButtonInteraction) => {
 
     await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
-    const gdb = await Util.database.guild(guild.id);
-    const { brs } = gdb.get();
     const iId = interaction.customId.slice(3);
     const rId = brs[iId];
 
-    const role = await interaction.guild.roles.fetch(rId).catch(() => null);
+    const role: Role | null = await interaction.guild.roles.fetch(rId).catch(() => null);
     if (!role || (role.rawPosition > interaction.guild.me.roles.highest.rawPosition))
         return await interaction.editReply("❌ Роль не была найдена или её позиция выше моей.");
 

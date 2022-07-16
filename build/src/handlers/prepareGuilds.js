@@ -8,8 +8,8 @@ const pretty_ms_1 = __importDefault(require("pretty-ms"));
 const discord_js_1 = require("discord.js");
 const Util_1 = __importDefault(require("../util/Util"));
 module.exports = async (guild) => {
-    await Util_1.default.func.checkGuildBans(guild);
     const gdb = await Util_1.default.database.guild(guild.id);
+    await Util_1.default.func.checkGuildBans(guild);
     const { channel: channelId, message: messageId } = gdb.get();
     let alert;
     try {
@@ -31,7 +31,7 @@ module.exports = async (guild) => {
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
                 while (processing && !fail) {
-                    messages = messages.filter((m) => m.id !== alert.id && m.id !== messageId);
+                    messages = messages.filter((m) => m.id !== alert.id);
                     if (!messages.size)
                         processing = false;
                     else {
@@ -41,7 +41,7 @@ module.exports = async (guild) => {
                     ;
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { fail = true; return null; });
-                        if (messages.filter((m) => m.id !== alert.id).size)
+                        if (messages?.filter((m) => m.id !== alert.id).size)
                             await sleep(3500);
                     }
                     ;
@@ -61,7 +61,7 @@ module.exports = async (guild) => {
         ;
     }
     catch (e) {
-        console.log(e);
+        console.error(e);
         alert.edit("❌ Что-то пошло не так при подготовке канала.")
             .then(() => setTimeout(() => (0, utils_1.deleteMessage)(alert), 10 * 1000))
             .catch(() => null);

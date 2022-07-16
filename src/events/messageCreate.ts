@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+// @ts-ignore
 import { checkMessage } from "stop-discord-phishing";
 import countingHandler from "../handlers/counting/handler";
 import { dokdo, linkRates } from "../bot";

@@ -75,8 +75,11 @@ export class ModifiedClient extends Client {
     util: typeof Util;
 }
 
+type GuildLocale = "en" | "ua" | "ru";
+
 export interface GuildObject {
     guildid: string,
+    locale: "" | GuildLocale,
     voices: object,
     bans: object,
     channel: string,

@@ -25,8 +25,8 @@ export const run = async (interaction: CommandInteraction) => {
 
         const { rss, heapUsed } = process.memoryUsage();
 
-        memoryUsageGlobal = Util.prettyBytes(rss, { maximumFractionDigits: 2 });
-        memoryUsage = Util.prettyBytes(heapUsed, { maximumFractionDigits: 2 });
+        memoryUsageGlobal = Util.prettyBytes(rss, 2);
+        memoryUsage = Util.prettyBytes(heapUsed, 2);
     };
 
     await interaction.reply({
