@@ -10,8 +10,6 @@ export const options = new SlashCommandBuilder()
                 name: "Удаление закреплённых сообщений при очистке (/purge).", value: "purgePinned"
             }, {
                 name: "Временные голосовые каналы.", value: "voices"
-            }, {
-                name: "Проверка сообщений на вредоносные ссылки.", value: "detectScamLinks"
             })
     ))
     .addSubcommand((c) => c.setName("setlobby").setDescription("Установить лобби для голосовых каналов.").addChannelOption((o) =>
@@ -54,18 +52,13 @@ export const run = async (interaction: CommandInteraction) => {
                         `<#${gset.get().voices.lobby}>` :
                         "**`Не установлен`**",
                     inline: true
-                }, {
-                    name: "Проверка сообщений на вредоносные ссылки.",
-                    value: gset.get().detectScamLinks ?
-                        "<:online:887393623845507082> **`Включено`**" :
-                        "<:dnd:887393623786803270> **`Выключено`**",
-                    inline: true
                 }]
             }]
         });
     } else if (cmd == "toggle") {
-        let idk = "";
         const type = interaction.options.getString("setting");
+        let idk = "";
+
         if (type == "purgePinned") {
             gset.get().purgePinned ? (() => {
                 gset.set("purgePinned", false);
@@ -84,16 +77,7 @@ export const run = async (interaction: CommandInteraction) => {
                 idk = "**`Временные голосовые каналы`** были включены.";
             })();
             await interaction.reply({ content: idk });
-        } else if (type == "detectScamLinks") {
-            gset.get().detectScamLinks ? (() => {
-                gset.set("detectScamLinks", false);
-                idk = "**`Проверка сообщений на вредоносные ссылки`** была выключена.";
-            })() : (() => {
-                gset.set("detectScamLinks", true);
-                idk = "**`Проверка сообщений на вредоносные ссылки`** была включена.";
-            })();
-            await interaction.reply({ content: idk });
-        };;
+        };
     } else if (cmd == "setlobby") {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);

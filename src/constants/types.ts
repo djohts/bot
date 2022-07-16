@@ -100,7 +100,6 @@ export interface GuildObject {
 export interface GSetObject {
     guildid: string,
     purgePinned: boolean,
-    detectScamLinks: boolean,
     voices: { enabled: boolean, lobby: string, parent: string }
 }
 

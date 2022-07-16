@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.linkRates = exports.shard = exports.dokdo = exports.client = void 0;
+exports.shard = exports.dokdo = exports.client = void 0;
 require("nodejs-better-console").overrideConsole();
 const fs_1 = __importDefault(require("fs"));
 const database_1 = __importDefault(require("./database/"));
@@ -44,7 +44,6 @@ exports.client.cfg = {
 exports.dokdo = new dokdo_1.default(exports.client, { aliases: ["d"], prefix: "!", noPerm: () => null });
 Util_1.default.setClient(exports.client).setDatabase(database_1.default);
 exports.shard = "[Shard N/A]";
-exports.linkRates = new Map();
 exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let start = Date.now();
     exports.shard = `[Shard ${shardId}]`;
@@ -59,8 +58,6 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     await database_1.default.cacheGSets(disabledGuilds);
     await database_1.default.cacheGuilds(disabledGuilds);
     console.log(`${exports.shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
-    for (const id of disabledGuilds)
-        exports.linkRates.set(id, new Set());
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => exports.client.user?.setPresence({
         status: "dnd",
         activities: [{

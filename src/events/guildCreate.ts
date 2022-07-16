@@ -1,5 +1,4 @@
 import { Guild } from "discord.js";
-import { linkRates } from "../bot";
 import config from "../../config";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
@@ -8,8 +7,6 @@ import Util from "../util/Util";
 const rest = new REST({ version: "9" }).setToken(config.token);
 
 export async function run(guild: Guild) {
-    linkRates.set(guild.id, new Set());
-
     const members = await guild.members.fetch();
     const owner = await Util.client.users.fetch(guild.ownerId);
 
