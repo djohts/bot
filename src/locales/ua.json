@@ -1,6 +1,71 @@
 {
-    "commands": {},
+    "commands": {
+        "ban": {
+            "cannotBan": "❌ I can't ban this user.",
+            "cannotParseTime": "❌ I can't parse that time.",
+            "alreadyBanned": "❌ This user is already banned.",
+            "noPerm": "❌ You don't have permission to ban this user.",
+            "notSpecified": "Not specified.",
+            "dmEmbed": {
+                "title": "Banned",
+                "staff": "Responsible staff",
+                "time": "Time",
+                "reason": "Reason"
+            },
+            "success": "✅ Successfully banned {user}.",
+            "notified": "User notified via DM message",
+            "unknownError": "❌ An unknown error occurred."
+        },
+        "buttonroles": {
+            "create": {
+                "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {perms}",
+                "cantGive": "❌ I can't give this role out.",
+                "invalidEmoji": "❌ {emoji} is not a valid unicode emoji.",
+                "working": "💢 Working...",
+                "chooseRoles": "Choose roles",
+                "done": "✅ Done.",
+                "noMessage": "❌ Message not found.",
+                "limitReached": "❌ You can only create **5** button roles per message.",
+                "alreadyExists": "❌ The message already has this button role.",
+                "unknownError": "❌ An unknown error occurred."
+            },
+            "delete": {
+                "deleted": "✅ Successfully deleted button role ID: {id}."
+            },
+            "list": {
+                "embedTitle": "Button roles ● {guild}",
+                "empty": "its empty in here",
+                "page": "Page {page}"
+            }
+        },
+        "docs": {
+            "docs": "📚 Bot documentation can be found here: {link}"
+        },
+        "flows": {},
+        "info": {},
+        "leaderboard": {
+            "embedTitle": "Counting leaderboard ● {guild}"
+        }
+    },
+    "events": {
+        "channelDelete": {
+            "playerStop": "Channel deleted. stopping player"
+        },
+        "voiceChannelJoin": {
+            "roomName": "{user}'s room"
+        },
+        "voiceChannelSwitch": {
+            "roomName": "{user}'s room"
+        }
+    },
     "handlers": {
+        "counting": {
+            "liveboard": {
+                "embed": {
+                    "title": "{guild} ● Counting leaders"
+                }
+            }
+        },
         "interactions": {
             "buttons": {
                 "no": "❌ You can't use this."
@@ -34,5 +99,10 @@
             "error": "❌ Something went wrong while processing this channel."
         }
     },
-    "generic": {}
+    "generic": {
+        "musicTicker": {
+            "channel": "Channel",
+            "progress": "Progress"
+        }
+    }
 }
