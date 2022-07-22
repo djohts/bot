@@ -4,16 +4,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("unban")
     .setDescription("Разбанить участника.")
     .addUserOption((o) => o.setName("user").setDescription("Пользователь, которого надо разбанить.").setRequired(true))
     .toJSON();
 exports.permission = 1;
+const discord_js_2 = require("discord.js");
 const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
-    if (!interaction.guild.me.permissions.has("BAN_MEMBERS"))
+    if (!interaction.guild.members.me.permissions.has(discord_js_2.PermissionFlagsBits.BanMembers))
         return await interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
     const bans = await interaction.guild.bans.fetch();
     const gdb = await Util_1.default.database.guild(interaction.guild.id);

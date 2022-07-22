@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
+const discord_js_1 = require("discord.js");
 const v9_1 = require("discord-api-types/v9");
-exports.options = new builders_1.SlashCommandBuilder()
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("serverstats")
     .setDescription("Управлять каналами статистики.")
     .addSubcommand(c => c

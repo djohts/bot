@@ -1,8 +1,8 @@
-import { ButtonInteraction } from "discord.js";
+import { ButtonInteraction, MessageType } from "discord.js";
 import Util from "../util/Util";
 
 export = async (interaction: ButtonInteraction) => {
-    if (interaction.message.type === "DEFAULT") {
+    if (interaction.message.type === MessageType.Default) {
         if (interaction.user.id !== interaction.customId.split(":")[2]) {
             return await interaction.reply({ content: "❌ Вы не можете использовать это.", ephemeral: true });
         };

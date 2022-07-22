@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("exec")
@@ -8,9 +8,9 @@ export const options = new SlashCommandBuilder()
 export const permission = 4;
 
 import { exec } from "child_process";
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     await interaction.deferReply();
 
     exec(interaction.options.getString("script"), async (error, stdout) => {

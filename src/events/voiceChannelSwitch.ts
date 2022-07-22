@@ -1,7 +1,11 @@
-import { GuildMember, VoiceChannel, StageChannel } from "discord.js";
+import { GuildMember, Channel, ChannelType, PermissionFlagsBits } from "discord.js";
 import Util from "../util/Util";
 
-export async function run(member: GuildMember, oldChannel: VoiceChannel | StageChannel, newChannel: VoiceChannel | StageChannel) {
+export async function run(member: GuildMember, oldChannel: Channel, newChannel: Channel) {
+    if (
+        oldChannel.type !== ChannelType.GuildVoice ||
+        newChannel.type !== ChannelType.GuildVoice
+    ) return;
     const gset = await Util.database.settings(member.guild.id);
     const { voices } = gset.get();
     const gdb = await Util.database.guild(member.guild.id);
@@ -12,12 +16,19 @@ export async function run(member: GuildMember, oldChannel: VoiceChannel | StageC
     };
 
     if (voices.lobby === newChannel.id && voices.enabled) {
-        await member.guild.channels.create("Комната " + member.user.tag, {
-            type: "GUILD_VOICE",
+        await member.guild.channels.create({
+            name: "Комната " + member.user.tag,
+            type: ChannelType.GuildVoice,
             parent: newChannel.parentId,
             permissionOverwrites: [{
                 id: member.user.id,
-                allow: ["MANAGE_CHANNELS", "PRIORITY_SPEAKER", "STREAM"]
+                allow: [
+                    PermissionFlagsBits.ManageChannels,
+                    PermissionFlagsBits.PrioritySpeaker,
+                    PermissionFlagsBits.Stream,
+                    PermissionFlagsBits.Connect,
+                    PermissionFlagsBits.Speak
+                ]
             }]
         })
             .then(async (ch) =>

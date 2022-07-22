@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import {  SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("docs")
@@ -6,9 +6,9 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 0;
 
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     await interaction.reply({
         content: "Документация: https://djoh.gitbook.io/djoho-bot",
         ephemeral: true

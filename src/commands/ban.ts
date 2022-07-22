@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("ban")
@@ -10,22 +10,22 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 1;
 
-import { CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
+import { ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, EmbedBuilder } from "discord.js";
 import { getPermissionLevel } from "../constants/";
 import { parseTime } from "../constants/resolvers";
 import prettyms from "pretty-ms";
 import Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
 
     if (
-        !interaction.guild.me.permissions.has("BAN_MEMBERS") ||
+        !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers) ||
         !member.manageable
     ) return await interaction.reply({ content: "❌ Я не могу забанить этого участника.", ephemeral: true });
     if (
-        interaction.options.getString("duration") &&
-        !parseTime(interaction.options.getString("duration"))
+        interaction.options.get("duration") as unknown as string &&
+        !parseTime(interaction.options.get("duration") as unknown as string)
     ) return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
@@ -45,21 +45,32 @@ export const run = async (interaction: CommandInteraction) => {
     if (!interaction.options.getString("duration")) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("duration"));
 
-    const dmemb = new MessageEmbed()
+    const dmemb = new EmbedBuilder()
         .setAuthor({
             name: interaction.guild.name,
-            iconURL: interaction.guild.iconURL({ dynamic: true })
+            iconURL: interaction.guild.iconURL()
         })
         .setTitle("Вы были забанены")
-        .addField("Модератор", `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`, true);
-    if (time != -1) dmemb.addField("Время", `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``, true);
-    if (reason) dmemb.addField("Причина", reason);
+        .addFields({
+            name: "Модератор",
+            value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
+            inline: true
+        });
+    if (time != -1) dmemb.addFields({
+        name: "Время",
+        value: `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``,
+        inline: true
+    });
+    if (reason) dmemb.addFields({
+        name: "Причина",
+        value: reason
+    });
 
     await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
 
     await interaction.guild.bans.create(member.id, {
         reason: `${interaction.user.tag}: ${reason || "Не указана."}`,
-        days: purgedays
+        deleteMessageDays: purgedays
     }).then(async () => {
         guilddb.setOnObject("bans", member.user.id, time);
         await interaction.editReply({

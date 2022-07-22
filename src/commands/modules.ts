@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("modules")
@@ -6,7 +6,7 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 2;
 
-import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageSelectMenu } from "discord.js";
+import { ChatInputCommandInteraction, Message, ActionRowBuilder, ButtonBuilder, SelectMenuBuilder, ComponentType, ButtonStyle } from "discord.js";
 import { modules as allModules } from "../constants/modules";
 import Util from "../util/Util";
 const names = {
@@ -16,16 +16,15 @@ const names = {
     "webhook": "Webhook"
 };
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
 
     const m = await interaction.reply({
-        content: "​", // U+200b
         fetchReply: true,
         components: [
-            new MessageActionRow().setComponents([
-                new MessageSelectMenu()
+            new ActionRowBuilder<SelectMenuBuilder>().setComponents([
+                new SelectMenuBuilder()
                     .setPlaceholder("Выберите модули")
                     .setCustomId("modules_menu")
                     .setMinValues(0)
@@ -42,7 +41,7 @@ export const run = async (interaction: CommandInteraction) => {
 
     const collector = m.createMessageComponentCollector({
         filter: (i) => i.customId == "modules_menu" && i.user.id == interaction.user.id,
-        componentType: "SELECT_MENU",
+        componentType: ComponentType.SelectMenu,
         time: 60 * 1000,
         idle: 30 * 1000
     });
@@ -51,23 +50,25 @@ export const run = async (interaction: CommandInteraction) => {
         if ("abc" != r) await interaction.editReply({
             content: "Время вышло.",
             components: [
-                new MessageActionRow().setComponents([
-                    new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                new ActionRowBuilder<ButtonBuilder>().setComponents([
+                    new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
                 ])
             ]
         });
         else {
             const newModules = a.first()?.values;
 
-            if (newModules.includes("embed") && newModules.includes("webhook"))
-                return await a.first().update({
+            if (newModules.includes("embed") && newModules.includes("webhook")) {
+                await a.first().update({
                     content: "Модули **Embed** и **Webhook** несовместимы.",
                     components: [
-                        new MessageActionRow().setComponents([
-                            new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                        new ActionRowBuilder<ButtonBuilder>().setComponents([
+                            new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
                         ])
                     ]
                 });
+                return;
+            };
 
             const oldList = oldModules?.map((m) => names[m]).join("**, **") || "Пусто";
             const newList = newModules?.map((m) => names[m]).join("**, **") || "Пусто";
@@ -80,8 +81,8 @@ export const run = async (interaction: CommandInteraction) => {
                     `Новые модули: **${newList}**`
                 ].join("\n"),
                 components: [
-                    new MessageActionRow().setComponents([
-                        new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                    new ActionRowBuilder<ButtonBuilder>().setComponents([
+                        new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
                     ])
                 ]
             });

@@ -148,7 +148,7 @@ class Util {
             if (!ids.length)
                 return;
             await Promise.all(ids.map(async (key) => {
-                if (!guild.me.permissions.has("BAN_MEMBERS"))
+                if (!guild.members.me.permissions.has(discord_js_1.PermissionFlagsBits.BanMembers))
                     return;
                 await guild.bans.remove(key)
                     .then(() => gdb.removeFromObject("bans", key))
@@ -171,7 +171,7 @@ class Util {
                         ].join("\n")
                     }],
                 components: [
-                    new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`))
+                    new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder().setLabel("Подписаться").setStyle(discord_js_1.ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`))
                 ]
             }).then(async () => { dmsent = true; }).catch(() => null);
             if (dmsent) {
@@ -193,7 +193,7 @@ class Util {
                             }
                         }],
                     components: [
-                        new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`))
+                        new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder().setLabel("Подписаться").setStyle(discord_js_1.ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`))
                     ]
                 });
             }

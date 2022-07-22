@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { ChannelType } from "discord-api-types/v9";
 
 export const options = new SlashCommandBuilder()
@@ -44,10 +44,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 3;
 
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
 
     switch (interaction.options.getSubcommand()) {

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("purge")
@@ -9,11 +9,11 @@ export const options = new SlashCommandBuilder()
 export const permission = 1;
 
 const cds = new Map<string, number>();
-import { Collection, CommandInteraction, Message } from "discord.js";
+import { Collection, ChatInputCommandInteraction, Message, PermissionFlagsBits } from "discord.js";
 import prettyMs from "pretty-ms";
 import Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     if (cds.has(interaction.channel.id))
         return await interaction.reply({
             content: `❌ Подождите ещё ${prettyMs(cds.get(interaction.channel.id) - Date.now())} перед повторным использованем команды.`,
@@ -24,7 +24,7 @@ export const run = async (interaction: CommandInteraction) => {
         setTimeout(() => cds.delete(interaction.channel.id), 4000);
     };
 
-    if (!interaction.channel.permissionsFor(interaction.guild.me).has("MANAGE_MESSAGES"))
+    if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageMessages))
         return await interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
 
     await interaction.deferReply();

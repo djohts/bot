@@ -1,10 +1,10 @@
-import { ButtonInteraction, Message } from "discord.js";
+import { ButtonInteraction, Message, MessageType } from "discord.js";
 import { deleteMessage } from "../../handlers/utils";
 import buttonRoles from "../buttonroles";
 import subscriptions from "../subscriptions";
 
 export = async (interaction: ButtonInteraction) => {
-    if (interaction.message.type === "APPLICATION_COMMAND") {
+    if (interaction.message.type === MessageType.ChatInputCommand) {
         if (interaction.user.id !== interaction.message.interaction.user.id) {
             return await interaction.reply({ content: "❌ Вы не можете использовать это.", ephemeral: true });
         };

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("unmute")
@@ -8,13 +8,13 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 1;
 
-import { CommandInteraction, GuildMember } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
     const reason = interaction.options.getString("reason");
 
-    if (!interaction.guild.me.permissions.has("MODERATE_MEMBERS"))
+    if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
         return await interaction.reply({ content: "❌ У меня нет прав на модерирование участников.", ephemeral: true });
     if (!member.moderatable)
         return await interaction.reply({ content: "❌ Я не могу модерировать этого участника.", ephemeral: true });

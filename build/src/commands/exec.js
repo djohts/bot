@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("exec")
     .setDescription("Execute bash script.")
     .addStringOption((o) => o.setName("script").setDescription("Bash script that'd be ran.").setRequired(true))

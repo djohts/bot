@@ -67,7 +67,7 @@ module.exports = (fastify, _, done) => {
                 id: rawguild.id,
                 name: rawguild.name,
                 iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
-                managed: new discord_js_1.Permissions().add(rawguild.permissions).has("ADMINISTRATOR")
+                managed: new discord_js_1.PermissionsBitField().add(rawguild.permissions).has(discord_js_1.PermissionFlagsBits.Administrator)
             });
         });
         res.send(guilds);
@@ -119,7 +119,6 @@ module.exports = (fastify, _, done) => {
                                 `<@${options.data.user}>:`,
                                 options.data.comment.new
                             ].join("\n"),
-                            timestamp: options.data.at,
                             fields: [{
                                     name: "Оценка",
                                     value: !options.data.comment.vote.new
@@ -145,7 +144,6 @@ module.exports = (fastify, _, done) => {
                                 `<@${options.data.user}>:`,
                                 options.data.comment.new
                             ].join("\n"),
-                            timestamp: options.data.at,
                             fields: [{
                                     name: "Оценка",
                                     value: vote

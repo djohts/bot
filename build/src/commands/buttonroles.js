@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("buttonroles")
     .setDescription("Настройки РПК.")
     .addSubcommand((c) => c.setName("create").setDescription("Создать новую РПК.").addChannelOption((o) => o.setName("channel").setDescription("Канал в котором будет создано РПК.").setRequired(true).addChannelTypes(0, 5))
@@ -16,7 +16,7 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addSubcommand((c) => c.setName("delete").setDescription("Удалить РПК.").addStringOption((o) => o.setName("id").setDescription("Id РПК, которую нужно удалить. (Id можно получить в /buttonroles list)").setRequired(true)))
     .toJSON();
 exports.permission = 2;
-const discord_js_1 = require("discord.js");
+const discord_js_2 = require("discord.js");
 const constants_1 = require("../constants/");
 const resolvers_1 = require("../constants/resolvers");
 const utils_1 = require("../handlers/utils");
@@ -29,9 +29,9 @@ const run = async (interaction) => {
     if (cmd == "create") {
         const channel = interaction.options.getChannel("channel");
         const messageId = interaction.options.getString("message");
-        if (!(channel.permissionsFor(interaction.guild.me).has("READ_MESSAGE_HISTORY") ||
-            channel.permissionsFor(interaction.guild.me).has("SEND_MESSAGES") ||
-            channel.permissionsFor(interaction.guild.me).has("VIEW_CHANNEL"))) {
+        if (!(channel.permissionsFor(interaction.guild.members.me).has(discord_js_2.PermissionFlagsBits.ReadMessageHistory) ||
+            channel.permissionsFor(interaction.guild.members.me).has(discord_js_2.PermissionFlagsBits.SendMessages) ||
+            channel.permissionsFor(interaction.guild.members.me).has(discord_js_2.PermissionFlagsBits.ViewChannel))) {
             return await interaction.reply({
                 content: "❌ Недостаточно прав в укразанном канале. Проверьте наличие следующих прав: `VIEW_CHANNEL`, `READ_MESSAGE_HISTORY`, `SEND_MESSAGES`",
                 ephemeral: true
@@ -39,7 +39,7 @@ const run = async (interaction) => {
         }
         ;
         const role = interaction.options.getRole("role");
-        if (role.rawPosition > interaction.guild.me.roles.highest.rawPosition ||
+        if (role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition ||
             role.managed ||
             interaction.guild.id == role.id) {
             return await interaction.reply({
@@ -68,11 +68,11 @@ const run = async (interaction) => {
                         description: `${emoji} - ${role}`
                     }],
                 components: [
-                    new discord_js_1.MessageActionRow().setComponents([
-                        new discord_js_1.MessageButton()
+                    new discord_js_2.ActionRowBuilder().setComponents([
+                        new discord_js_2.ButtonBuilder()
                             .setCustomId(`br:${id}`)
                             .setEmoji(emoji)
-                            .setStyle("DANGER")
+                            .setStyle(discord_js_2.ButtonStyle.Danger)
                     ])
                 ]
             }).then(async (m) => {
@@ -95,10 +95,10 @@ const run = async (interaction) => {
             return await interaction.editReply("❌ На этом сообщении уже есть РПК с этой ролью.");
         }
         ;
-        message.components[0].components.push(new discord_js_1.MessageButton()
+        message.components[0].components.push(new discord_js_2.ButtonBuilder()
             .setCustomId(`br:${id}`)
             .setEmoji(emoji)
-            .setStyle("DANGER"));
+            .setStyle(discord_js_2.ButtonStyle.Danger));
         const newMessage = {
             embeds: [{
                     title: "Выбор роли",
@@ -128,7 +128,7 @@ const run = async (interaction) => {
         await interaction.deferReply({ ephemeral: true }).catch(() => null);
         const channel = await interaction.guild.channels.fetch(brc).catch(() => null);
         if (!channel ||
-            !(channel instanceof discord_js_1.TextChannel))
+            !(channel instanceof discord_js_2.TextChannel))
             return await interaction.editReply(`✅ РПК \`${brId}\` было удалено.`).then(() => {
                 gdb.removeFromObject("brcs", brId);
                 gdb.removeFromObject("brms", brId);
@@ -169,17 +169,17 @@ const run = async (interaction) => {
     }
     else if (cmd == "list") {
         const { brcs: brcs1, brms: brms1, brs: brs1 } = gdb.get();
-        const brcs = new discord_js_1.Collection();
-        const brms = new discord_js_1.Collection();
-        const brs = new discord_js_1.Collection();
+        const brcs = new discord_js_2.Collection();
+        const brms = new discord_js_2.Collection();
+        const brs = new discord_js_2.Collection();
         for (const key in brcs1)
             brcs.set(key, brcs1[key]);
         for (const key in brms1)
             brms.set(key, brms1[key]);
         for (const key in brs1)
             brs.set(key, brs1[key]);
-        const channelObject = new discord_js_1.Collection();
-        const messageObject = new discord_js_1.Collection();
+        const channelObject = new discord_js_2.Collection();
+        const messageObject = new discord_js_2.Collection();
         const channelsFlat = [...new Set(brcs.values())];
         channelsFlat.map((channelId) => {
             const channelBrIds = [...brcs.filter((v) => v == channelId).keys()];
@@ -202,7 +202,7 @@ const run = async (interaction) => {
         let page = 0;
         await interaction.reply(generateMessage(interaction, paginated, page)).then((m) => {
             const collector = m.createMessageComponentCollector({
-                componentType: "BUTTON",
+                componentType: discord_js_2.ComponentType.Button,
                 filter: (x) => x.user.id == interaction.user.id,
                 idle: 60 * 1000
             });
@@ -234,18 +234,18 @@ exports.run = run;
 const generateMessage = (interaction, pages, page) => {
     return {
         embeds: [
-            new discord_js_1.MessageEmbed()
+            new discord_js_2.EmbedBuilder()
                 .setTitle(`Список РПК - ${interaction.guild.name}`)
                 .setDescription(pages[page]?.join("\n") || "Тут пусто")
                 .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
         ],
         fetchReply: true,
         components: [
-            new discord_js_1.MessageActionRow().setComponents([
-                new discord_js_1.MessageButton().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle("SECONDARY").setDisabled(page <= 0),
-                new discord_js_1.MessageButton().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle("SECONDARY").setDisabled(page <= 0),
-                new discord_js_1.MessageButton().setCustomId("brlist:page:next").setEmoji("▶️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page),
-                new discord_js_1.MessageButton().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page)
+            new discord_js_2.ActionRowBuilder().setComponents([
+                new discord_js_2.ButtonBuilder().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle(discord_js_2.ButtonStyle.Secondary).setDisabled(page <= 0),
+                new discord_js_2.ButtonBuilder().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle(discord_js_2.ButtonStyle.Secondary).setDisabled(page <= 0),
+                new discord_js_2.ButtonBuilder().setCustomId("brlist:page:next").setEmoji("▶️").setStyle(discord_js_2.ButtonStyle.Secondary).setDisabled(pages.length - 1 <= page),
+                new discord_js_2.ButtonBuilder().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle(discord_js_2.ButtonStyle.Secondary).setDisabled(pages.length - 1 <= page)
             ])
         ]
     };

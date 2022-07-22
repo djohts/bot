@@ -2,9 +2,10 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+const discord_js_1 = require("discord.js");
 const Util_1 = __importDefault(require("../util/Util"));
 module.exports = async (interaction) => {
-    if (interaction.message.type === "DEFAULT") {
+    if (interaction.message.type === discord_js_1.MessageType.Default) {
         if (interaction.user.id !== interaction.customId.split(":")[2]) {
             return await interaction.reply({ content: "❌ Вы не можете использовать это.", ephemeral: true });
         }

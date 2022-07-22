@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("volume")
@@ -7,10 +7,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 0;
 
-import { CommandInteraction, GuildMember } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const member = interaction.member as GuildMember;
     const volume = interaction.options.getInteger("volume");
 
@@ -20,8 +20,8 @@ export const run = async (interaction: CommandInteraction) => {
             ephemeral: true
         });
     if (
-        interaction.guild.me.voice.channel &&
-        member.voice.channel.id !== interaction.guild.me.voice.channel.id
+        interaction.guild.members.me.voice.channel &&
+        member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
     ) return await interaction.reply({
         content: "❌ Вы должны находится в том же голосовом канале, что и я.",
         ephemeral: true

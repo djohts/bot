@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("purge")
     .setDescription("Удалить указанное количество сообщений в канале.")
     .addIntegerOption((o) => o.setName("amount").setDescription("Количество сообщений которое надо удалить.").setRequired(true).setMinValue(2).setMaxValue(100))
@@ -13,6 +13,7 @@ exports.options = new builders_1.SlashCommandBuilder()
     .toJSON();
 exports.permission = 1;
 const cds = new Map();
+const discord_js_2 = require("discord.js");
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
 const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
@@ -26,7 +27,7 @@ const run = async (interaction) => {
         setTimeout(() => cds.delete(interaction.channel.id), 4000);
     }
     ;
-    if (!interaction.channel.permissionsFor(interaction.guild.me).has("MANAGE_MESSAGES"))
+    if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(discord_js_2.PermissionFlagsBits.ManageMessages))
         return await interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
     await interaction.deferReply();
     const gsdb = await Util_1.default.database.settings(interaction.guild.id);

@@ -1,4 +1,4 @@
-import { ButtonInteraction, GuildMember, Role } from "discord.js";
+import { ButtonInteraction, GuildMember, PermissionFlagsBits, Role } from "discord.js";
 import Util from "../util/Util";
 
 export = async (interaction: ButtonInteraction) => {
@@ -7,7 +7,7 @@ export = async (interaction: ButtonInteraction) => {
     const member = interaction.member as GuildMember;
     const guild = interaction.guild;
 
-    if (!guild.me.permissions.has("MANAGE_ROLES"))
+    if (!guild.members.me.permissions.has(PermissionFlagsBits.ManageRoles))
         return await interaction.reply({ content: "❌ У меня нет прав на изменение ролей.", ephemeral: true });
 
     await interaction.deferReply({ ephemeral: true }).catch(() => null);
@@ -16,7 +16,7 @@ export = async (interaction: ButtonInteraction) => {
     const rId = brs[iId];
 
     const role: Role | null = await interaction.guild.roles.fetch(rId).catch(() => null);
-    if (!role || (role.rawPosition > interaction.guild.me.roles.highest.rawPosition))
+    if (!role || (role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition))
         return await interaction.editReply("❌ Роль не была найдена или её позиция выше моей.");
 
     member.roles.cache.has(role.id)

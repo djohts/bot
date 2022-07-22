@@ -41,15 +41,15 @@
         "docs": {
             "docs": "📚 Bot documentation can be found here: {link}"
         },
-        "flows": {},
-        "info": {},
+        "flows": [],
+        "info": [],
         "leaderboard": {
             "embedTitle": "Counting leaderboard ● {guild}"
         }
     },
     "events": {
         "channelDelete": {
-            "playerStop": "Channel deleted. stopping player"
+            "playerStop": "Channel deleted. Stopping player"
         },
         "voiceChannelJoin": {
             "roomName": "{user}'s room"
@@ -90,7 +90,7 @@
         "lava": {
             "empty_vc": "♻️ All users have left the voice channel. Stopping the player.",
             "loading": "⏳ Loading...",
-            "empty_queue": "♻️ Player reached the end of the queue. Stopping."
+            "empty_queue": "♻️ Player reached the end of the queue."
         },
         "prepareGuilds": {
             "in_process": "💢 Preparing this channel for counting...",

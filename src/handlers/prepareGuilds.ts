@@ -1,7 +1,7 @@
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 import { deleteMessage } from "./utils";
 import prettyms from "pretty-ms";
-import { Guild, Message, TextChannel } from "discord.js";
+import { Guild, Message, PermissionFlagsBits, TextChannel } from "discord.js";
 import Util from "../util/Util";
 
 export = async (guild: Guild) => {
@@ -14,8 +14,9 @@ export = async (guild: Guild) => {
         const channel = guild.channels.cache.get(channelId);
         if (
             channel instanceof TextChannel &&
-            channel.permissionsFor(guild.me).has("MANAGE_MESSAGES") &&
-            channel.permissionsFor(guild.me).has("SEND_MESSAGES")
+            channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ViewChannel) &&
+            channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ManageMessages) &&
+            channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)
         ) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId });
             if (messages.size) {
@@ -23,9 +24,9 @@ export = async (guild: Guild) => {
 
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone.id) || { allow: new Set(), deny: new Set() };
                 let oldPermission: boolean | null = null;
-                if (defaultPermissions.allow.has("SEND_MESSAGES")) oldPermission = true;
-                else if (defaultPermissions.deny.has("SEND_MESSAGES")) oldPermission = false;
-                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => null);
+                if (defaultPermissions.allow.has(PermissionFlagsBits.SendMessages)) oldPermission = true;
+                else if (defaultPermissions.deny.has(PermissionFlagsBits.SendMessages)) oldPermission = false;
+                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SendMessages: false }).catch(() => null);
 
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
@@ -47,7 +48,7 @@ export = async (guild: Guild) => {
                     };
                 };
 
-                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission }).catch(() => null);
+                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SendMessages: oldPermission }).catch(() => null);
                 if (fail) await alert.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
                 else await alert.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`)
                     .then(() => setTimeout(() => deleteMessage(alert), 10 * 1000))

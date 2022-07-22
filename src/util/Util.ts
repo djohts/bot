@@ -2,7 +2,7 @@ import config from "../../config";
 import { BcBotBumpAction, ModifiedClient } from "../constants/types";
 import { inspect } from "util";
 import { Manager, Player } from "erela.js";
-import { Collection, Guild, GuildMember, Message, MessageActionRow, MessageButton, MessageOptions, TextChannel, WebhookClient } from "discord.js";
+import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, MessageOptions, TextChannel, WebhookClient, ButtonStyle, PermissionFlagsBits } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 import i18n from "./i18n";
@@ -118,7 +118,7 @@ class Util {
             if (!ids.length) return;
 
             await Promise.all(ids.map(async (key) => {
-                if (!guild.me.permissions.has("BAN_MEMBERS")) return;
+                if (!guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) return;
 
                 await guild.bans.remove(key)
                     .then(() => gdb.removeFromObject("bans", key))
@@ -144,8 +144,8 @@ class Util {
                     ].join("\n")
                 }],
                 components: [
-                    new MessageActionRow().addComponents(
-                        new MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`)
+                    new ActionRowBuilder<ButtonBuilder>().addComponents(
+                        new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`)
                     )
                 ]
             }).then(async () => { dmsent = true; }).catch(() => null);
@@ -169,8 +169,8 @@ class Util {
                         }
                     }],
                     components: [
-                        new MessageActionRow().addComponents(
-                            new MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`)
+                        new ActionRowBuilder<ButtonBuilder>().addComponents(
+                            new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`)
                         )
                     ]
                 });

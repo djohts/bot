@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("ping")
@@ -7,9 +7,9 @@ export const options = new SlashCommandBuilder()
 export const permission = 0;
 
 import prettyms from "pretty-ms";
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const server = Date.now() - interaction.createdTimestamp;
     const uptime = prettyms(interaction.client.uptime);
     const api = interaction.guild.shard.ping;

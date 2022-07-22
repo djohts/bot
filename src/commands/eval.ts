@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("eval")
@@ -7,10 +7,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 4;
 
-import { CommandInteraction, MessageActionRow, MessageButton } from "discord.js";
+import { ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import _Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     await interaction.deferReply();
 
     try {
@@ -25,8 +25,8 @@ export const run = async (interaction: CommandInteraction) => {
         await interaction.editReply({
             content: `\`\`\`js\n${evaled}\n\`\`\``,
             components: [
-                new MessageActionRow().setComponents([
-                    new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                new ActionRowBuilder<ButtonBuilder>().setComponents([
+                    new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
                 ])]
         });
     } catch (e) {
@@ -37,8 +37,8 @@ export const run = async (interaction: CommandInteraction) => {
         await interaction.editReply({
             content: `\`\`\`fix\n${err}\n\`\`\``,
             components: [
-                new MessageActionRow().setComponents([
-                    new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                new ActionRowBuilder<ButtonBuilder>().setComponents([
+                    new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
                 ])]
         });
     };

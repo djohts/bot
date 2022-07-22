@@ -8,7 +8,7 @@ module.exports = (fastify, _, done) => {
         const user = req.session.user;
         if (!id ||
             !user ||
-            !new discord_js_1.Permissions().add(user.guilds.find((guild) => guild.id === id)?.permissions || "0").has("ADMINISTRATOR"))
+            !new discord_js_1.PermissionsBitField().add(user.guilds.find((guild) => guild.id === id)?.permissions || "0").has(discord_js_1.PermissionFlagsBits.Administrator))
             return res.redirect("/dash/guilds");
         const guild = await sharding_1.manager.broadcastEval((bot, { id }) => {
             const { inspect } = require("util");

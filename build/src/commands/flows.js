@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("flows")
     .setDescription("Настройки потоков.")
     .addSubcommand((c) => c.setName("create").setDescription("Создать новый поток."))
@@ -14,7 +14,7 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addStringOption((o) => o.setName("id").setDescription("Id потока, который нужно удалить. (/flows list)").setRequired(true)))
     .toJSON();
 exports.permission = 2;
-const discord_js_1 = require("discord.js");
+const discord_js_2 = require("discord.js");
 const constants_1 = require("../constants/");
 const walkthrough_1 = require("../constants/flows/walkthrough");
 const flows_1 = __importDefault(require("../constants/flows/"));
@@ -31,7 +31,7 @@ const run = async (interaction) => {
                 content: `❌ Вы можете иметь только ${limitFlows} потоков.`,
                 ephemeral: true
             });
-        if (!interaction.guild.me.permissions.has("MANAGE_CHANNELS"))
+        if (!interaction.guild.members.me.permissions.has(discord_js_2.PermissionFlagsBits.ManageChannels))
             return await interaction.reply({
                 content: "❌ У бота нету прав на создание каналов.",
                 ephemeral: true
@@ -39,27 +39,28 @@ const run = async (interaction) => {
         const flowId = (0, constants_1.generateID)();
         let channel;
         try {
-            channel = await interaction.guild.channels.create("dob-flow-editor", {
+            channel = await interaction.guild.channels.create({
+                name: "dob-flow-editor",
                 permissionOverwrites: [{
                         id: interaction.client.user.id,
                         allow: [
-                            "VIEW_CHANNEL",
-                            "SEND_MESSAGES",
-                            "MANAGE_MESSAGES",
-                            "EMBED_LINKS",
-                            "READ_MESSAGE_HISTORY"
+                            discord_js_2.PermissionFlagsBits.ViewChannel,
+                            discord_js_2.PermissionFlagsBits.SendMessages,
+                            discord_js_2.PermissionFlagsBits.ManageMessages,
+                            discord_js_2.PermissionFlagsBits.EmbedLinks,
+                            discord_js_2.PermissionFlagsBits.ReadMessageHistory
                         ]
                     }, {
                         id: interaction.user.id,
                         allow: [
-                            "VIEW_CHANNEL",
-                            "SEND_MESSAGES",
-                            "READ_MESSAGE_HISTORY"
+                            discord_js_2.PermissionFlagsBits.ViewChannel,
+                            discord_js_2.PermissionFlagsBits.SendMessages,
+                            discord_js_2.PermissionFlagsBits.ReadMessageHistory
                         ]
                     }, {
                         id: interaction.guild.roles.everyone,
                         deny: [
-                            "VIEW_CHANNEL"
+                            discord_js_2.PermissionFlagsBits.ViewChannel
                         ]
                     }]
             });
@@ -144,8 +145,8 @@ const run = async (interaction) => {
                         }))
                     }],
                 components: [
-                    new discord_js_1.MessageActionRow().setComponents([
-                        new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                    new discord_js_2.ActionRowBuilder().setComponents([
+                        new discord_js_2.ButtonBuilder().setCustomId("reply:delete").setStyle(discord_js_2.ButtonStyle.Danger).setEmoji("🗑")
                     ])
                 ]
             });

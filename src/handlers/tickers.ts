@@ -1,4 +1,4 @@
-import { MessageActionRow, MessageButton, TextChannel } from "discord.js";
+import { ActionRowBuilder, ActivityType, ButtonBuilder, ButtonStyle, TextChannel } from "discord.js";
 import { BcBotBumpAction } from "../constants/types";
 import Util from "../util/Util";
 import { UserFetcher } from "./bottleneck";
@@ -17,7 +17,7 @@ function updatePresence() {
         const aaaaaaa = gc <= 400 ? "400" : gc <= 500 ? "500" : gc <= 600 ? "600" : gc <= 700 ? "700" : gc <= 800 ? "800" : gc <= 900 ? "900" : "1000"
         Util.client.user.setPresence({
             status: "idle",
-            activities: [{ type: "PLAYING", name: `${aaaaaaa}? -> | ${gc} guilds` }],
+            activities: [{ type: ActivityType.Playing, name: `${aaaaaaa}? -> | ${gc} guilds` }],
         });
         setTimeout(() => updatePresence(), 5 * 60 * 1000);
     });
@@ -61,8 +61,11 @@ function processBotBumps() {
                             description: "Вы можете снова апнуть бота на `boticord.top`.",
                         }],
                         components: [
-                            new MessageActionRow().addComponents(
-                                new MessageButton().setLabel("Апнуть бота").setStyle("LINK").setURL("https://boticord.top/bot/889214509544247306")
+                            new ActionRowBuilder().addComponents(
+                                new ButtonBuilder()
+                                    .setLabel("Апнуть бота")
+                                    .setStyle(ButtonStyle.Link)
+                                    .setURL("https://boticord.top/bot/889214509544247306")
                             )
                         ]
                     }).then(async () => { dmsent = true; }).catch(() => null);
@@ -86,8 +89,11 @@ function processBotBumps() {
                                 }
                             }],
                             components: [
-                                new MessageActionRow().addComponents(
-                                    new MessageButton().setLabel("Апнуть бота").setStyle("LINK").setURL("https://boticord.top/bot/889214509544247306")
+                                new ActionRowBuilder<ButtonBuilder>().addComponents(
+                                    new ButtonBuilder()
+                                        .setLabel("Апнуть бота")
+                                        .setStyle(ButtonStyle.Link)
+                                        .setURL("https://boticord.top/bot/889214509544247306")
                                 )
                             ]
                         });

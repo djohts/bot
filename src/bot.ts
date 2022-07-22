@@ -3,9 +3,8 @@ import fs from "fs";
 import db from "./database/";
 import { inspect } from "util";
 import Util from "./util/Util";
-import Discord from "discord.js";
+import Discord, { ActivityType, IntentsBitField, Partials } from "discord.js";
 import prettyms from "pretty-ms";
-import Dokdo from "dokdo";
 import tickers from "./handlers/tickers";
 import lavaHandler from "./handlers/lava";
 import { ModifiedClient } from "./constants/types";
@@ -21,12 +20,18 @@ export const client = new ModifiedClient({
             lifetime: 24 * 60 * 60 // 24 hours
         }
     },
-    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
-    partials: ["CHANNEL", "USER"],
+    intents: [
+        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.GuildMembers,
+        IntentsBitField.Flags.GuildBans,
+        IntentsBitField.Flags.GuildVoiceStates
+    ],
+    partials: [Partials.Channel],
     presence: {
         status: "dnd",
         activities: [{
-            type: "WATCHING",
+            type: ActivityType.Watching,
             name: "the loading screen",
         }]
     }
@@ -36,7 +41,6 @@ client.cfg = {
     enbr: true,
     debug: false
 };
-export const dokdo = new Dokdo(client, { aliases: ["d"], prefix: "!", noPerm: () => null });
 Util.setClient(client).setDatabase(db);
 
 export let shard = "[Shard N/A]";
@@ -64,7 +68,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user?.setPresence({
         status: "dnd",
         activities: [{
-            type: "WATCHING",
+            type: ActivityType.Watching,
             name: `${Math.floor((completed / client.guilds.cache.size) * 100)}%`
         }]
     }), 1000);

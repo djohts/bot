@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("mute")
     .setDescription("Замьютить участника.")
     .addUserOption((o) => o.setName("member").setDescription("Участник, которому надо выдать мьют.").setRequired(true))
@@ -10,6 +10,7 @@ exports.options = new builders_1.SlashCommandBuilder()
     .addStringOption((o) => o.setName("reason").setDescription("Причина выдачи мьюта."))
     .toJSON();
 exports.permission = 1;
+const discord_js_2 = require("discord.js");
 const constants_1 = require("../constants/");
 const resolvers_1 = require("../constants/resolvers");
 const run = async (interaction) => {
@@ -17,7 +18,7 @@ const run = async (interaction) => {
     const timeString = interaction.options.getString("time");
     const reason = interaction.options.getString("reason");
     const time = (0, resolvers_1.parseTime)(timeString);
-    if (!interaction.guild.me.permissions.has("MODERATE_MEMBERS"))
+    if (!interaction.guild.members.me.permissions.has(discord_js_2.PermissionFlagsBits.ModerateMembers))
         return await interaction.reply({ content: "❌ У меня нет прав на модерирование участников.", ephemeral: true });
     if (!member.moderatable)
         return await interaction.reply({ content: "❌ Я не могу модерировать этого участника.", ephemeral: true });

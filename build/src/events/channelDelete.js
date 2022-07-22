@@ -4,10 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.name = void 0;
+const discord_js_1 = require("discord.js");
 const Util_1 = __importDefault(require("../util/Util"));
 exports.name = "channelDelete";
 const run = async (channel) => {
-    if (channel.type === "DM")
+    if (channel.type !== discord_js_1.ChannelType.GuildVoice)
         return;
     const player = Util_1.default.lava.get(channel.guild.id);
     if (player?.options.voiceChannel === channel.id) {

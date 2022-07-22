@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("settings")
@@ -21,10 +21,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 2;
 
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const cmd = interaction.options.getSubcommand();
     const gset = await Util.database.settings(interaction.guild.id);
     const gdb = await Util.database.guild(interaction.guild.id);
@@ -33,7 +33,6 @@ export const run = async (interaction: CommandInteraction) => {
         await interaction.reply({
             embeds: [{
                 title: "Настройки " + interaction.guild.name,
-                timestamp: Date.now(),
                 fields: [{
                     name: "Удаление закреплённых сообщений",
                     value: gset.get().purgePinned ?

@@ -4,14 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("eval")
     .setDescription("Evaluate JavaScript.")
     .addStringOption((o) => o.setName("script").setDescription("Script that'd be ran.").setRequired(true))
     .toJSON();
 exports.permission = 4;
-const discord_js_1 = require("discord.js");
+const discord_js_2 = require("discord.js");
 const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
     await interaction.deferReply();
@@ -26,8 +26,8 @@ const run = async (interaction) => {
         await interaction.editReply({
             content: `\`\`\`js\n${evaled}\n\`\`\``,
             components: [
-                new discord_js_1.MessageActionRow().setComponents([
-                    new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                new discord_js_2.ActionRowBuilder().setComponents([
+                    new discord_js_2.ButtonBuilder().setCustomId("reply:delete").setStyle(discord_js_2.ButtonStyle.Danger).setEmoji("🗑")
                 ])
             ]
         });
@@ -41,8 +41,8 @@ const run = async (interaction) => {
         await interaction.editReply({
             content: `\`\`\`fix\n${err}\n\`\`\``,
             components: [
-                new discord_js_1.MessageActionRow().setComponents([
-                    new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                new discord_js_2.ActionRowBuilder().setComponents([
+                    new discord_js_2.ButtonBuilder().setCustomId("reply:delete").setStyle(discord_js_2.ButtonStyle.Danger).setEmoji("🗑")
                 ])
             ]
         });

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("buttonroles")
@@ -27,15 +27,18 @@ export const options = new SlashCommandBuilder()
 export const permission = 2;
 
 import {
-    CommandInteraction,
+    ButtonStyle,
+    ComponentType,
+    PermissionFlagsBits,
+    ChatInputCommandInteraction,
     Collection,
     TextChannel,
     Message,
     Role,
-    MessageActionRow,
-    MessageButton,
+    ActionRowBuilder,
+    ButtonBuilder,
     ButtonInteraction,
-    MessageEmbed,
+    EmbedBuilder,
     InteractionReplyOptions,
     InteractionUpdateOptions
 } from "discord.js";
@@ -44,7 +47,7 @@ import { paginate } from "../constants/resolvers";
 import { deleteMessage } from "../handlers/utils";
 import Util from "../util/Util";
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
     const global = await Util.database.global();
     const addToGlobal = global.addToArray;
@@ -54,9 +57,9 @@ export const run = async (interaction: CommandInteraction) => {
         const channel = interaction.options.getChannel("channel") as TextChannel;
         const messageId = interaction.options.getString("message");
         if (!(
-            channel.permissionsFor(interaction.guild.me).has("READ_MESSAGE_HISTORY") ||
-            channel.permissionsFor(interaction.guild.me).has("SEND_MESSAGES") ||
-            channel.permissionsFor(interaction.guild.me).has("VIEW_CHANNEL")
+            channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ReadMessageHistory) ||
+            channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages) ||
+            channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ViewChannel)
         )) {
             return await interaction.reply({
                 content: "❌ Недостаточно прав в укразанном канале. Проверьте наличие следующих прав: `VIEW_CHANNEL`, `READ_MESSAGE_HISTORY`, `SEND_MESSAGES`",
@@ -65,7 +68,7 @@ export const run = async (interaction: CommandInteraction) => {
         };
         const role = interaction.options.getRole("role") as Role;
         if (
-            role.rawPosition > interaction.guild.me.roles.highest.rawPosition ||
+            role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition ||
             role.managed ||
             interaction.guild.id == role.id
         ) {
@@ -93,11 +96,11 @@ export const run = async (interaction: CommandInteraction) => {
                 description: `${emoji} - ${role}`
             }],
             components: [
-                new MessageActionRow().setComponents([
-                    new MessageButton()
+                new ActionRowBuilder<ButtonBuilder>().setComponents([
+                    new ButtonBuilder()
                         .setCustomId(`br:${id}`)
                         .setEmoji(emoji)
-                        .setStyle("DANGER")
+                        .setStyle(ButtonStyle.Danger)
                 ])
             ]
         }).then(async (m) => {
@@ -118,11 +121,11 @@ export const run = async (interaction: CommandInteraction) => {
         if (message.embeds[0].description.includes(role.id)) {
             return await interaction.editReply("❌ На этом сообщении уже есть РПК с этой ролью.");
         };
-        message.components[0].components.push(
-            new MessageButton()
+        (message.components[0].components as unknown as ButtonBuilder[]).push(
+            new ButtonBuilder()
                 .setCustomId(`br:${id}`)
                 .setEmoji(emoji)
-                .setStyle("DANGER")
+                .setStyle(ButtonStyle.Danger)
         );
         const newMessage = {
             embeds: [{
@@ -232,7 +235,7 @@ export const run = async (interaction: CommandInteraction) => {
 
         await interaction.reply(generateMessage(interaction, paginated, page)).then((m: any) => {
             const collector = (m as Message).createMessageComponentCollector({
-                componentType: "BUTTON",
+                componentType: ComponentType.Button,
                 filter: (x: ButtonInteraction) => x.user.id == interaction.user.id,
                 idle: 60 * 1000
             });
@@ -257,21 +260,21 @@ export const run = async (interaction: CommandInteraction) => {
     };
 };
 
-const generateMessage = (interaction: CommandInteraction, pages: string[][], page: number): InteractionReplyOptions & InteractionUpdateOptions => {
+const generateMessage = (interaction: ChatInputCommandInteraction, pages: string[][], page: number): InteractionReplyOptions & InteractionUpdateOptions => {
     return {
         embeds: [
-            new MessageEmbed()
+            new EmbedBuilder()
                 .setTitle(`Список РПК - ${interaction.guild.name}`)
                 .setDescription(pages[page]?.join("\n") || "Тут пусто")
                 .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
         ],
         fetchReply: true,
         components: [
-            new MessageActionRow().setComponents([
-                new MessageButton().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle("SECONDARY").setDisabled(page <= 0),
-                new MessageButton().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle("SECONDARY").setDisabled(page <= 0),
-                new MessageButton().setCustomId("brlist:page:next").setEmoji("▶️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page),
-                new MessageButton().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle("SECONDARY").setDisabled(pages.length - 1 <= page)
+            new ActionRowBuilder<ButtonBuilder>().setComponents([
+                new ButtonBuilder().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle(ButtonStyle.Secondary).setDisabled(page <= 0),
+                new ButtonBuilder().setCustomId("brlist:page:prev").setEmoji("◀️").setStyle(ButtonStyle.Secondary).setDisabled(page <= 0),
+                new ButtonBuilder().setCustomId("brlist:page:next").setEmoji("▶️").setStyle(ButtonStyle.Secondary).setDisabled(pages.length - 1 <= page),
+                new ButtonBuilder().setCustomId("brlist:page:last").setEmoji("⏭️").setStyle(ButtonStyle.Secondary).setDisabled(pages.length - 1 <= page)
             ])
         ]
     };

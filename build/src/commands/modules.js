@@ -4,13 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("modules")
     .setDescription("Настроить модули счёта.")
     .toJSON();
 exports.permission = 2;
-const discord_js_1 = require("discord.js");
+const discord_js_2 = require("discord.js");
 const modules_1 = require("../constants/modules");
 const Util_1 = __importDefault(require("../util/Util"));
 const names = {
@@ -23,11 +23,10 @@ const run = async (interaction) => {
     const gdb = await Util_1.default.database.guild(interaction.guild.id);
     const { modules: oldModules } = gdb.get();
     const m = await interaction.reply({
-        content: "​",
         fetchReply: true,
         components: [
-            new discord_js_1.MessageActionRow().setComponents([
-                new discord_js_1.MessageSelectMenu()
+            new discord_js_2.ActionRowBuilder().setComponents([
+                new discord_js_2.SelectMenuBuilder()
                     .setPlaceholder("Выберите модули")
                     .setCustomId("modules_menu")
                     .setMinValues(0)
@@ -43,7 +42,7 @@ const run = async (interaction) => {
     });
     const collector = m.createMessageComponentCollector({
         filter: (i) => i.customId == "modules_menu" && i.user.id == interaction.user.id,
-        componentType: "SELECT_MENU",
+        componentType: discord_js_2.ComponentType.SelectMenu,
         time: 60 * 1000,
         idle: 30 * 1000
     });
@@ -53,22 +52,25 @@ const run = async (interaction) => {
             await interaction.editReply({
                 content: "Время вышло.",
                 components: [
-                    new discord_js_1.MessageActionRow().setComponents([
-                        new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                    new discord_js_2.ActionRowBuilder().setComponents([
+                        new discord_js_2.ButtonBuilder().setCustomId("reply:delete").setStyle(discord_js_2.ButtonStyle.Danger).setEmoji("🗑")
                     ])
                 ]
             });
         else {
             const newModules = a.first()?.values;
-            if (newModules.includes("embed") && newModules.includes("webhook"))
-                return await a.first().update({
+            if (newModules.includes("embed") && newModules.includes("webhook")) {
+                await a.first().update({
                     content: "Модули **Embed** и **Webhook** несовместимы.",
                     components: [
-                        new discord_js_1.MessageActionRow().setComponents([
-                            new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                        new discord_js_2.ActionRowBuilder().setComponents([
+                            new discord_js_2.ButtonBuilder().setCustomId("reply:delete").setStyle(discord_js_2.ButtonStyle.Danger).setEmoji("🗑")
                         ])
                     ]
                 });
+                return;
+            }
+            ;
             const oldList = oldModules?.map((m) => names[m]).join("**, **") || "Пусто";
             const newList = newModules?.map((m) => names[m]).join("**, **") || "Пусто";
             gdb.set("modules", newModules);
@@ -79,8 +81,8 @@ const run = async (interaction) => {
                     `Новые модули: **${newList}**`
                 ].join("\n"),
                 components: [
-                    new discord_js_1.MessageActionRow().setComponents([
-                        new discord_js_1.MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                    new discord_js_2.ActionRowBuilder().setComponents([
+                        new discord_js_2.ButtonBuilder().setCustomId("reply:delete").setStyle(discord_js_2.ButtonStyle.Danger).setEmoji("🗑")
                     ])
                 ]
             });

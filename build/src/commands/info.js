@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("info")
     .setDescription("Посмотреть информацию о боте.")
     .toJSON();
@@ -13,7 +13,7 @@ exports.permission = 0;
 const os_1 = __importDefault(require("os"));
 const platform = `${os_1.default.type()} (${os_1.default.release()})`;
 const Util_js_1 = __importDefault(require("../util/Util.js"));
-const discord_js_1 = require("discord.js");
+const discord_js_2 = require("discord.js");
 let guilds = 0, users = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 const run = async (interaction) => {
     if (nextUpdate < Date.now()) {
@@ -33,7 +33,7 @@ const run = async (interaction) => {
                         name: "💠 Хост",
                         value: [
                             `**ОС**: \`${platform}\``,
-                            `**Библиотека**: \`discord.js v${discord_js_1.version}\``,
+                            `**Библиотека**: \`discord.js v${discord_js_2.version}\``,
                             `**Исп. ОЗУ**: \`${memoryUsageGlobal}\``
                         ].join("\n"),
                         inline: true

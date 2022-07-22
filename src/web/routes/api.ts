@@ -3,7 +3,7 @@ import config from "../../../config";
 import discordoauth2 from "discord-oauth2";
 import { manager } from "../../sharding";
 import { ModifiedClient, SessionUser, CustomGuild, BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
-import { Permissions, ShardClientUtil, WebhookClient } from "discord.js";
+import { PermissionFlagsBits, PermissionsBitField, ShardClientUtil, WebhookClient } from "discord.js";
 const wh = new WebhookClient({ url: config.notifications_webhook });
 const oauth2 = new discordoauth2({
     clientId: config.client.id,
@@ -66,7 +66,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 id: rawguild.id,
                 name: rawguild.name,
                 iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
-                managed: new Permissions().add(rawguild.permissions as any).has("ADMINISTRATOR")
+                managed: new PermissionsBitField().add(rawguild.permissions as any).has(PermissionFlagsBits.Administrator)
             });
         });
 
@@ -118,7 +118,6 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                             `<@${options.data.user}>:`,
                             (options as BcBotCommentAction).data.comment.new
                         ].join("\n"),
-                        timestamp: options.data.at,
                         fields: [{
                             name: "Оценка",
                             value: !(options as BcBotCommentAction).data.comment.vote.new
@@ -141,7 +140,6 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                             `<@${options.data.user}>:`,
                             (options as BcBotCommentAction).data.comment.new
                         ].join("\n"),
-                        timestamp: options.data.at,
                         fields: [{
                             name: "Оценка",
                             value: vote

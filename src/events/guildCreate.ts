@@ -16,10 +16,10 @@ export async function run(guild: Guild) {
             title: `${guild.name} - ${guild.id}`,
             author: {
                 name: `${owner.tag} - ${owner.id}`,
-                iconURL: owner.avatarURL({ dynamic: true, format: "png" })
+                icon_url: owner.avatarURL()
             },
             thumbnail: {
-                url: guild.iconURL({ dynamic: true, format: "png", size: 512 })
+                url: guild.iconURL({ size: 512 })
             },
             fields: [{
                 name: "counts",

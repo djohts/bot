@@ -1,4 +1,4 @@
-import { CommandInteraction, GuildMember } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import { getPermissionLevel } from "../../constants/";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
@@ -10,7 +10,7 @@ export const commands: SlashCommand[] = [];
 const registeredGuilds: string[] = [];
 const rest = new REST({ version: "9" }).setToken(config.token);
 
-export default async (interaction: CommandInteraction) => {
+export default async (interaction: ChatInputCommandInteraction) => {
     if (
         !(interaction.client as ModifiedClient).cfg.enslash &&
         !config.admins.includes(interaction.user.id)
@@ -47,7 +47,7 @@ export const registerCommands = async (client: ModifiedClient): Promise<string[]
     await Promise.all(client.guilds.cache.map(async (guild) => {
         await rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: commands })
             .then(() => registeredGuilds.push(guild.id))
-            .catch((err) => {
+            .catch((err: any) => {
                 if (!err.message.toLowerCase().includes("missing")) console.error(err);
             });
     }));

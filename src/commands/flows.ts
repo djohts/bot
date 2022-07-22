@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("flows")
@@ -12,18 +12,26 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 2;
 
-import { CommandInteraction, MessageActionRow, MessageButton, TextChannel } from "discord.js";
+import {
+    ChatInputCommandInteraction,
+    ActionRowBuilder,
+    ButtonBuilder,
+    PermissionFlagsBits,
+    TextChannel,
+    ButtonStyle
+} from "discord.js";
 import { generateID } from "../constants/";
 import { flowWalkthrough, formatExplanation } from "../constants/flows/walkthrough";
 import limits from "../constants/flows/";
 import Util from "../util/Util";
 const { limitFlows, limitTriggers, limitActions } = limits;
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
     const global = await Util.database.global();
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
+
     if (cmd == "create") {
         if (Object.keys(flows).length >= limitFlows)
             return await interaction.reply({
@@ -31,7 +39,7 @@ export const run = async (interaction: CommandInteraction) => {
                 ephemeral: true
             });
 
-        if (!interaction.guild.me.permissions.has("MANAGE_CHANNELS"))
+        if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels))
             return await interaction.reply({
                 content: "❌ У бота нету прав на создание каналов.",
                 ephemeral: true
@@ -40,27 +48,28 @@ export const run = async (interaction: CommandInteraction) => {
         const flowId = generateID();
         let channel: TextChannel;
         try {
-            channel = await interaction.guild.channels.create("dob-flow-editor", {
+            channel = await interaction.guild.channels.create({
+                name: "dob-flow-editor",
                 permissionOverwrites: [{
                     id: interaction.client.user.id,
                     allow: [
-                        "VIEW_CHANNEL",
-                        "SEND_MESSAGES",
-                        "MANAGE_MESSAGES",
-                        "EMBED_LINKS",
-                        "READ_MESSAGE_HISTORY"
+                        PermissionFlagsBits.ViewChannel,
+                        PermissionFlagsBits.SendMessages,
+                        PermissionFlagsBits.ManageMessages,
+                        PermissionFlagsBits.EmbedLinks,
+                        PermissionFlagsBits.ReadMessageHistory
                     ]
                 }, {
                     id: interaction.user.id,
                     allow: [
-                        "VIEW_CHANNEL",
-                        "SEND_MESSAGES",
-                        "READ_MESSAGE_HISTORY"
+                        PermissionFlagsBits.ViewChannel,
+                        PermissionFlagsBits.SendMessages,
+                        PermissionFlagsBits.ReadMessageHistory
                     ]
                 }, {
                     id: interaction.guild.roles.everyone,
                     deny: [
-                        "VIEW_CHANNEL"
+                        PermissionFlagsBits.ViewChannel
                     ]
                 }]
             }) as TextChannel;
@@ -152,8 +161,8 @@ export const run = async (interaction: CommandInteraction) => {
                     }))
                 }],
                 components: [
-                    new MessageActionRow().setComponents([
-                        new MessageButton().setCustomId("reply:delete").setStyle("DANGER").setEmoji("🗑")
+                    new ActionRowBuilder<ButtonBuilder>().setComponents([
+                        new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
                     ])
                 ]
             });

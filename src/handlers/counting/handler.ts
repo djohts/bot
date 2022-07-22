@@ -1,4 +1,4 @@
-import { Message, ThreadChannel, Webhook } from "discord.js";
+import { ChannelType, Message, ThreadChannel, Webhook } from "discord.js";
 import { ModifiedClient } from "../../constants/types";
 import { flow as _flow } from "../../constants/flows/flow";
 const { triggers: allTriggers, actions: allActions } = _flow;
@@ -45,19 +45,19 @@ export = async (message: Message) => {
 
     let countingMessage = message;
     if (
-        message.channel.type === "DM" ||
+        message.channel.type === ChannelType.DM ||
         message.channel instanceof ThreadChannel
     ) return;
     if (modules.includes("webhook")) try {
         const webhooks = await message.channel.fetchWebhooks();
         let webhook: Webhook | null = webhooks.find((w: Webhook) => w.name === "Counting");
-        if (!webhook) webhook = await message.channel.createWebhook("Counting");
+        if (!webhook) webhook = await message.channel.createWebhook({ name: "Counting" });
 
         if (webhook) {
             countingMessage = await webhook.send({
                 content: content,
                 username: message.author.username,
-                avatarURL: message.author.displayAvatarURL({ dynamic: true }),
+                avatarURL: message.author.displayAvatarURL(),
                 allowedMentions: {
                     users: [],
                     roles: [],

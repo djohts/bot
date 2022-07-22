@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("info")
@@ -6,14 +6,14 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 0;
 
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import os from "os";
 const platform = `${os.type()} (${os.release()})`;
 import Util from "../util/Util.js";
 import { version } from "discord.js";
 let guilds = 0, users = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = Date.now();
 
-export const run = async (interaction: CommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction) => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;
 

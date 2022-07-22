@@ -1,17 +1,39 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shard = exports.dokdo = exports.client = void 0;
+exports.shard = exports.client = void 0;
 require("nodejs-better-console").overrideConsole();
 const fs_1 = __importDefault(require("fs"));
 const database_1 = __importDefault(require("./database/"));
 const util_1 = require("util");
 const Util_1 = __importDefault(require("./util/Util"));
-const discord_js_1 = __importDefault(require("discord.js"));
+const discord_js_1 = __importStar(require("discord.js"));
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
-const dokdo_1 = __importDefault(require("dokdo"));
 const tickers_1 = __importDefault(require("./handlers/tickers"));
 const lava_1 = __importDefault(require("./handlers/lava"));
 const types_1 = require("./constants/types");
@@ -27,12 +49,18 @@ exports.client = new types_1.ModifiedClient({
             lifetime: 24 * 60 * 60
         }
     },
-    intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
-    partials: ["CHANNEL", "USER"],
+    intents: [
+        discord_js_1.IntentsBitField.Flags.Guilds,
+        discord_js_1.IntentsBitField.Flags.GuildMessages,
+        discord_js_1.IntentsBitField.Flags.GuildMembers,
+        discord_js_1.IntentsBitField.Flags.GuildBans,
+        discord_js_1.IntentsBitField.Flags.GuildVoiceStates
+    ],
+    partials: [discord_js_1.Partials.Channel],
     presence: {
         status: "dnd",
         activities: [{
-                type: "WATCHING",
+                type: discord_js_1.ActivityType.Watching,
                 name: "the loading screen",
             }]
     }
@@ -42,7 +70,6 @@ exports.client.cfg = {
     enbr: true,
     debug: false
 };
-exports.dokdo = new dokdo_1.default(exports.client, { aliases: ["d"], prefix: "!", noPerm: () => null });
 Util_1.default.setClient(exports.client).setDatabase(database_1.default);
 exports.shard = "[Shard N/A]";
 exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
@@ -63,7 +90,7 @@ exports.client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => exports.client.user?.setPresence({
         status: "dnd",
         activities: [{
-                type: "WATCHING",
+                type: discord_js_1.ActivityType.Watching,
                 name: `${Math.floor((completed / exports.client.guilds.cache.size) * 100)}%`
             }]
     }), 1000);

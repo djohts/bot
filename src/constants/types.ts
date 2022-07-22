@@ -1,5 +1,5 @@
 import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
-import { Client, CommandInteraction } from "discord.js";
+import { Client, ChatInputCommandInteraction } from "discord.js";
 import { NodeOptions } from "erela.js";
 import Util from "../util/Util";
 
@@ -34,7 +34,7 @@ export interface Config {
 export interface SlashCommand {
     options: RESTPostAPIApplicationCommandsJSONBody,
     permissions: 0 | 1 | 2 | 3 | 4 | 5,
-    run(interaction: CommandInteraction): Promise<void>
+    run(interaction: ChatInputCommandInteraction): Promise<void>
 }
 
 export interface SessionUser {

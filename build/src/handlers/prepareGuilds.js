@@ -15,19 +15,20 @@ module.exports = async (guild) => {
     try {
         const channel = guild.channels.cache.get(channelId);
         if (channel instanceof discord_js_1.TextChannel &&
-            channel.permissionsFor(guild.me).has("MANAGE_MESSAGES") &&
-            channel.permissionsFor(guild.me).has("SEND_MESSAGES")) {
+            channel.permissionsFor(guild.members.me).has(discord_js_1.PermissionFlagsBits.ViewChannel) &&
+            channel.permissionsFor(guild.members.me).has(discord_js_1.PermissionFlagsBits.ManageMessages) &&
+            channel.permissionsFor(guild.members.me).has(discord_js_1.PermissionFlagsBits.SendMessages)) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId });
             if (messages.size) {
                 alert = await channel.send("💢 Идёт подготовка канала.").catch(() => null);
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone.id) || { allow: new Set(), deny: new Set() };
                 let oldPermission = null;
-                if (defaultPermissions.allow.has("SEND_MESSAGES"))
+                if (defaultPermissions.allow.has(discord_js_1.PermissionFlagsBits.SendMessages))
                     oldPermission = true;
-                else if (defaultPermissions.deny.has("SEND_MESSAGES"))
+                else if (defaultPermissions.deny.has(discord_js_1.PermissionFlagsBits.SendMessages))
                     oldPermission = false;
                 if (oldPermission)
-                    channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => null);
+                    channel.permissionOverwrites.edit(guild.roles.everyone, { SendMessages: false }).catch(() => null);
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
                 const filter = (message) => message.id !== alert.id &&
@@ -51,7 +52,7 @@ module.exports = async (guild) => {
                 }
                 ;
                 if (oldPermission)
-                    channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: oldPermission }).catch(() => null);
+                    channel.permissionOverwrites.edit(guild.roles.everyone, { SendMessages: oldPermission }).catch(() => null);
                 if (fail)
                     await alert.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
                 else

@@ -22,10 +22,9 @@ module.exports = (client) => Promise.all(client.guilds.cache.map(async (guild) =
             embeds: [{
                     title: `Лидеры ${message.guild.name}`,
                     thumbnail: {
-                        url: message.guild.iconURL({ dynamic: true })
+                        url: message.guild.iconURL()
                     },
-                    description,
-                    timestamp: Date.now()
+                    description
                 }]
         }).catch(() => null);
     }

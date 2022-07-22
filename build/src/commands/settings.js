@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = exports.permission = exports.options = void 0;
-const builders_1 = require("@discordjs/builders");
-exports.options = new builders_1.SlashCommandBuilder()
+const discord_js_1 = require("discord.js");
+exports.options = new discord_js_1.SlashCommandBuilder()
     .setName("settings")
     .setDescription("Настройки бота на сервере.")
     .addSubcommand((c) => c.setName("get").setDescription("Получить настройки сервера."))
@@ -28,7 +28,6 @@ const run = async (interaction) => {
         await interaction.reply({
             embeds: [{
                     title: "Настройки " + interaction.guild.name,
-                    timestamp: Date.now(),
                     fields: [{
                             name: "Удаление закреплённых сообщений",
                             value: gset.get().purgePinned ?

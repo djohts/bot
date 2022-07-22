@@ -48,7 +48,7 @@ module.exports = async (message) => {
     count++;
     gdb.addToCount(message.member);
     let countingMessage = message;
-    if (message.channel.type === "DM" ||
+    if (message.channel.type === discord_js_1.ChannelType.DM ||
         message.channel instanceof discord_js_1.ThreadChannel)
         return;
     if (modules.includes("webhook"))
@@ -56,12 +56,12 @@ module.exports = async (message) => {
             const webhooks = await message.channel.fetchWebhooks();
             let webhook = webhooks.find((w) => w.name === "Counting");
             if (!webhook)
-                webhook = await message.channel.createWebhook("Counting");
+                webhook = await message.channel.createWebhook({ name: "Counting" });
             if (webhook) {
                 countingMessage = await webhook.send({
                     content: content,
                     username: message.author.username,
-                    avatarURL: message.author.displayAvatarURL({ dynamic: true }),
+                    avatarURL: message.author.displayAvatarURL(),
                     allowedMentions: {
                         users: [],
                         roles: [],

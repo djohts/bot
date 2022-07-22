@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatScore = exports.generateID = exports.getPermissionLevel = void 0;
+const discord_js_1 = require("discord.js");
 const config_1 = __importDefault(require("../../config"));
 const getPermissionLevel = (member) => {
     if (config_1.default.admins[0] == member.user.id)
@@ -12,7 +13,7 @@ const getPermissionLevel = (member) => {
         return 4;
     if (member.guild.ownerId == member.user.id)
         return 3;
-    if (member.permissions.has("MANAGE_GUILD"))
+    if (member.permissions.has(discord_js_1.PermissionFlagsBits.ManageGuild))
         return 2;
     return 0;
 };
