@@ -1,12 +1,108 @@
 {
-    "commands": {},
-    "handlers": {
-        "prepareGuilds": {
-            "in_process": "💢 Preparing this channel for counting...",
-            "in_process_time": "💢 Preparing this channel for counting... **`[{timestring}]`**",
-            "done": "🔰 Channel is ready for counting! **`[{timestring}]`**",
-            "error": "❌ Something went wrong while processing this channel."
+    "commands": {
+        "ban": {
+            "cannotBan": "❌ I can't ban this user.",
+            "cannotParseTime": "❌ I can't parse that time.",
+            "alreadyBanned": "❌ This user is already banned.",
+            "noPerm": "❌ You don't have permission to ban this user.",
+            "notSpecified": "Not specified.",
+            "dmEmbed": {
+                "title": "Banned",
+                "staff": "Moderator",
+                "time": "Time",
+                "reason": "Reason"
+            },
+            "success": "✅ Successfully banned {user}.",
+            "notified": "User notified via DM message",
+            "unknownError": "❌ An unknown error occurred."
+        },
+        "buttonroles": {
+            "create": {
+                "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {perms}",
+                "cantGive": "❌ I can't give this role out.",
+                "invalidEmoji": "❌ {emoji} is not a valid unicode emoji.",
+                "working": "💢 Working...",
+                "chooseRoles": "Choose roles",
+                "done": "✅ Done.",
+                "noMessage": "❌ Message not found.",
+                "limitReached": "❌ You can only create **5** button roles per message.",
+                "alreadyExists": "❌ The message already has this button role.",
+                "unknownError": "❌ An unknown error occurred."
+            },
+            "delete": {
+                "deleted": "✅ Successfully deleted button role ID: {id}."
+            },
+            "list": {
+                "embedTitle": "Button roles ● {guild}",
+                "empty": "its empty in here",
+                "page": "Page {page}"
+            }
+        },
+        "docs": {
+            "docs": "📚 Bot documentation can be found here: {link}"
+        },
+        "flows": [],
+        "info": [],
+        "leaderboard": {
+            "embedTitle": "Counting leaderboard ● {guild}"
         }
     },
-    "generic": {}
+    "events": {
+        "channelDelete": {
+            "playerStop": "Channel deleted. Stopping player"
+        },
+        "voiceChannelJoin": {
+            "roomName": "{user}'s room"
+        },
+        "voiceChannelSwitch": {
+            "roomName": "{user}'s room"
+        }
+    },
+    "handlers": {
+        "counting": {
+            "liveboard": {
+                "embed": {
+                    "title": "{guild} ● Counting leaders"
+                }
+            }
+        },
+        "interactions": {
+            "buttons": {
+                "no": "❌ Ви не можете використати це."
+            },
+            "index": {
+                "bot_loading": "🌀 Я ще завантажуюсь, будь ласка, зачекайте..."
+            },
+            "slash": {
+                "no_commands": "❌ Команди вимкнено розробником. Приєднуйтесь до {link} для отримання додаткової інформації.",
+                "channel": "❌ Команди вимкнено у цьому каналі.",
+                "noperm": "❌ You don't have permission to use this command."
+            }
+        },
+        "buttonroles": {
+            "noperm": "❌ У мене недостатньо прав для зміни ролей.",
+            "no_role": "❌ Роль не знайдено.",
+            "rolepos": "❌ Позиція ролі занадто висока. Роль: {role}, бот: {bot}",
+            "added": "✅ Роль додано: {role}.",
+            "removed": "✅ Роль видалено: {role}.",
+            "error": "❌ Сталася помилка. Будь ласка, зв'яжіться з розробником."
+        },
+        "lava": {
+            "empty_vc": "♻️ Всі користувачі вийшли з голосового каналу. Зупинка плеєра.",
+            "loading": "⏳ Завантаження...",
+            "empty_queue": "♻️ Player reached the end of the queue."
+        },
+        "prepareGuilds": {
+            "in_process": "💢 Підготовка цього каналу до рахування...",
+            "in_process_time": "💢 Підготовка цього каналу для рахування... **`[{timestring}]`**",
+            "done": "🔰 Канал готовий до рахування! **`[{timestring}]`**",
+            "error": "❌ Щось пішло не так під час обробки цього каналу."
+        }
+    },
+    "generic": {
+        "musicTicker": {
+            "channel": "Channel",
+            "progress": "Progress"
+        }
+    }
 }
