@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@discordjs/builders": "^0.15.0",
-        "@discordjs/rest": "^0.5.0",
+        "@discordjs/rest": "^0.6.0",
         "@eartharoid/i18n": "^1.0.4",
         "@fastify/cookie": "^7.0.0",
         "@fastify/session": "^9.0.0",
