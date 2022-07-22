@@ -6,10 +6,9 @@ const buttons_1 = __importDefault(require("./buttons"));
 const slash_1 = __importDefault(require("./slash"));
 const autocomplete_1 = __importDefault(require("./autocomplete"));
 module.exports = async (interaction) => {
-    if (!interaction.guild ||
-        !interaction.isCommand() &&
-            !interaction.isButton() &&
-            !interaction.isAutocomplete())
+    if (!interaction.isCommand() &&
+        !interaction.isButton() &&
+        !interaction.isAutocomplete())
         return;
     if (interaction.client.loading &&
         (interaction.isCommand() ||

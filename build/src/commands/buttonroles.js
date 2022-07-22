@@ -23,7 +23,8 @@ const utils_1 = require("../handlers/utils");
 const Util_1 = __importDefault(require("../util/Util"));
 const run = async (interaction) => {
     const gdb = await Util_1.default.database.guild(interaction.guild.id);
-    const addToGlobal = Util_1.default.database.global.addToArray;
+    const global = await Util_1.default.database.global();
+    const addToGlobal = global.addToArray;
     const cmd = interaction.options.getSubcommand();
     if (cmd == "create") {
         const channel = interaction.options.getChannel("channel");

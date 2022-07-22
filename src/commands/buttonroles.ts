@@ -46,7 +46,8 @@ import Util from "../util/Util";
 
 export const run = async (interaction: CommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
-    const addToGlobal = Util.database.global.addToArray;
+    const global = await Util.database.global();
+    const addToGlobal = global.addToArray;
     const cmd = interaction.options.getSubcommand();
 
     if (cmd == "create") {

@@ -17,14 +17,14 @@ module.exports = (fastify, _, done) => {
         const newBotInfo = await sharding_1.manager.broadcastEval((bot) => ({
             status: bot.ws.status,
             guilds: bot.guilds.cache.size,
-            channels: bot.channels.cache.size,
             cachedUsers: bot.users.cache.size,
+            channels: bot.channels.cache.size,
             users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
             ping: bot.ws.ping,
             loading: bot.loading
         })).then((results) => results.reduce((info, next, index) => {
             for (const [key, value] of Object.entries(next)) {
-                if (["guilds", "cachedUsers", "users"].includes(key))
+                if (["guilds", "cachedUsers", "channels", "users"].includes(key))
                     info[key] = (info[key] || 0) + value;
             }
             ;
@@ -73,14 +73,14 @@ module.exports = (fastify, _, done) => {
         res.send(guilds);
     });
     fastify.get("/bot/isinuguild/:guild", async (req, res) => {
-        const guildid = req.params.guild;
-        if (!guildid)
+        const { guild } = req.params;
+        if (!guild)
             return res.send({ isinuguild: false });
-        const guild = await sharding_1.manager.broadcastEval((bot, { guildid }) => bot.guilds.cache.get(guildid) || null, {
-            shard: discord_js_1.ShardClientUtil.shardIdForGuildId(guildid, sharding_1.manager.shards.size),
-            context: { guildid }
+        const isinuguild = await sharding_1.manager.broadcastEval((bot, guild) => !!bot.guilds.cache.get(guild), {
+            shard: discord_js_1.ShardClientUtil.shardIdForGuildId(guild, sharding_1.manager.shards.size),
+            context: guild
         });
-        res.send({ isinuguild: !!guild });
+        res.send({ isinuguild });
     });
     fastify.get("/invite/:guildid", (req, res) => {
         const guildid = req.params.guildid;
@@ -89,7 +89,6 @@ module.exports = (fastify, _, done) => {
             "https://discord.com/oauth2/authorize",
             `?client_id=${botid}`,
             `&guild_id=${guildid}`,
-            "&disable_guild_select=true",
             "&scope=bot%20applications.commands",
             "&permissions=1375450033182"
         ].join("")) : res.redirect([
@@ -105,15 +104,15 @@ module.exports = (fastify, _, done) => {
         const options = req.body;
         switch (options.type) {
             case "new_bot_bump":
-                return await wh.send({
-                    content: [
-                        `<@${options.data.user}>, спасибо за ап на \`boticord.top\`!`,
-                        `Вы можете сделать повторный ап <t:${Math.round(options.data.at / 1000) + 4 * 60 * 60}:R>.`
-                    ].join("\n"),
-                    username: "ботикорд",
+                sharding_1.manager.broadcastEval((bot, options) => {
+                    bot.util.func.processBotBump(options);
+                }, {
+                    shard: discord_js_1.ShardClientUtil.shardIdForGuildId("888870095659630664", sharding_1.manager.shards.size),
+                    context: options
                 });
+                break;
             case "new_bot_comment":
-                return await wh.send({
+                await wh.send({
                     embeds: [{
                             title: "Новый комментарий",
                             description: [
@@ -124,12 +123,13 @@ module.exports = (fastify, _, done) => {
                             fields: [{
                                     name: "Оценка",
                                     value: !options.data.comment.vote.new
-                                        ? "Нейтральная" : options.data.comment.vote.new === -1
-                                        ? "Негативная" : "Позитивная"
+                                        ? "Нейтральная" : options.data.comment.vote.new === 1
+                                        ? "Позитивная" : "Негативная"
                                 }]
                         }],
                     username: "ботикорд"
                 });
+                break;
             case "edit_bot_comment":
                 let vote;
                 if (options.data.comment.vote.new == 1)
@@ -138,7 +138,7 @@ module.exports = (fastify, _, done) => {
                     vote = "Негативная";
                 else
                     vote = "Нейтральная";
-                return await wh.send({
+                await wh.send({
                     embeds: [{
                             title: "Комментарий изменён",
                             description: [
@@ -153,8 +153,10 @@ module.exports = (fastify, _, done) => {
                         }],
                     username: "ботикорд"
                 });
+                break;
         }
         ;
+        return res.status(202).send();
     });
     done();
 };

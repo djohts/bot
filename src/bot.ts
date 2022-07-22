@@ -22,6 +22,7 @@ export const client = new ModifiedClient({
         }
     },
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
+    partials: ["CHANNEL", "USER"],
     presence: {
         status: "dnd",
         activities: [{
@@ -57,6 +58,7 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
+    await (await db.global()).reload();
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
 
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user?.setPresence({

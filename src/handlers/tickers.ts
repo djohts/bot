@@ -1,10 +1,14 @@
+import { MessageActionRow, MessageButton, TextChannel } from "discord.js";
+import { BcBotBumpAction } from "../constants/types";
 import Util from "../util/Util";
+import { UserFetcher } from "./bottleneck";
 
 export = () => {
     updatePresence();
     checkBans();
     tickMusicPlayers();
     updateGuildStatsChannels();
+    if (Util.client.shard.ids[0] === 0) processBotBumps();
 };
 
 function updatePresence() {
@@ -33,4 +37,63 @@ function tickMusicPlayers() {
 function updateGuildStatsChannels() {
     Promise.all(Util.client.guilds.cache.map((guild) => Util.func.updateGuildStatsChannels(guild.id)))
         .then(() => setTimeout(() => updateGuildStatsChannels(), 10 * 60 * 1000));
+};
+
+function processBotBumps() {
+    Util.database.global().then(async (global) => {
+        await Promise.all(global.get().boticordBumps.map(async (data) => {
+            try {
+                const delay = 2 * 60 * 60 * 1000;
+                if (data.at + delay > Date.now()) return;
+                global.removeFromArray("boticordBumps", data);
+                const udb = await Util.database.users(data.user);
+                await udb.reload();
+
+                if (udb.isSubscribed("boticord")) {
+                    const fetchUser = (data: BcBotBumpAction["data"]) => Util.client.users.fetch(data.user).catch(() => null);
+                    const user = await UserFetcher.schedule(fetchUser, data);
+
+                    let dmsent = false;
+
+                    await user.send({
+                        embeds: [{
+                            title: "Мониторинг",
+                            description: "Вы можете снова апнуть бота на `boticord.top`.",
+                        }],
+                        components: [
+                            new MessageActionRow().addComponents(
+                                new MessageButton().setLabel("Апнуть бота").setStyle("LINK").setURL("https://boticord.top/bot/889214509544247306")
+                            )
+                        ]
+                    }).then(async () => { dmsent = true; }).catch(() => null);
+
+                    if (dmsent) {
+                        await Util.func.uselesslog({ content: `sent boticord up notification to ${user.tag} ${user} (\`${user.id}\`)` });
+                    } else {
+                        const channel = Util.client.channels.cache.get("957937585999736858") as TextChannel;
+
+                        await channel.send({
+                            content: `${user},`,
+                            embeds: [{
+                                title: "Мониторинг",
+                                description: [
+                                    "Вы можете снова апнуть бота на `boticord.top`.",
+                                    "Нажав на кнопку ниже, вы подпишетесь на уведомления о возможности поднимать в рейтинге нашего бота.",
+                                    "Дайте боту возможность писать вам в личные сообщения, посредством удаления из чёрного списка бота или выдавая доступ на общих серверах с ботом писать в личные сообщения пользователям без добавления в друзья"
+                                ].join("\n"),
+                                image: {
+                                    url: "https://cdn.discordapp.com/attachments/768041170076827648/999436594664702012/UR4yHOER.gif"
+                                }
+                            }],
+                            components: [
+                                new MessageActionRow().addComponents(
+                                    new MessageButton().setLabel("Апнуть бота").setStyle("LINK").setURL("https://boticord.top/bot/889214509544247306")
+                                )
+                            ]
+                        });
+                    };
+                };
+            } catch (e) { console.error(e); };
+        })).then(() => setTimeout(() => processBotBumps(), 30 * 1000));
+    });
 };

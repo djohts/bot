@@ -22,6 +22,7 @@ const Util_1 = __importDefault(require("../util/Util"));
 const { limitFlows, limitTriggers, limitActions } = flows_1.default;
 const run = async (interaction) => {
     const gdb = await Util_1.default.database.guild(interaction.guild.id);
+    const global = await Util_1.default.database.global();
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
     if (cmd == "create") {
@@ -105,7 +106,7 @@ const run = async (interaction) => {
         channel.delete();
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
-            Util_1.default.database.global.addToArray("generatedIds", flowId);
+            global.addToArray("generatedIds", flowId);
             await interaction.editReply("✅ Поток был успешно создан.");
         }
         else
@@ -116,7 +117,7 @@ const run = async (interaction) => {
         if (!flows[flowId])
             return await interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
         gdb.removeFromObject("flows", flowId);
-        Util_1.default.database.global.removeFromArray("generatedIds", flowId);
+        global.removeFromArray("generatedIds", flowId);
         await interaction.reply({
             content: `✅ Поток \`${flowId}\` был удалён.`
         });

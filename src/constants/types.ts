@@ -11,7 +11,8 @@ export interface Config {
         bc: string,
         bc_hook_key: string
     },
-    notifications_webhook?: string,
+    notifications_webhook: string,
+    useless_webhook: string,
     admins: string[],
     lava: {
         nodes: NodeOptions[],
@@ -106,7 +107,13 @@ export interface GSetObject {
 export interface GlobalObject {
     maintenance: boolean,
     debug: boolean,
-    generatedIds: string[]
+    generatedIds: string[],
+    boticordBumps: BcBotBumpAction["data"][]
+}
+
+export interface UserObject {
+    userid: string,
+    subscriptions: Subscription[],
 }
 
 export interface BcBotBumpAction {
@@ -133,3 +140,5 @@ export interface BcBotCommentAction {
         }
     }
 }
+
+export type Subscription = "boticord";

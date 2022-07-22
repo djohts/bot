@@ -25,10 +25,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+const config_1 = __importDefault(require("../../config"));
 const util_1 = require("util");
+const discord_js_1 = require("discord.js");
 const string_progressbar_1 = require("string-progressbar");
 const pretty_ms_1 = __importDefault(require("pretty-ms"));
 const i18n_1 = __importDefault(require("./i18n"));
+const bottleneck_1 = require("../handlers/bottleneck");
+const uselesswebhook = new discord_js_1.WebhookClient({ url: config_1.default.useless_webhook });
 let util = null;
 class Util {
     constructor() {
@@ -150,7 +154,52 @@ class Util {
                     .then(() => gdb.removeFromObject("bans", key))
                     .catch(() => gdb.removeFromObject("bans", key));
             }));
-        }
+        },
+        processBotBump: async (options) => {
+            const { data } = options;
+            const global = await this.database.global();
+            global.addToArray("boticordBumps", data);
+            const fetchUser = (data) => this.client.users.fetch(data.user).catch(() => null);
+            const user = await bottleneck_1.UserFetcher.schedule(fetchUser, data);
+            let dmsent = false;
+            await user.send({
+                embeds: [{
+                        title: "Мониторинг",
+                        description: [
+                            "Спасибо за ап на `boticord.top`!",
+                            "Нажав на кнопку ниже, вы подпишетесь на уведомления о возможности поднимать в рейтинге нашего бота."
+                        ].join("\n")
+                    }],
+                components: [
+                    new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`))
+                ]
+            }).then(async () => { dmsent = true; }).catch(() => null);
+            if (dmsent) {
+                await this.func.uselesslog({ content: `${user.tag} ${user} (\`${user.id}\`) bumped on boticord.top` });
+            }
+            else {
+                const channel = this.client.channels.cache.get("957937585999736858");
+                await channel.send({
+                    content: `${user},`,
+                    embeds: [{
+                            title: "Мониторинг",
+                            description: [
+                                "Спасибо за ап на `boticord.top`!",
+                                "Нажав на кнопку ниже, вы подпишетесь на уведомления о возможности поднимать в рейтинге нашего бота.",
+                                "Дайте боту возможность писать вам в личные сообщения, посредством удаления из чёрного списка бота или выдавая доступ на общих серверах с ботом писать в личные сообщения пользователям без добавления в друзья"
+                            ].join("\n"),
+                            image: {
+                                url: "https://cdn.discordapp.com/attachments/768041170076827648/999436594664702012/UR4yHOER.gif"
+                            }
+                        }],
+                    components: [
+                        new discord_js_1.MessageActionRow().addComponents(new discord_js_1.MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`))
+                    ]
+                });
+            }
+            ;
+        },
+        uselesslog: (opts) => uselesswebhook.send(opts)
     };
     setClient(client) {
         Promise.resolve().then(() => __importStar(require("discord-logs"))).then((x) => x.default(client));

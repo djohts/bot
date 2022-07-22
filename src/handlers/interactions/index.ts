@@ -6,7 +6,6 @@ import handleAutocomplete from "./autocomplete";
 
 export = async (interaction: Interaction) => {
     if (
-        !interaction.guild ||
         !interaction.isCommand() &&
         !interaction.isButton() &&
         !interaction.isAutocomplete()
