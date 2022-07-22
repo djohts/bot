@@ -1,68 +1,68 @@
 {
     "commands": {
         "ban": {
-            "cannotBan": "❌ I can't ban this user.",
-            "cannotParseTime": "❌ I can't parse that time.",
-            "alreadyBanned": "❌ This user is already banned.",
-            "noPerm": "❌ You don't have permission to ban this user.",
-            "notSpecified": "Not specified.",
+            "cannotBan": "❌ Я не могу забанить этого пользователя.",
+            "cannotParseTime": "❌ Я не могу разобрать это время.",
+            "alreadyBanned": "❌ Этот пользователь уже забанен.",
+            "noPerm": "❌ У вас недостаточно прав для бана этого пользователя.",
+            "notSpecified": "Не указано.",
             "dmEmbed": {
-                "title": "Banned",
+                "title": "Забанен",
                 "staff": "Moderator",
-                "time": "Time",
-                "reason": "Reason"
+                "time": "Время",
+                "reason": "Причина"
             },
-            "success": "✅ Successfully banned {user}.",
-            "notified": "User notified via DM message",
-            "unknownError": "❌ An unknown error occurred."
+            "success": "✅ {user} успешно забанен.",
+            "notified": "Пользователь уведомлен в личных сообщениях",
+            "unknownError": "❌ Произошла неизвестная ошибка. "
         },
         "buttonroles": {
             "create": {
-                "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {perms}",
-                "cantGive": "❌ I can't give this role out.",
-                "invalidEmoji": "❌ {emoji} is not a valid unicode emoji.",
-                "working": "💢 Working...",
-                "chooseRoles": "Choose roles",
-                "done": "✅ Done.",
-                "noMessage": "❌ Message not found.",
-                "limitReached": "❌ You can only create **5** button roles per message.",
-                "alreadyExists": "❌ The message already has this button role.",
-                "unknownError": "❌ An unknown error occurred."
+                "noPerms": "❌ У меня недостаточно прав в выбранном канале. Пожалуйста, убедитесь, что у меня есть следующие права: {perms}",
+                "cantGive": "❌ Я не могу выдать эту роль.",
+                "invalidEmoji": "❌ {emoji} не является юникод-эмоджи.",
+                "working": "💢 Работаю...",
+                "chooseRoles": "Выберите роли",
+                "done": "✅ Готово.",
+                "noMessage": "❌ Сообщение не было найдено.",
+                "limitReached": "❌ Вы можете создавать только **5** РПК для каждого сообщения.",
+                "alreadyExists": "❌ Сообщение уже имеет эту РПК.",
+                "unknownError": "❌ Произошла неизвестная ошибка."
             },
             "delete": {
-                "deleted": "✅ Successfully deleted button role ID: {id}."
+                "deleted": "✅ Успешно удалён РПК с ID: {id}."
             },
             "list": {
-                "embedTitle": "Button roles ● {guild}",
-                "empty": "its empty in here",
-                "page": "Page {page}"
+                "embedTitle": "РПК ● {guild}",
+                "empty": "пусто",
+                "page": "Страница {page}"
             }
         },
         "docs": {
-            "docs": "📚 Bot documentation can be found here: {link}"
+            "docs": "📚 Документация бота находится здесь: {link}"
         },
-        "flows": {},
-        "info": {},
+        "flows": [],
+        "info": [],
         "leaderboard": {
-            "embedTitle": "Counting leaderboard ● {guild}"
+            "embedTitle": "Топ счёта ● {guild}"
         }
     },
     "events": {
         "channelDelete": {
-            "playerStop": "Channel deleted. stopping player"
+            "playerStop": "Канал удален. Останавливаю плеер"
         },
         "voiceChannelJoin": {
-            "roomName": "{user}'s room"
+            "roomName": "Комната {user}"
         },
         "voiceChannelSwitch": {
-            "roomName": "{user}'s room"
+            "roomName": "Комната {user}"
         }
     },
     "handlers": {
         "counting": {
             "liveboard": {
                 "embed": {
-                    "title": "{guild} ● Counting leaders"
+                    "title": "{guild} ● Лидеры счёта"
                 }
             }
         },
@@ -90,7 +90,7 @@
         "lava": {
             "empty_vc": "♻️ Все пользователи покинули голосовой канал. Останавливаю плеер.",
             "loading": "⏳ Загрузка...",
-            "empty_queue": "♻️ Плеер достиг конца очереди. Останавливаю."
+            "empty_queue": "♻️ Player reached the end of the queue."
         },
         "prepareGuilds": {
             "in_process": "💢 Подготовка этого канала к счету...",
