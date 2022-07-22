@@ -23,7 +23,7 @@
         "node": ">=16"
     },
     "dependencies": {
-        "@discordjs/builders": "^0.15.0",
+        "@discordjs/builders": "^0.16.0",
         "@discordjs/rest": "^0.5.0",
         "@eartharoid/i18n": "^1.0.4",
         "@fastify/cookie": "^7.0.0",
