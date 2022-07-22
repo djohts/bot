@@ -30,18 +30,21 @@ module.exports = async (guild) => {
                     channel.permissionOverwrites.edit(guild.roles.everyone, { SEND_MESSAGES: false }).catch(() => null);
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
+                const filter = (message) => message.id !== alert.id &&
+                    message.createdTimestamp > Date.now() - 14 * 24 * 60 * 60 * 1000;
                 while (processing && !fail) {
-                    messages = messages.filter((m) => m.id !== alert.id);
+                    messages = messages.filter(filter);
+                    console.log(messages);
                     if (!messages.size)
                         processing = false;
                     else {
-                        await channel.bulkDelete(messages).catch(() => fail = true);
+                        await channel.bulkDelete(messages, true).catch(() => fail = true);
                         await alert.edit(`💢 Идёт подготовка канала. **\`[${(0, pretty_ms_1.default)(Date.now() - preparationStart)}]\`**`).catch(() => null);
                     }
                     ;
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { fail = true; return null; });
-                        if (messages?.filter((m) => m.id !== alert.id).size)
+                        if (messages?.filter(filter).size)
                             await sleep(3500);
                     }
                     ;

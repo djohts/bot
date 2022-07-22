@@ -1,10 +1,12 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const dbCache = new Map(), dbSaveQueue = new Map();
 const globalObject = {
     maintenance: false,
     debug: false,
-    generatedIds: []
+    generatedIds: [],
+    boticordBumps: []
 };
 const globalSchema = new mongoose_1.Schema(globalObject, { minimize: true });
 const Global = (0, mongoose_1.model)("Global", globalSchema);
@@ -38,47 +40,49 @@ const save = async (changes) => {
             dbSaveQueue.delete("global");
     }).catch(console.log);
 };
-if (!dbCache.has("global"))
-    (async () => await load())();
-module.exports = {
-    reload: () => load(),
-    unload: () => dbCache.delete("global"),
-    get: () => Object.assign({}, dbCache.get("global")),
-    set: (key, value) => {
-        dbCache.get("global")[key] = value;
-        save([key]);
-        return dbCache.get("global");
-    },
-    setMultiple: (changes) => {
-        let globalCache = dbCache.get("global");
-        Object.assign(globalCache, changes);
-        save(Object.keys(changes));
-        return dbCache.get("global");
-    },
-    addToArray: (array, value) => {
-        dbCache.get("global")[array].push(value);
-        save([array]);
-        return dbCache.get("global");
-    },
-    removeFromArray: (array, value) => {
-        dbCache.get("global")[array] = dbCache.get("global")[array].filter((aValue) => aValue !== value);
-        save([array]);
-        return dbCache.get("global");
-    },
-    setOnObject: (object, key, value) => {
-        dbCache.get("global")[object][key] = value;
-        save([object]);
-        return dbCache.get("global");
-    },
-    removeFromObject: (object, key) => {
-        delete dbCache.get("global")[object][key];
-        save([object]);
-        return dbCache.get("global");
-    },
-    reset: () => {
-        let globalCache = dbCache.get("global");
-        Object.assign(globalCache, globalObject);
-        save(Object.keys(globalObject));
-        return dbCache.get("global");
-    }
-};
+exports.default = () => (async () => {
+    if (!dbCache.has("global"))
+        await load();
+    return {
+        reload: () => load(),
+        unload: () => dbCache.delete("global"),
+        get: () => Object.assign({}, dbCache.get("global")),
+        set: (key, value) => {
+            dbCache.get("global")[key] = value;
+            save([key]);
+            return dbCache.get("global");
+        },
+        setMultiple: (changes) => {
+            let globalCache = dbCache.get("global");
+            Object.assign(globalCache, changes);
+            save(Object.keys(changes));
+            return dbCache.get("global");
+        },
+        addToArray: (array, value) => {
+            dbCache.get("global")[array].push(value);
+            save([array]);
+            return dbCache.get("global");
+        },
+        removeFromArray: (array, value) => {
+            dbCache.get("global")[array] = dbCache.get("global")[array].filter((aValue) => aValue !== value);
+            save([array]);
+            return dbCache.get("global");
+        },
+        setOnObject: (object, key, value) => {
+            dbCache.get("global")[object][key] = value;
+            save([object]);
+            return dbCache.get("global");
+        },
+        removeFromObject: (object, key) => {
+            delete dbCache.get("global")[object][key];
+            save([object]);
+            return dbCache.get("global");
+        },
+        reset: () => {
+            let globalCache = dbCache.get("global");
+            Object.assign(globalCache, globalObject);
+            save(Object.keys(globalObject));
+            return dbCache.get("global");
+        }
+    };
+});

@@ -1,6 +1,7 @@
 import { ButtonInteraction, Message } from "discord.js";
 import { deleteMessage } from "../../handlers/utils";
 import buttonRoles from "../buttonroles";
+import subscriptions from "../subscriptions";
 
 export = async (interaction: ButtonInteraction) => {
     if (interaction.message.type === "APPLICATION_COMMAND") {
@@ -10,5 +11,6 @@ export = async (interaction: ButtonInteraction) => {
     };
 
     if (interaction.customId == "reply:delete") return deleteMessage(interaction.message as Message);
-    if (interaction.customId.startsWith("br:")) return buttonRoles(interaction);
+    if (interaction.customId.startsWith("br:")) return await buttonRoles(interaction);
+    if (["subscribe"].some((i) => interaction.customId.startsWith(i))) return await subscriptions(interaction);
 };

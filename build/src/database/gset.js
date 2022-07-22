@@ -7,7 +7,6 @@ const gSetObject = {
     guildid: "",
     delMuted: false,
     purgePinned: false,
-    detectScamLinks: false,
     voices: { enabled: false, lobby: "", parent: "" }
 };
 const gSetSchema = new mongoose_1.Schema(gSetObject, { minimize: true });

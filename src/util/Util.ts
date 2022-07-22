@@ -1,10 +1,13 @@
-import { ModifiedClient } from "../constants/types";
+import config from "../../config";
+import { BcBotBumpAction, ModifiedClient } from "../constants/types";
 import { inspect } from "util";
 import { Manager, Player } from "erela.js";
-import { Collection, Guild, GuildMember, Message } from "discord.js";
+import { Collection, Guild, GuildMember, Message, MessageActionRow, MessageButton, MessageOptions, TextChannel, WebhookClient } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 import i18n from "./i18n";
+import { UserFetcher } from "../handlers/bottleneck";
+const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 
 let util: Util | null = null;
 
@@ -121,7 +124,59 @@ class Util {
                     .then(() => gdb.removeFromObject("bans", key))
                     .catch(() => gdb.removeFromObject("bans", key));
             }));
-        }
+        },
+        processBotBump: async (options: BcBotBumpAction) => {
+            const { data } = options;
+            const global = await this.database.global();
+            global.addToArray("boticordBumps", data);
+
+            const fetchUser = (data: BcBotBumpAction["data"]) => this.client.users.fetch(data.user).catch(() => null);
+            const user = await UserFetcher.schedule(fetchUser, data);
+
+            let dmsent = false;
+
+            await user.send({
+                embeds: [{
+                    title: "Мониторинг",
+                    description: [
+                        "Спасибо за ап на `boticord.top`!",
+                        "Нажав на кнопку ниже, вы подпишетесь на уведомления о возможности поднимать в рейтинге нашего бота."
+                    ].join("\n")
+                }],
+                components: [
+                    new MessageActionRow().addComponents(
+                        new MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`)
+                    )
+                ]
+            }).then(async () => { dmsent = true; }).catch(() => null);
+
+            if (dmsent) {
+                await this.func.uselesslog({ content: `${user.tag} ${user} (\`${user.id}\`) bumped on boticord.top` });
+            } else {
+                const channel = this.client.channels.cache.get("957937585999736858") as TextChannel;
+
+                await channel.send({
+                    content: `${user},`,
+                    embeds: [{
+                        title: "Мониторинг",
+                        description: [
+                            "Спасибо за ап на `boticord.top`!",
+                            "Нажав на кнопку ниже, вы подпишетесь на уведомления о возможности поднимать в рейтинге нашего бота.",
+                            "Дайте боту возможность писать вам в личные сообщения, посредством удаления из чёрного списка бота или выдавая доступ на общих серверах с ботом писать в личные сообщения пользователям без добавления в друзья"
+                        ].join("\n"),
+                        image: {
+                            url: "https://cdn.discordapp.com/attachments/768041170076827648/999436594664702012/UR4yHOER.gif"
+                        }
+                    }],
+                    components: [
+                        new MessageActionRow().addComponents(
+                            new MessageButton().setLabel("Подписаться").setStyle("SECONDARY").setCustomId(`subscribe:boticord:${data.user}`)
+                        )
+                    ]
+                });
+            };
+        },
+        uselesslog: (opts: MessageOptions) => uselesswebhook.send(opts)
     };
 
     public setClient(client: ModifiedClient): Util {
@@ -130,12 +185,10 @@ class Util {
         this._client = client;
         return this;
     };
-
     public setDatabase(database: typeof import("../database/")): Util {
         this._database = database;
         return this;
     };
-
     public setLavaManager(lavaManager: Manager): Util {
         this._lavaManager = lavaManager;
         return this;

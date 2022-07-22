@@ -21,6 +21,7 @@ const { limitFlows, limitTriggers, limitActions } = limits;
 
 export const run = async (interaction: CommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
+    const global = await Util.database.global();
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
     if (cmd == "create") {
@@ -114,7 +115,7 @@ export const run = async (interaction: CommandInteraction) => {
         channel.delete();
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
-            Util.database.global.addToArray("generatedIds", flowId);
+            global.addToArray("generatedIds", flowId);
 
             await interaction.editReply("✅ Поток был успешно создан.");
         } else await interaction.editReply("❌ Создание потока было отменено.");
@@ -123,7 +124,7 @@ export const run = async (interaction: CommandInteraction) => {
         if (!flows[flowId]) return await interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
 
         gdb.removeFromObject("flows", flowId);
-        Util.database.global.removeFromArray("generatedIds", flowId);
+        global.removeFromArray("generatedIds", flowId);
 
         await interaction.reply({
             content: `✅ Поток \`${flowId}\` был удалён.`

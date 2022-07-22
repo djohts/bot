@@ -6,7 +6,8 @@ const dbCache = new Map<string, GlobalObject>(), dbSaveQueue = new Map<string, s
 const globalObject = {
     maintenance: false,
     debug: false,
-    generatedIds: []
+    generatedIds: [],
+    boticordBumps: []
 } as GlobalObject;
 
 const globalSchema = new Schema(globalObject, { minimize: true });
@@ -41,57 +42,58 @@ const save = async (changes: string[]) => {
     }).catch(console.log);
 };
 
-if (!dbCache.has("global")) (async () => await load())();
+export default () => (async () => {
+    if (!dbCache.has("global")) await load();
+    return {
+        reload: () => load(),
+        unload: () => dbCache.delete("global"),
 
-export = {
-    reload: () => load(),
-    unload: () => dbCache.delete("global"),
+        get: () => Object.assign({}, dbCache.get("global")),
+        set: (key: string, value: string | number | object) => {
+            dbCache.get("global")[key] = value;
+            save([key]);
 
-    get: () => Object.assign({}, dbCache.get("global")),
-    set: (key: string, value: string | number | object) => {
-        dbCache.get("global")[key] = value;
-        save([key]);
+            return dbCache.get("global");
+        },
+        setMultiple: (changes: string[]) => {
+            let globalCache = dbCache.get("global");
+            Object.assign(globalCache, changes);
 
-        return dbCache.get("global");
-    },
-    setMultiple: (changes: string[]) => {
-        let globalCache = dbCache.get("global");
-        Object.assign(globalCache, changes);
+            save(Object.keys(changes));
 
-        save(Object.keys(changes));
+            return dbCache.get("global");
+        },
+        addToArray: (array: string, value: string | number | object | boolean) => {
+            dbCache.get("global")[array].push(value);
+            save([array]);
 
-        return dbCache.get("global");
-    },
-    addToArray: (array: string, value: string | number | object | boolean) => {
-        dbCache.get("global")[array].push(value);
-        save([array]);
+            return dbCache.get("global");
+        },
+        removeFromArray: (array: string, value: string | number | object | boolean) => {
+            dbCache.get("global")[array] = dbCache.get("global")[array].filter((aValue: string | number | object | boolean) => aValue !== value);
+            save([array]);
 
-        return dbCache.get("global");
-    },
-    removeFromArray: (array: string, value: string | number | object | boolean) => {
-        dbCache.get("global")[array] = dbCache.get("global")[array].filter((aValue: string | number | object | boolean) => aValue !== value);
-        save([array]);
+            return dbCache.get("global");
+        },
+        setOnObject: (object: string, key: string, value: string | number | object | boolean) => {
+            dbCache.get("global")[object][key] = value;
+            save([object]);
 
-        return dbCache.get("global");
-    },
-    setOnObject: (object: string, key: string, value: string | number | object | boolean) => {
-        dbCache.get("global")[object][key] = value;
-        save([object]);
+            return dbCache.get("global");
+        },
+        removeFromObject: (object: string, key: string) => {
+            delete dbCache.get("global")[object][key];
+            save([object]);
 
-        return dbCache.get("global");
-    },
-    removeFromObject: (object: string, key: string) => {
-        delete dbCache.get("global")[object][key];
-        save([object]);
+            return dbCache.get("global");
+        },
+        reset: () => {
+            let globalCache = dbCache.get("global");
+            Object.assign(globalCache, globalObject);
 
-        return dbCache.get("global");
-    },
-    reset: () => {
-        let globalCache = dbCache.get("global");
-        Object.assign(globalCache, globalObject);
+            save(Object.keys(globalObject));
 
-        save(Object.keys(globalObject));
-
-        return dbCache.get("global");
-    }
-};
+            return dbCache.get("global");
+        }
+    };
+});

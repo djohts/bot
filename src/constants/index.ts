@@ -1,6 +1,5 @@
 import { GuildMember } from "discord.js";
 import config from "../../config";
-import Util from "../util/Util";
 
 export const getPermissionLevel = (member: GuildMember): 5 | 4 | 3 | 2 | 1 | 0 => {
     if (config.admins[0] == member.user.id) return 5; // bot owner
@@ -13,9 +12,8 @@ export const getPermissionLevel = (member: GuildMember): 5 | 4 | 3 | 2 | 1 | 0 =
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 export const generateID = (): string => {
     let id: string;
-    const { generatedIds } = Util.database.global.get();
 
-    while (!id && generatedIds.includes(id)) {
+    while (!id) {
         id = "";
         for (let i = 0; i < 10; i++) id += chars[Math.floor(Math.random() * chars.length)];
     };

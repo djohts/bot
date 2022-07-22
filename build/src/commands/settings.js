@@ -14,8 +14,6 @@ exports.options = new builders_1.SlashCommandBuilder()
     name: "Удаление закреплённых сообщений при очистке (/purge).", value: "purgePinned"
 }, {
     name: "Временные голосовые каналы.", value: "voices"
-}, {
-    name: "Проверка сообщений на вредоносные ссылки.", value: "detectScamLinks"
 })))
     .addSubcommand((c) => c.setName("setlobby").setDescription("Установить лобби для голосовых каналов.").addChannelOption((o) => o.setName("channel").setDescription("Канал-генератор, в который надо зайти для создания временного канала.").setRequired(true).addChannelTypes(2)))
     .addSubcommand((c) => c.setName("counting").setDescription("Настройки модуля счёта.").addChannelOption((o) => o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelTypes(0)))
@@ -49,19 +47,13 @@ const run = async (interaction) => {
                                 `<#${gset.get().voices.lobby}>` :
                                 "**`Не установлен`**",
                             inline: true
-                        }, {
-                            name: "Проверка сообщений на вредоносные ссылки.",
-                            value: gset.get().detectScamLinks ?
-                                "<:online:887393623845507082> **`Включено`**" :
-                                "<:dnd:887393623786803270> **`Выключено`**",
-                            inline: true
                         }]
                 }]
         });
     }
     else if (cmd == "toggle") {
-        let idk = "";
         const type = interaction.options.getString("setting");
+        let idk = "";
         if (type == "purgePinned") {
             gset.get().purgePinned ? (() => {
                 gset.set("purgePinned", false);
@@ -82,17 +74,6 @@ const run = async (interaction) => {
             })();
             await interaction.reply({ content: idk });
         }
-        else if (type == "detectScamLinks") {
-            gset.get().detectScamLinks ? (() => {
-                gset.set("detectScamLinks", false);
-                idk = "**`Проверка сообщений на вредоносные ссылки`** была выключена.";
-            })() : (() => {
-                gset.set("detectScamLinks", true);
-                idk = "**`Проверка сообщений на вредоносные ссылки`** была включена.";
-            })();
-            await interaction.reply({ content: idk });
-        }
-        ;
         ;
     }
     else if (cmd == "setlobby") {

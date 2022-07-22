@@ -22,6 +22,7 @@ export const client = new ModifiedClient({
         }
     },
     intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_MEMBERS", "GUILD_BANS", "GUILD_VOICE_STATES"],
+    partials: ["CHANNEL", "USER"],
     presence: {
         status: "dnd",
         activities: [{
@@ -39,7 +40,6 @@ export const dokdo = new Dokdo(client, { aliases: ["d"], prefix: "!", noPerm: ()
 Util.setClient(client).setDatabase(db);
 
 export let shard = "[Shard N/A]";
-export const linkRates = new Map<string, Set<string>>();
 client.once("shardReady", async (shardId, unavailable = new Set()) => {
     let start = Date.now();
     shard = `[Shard ${shardId}]`;
@@ -58,9 +58,9 @@ client.once("shardReady", async (shardId, unavailable = new Set()) => {
 
     await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
+    await (await db.global()).reload();
     console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
 
-    for (const id of disabledGuilds) linkRates.set(id, new Set());
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user?.setPresence({
         status: "dnd",
         activities: [{

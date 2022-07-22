@@ -128,7 +128,7 @@ async function postStats() {
         body: JSON.stringify(stats.sdc)
     }).then(async (res) => {
         if (res.status !== 200) {
-            return console.error(`[Manager] Failed to post stats to SDC: ${res.status} ${await res.text()}`);
+            return console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
         }
         ;
     });
@@ -141,7 +141,7 @@ async function postStats() {
         body: JSON.stringify(stats.bc)
     }).then(async (res) => {
         if (res.status !== 200) {
-            return console.error(`[Manager] Failed to post stats to BC: ${res.status} ${await res.text()}`);
+            return console.error(`[Manager] Failed to post stats to BC: ${res.status}`);
         }
         ;
         if (!(await res.json()).ok) {

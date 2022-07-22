@@ -7,7 +7,6 @@ const gSetObject = {
     guildid: "",
     delMuted: false,
     purgePinned: false,
-    detectScamLinks: false,
     voices: { enabled: false, lobby: "", parent: "" }
 } as GSetObject;
 
