@@ -19,6 +19,7 @@ export = async (guild: Guild) => {
             channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)
         ) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId });
+            messages = messages.filter((m) => m.createdTimestamp > Date.now() - (1000 * 60 * 60 * 24 * 7 * 2));
             if (messages.size) {
                 alert = await channel.send("💢 Идёт подготовка канала.").catch(() => null);
 

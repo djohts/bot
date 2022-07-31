@@ -4,6 +4,7 @@ import discordoauth2 from "discord-oauth2";
 import { manager } from "../../sharding";
 import { ModifiedClient, SessionUser, CustomGuild, BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
 import { PermissionFlagsBits, PermissionsBitField, ShardClientUtil, WebhookClient } from "discord.js";
+import axios from "axios";
 const wh = new WebhookClient({ url: config.notifications_webhook });
 const oauth2 = new discordoauth2({
     clientId: config.client.id,
@@ -27,9 +28,69 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             };
             info.shards[index] = next;
             return info;
-        }, { shards: {}, lastUpdate: 0 }));
+        }, {
+            shards: {} as {
+                status: string,
+                guilds: number,
+                cachedUsers: number,
+                channels: number,
+                users: number,
+                ping: number,
+                loading: boolean
+            },
+            guilds: 0,
+            cachedUsers: 0,
+            channels: 0,
+            users: 0,
+            lastUpdate: 0
+        }));
         newBotInfo.lastUpdate = Date.now();
         res.send(newBotInfo);
+    });
+    fastify.get("/metrics", async (req, res) => {
+        const sharddata = (await axios("http://localhost:4000/api/shards").then((response) => response.data)) as {
+            shards: {
+                [key: string]: {
+                    status: string,
+                    guilds: number,
+                    cachedUsers: number,
+                    channels: number,
+                    users: number,
+                    ping: number,
+                    loading: boolean
+                }
+            },
+            guilds: number,
+            cachedUsers: number,
+            channels: number,
+            users: number,
+            lastUpdate: number
+        };
+
+        const metricObject = {
+            total_guilds: sharddata.guilds,
+            total_channels: sharddata.channels,
+            total_users: sharddata.users,
+            total_cached_users: sharddata.cachedUsers,
+            average_ping: Object.values(sharddata.shards).reduce((total, next) => total + next.ping, 0) / Object.keys(sharddata.shards).length,
+
+            shard_guilds: {},
+            shard_channels: {},
+            shard_users: {},
+            shard_cached_users: {},
+            shard_ping: {},
+        } as { [key: string]: number | { [key: string]: number } };
+
+        for (const [key, value] of Object.entries(sharddata.shards)) {
+            metricObject["shard_guilds"][key] = value.guilds;
+            metricObject["shard_channels"][key] = value.channels;
+            metricObject["shard_users"][key] = value.users;
+            metricObject["shard_cached_users"][key] = value.cachedUsers;
+            metricObject["shard_ping"][key] = value.ping;
+        };
+
+        res.type("text/plain");
+        res.send(prometheusMetrics(metricObject));
     });
     fastify.get("/login", (_, res) => {
         res.redirect(oauth2.generateAuthUrl({
@@ -152,4 +213,27 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         return res.status(202).send();
     });
     done();
+};
+
+const isdev = !config.monitoring.bc;
+function prometheusMetrics(obj: { [key: string]: number | { [key: string]: number } }): string {
+    const metrics = [];
+    for (let [key, value] of Object.entries(obj)) {
+        if (isdev) key = `d${key}`;
+        const prefix = [
+            `# HELP ${key} todo`,
+            `# TYPE ${key} gauge`
+        ].join("\n");
+
+        metrics.push(prefix);
+
+        if (typeof value === "number") {
+            metrics.push(`${key} ${value}`);
+        } else {
+            for (const subkey in value) {
+                metrics.push(`${key}{subkey="${subkey}",} ${value[subkey]}`);
+            };
+        };
+    };
+    return metrics.join("\n");
 };

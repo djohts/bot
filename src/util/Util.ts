@@ -180,7 +180,6 @@ class Util {
     };
 
     public setClient(client: ModifiedClient): Util {
-        import("discord-logs").then((x) => x.default(client))
         client.util = this;
         this._client = client;
         return this;

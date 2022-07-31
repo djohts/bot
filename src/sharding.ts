@@ -1,7 +1,7 @@
 require("nodejs-better-console").overrideConsole();
 import { ShardingManager } from "discord.js";
 import readline from "readline";
-import fetch from "node-fetch";
+import axios from "axios";
 import config from "../config";
 import { inspect } from "util";
 const read = readline.createInterface({
@@ -10,6 +10,7 @@ const read = readline.createInterface({
 });
 
 export const manager = new ShardingManager(__dirname + "/bot.js", {
+    totalShards: config.shards,
     token: config.token,
     mode: "worker"
 });
@@ -106,31 +107,31 @@ async function postStats() {
             ).then((res) => res.reduce((prev, val) => prev + val, 0))
         }
     };
-    await fetch("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
+    await axios("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
         method: "POST",
         headers: {
             "Authorization": `SDC ${config.monitoring.sdc}`,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(stats.sdc)
+        data: JSON.stringify(stats.sdc)
     }).then(async (res) => {
         if (res.status !== 200) {
             return console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
         };
     });
-    await fetch("https://api.boticord.top/v1/stats", {
+    await axios("https://api.boticord.top/v1/stats", {
         method: "POST",
         headers: {
             "Authorization": config.monitoring.bc,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(stats.bc)
+        data: JSON.stringify(stats.bc)
     }).then(async (res) => {
         if (res.status !== 200) {
             return console.error(`[Manager] Failed to post stats to BC: ${res.status}`);
         };
-        if (!(await res.json()).ok) {
-            return console.error(`[Manager] Failed to post stats to BC: ${await res.text()}`);
+        if (!res.data.ok) {
+            return console.error(`[Manager] Failed to post stats to BC: ${res.statusText}`);
         };
     });
 };

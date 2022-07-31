@@ -1,11 +1,7 @@
-import { GuildMember, Channel, ChannelType, PermissionFlagsBits } from "discord.js";
+import { GuildMember, ChannelType, PermissionFlagsBits, VoiceBasedChannel } from "discord.js";
 import Util from "../util/Util";
 
-export async function run(member: GuildMember, oldChannel: Channel, newChannel: Channel) {
-    if (
-        oldChannel.type !== ChannelType.GuildVoice ||
-        newChannel.type !== ChannelType.GuildVoice
-    ) return;
+export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, newChannel: VoiceBasedChannel) {
     const gset = await Util.database.settings(member.guild.id);
     const { voices } = gset.get();
     const gdb = await Util.database.guild(member.guild.id);

@@ -6,9 +6,9 @@ import Util from "../util/Util";
 export interface Config {
     token: string,
     database_uri: string,
-    monitoring?: {
-        sdc: string,
-        bc: string,
+    monitoring: {
+        sdc?: string,
+        bc?: string,
         bc_hook_key: string
     },
     notifications_webhook: string,

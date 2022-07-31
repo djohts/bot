@@ -7,7 +7,7 @@ exports.manager = void 0;
 require("nodejs-better-console").overrideConsole();
 const discord_js_1 = require("discord.js");
 const readline_1 = __importDefault(require("readline"));
-const node_fetch_1 = __importDefault(require("node-fetch"));
+const axios_1 = __importDefault(require("axios"));
 const config_1 = __importDefault(require("../config"));
 const util_1 = require("util");
 const read = readline_1.default.createInterface({
@@ -15,6 +15,7 @@ const read = readline_1.default.createInterface({
     output: process.stdout
 });
 exports.manager = new discord_js_1.ShardingManager(__dirname + "/bot.js", {
+    totalShards: config_1.default.shards,
     token: config_1.default.token,
     mode: "worker"
 });
@@ -119,33 +120,33 @@ async function postStats() {
             users: await exports.manager.broadcastEval((bot) => bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)).then((res) => res.reduce((prev, val) => prev + val, 0))
         }
     };
-    await (0, node_fetch_1.default)("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
+    await (0, axios_1.default)("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
         method: "POST",
         headers: {
             "Authorization": `SDC ${config_1.default.monitoring.sdc}`,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(stats.sdc)
+        data: JSON.stringify(stats.sdc)
     }).then(async (res) => {
         if (res.status !== 200) {
             return console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
         }
         ;
     });
-    await (0, node_fetch_1.default)("https://api.boticord.top/v1/stats", {
+    await (0, axios_1.default)("https://api.boticord.top/v1/stats", {
         method: "POST",
         headers: {
             "Authorization": config_1.default.monitoring.bc,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(stats.bc)
+        data: JSON.stringify(stats.bc)
     }).then(async (res) => {
         if (res.status !== 200) {
             return console.error(`[Manager] Failed to post stats to BC: ${res.status}`);
         }
         ;
-        if (!(await res.json()).ok) {
-            return console.error(`[Manager] Failed to post stats to BC: ${await res.text()}`);
+        if (!res.data.ok) {
+            return console.error(`[Manager] Failed to post stats to BC: ${res.statusText}`);
         }
         ;
     });

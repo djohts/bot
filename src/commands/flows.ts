@@ -74,7 +74,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 }]
             }) as TextChannel;
         } catch {
-            return await interaction.reply("❌ Не удалось создать канал для создания потока.");
+            return await interaction.reply("❌ Не удалось создать канал для создания потока.").catch(() => null);
         };
         await interaction.reply({
             content: `🌀 Перейдите в ${channel} для настройки нового потока.`,
@@ -118,16 +118,16 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         });
         const pinned = await channel.send("Загрузка...");
 
-        await pinned.pin();
+        await pinned.pin().catch(() => null);
         const success = await flowWalkthrough(interaction.guild, interaction.user, channel, newFlow, generateEmbed, pinned);
 
-        channel.delete();
+        await channel.delete().catch(() => null);
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
             global.addToArray("generatedIds", flowId);
 
-            await interaction.editReply("✅ Поток был успешно создан.");
-        } else await interaction.editReply("❌ Создание потока было отменено.");
+            await interaction.editReply("✅ Поток был успешно создан.").catch(() => null);
+        } else await interaction.editReply("❌ Создание потока было отменено.").catch(() => null);
     } else if (cmd === "delete") {
         const flowId = interaction.options.getString("id");
         if (!flows[flowId]) return await interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });

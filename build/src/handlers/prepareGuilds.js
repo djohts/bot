@@ -19,6 +19,7 @@ module.exports = async (guild) => {
             channel.permissionsFor(guild.members.me).has(discord_js_1.PermissionFlagsBits.ManageMessages) &&
             channel.permissionsFor(guild.members.me).has(discord_js_1.PermissionFlagsBits.SendMessages)) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId });
+            messages = messages.filter((m) => m.createdTimestamp > Date.now() - (1000 * 60 * 60 * 24 * 7 * 2));
             if (messages.size) {
                 alert = await channel.send("💢 Идёт подготовка канала.").catch(() => null);
                 const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone.id) || { allow: new Set(), deny: new Set() };
