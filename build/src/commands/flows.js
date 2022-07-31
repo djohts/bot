@@ -66,7 +66,7 @@ const run = async (interaction) => {
             });
         }
         catch {
-            return await interaction.reply("❌ Не удалось создать канал для создания потока.");
+            return await interaction.reply("❌ Не удалось создать канал для создания потока.").catch(() => null);
         }
         ;
         await interaction.reply({
@@ -102,16 +102,16 @@ const run = async (interaction) => {
                 }]
         });
         const pinned = await channel.send("Загрузка...");
-        await pinned.pin();
+        await pinned.pin().catch(() => null);
         const success = await (0, walkthrough_1.flowWalkthrough)(interaction.guild, interaction.user, channel, newFlow, generateEmbed, pinned);
-        channel.delete();
+        await channel.delete().catch(() => null);
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
             global.addToArray("generatedIds", flowId);
-            await interaction.editReply("✅ Поток был успешно создан.");
+            await interaction.editReply("✅ Поток был успешно создан.").catch(() => null);
         }
         else
-            await interaction.editReply("❌ Создание потока было отменено.");
+            await interaction.editReply("❌ Создание потока было отменено.").catch(() => null);
     }
     else if (cmd === "delete") {
         const flowId = interaction.options.getString("id");

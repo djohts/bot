@@ -10,7 +10,7 @@ async function run(oldState, newState) {
     }
     ;
     if (oldState.channel && !newState.channel) {
-        return await (0, voiceChannelLeave_1.run)(newState.member, newState.channel);
+        return await (0, voiceChannelLeave_1.run)(newState.member, oldState.channel);
     }
     ;
     if ((oldState.channel && newState.channel)

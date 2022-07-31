@@ -8,7 +8,7 @@ export async function run(oldState: VoiceState, newState: VoiceState) {
         return await join(newState.member, newState.channel);
     };
     if (oldState.channel && !newState.channel) {
-        return await leave(newState.member, newState.channel);
+        return await leave(newState.member, oldState.channel);
     };
     if (
         (oldState.channel && newState.channel)
