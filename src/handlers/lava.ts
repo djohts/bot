@@ -11,7 +11,6 @@ export = (client: ModifiedClient) => new Manager({
     plugins: [
         new Spotify({ clientId, clientSecret })
     ],
-    defaultSearchPlatform: "youtube",
     send(id, payload) {
         client.guilds.cache.get(id)?.shard.send(payload);
     }

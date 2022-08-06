@@ -12,7 +12,6 @@ module.exports = (client) => new erela_js_1.Manager({
     plugins: [
         new better_erela_js_spotify_1.default({ clientId, clientSecret })
     ],
-    defaultSearchPlatform: "youtube",
     send(id, payload) {
         client.guilds.cache.get(id)?.shard.send(payload);
     }
