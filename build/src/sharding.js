@@ -6,14 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.manager = void 0;
 require("nodejs-better-console").overrideConsole();
 const discord_js_1 = require("discord.js");
-const readline_1 = __importDefault(require("readline"));
 const axios_1 = __importDefault(require("axios"));
 const config_1 = __importDefault(require("../config"));
-const util_1 = require("util");
-const read = readline_1.default.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
 exports.manager = new discord_js_1.ShardingManager(__dirname + "/bot.js", {
     totalShards: config_1.default.shards,
     token: config_1.default.token,
@@ -52,62 +46,6 @@ exports.manager.spawn({ timeout: -1 }).then(() => {
 });
 process.on("unhandledRejection", (e) => console.error("[Manager]", "unhandledRejection:", e));
 process.on("uncaughtException", (e) => console.error("[Manager]", "uncaughtException:", e));
-read.on("line", async (line) => {
-    if (!line)
-        return;
-    const [cmd, ...args] = line.split(" ");
-    let _manager = exports.manager;
-    console.log(`[Manager CLI] Received command: ${line}`);
-    if (cmd === "eval") {
-        const script = args.join(" ");
-        console.log(`[Manager CLI] Evaluating: ${script}`);
-        try {
-            console.log(`[Manager CLI] Result:`, (0, util_1.inspect)(await eval(script), { depth: 2 }));
-        }
-        catch (e) {
-            console.error(`[Manager CLI] Error: ${e}`);
-        }
-        ;
-    }
-    else if (cmd === "beval") {
-        let shard = parseInt(args[0]);
-        if (isNaN(shard))
-            shard = null;
-        const script = args.slice(1).join(" ");
-        console.log(`[Manager CLI] Evaluating on ${shard ? `shard ${shard}` : "all shards"}: ${script}`);
-        try {
-            const result = await _manager.broadcastEval(async (bot, { script }) => await eval(script), { shard, context: { script } });
-            console.log(`[Manager CLI] Result:`, (0, util_1.inspect)(result, { depth: 2 }));
-        }
-        catch (e) {
-            console.error(`[Manager CLI] Error:`, e);
-        }
-        ;
-    }
-    else if (cmd === "respawn") {
-        let shard = parseInt(args[0]);
-        if (!isNaN(shard)) {
-            const opts = args.slice(1).reduce((acc, arg) => {
-                const [key, value] = arg.split("=");
-                acc[key] = value;
-                return acc;
-            }, { delay: 500, timeout: -1 });
-            console.log(`[Manager CLI] Respawning shard ${shard} with ${JSON.stringify(opts)}`);
-            await _manager.shards.get(shard).respawn(opts);
-        }
-        else {
-            const opts = args.slice(1).reduce((acc, arg) => {
-                const [key, value] = arg.split("=");
-                acc[key] = value;
-                return acc;
-            }, { shardDelay: 5000, respawnDelay: 500, timeout: -1 });
-            console.log(`[Manager CLI] Respawning all shards with ${JSON.stringify(opts)}`);
-            await _manager.respawnAll(opts);
-        }
-        ;
-    }
-    ;
-});
 async function postStats() {
     const stats = {
         sdc: {
@@ -127,9 +65,9 @@ async function postStats() {
             "Content-Type": "application/json"
         },
         data: JSON.stringify(stats.sdc)
-    }).then(async (res) => {
+    }).then((res) => {
         if (res.status !== 200) {
-            return console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
+            console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
         }
         ;
     });
@@ -140,7 +78,7 @@ async function postStats() {
             "Content-Type": "application/json"
         },
         data: JSON.stringify(stats.bc)
-    }).then(async (res) => {
+    }).then((res) => {
         if (res.status !== 200) {
             return console.error(`[Manager] Failed to post stats to BC: ${res.status}`);
         }
