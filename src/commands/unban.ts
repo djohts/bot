@@ -14,11 +14,10 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers))
         return await interaction.reply({ content: "❌ У меня нет прав для просмотра списка / снятия банов.", ephemeral: true });
 
-    const bans = await interaction.guild.bans.fetch();
     const gdb = await Util.database.guild(interaction.guild.id);
     const user = interaction.options.getUser("user");
 
-    if (!bans.has(user.id))
+    if (!(await interaction.guild.bans.fetch(user).catch(() => 0)))
         return await interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true })
             .then(() => gdb.removeFromObject("bans", user.id));
 
