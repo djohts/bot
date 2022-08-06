@@ -110,20 +110,21 @@ class Util {
             };
         },
         checkGuildBans: async (guild: Guild) => {
-            if (!guild.available) return;
+            if (
+                !guild.available
+                || !guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
+            ) return;
 
             const gdb = await this.database.guild(guild.id);
             let { bans } = gdb.get();
             let ids = Object.keys(bans).filter((key) => bans[key] !== -1 && bans[key] <= Date.now());
             if (!ids.length) return;
 
-            await Promise.all(ids.map(async (key) => {
-                if (!guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)) return;
-
-                await guild.bans.remove(key)
+            await Promise.all(ids.map((key) =>
+                guild.bans.remove(key)
                     .then(() => gdb.removeFromObject("bans", key))
-                    .catch(() => gdb.removeFromObject("bans", key));
-            }));
+                    .catch(() => gdb.removeFromObject("bans", key))
+            ));
         },
         processBotBump: async (options: BcBotBumpAction) => {
             const { data } = options;
