@@ -41,7 +41,7 @@
         "nodejs-better-console": "^1.0.2",
         "pretty-ms": "^7.0.1",
         "sanitize-filename": "^1.6.3",
-        "stop-discord-phishing": "^0.2.0",
+        "stop-discord-phishing": "^0.3.0",
         "string-progressbar": "^1.0.4"
     },
     "devDependencies": {
