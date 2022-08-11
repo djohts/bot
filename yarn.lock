@@ -301,6 +301,7 @@ base64-js@^1.3.1:
 
 "bottleneck@github:SGrondin/bottleneck":
   version "2.19.5"
+  uid b83528333ba4d27cf70b81cc2be12e09d7ff692f
   resolved "https://codeload.github.com/SGrondin/bottleneck/tar.gz/b83528333ba4d27cf70b81cc2be12e09d7ff692f"
 
 brace-expansion@^1.1.7:
@@ -451,6 +452,7 @@ erela.js-spotify@^1.2.0:
 
 erela.js@^2.2.0, "erela.js@github:menudocs/erela.js#build":
   version "2.3.3"
+  uid b4cf937b283d90fb153bcd8ea7fcb41c42462c31
   resolved "https://codeload.github.com/menudocs/erela.js/tar.gz/b4cf937b283d90fb153bcd8ea7fcb41c42462c31"
   dependencies:
     "@discordjs/collection" "^0.2.1"
