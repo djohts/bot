@@ -3,7 +3,7 @@ import fs from "fs";
 import db from "./database/";
 import { inspect } from "util";
 import Util from "./util/Util";
-import Discord, { ActivityType, IntentsBitField, Partials } from "discord.js";
+import { ActivityType, GatewayIntentBits, Options, Partials } from "discord.js";
 import prettyms from "pretty-ms";
 import tickers from "./handlers/tickers";
 import lavaHandler from "./handlers/lava";
@@ -11,7 +11,7 @@ import { ModifiedClient } from "./constants/types";
 import prepareGuild from "./handlers/prepareGuilds";
 import { registerCommands } from "./handlers/interactions/slash";
 export const client = new ModifiedClient({
-    makeCache: Discord.Options.cacheWithLimits({
+    makeCache: Options.cacheWithLimits({
         MessageManager: 4096
     }),
     sweepers: {
@@ -21,11 +21,11 @@ export const client = new ModifiedClient({
         }
     },
     intents: [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.GuildMembers,
-        IntentsBitField.Flags.GuildBans,
-        IntentsBitField.Flags.GuildVoiceStates
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildVoiceStates
     ],
     partials: [Partials.Channel],
     presence: {

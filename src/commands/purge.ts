@@ -9,7 +9,7 @@ export const options = new SlashCommandBuilder()
 export const permission = 1;
 
 const cds = new Map<string, number>();
-import { Collection, ChatInputCommandInteraction, Message, PermissionFlagsBits } from "discord.js";
+import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import prettyMs from "pretty-ms";
 import Util from "../util/Util";
 
@@ -39,7 +39,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (!toDelete.size) return await interaction.editReply({ content: "❌ Не удалось найти сообщений для удаления." })
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
-    const purged: false | Collection<string, Message> = await interaction.channel.bulkDelete(toDelete, true).catch(() => false);
+    const purged = await interaction.channel.bulkDelete(toDelete, true).catch(() => null);
     if (!purged) return await interaction.editReply({ content: "❌ Не удалось удалить сообщения." })
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 

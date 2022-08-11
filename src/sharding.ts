@@ -28,12 +28,9 @@ if (config.port) {
 };
 
 manager.spawn({ timeout: -1 }).then(() => {
-    setTimeout(async () => {
+    setTimeout(() => {
         if (config.monitoring?.sdc && config.monitoring?.bc) {
-            setInterval(async () => {
-                await postStats();
-            }, 1 * 60 * 60 * 1000);
-            await postStats();
+            postStats();
         };
     }, 1 * 60 * 1000);
 });
@@ -55,31 +52,35 @@ async function postStats() {
             ).then((res) => res.reduce((prev, val) => prev + val, 0))
         }
     };
-    await axios("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
-        method: "POST",
-        headers: {
-            "Authorization": `SDC ${config.monitoring.sdc}`,
-            "Content-Type": "application/json"
-        },
-        data: JSON.stringify(stats.sdc)
-    }).then((res) => {
-        if (res.status !== 200) {
-            console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
-        };
-    });
-    await axios("https://api.boticord.top/v1/stats", {
-        method: "POST",
-        headers: {
-            "Authorization": config.monitoring.bc,
-            "Content-Type": "application/json"
-        },
-        data: JSON.stringify(stats.bc)
-    }).then((res) => {
-        if (res.status !== 200) {
-            return console.error(`[Manager] Failed to post stats to BC: ${res.status}`);
-        };
-        if (!res.data.ok) {
-            return console.error(`[Manager] Failed to post stats to BC: ${res.statusText}`);
-        };
-    });
+
+    const promises = [
+        axios("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
+            method: "POST",
+            headers: {
+                "Authorization": `SDC ${config.monitoring.sdc}`,
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(stats.sdc)
+        }).then((res) => {
+            if (res.status !== 200) {
+                console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
+            };
+        }).catch(() => null),
+        axios("https://api.boticord.top/v1/stats", {
+            method: "POST",
+            headers: {
+                "Authorization": config.monitoring.bc,
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(stats.bc)
+        }).then((res) => {
+            if (res.status !== 200) {
+                return console.error(`[Manager] Failed to post stats to BC: ${res.status}`);
+            };
+            if (!res.data.ok) {
+                return console.error(`[Manager] Failed to post stats to BC: ${res.statusText}`);
+            };
+        }).catch(() => null)
+    ];
+    return Promise.all(promises).then(() => setTimeout(() => postStats(), 1 * 60 * 60 * 1000));
 };
