@@ -8,7 +8,6 @@ import prettyms from "pretty-ms";
 import tickers from "./handlers/tickers";
 import lavaHandler from "./handlers/lava";
 import prepareGuild from "./handlers/prepareGuilds";
-import { registerCommands } from "./handlers/interactions/slash";
 export const client = new Client({
     makeCache: Options.cacheWithLimits({
         MessageManager: 4096
@@ -48,15 +47,15 @@ client.once("ready", async () => {
 
     clientLogger.info(`Ready as ${client.user!.tag}!`);
 
-    // remove this after first prod boot
-    let slashPostStart = Date.now();
-    registerCommands(client).then(() => {
-        clientLogger.info(`Refreshed slash commands. [${prettyms(Date.now() - slashPostStart)}]`);
-    });
-
     Util.setLavaManager(lavaHandler(client));
 
     disabledGuilds = new Set<string>(client.guilds.cache.map((g) => g.id));
+
+    const guildCachingStart = Date.now();
+    await db.cacheGSets(disabledGuilds);
+    await db.cacheGuilds(disabledGuilds);
+    await (await db.global()).reload();
+    console.log(`Cached ${disabledGuilds.size} guilds. [${Date.now() - guildCachingStart}ms]`);
 
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user!.setPresence({
         status: "dnd",
