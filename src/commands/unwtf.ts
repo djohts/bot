@@ -80,9 +80,9 @@ export const run = async (interaction: ContextMenuCommandInteraction) => {
         .replace(/B/g, "И")
         .replace(/N/g, "Т")
         .replace(/M/g, "Ь")
-        .replace(/,/g, "Б")
-        .replace(/\./g, "Ю")
-        .replace(/\//g, ".");
+        .replace(/\</g, "Б")
+        .replace(/\>/g, "Ю")
+        .replace(/\?/g, ".");
 
     await interaction.reply(text);
 };
