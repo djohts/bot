@@ -14,18 +14,17 @@ export const generateID = (length = 10): string => {
     return crypto.randomBytes(Math.ceil(length / 2)).toString("hex").slice(0, length);
 };
 
-const medals = {
-    "1й": "🥇", "2й": "🥈", "3й": "🥉"
-};
+const medals = [
+    "🥇", "🥈", "🥉"
+];
 const formatNumberSuffix = (n: number): string => {
-    let str = `${n}`;
-    if (str == "0") return "N/A";
-    return str + "й";
+    if (n === 0) return "N/A";
+    return `${n}й`;
 };
 
 export const formatScore = (id: string, index: number, users: object, userid?: string): string => {
-    let suffix = formatNumberSuffix(index + 1);
-    suffix = medals[suffix] || `**${suffix}**:`;
+    const suffix = medals[index] ?? `**${formatNumberSuffix(index + 1)}**:`;
+
     if (userid === id) return `${suffix} *__<@${id}>, **счёт:** ${(users[id] || 0)}__*`;
     return `${suffix} <@${id}>, **счёт:** ${(users[id] || 0)}`;
 };
