@@ -21,12 +21,12 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
 
     if (
-        !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers) ||
-        !member.manageable
+        !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
+        || !member.manageable
     ) return interaction.reply({ content: "❌ Я не могу забанить этого участника.", ephemeral: true });
     if (
-        interaction.options.get("duration") as unknown as string &&
-        !parseTime(interaction.options.get("duration") as unknown as string)
+        interaction.options.getString("duration")
+        && !parseTime(interaction.options.getString("duration"))
     ) return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
@@ -57,7 +57,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
             inline: true
         });
-    if (time != -1) dmemb.addFields({
+    if (time !== -1) dmemb.addFields({
         name: "Время",
         value: `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``,
         inline: true

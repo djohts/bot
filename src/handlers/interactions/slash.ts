@@ -10,8 +10,8 @@ const rest = new REST().setToken(config.token);
 
 export default async (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
     if (
-        !interaction.client.cfg.enslash &&
-        !config.admins.includes(interaction.user.id)
+        !interaction.client.cfg.enslash
+        && !config.admins.includes(interaction.user.id)
     ) return interaction.reply({
         content: "❌ Команды были выключены разработчиком. Если вы считаете, что это ошибка, обратитесь к нам: https://discord.gg/AaS4dwVHyA",
         ephemeral: true

@@ -20,8 +20,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             ephemeral: true
         });
     if (
-        interaction.guild.members.me.voice.channel &&
-        member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
+        interaction.guild.members.me.voice.channel
+        && member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
     ) return interaction.reply({
         content: "❌ Вы должны находится в том же голосовом канале, что и я.",
         ephemeral: true

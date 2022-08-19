@@ -15,8 +15,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (!member.voice.channel)
         return interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
     if (
-        interaction.guild.members.me.voice.channel &&
-        member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
+        interaction.guild.members.me.voice.channel
+        && member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
     ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
 
     const player = Util.lava.get(interaction.guildId);

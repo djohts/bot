@@ -16,8 +16,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (!member.voice.channel)
         return interaction.reply("❌ Вы должны находиться в голосовом канале.");
     if (
-        interaction.guild.members.me.voice.channel &&
-        member.voice.channel?.id !== interaction.guild.members.me.voice.channel?.id
+        interaction.guild.members.me.voice.channel
+        && member.voice.channel?.id !== interaction.guild.members.me.voice.channel?.id
     ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
 
     await interaction.deferReply();
@@ -37,8 +37,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         volume: 20
     });
     if (
-        player.state !== "CONNECTED" &&
-        player.state !== "CONNECTING"
+        player.state !== "CONNECTED"
+        && player.state !== "CONNECTING"
     ) {
         player.connect();
     };
@@ -51,9 +51,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     await interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
 
     if (
-        !player.playing &&
-        !player.paused &&
-        (!player.queue.size || player.queue.totalSize === res.tracks.length)
+        !player.playing
+        && !player.paused
+        && (!player.queue.size || player.queue.totalSize === res.tracks.length)
     ) player.play();
     setTimeout(async () => await interaction.deleteReply().catch(() => { }), 20 * 1000);
 };
