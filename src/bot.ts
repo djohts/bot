@@ -55,7 +55,7 @@ client.once("ready", async () => {
     await db.cacheGSets(disabledGuilds);
     await db.cacheGuilds(disabledGuilds);
     await (await db.global()).reload();
-    console.log(`Cached ${disabledGuilds.size} guilds. [${Date.now() - guildCachingStart}ms]`);
+    clientLogger.info(`Cached ${disabledGuilds.size} guilds. [${Date.now() - guildCachingStart}ms]`);
 
     let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user!.setPresence({
         status: "dnd",
