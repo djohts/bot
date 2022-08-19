@@ -3,8 +3,9 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("modules")
     .setDescription("Настроить модули счёта.")
+    .setDefaultMemberPermissions(8)
+    .setDMPermission(false)
     .toJSON();
-export const permission = 2;
 
 import { ChatInputCommandInteraction, Message, ActionRowBuilder, ButtonBuilder, SelectMenuBuilder, ComponentType, ButtonStyle } from "discord.js";
 import { modules as allModules } from "../constants/modules";

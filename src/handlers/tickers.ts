@@ -2,24 +2,25 @@ import { ActionRowBuilder, ActivityType, ButtonBuilder, ButtonStyle, TextChannel
 import { BcBotBumpAction } from "../constants/types";
 import Util from "../util/Util";
 import { UserFetcher } from "./bottleneck";
+import { clientLogger } from "../util/logger/normal";
 
 export = () => {
     updatePresence();
     checkBans();
     tickMusicPlayers();
     updateGuildStatsChannels();
-    if (Util.client.shard.ids[0] === 0) processBotBumps();
+    if (Util.client.cluster.id === 0) processBotBumps();
 };
 
 function updatePresence() {
-    Util.client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
+    Util.client.cluster.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
         const aaaaaaa = gc <= 400 ? "400" : gc <= 500 ? "500" : gc <= 600 ? "600" : gc <= 700 ? "700" : gc <= 800 ? "800" : gc <= 900 ? "900" : "1000"
         Util.client.user.setPresence({
             status: "idle",
-            activities: [{ type: ActivityType.Playing, name: `${aaaaaaa}? -> | ${gc} guilds` }],
+            activities: [{ type: ActivityType.Playing, name: Util.client.ptext ?? `${aaaaaaa}? -> | ${gc} guilds` }],
         });
-        setTimeout(() => updatePresence(), 5 * 60 * 1000);
+        setTimeout(() => updatePresence(), 1 * 60 * 1000);
     });
 };
 
@@ -40,17 +41,16 @@ function updateGuildStatsChannels() {
 };
 
 function processBotBumps() {
-    Util.database.global().then(async (global) => {
-        await Promise.all(global.get().boticordBumps.map(async (data) => {
+    Util.database.global().then((global) => {
+        Promise.all(global.get().boticordBumps.map(async (data) => {
             try {
                 const delay = 6 * 60 * 60 * 1000;
                 if (data.at + delay > Date.now()) return;
                 global.removeFromArray("boticordBumps", data);
                 const udb = await Util.database.users(data.user);
-                await udb.reload();
 
                 if (udb.isSubscribed("boticord")) {
-                    const fetchUser = (data: BcBotBumpAction["data"]) => Util.client.users.fetch(data.user).catch(() => null);
+                    const fetchUser = (data: BcBotBumpAction["data"]) => Util.client.users.fetch(data.user);
                     const user = await UserFetcher.schedule(fetchUser, data);
 
                     let dmsent = false;
@@ -61,19 +61,19 @@ function processBotBumps() {
                             description: "Вы можете снова апнуть бота на `boticord.top`.",
                         }],
                         components: [
-                            new ActionRowBuilder().addComponents(
+                            new ActionRowBuilder<ButtonBuilder>().addComponents(
                                 new ButtonBuilder()
                                     .setLabel("Апнуть бота")
                                     .setStyle(ButtonStyle.Link)
                                     .setURL("https://boticord.top/bot/889214509544247306")
                             )
                         ]
-                    }).then(async () => { dmsent = true; }).catch(() => null);
+                    }).then(() => { dmsent = true; }).catch(() => null);
 
                     if (dmsent) {
                         await Util.func.uselesslog({ content: `sent boticord up notification to ${user.tag} ${user} (\`${user.id}\`)` });
                     } else {
-                        const channel = Util.client.channels.cache.get("957937585999736858") as TextChannel;
+                        const channel = Util.client.channels.cache.get("970267545548509255") as TextChannel;
 
                         await channel.send({
                             content: `${user},`,
@@ -99,7 +99,7 @@ function processBotBumps() {
                         });
                     };
                 };
-            } catch (e) { console.error(e); };
+            } catch (e) { clientLogger.error(e); };
         })).then(() => setTimeout(() => processBotBumps(), 30 * 1000));
     });
 };

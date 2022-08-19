@@ -3,8 +3,8 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("leaderboard")
     .setDescription("Список лидеров счёта.")
+    .setDMPermission(false)
     .toJSON();
-export const permission = 0
 
 import { ChatInputCommandInteraction } from "discord.js";
 import { formatScore } from "../constants/";

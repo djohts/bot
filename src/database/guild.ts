@@ -1,7 +1,10 @@
 import { GuildMember } from "discord.js";
 import { Schema, model } from "mongoose";
+import { inspect } from "util";
+import { generateID } from "../constants";
 import { getDateFormatted } from "../constants/time";
-import { GuildObject } from "../constants/types";
+import { GuildObject, Warn } from "../constants/types";
+import { clientLogger } from "../util/logger/normal";
 
 const dbCache = new Map<string, GuildObject>(), dbSaveQueue = new Map<string, string[]>();
 
@@ -11,6 +14,7 @@ const guildObject = {
     voices: {},
     // moderation data
     bans: {},
+    warns: [],
     // counting
     channel: "",
     count: 0,
@@ -32,7 +36,7 @@ const guildObject = {
 const guildSchema = new Schema(guildObject, { minimize: true });
 const Guild = model("Guild", guildSchema);
 
-const get = (guildid: string) => new Promise((resolve, reject) => Guild.findOne({ guildid }, (err: Error, guild: any) => {
+const get = (guildid: string): Promise<Error | GuildObject> => new Promise((resolve, reject) => Guild.findOne({ guildid }, (err: Error, guild: GuildObject) => {
     if (err) return reject(err);
     if (!guild) {
         guild = new Guild(guildObject);
@@ -42,9 +46,9 @@ const get = (guildid: string) => new Promise((resolve, reject) => Guild.findOne(
 }));
 
 const load = async (guildid: string) => {
-    const guild = await get(guildid), guildCache = {}, freshGuildObject = guildObject;
-    for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
-    return dbCache.set(guildid, guildCache as any);
+    const guild = await get(guildid), guildCache = {} as GuildObject, freshGuildObject = guildObject;
+    for (const key in freshGuildObject) guildCache[key] = guild[key] ?? freshGuildObject[key];
+    return dbCache.set(guildid, guildCache);
 };
 
 const save = async (guildid: string, changes: string[]) => {
@@ -56,14 +60,19 @@ const save = async (guildid: string, changes: string[]) => {
             let newSaveQueue = dbSaveQueue.get(guildid);
             if (newSaveQueue.length > guildSaveQueue.length) {
                 dbSaveQueue.delete(guildid);
-                save(guildid, newSaveQueue.filter((key: string) => !guildSaveQueue.includes(key)));
+                save(guildid, newSaveQueue.filter((key) => !guildSaveQueue.includes(key)));
             } else dbSaveQueue.delete(guildid);
-        }).catch(console.log);
+        }).catch((e: any) => void clientLogger.error(inspect(e)));
     } else dbSaveQueue.get(guildid).push(...changes);
 };
 
+let timeout: NodeJS.Timeout | null = null;
 export default () => (async (guildid: string) => {
     if (!dbCache.has(guildid)) await load(guildid);
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        if (dbSaveQueue.has(guildid)) save(guildid, dbSaveQueue.get(guildid)).then(() => dbCache.delete(guildid));
+    }, 5 * 60 * 1000);
     return {
         reload: () => load(guildid),
         unload: () => dbCache.delete(guildid),
@@ -107,6 +116,27 @@ export default () => (async (guildid: string) => {
 
             return dbCache.get(guildid);
         },
+        addWarn: (userId: string, actionedById: string, reason?: string) => {
+            const warn = {
+                id: generateID(4),
+                timestamp: Date.now(),
+                userId,
+                actionedById
+            } as Warn;
+
+            if (reason) warn.reason = reason;
+
+            dbCache.get(guildid).warns.push(warn);
+            save(guildid, ["warns"]);
+
+            return dbCache.get(guildid);
+        },
+        removeWarn: (id: string) => {
+            dbCache.get(guildid).warns = dbCache.get(guildid).warns.filter((warn) => warn.id !== id);
+            save(guildid, ["warns"]);
+
+            return dbCache.get(guildid);
+        },
         reset: () => {
             let guildCache = dbCache.get(guildid);
             Object.assign(guildCache, guildObject);
@@ -139,14 +169,14 @@ export default () => (async (guildid: string) => {
 });
 
 export async function cacheGuilds(guilds: Set<string>) {
-    let gdbs = await Guild.find({ $or: [...guilds].map((guildid) => ({ guildid })) });
-    return await Promise.all([...guilds].map(async (guildid) => {
-        const guild = gdbs.find((db) => db.guildid == guildid) || { guildid };
-        const guildCache = {};
+    const gdbs = await Guild.find({ $or: [...guilds].map((guildid) => ({ guildid })) });
+    return [...guilds].map((guildid) => {
+        const guild = gdbs.find((db) => db.guildid === guildid) || { guildid };
+        const guildCache = {} as GuildObject;
         const freshGuildObject = guildObject;
 
-        for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
+        for (const key in freshGuildObject) guildCache[key] = guild[key] ?? freshGuildObject[key];
 
-        return dbCache.set(guildid, guildCache as any);
-    }));
+        return dbCache.set(guildid, guildCache);
+    });
 };

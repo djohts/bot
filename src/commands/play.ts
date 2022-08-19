@@ -3,9 +3,9 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("play")
     .setDescription("Слушать музыку.")
+    .setDMPermission(false)
     .addStringOption((o) => o.setName("query").setDescription("Трек, который вы хотите послушать.").setRequired(true))
     .toJSON();
-export const permission = 0;
 
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import Util from "../util/Util";
@@ -14,11 +14,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const member = interaction.member as GuildMember;
 
     if (!member.voice.channel)
-        return await interaction.reply("❌ Вы должны находиться в голосовом канале.");
+        return interaction.reply("❌ Вы должны находиться в голосовом канале.");
     if (
         interaction.guild.members.me.voice.channel &&
         member.voice.channel?.id !== interaction.guild.members.me.voice.channel?.id
-    ) return await interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
+    ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
 
     await interaction.deferReply();
 

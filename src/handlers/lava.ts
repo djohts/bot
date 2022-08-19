@@ -1,12 +1,12 @@
-import { TextChannel, VoiceBasedChannel, Message } from "discord.js";
-import { ModifiedClient } from "../constants/types";
+import { TextChannel, VoiceBasedChannel, Message, Client } from "discord.js";
 import { Manager } from "erela.js";
 import Spotify from "erela.js-spotify";
+import { inspect } from "util";
 import config from "../../config";
 const { lava: { nodes, spotify: { clientId, clientSecret } } } = config;
-import { shard } from "../bot";
+import { clientLogger } from "../util/logger/normal";
 
-export = (client: ModifiedClient) => new Manager({
+export = (client: Client) => new Manager({
     nodes: nodes,
     plugins: [
         new Spotify({ clientID: clientId, clientSecret })
@@ -17,6 +17,8 @@ export = (client: ModifiedClient) => new Manager({
 })
     .on("trackError", async (player, track, error) => {
         const text = client.channels.cache.get(player.textChannel) as TextChannel;
+
+        clientLogger.error(`[g${player.guild}] ${track.title} failed to play: ${inspect(error)}`);
 
         try {
             await text.send(`An error occured when trying to play \`${track.title}\`: ${error.exception?.cause || error.error}`);
@@ -29,8 +31,8 @@ export = (client: ModifiedClient) => new Manager({
             await text.send(`\`${track.title}\` got stuck.`);
         } catch { };
     })
-    .on("nodeConnect", ({ options }) => console.log(`${shard} Lava ${options.host}:${options.port} connected.`))
-    .on("nodeError", ({ options }, error) => console.log(`${shard} Lava ${options.host}:${options.port} had an error: ${error.message}`))
+    .on("nodeConnect", ({ options }) => clientLogger.info(`Lava ${options.host}:${options.port} connected.`))
+    .on("nodeError", ({ options }, error) => clientLogger.error(`Lava ${options.host}:${options.port} had an error: ${error.message}`))
     .on("trackStart", async (player, track) => {
         const voice = client.channels.cache.get(player.voiceChannel) as VoiceBasedChannel;
         const text = client.channels.cache.get(player.textChannel) as TextChannel;

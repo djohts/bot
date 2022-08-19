@@ -1,6 +1,8 @@
 import { Schema, model } from "mongoose";
 import { Subscription, UserObject } from "../constants/types";
 import { isEqual } from "lodash";
+import { clientLogger } from "../util/logger/normal";
+import { inspect } from "util";
 
 const dbCache = new Map<string, UserObject>(), dbSaveQueue = new Map<string, string[]>();
 
@@ -38,12 +40,17 @@ const save = async (userid: string, changes: string[]) => {
                 dbSaveQueue.delete(userid);
                 save(userid, newSaveQueue.filter((key: string) => !userSaveQueue.includes(key)));
             } else dbSaveQueue.delete(userid);
-        }).catch(console.log);
+        }).catch((e: any) => void clientLogger.error(inspect(e)));
     } else dbSaveQueue.get(userid).push(...changes);
 };
 
+let timeout: NodeJS.Timeout | null = null;
 export default () => (async (userid: string) => {
     if (!dbCache.has(userid)) await load(userid);
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        if (dbSaveQueue.has(userid)) save(userid, dbSaveQueue.get(userid)).then(() => dbCache.delete(userid));
+    }, 5 * 60 * 1000);
     return {
         reload: () => load(userid),
         unload: () => dbCache.delete(userid),

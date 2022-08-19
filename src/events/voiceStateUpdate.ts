@@ -5,15 +5,15 @@ import { run as _switch } from "./voiceChannelSwitch";
 
 export async function run(oldState: VoiceState, newState: VoiceState) {
     if (!oldState.channel && newState.channel) {
-        return await join(newState.member, newState.channel);
+        return join(newState.member, newState.channel);
     };
     if (oldState.channel && !newState.channel) {
-        return await leave(newState.member, oldState.channel);
+        return leave(newState.member, oldState.channel);
     };
     if (
         (oldState.channel && newState.channel)
         && (oldState.channel.id !== newState.channel.id)
     ) {
-        return await _switch(newState.member, oldState.channel, newState.channel);
+        return _switch(newState.member, oldState.channel, newState.channel);
     };
 };

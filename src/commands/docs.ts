@@ -1,10 +1,10 @@
-import {  SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("docs")
     .setDescription("Документация по использованию бота.")
+    .setDMPermission(false)
     .toJSON();
-export const permission = 0;
 
 import { ChatInputCommandInteraction } from "discord.js";
 

@@ -1,6 +1,6 @@
-export function paginate(arr = [], size = 4) {
+export const paginate = <T>(arr: T[], itemsPerPage: number): T[][] => {
     return arr.reduce((acc, val, i) => {
-        let idx = Math.floor(i / size);
+        let idx = Math.floor(i / itemsPerPage);
         let page = acc[idx] || (acc[idx] = []);
         page.push(val);
 
@@ -8,7 +8,7 @@ export function paginate(arr = [], size = 4) {
     }, []);
 };
 
-export function parseTime(input: string, outputType = "ms") {
+export const parseTime = (input: string, outputType = "ms") => {
     const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
 
     let parse: any = {};
@@ -45,8 +45,8 @@ export function parseTime(input: string, outputType = "ms") {
         parse.w = parse.d * 7;
 
     parse.month =
-        parse.b =
-        parse.d * (365.25 / 12);
+        parse.mo =
+        parse.b = parse.d * (365.25 / 12);
 
     parse.year =
         parse.yr =

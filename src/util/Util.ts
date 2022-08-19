@@ -1,12 +1,14 @@
 import config from "../../config";
-import { BcBotBumpAction, ModifiedClient } from "../constants/types";
+import { BcBotBumpAction } from "../constants/types";
 import { inspect } from "util";
+import Sharding from "discord-hybrid-sharding";
 import { Manager, Player } from "erela.js";
-import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, MessageOptions, TextChannel, WebhookClient, ButtonStyle, PermissionFlagsBits } from "discord.js";
+import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, MessageOptions, TextChannel, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 import i18n from "./i18n";
 import { UserFetcher } from "../handlers/bottleneck";
+import { loadCommands } from "../handlers/interactions/slash";
 const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 
 let util: Util | null = null;
@@ -17,8 +19,8 @@ class Util {
         util = this;
     };
 
-    private _client: ModifiedClient | null = null;
-    private _database: typeof import("../database/") | null = null;
+    private _client: Client | null = null;
+    private _database: typeof import("../database") | null = null;
     private _lavaManager: Manager | null = null;
     public i18n = i18n;
     public inspect = inspect;
@@ -49,7 +51,7 @@ class Util {
                     prettyms(duration, { colonNotation: true, compact: true }),
                     `]`
                 ].join("");
-                return await message.edit({
+                return message.edit({
                     content: null,
                     embeds: [{
                         title: track.title,
@@ -177,10 +179,23 @@ class Util {
                 });
             };
         },
+        registerCommands: () => {
+            const dev = !config.monitoring.bc;
+
+            return dev
+                ? this._client.guilds.cache.get("957937585299292192").commands.set(loadCommands())
+                : this._client.application.commands.set(loadCommands());
+        },
         uselesslog: (opts: MessageOptions) => uselesswebhook.send(opts)
     };
 
-    public setClient(client: ModifiedClient): Util {
+    public setClient(client: Client): Util {
+        client.cluster = new Sharding.Client(client);
+        client.cfg = {
+            enslash: true,
+            enbr: true,
+            debug: false
+        };
         client.util = this;
         this._client = client;
         return this;

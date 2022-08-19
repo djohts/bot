@@ -4,6 +4,8 @@ import { ChannelType } from "discord-api-types/v9";
 export const options = new SlashCommandBuilder()
     .setName("serverstats")
     .setDescription("Управлять каналами статистики.")
+    .setDefaultMemberPermissions(8)
+    .setDMPermission(false)
     .addSubcommand(c =>
         c
             .setName("set")
@@ -42,7 +44,6 @@ export const options = new SlashCommandBuilder()
             .setDescription("Список каналов статистики.")
     )
     .toJSON();
-export const permission = 3;
 
 import { ChatInputCommandInteraction } from "discord.js";
 import Util from "../util/Util";
@@ -56,9 +57,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             const text = interaction.options.getString("text");
 
             if (Object.keys(gdb.get().statschannels).length === 5)
-                return await interaction.reply("Вы не можете установить больше 5 каналов статистики.");
+                return interaction.reply("Вы не можете установить больше 5 каналов статистики.");
             if (text.length > 64)
-                return await interaction.reply("Длина шаблона должна быть не длиннее 64 символов.");
+                return interaction.reply("Длина шаблона должна быть не длиннее 64 символов.");
 
             gdb.setOnObject("statschannels", channel.id, text);
 

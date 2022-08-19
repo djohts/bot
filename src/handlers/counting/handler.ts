@@ -1,11 +1,10 @@
 import { ChannelType, Message, ThreadChannel, Webhook } from "discord.js";
-import { ModifiedClient } from "../../constants/types";
 import { flow as _flow } from "../../constants/flows/flow";
 const { triggers: allTriggers, actions: allActions } = _flow;
 import { getPermissionLevel } from "../../constants";
 import limits from "../../constants/flows/";
 const { limitFlows, limitTriggers, limitActions } = limits;
-import { deleteMessage } from "./../utils";
+import { queueDelete } from "./../utils";
 import Util from "../../util/Util";
 
 export = async (message: Message) => {
@@ -13,7 +12,7 @@ export = async (message: Message) => {
     const permissionLevel = getPermissionLevel(message.member), content = message.content;
     if (content.startsWith("!") && permissionLevel >= 1) return;
     let { count, user, modules, flows, users: scores } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
-    if ((message.client as ModifiedClient).loading) return deleteMessage(message);
+    if (message.client.loading) return queueDelete([message]);
 
     if (
         (!modules.includes("allow-spam") && message.author.id === user) ||
@@ -28,7 +27,7 @@ export = async (message: Message) => {
             gdb
         };
 
-        deleteMessage(message);
+        queueDelete([message]);
 
         for (const flowId of flowIDs) try {
             const flow = flows[flowId];
@@ -64,7 +63,7 @@ export = async (message: Message) => {
                     parse: [],
                 }
             }) as Message;
-            deleteMessage(message);
+            queueDelete([message]);
         };
     } catch (e) { }
     else if (modules.includes("embed")) try {
@@ -74,7 +73,7 @@ export = async (message: Message) => {
                 color: message.member.displayColor || 3553598
             }]
         });
-        deleteMessage(message);
+        queueDelete([message]);
     } catch (e) { };
 
     gdb.set("message", countingMessage.id);

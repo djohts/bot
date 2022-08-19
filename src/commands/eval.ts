@@ -3,6 +3,8 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("eval")
     .setDescription("Evaluate JavaScript.")
+    .setDefaultMemberPermissions(0)
+    .setDMPermission(false)
     .addStringOption((o) => o.setName("script").setDescription("Script that'd be ran.").setRequired(true))
     .toJSON();
 export const permission = 4;
@@ -20,7 +22,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         let evaled = await eval(interaction.options.getString("script"));
         if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
 
-        if (evaled.length >= 2000) return await interaction.editReply("✅");
+        if (evaled.length >= 2000) return interaction.editReply("✅");
 
         await interaction.editReply({
             content: `\`\`\`js\n${evaled}\n\`\`\``,

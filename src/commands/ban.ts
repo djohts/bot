@@ -3,12 +3,13 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("ban")
     .setDescription("Забанить участника.")
+    .setDefaultMemberPermissions(8)
+    .setDMPermission(false)
     .addUserOption((o) => o.setName("member").setDescription("Пользователь, которого надо забанить.").setRequired(true))
     .addStringOption((o) => o.setName("duration").setDescription("Время, на которое участник будет забанен."))
     .addStringOption((o) => o.setName("reason").setDescription("Причина выдачи бана."))
     .addIntegerOption((o) => o.setName("purgedays").setDescription("Удаление сообщений пользователя за указанное время, в днях.").setMaxValue(7).setMinValue(1))
     .toJSON();
-export const permission = 1;
 
 import { ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, EmbedBuilder } from "discord.js";
 import { getPermissionLevel } from "../constants/";
@@ -22,19 +23,19 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (
         !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers) ||
         !member.manageable
-    ) return await interaction.reply({ content: "❌ Я не могу забанить этого участника.", ephemeral: true });
+    ) return interaction.reply({ content: "❌ Я не могу забанить этого участника.", ephemeral: true });
     if (
         interaction.options.get("duration") as unknown as string &&
         !parseTime(interaction.options.get("duration") as unknown as string)
-    ) return await interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
+    ) return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     const bans = await interaction.guild.bans.fetch();
     const guilddb = await Util.database.guild(interaction.guild.id);
 
     if (bans.has(member.user.id))
-        return await interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
+        return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
     if (getPermissionLevel(member) >= getPermissionLevel(interaction.member as GuildMember))
-        return await interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
+        return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
 
     await interaction.deferReply();
 

@@ -3,10 +3,11 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("purge")
     .setDescription("Удалить указанное количество сообщений в канале.")
+    .setDefaultMemberPermissions(8)
+    .setDMPermission(false)
     .addIntegerOption((o) => o.setName("amount").setDescription("Количество сообщений которое надо удалить.").setRequired(true).setMinValue(2).setMaxValue(100))
     .addUserOption((o) => o.setName("member").setDescription("Участник, чьи сообщения должны быть очищены."))
     .toJSON();
-export const permission = 1;
 
 const cds = new Map<string, number>();
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
@@ -15,7 +16,7 @@ import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     if (cds.has(interaction.channel.id))
-        return await interaction.reply({
+        return interaction.reply({
             content: `❌ Подождите ещё ${prettyMs(cds.get(interaction.channel.id) - Date.now())} перед повторным использованем команды.`,
             ephemeral: true
         });
@@ -25,7 +26,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     };
 
     if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageMessages))
-        return await interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
+        return interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
 
     await interaction.deferReply();
 
@@ -36,11 +37,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
     if (!gsdb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
     if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id == interaction.options.getUser("member").id);
-    if (!toDelete.size) return await interaction.editReply({ content: "❌ Не удалось найти сообщений для удаления." })
+    if (!toDelete.size) return interaction.editReply({ content: "❌ Не удалось найти сообщений для удаления." })
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
     const purged = await interaction.channel.bulkDelete(toDelete, true).catch(() => null);
-    if (!purged) return await interaction.editReply({ content: "❌ Не удалось удалить сообщения." })
+    if (!purged) return interaction.editReply({ content: "❌ Не удалось удалить сообщения." })
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
     await interaction.editReply({

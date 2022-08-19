@@ -1,8 +1,10 @@
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-import { deleteMessage } from "./utils";
+import { queueDelete } from "./utils";
 import prettyms from "pretty-ms";
 import { Guild, Message, PermissionFlagsBits, TextChannel } from "discord.js";
 import Util from "../util/Util";
+import { clientLogger } from "../util/logger/normal";
+import { inspect } from "util";
 
 export = async (guild: Guild) => {
     const gdb = await Util.database.guild(guild.id);
@@ -13,35 +15,28 @@ export = async (guild: Guild) => {
     try {
         const channel = guild.channels.cache.get(channelId);
         if (
-            channel instanceof TextChannel &&
-            channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ViewChannel) &&
-            channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ManageMessages) &&
-            channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)
+            channel instanceof TextChannel
+            && channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ViewChannel)
+            && channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ReadMessageHistory)
+            && channel.permissionsFor(guild.members.me).has(PermissionFlagsBits.ManageMessages)
         ) {
             let messages = await channel.messages.fetch({ limit: 100, after: messageId });
-            messages = messages.filter((m) => m.createdTimestamp > Date.now() - (1000 * 60 * 60 * 24 * 7 * 2));
+            messages = messages.filter((m) => m.createdTimestamp > Date.now() - 14 * 24 * 60 * 60 * 1000);
             if (messages.size) {
                 alert = await channel.send("💢 Идёт подготовка канала.").catch(() => null);
 
-                const defaultPermissions = channel.permissionOverwrites.cache.get(guild.roles.everyone.id) || { allow: new Set(), deny: new Set() };
-                let oldPermission: boolean | null = null;
-                if (defaultPermissions.allow.has(PermissionFlagsBits.SendMessages)) oldPermission = true;
-                else if (defaultPermissions.deny.has(PermissionFlagsBits.SendMessages)) oldPermission = false;
-                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SendMessages: false }).catch(() => null);
-
                 let processing = true, fail = false;
                 let preparationStart = Date.now();
-                const filter = (message: Message) =>
-                    message.id !== alert.id &&
-                    message.createdTimestamp > Date.now() - 14 * 24 * 60 * 60 * 1000;
+                const filter = (m: Message) =>
+                    m.id !== alert?.id
+                    && m.createdTimestamp > Date.now() - 14 * 24 * 60 * 60 * 1000;
 
                 while (processing && !fail) {
                     messages = messages.filter(filter);
-                    console.log(messages);
                     if (!messages.size) processing = false;
                     else {
                         await channel.bulkDelete(messages, true).catch(() => fail = true);
-                        await alert.edit(`💢 Идёт подготовка канала. **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => null);
+                        await alert?.edit(`💢 Идёт подготовка канала. **\`[${prettyms(Date.now() - preparationStart)}]\`**`).catch(() => null);
                     };
                     if (processing && !fail) {
                         messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { fail = true; return null; });
@@ -49,17 +44,18 @@ export = async (guild: Guild) => {
                     };
                 };
 
-                if (oldPermission) channel.permissionOverwrites.edit(guild.roles.everyone, { SendMessages: oldPermission }).catch(() => null);
-                if (fail) await alert.edit("❌ Что-то пошло не так при подготовке канала.").catch(() => null);
-                else await alert.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`)
-                    .then(() => setTimeout(() => deleteMessage(alert), 10 * 1000))
+                if (fail) await alert?.edit("❌ Что-то пошло не так при подготовке канала.")
+                    .then(() => setTimeout(() => queueDelete([alert]), 10 * 1000))
+                    .catch(() => null);
+                else await alert?.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`)
+                    .then(() => setTimeout(() => queueDelete([alert]), 10 * 1000))
                     .catch(() => null);
             };
         };
     } catch (e) {
-        console.error(e);
-        alert.edit("❌ Что-то пошло не так при подготовке канала.")
-            .then(() => setTimeout(() => deleteMessage(alert), 10 * 1000))
+        clientLogger.error(`[g${guild.id}c${channelId}] prepareGuilds: ${inspect(e)}`);
+        alert?.edit("❌ Что-то пошло не так при подготовке канала.")
+            .then(() => setTimeout(() => queueDelete([alert]), 10 * 1000))
             .catch(() => null);
     };
 };

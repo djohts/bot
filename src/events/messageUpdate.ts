@@ -1,4 +1,4 @@
-import { deleteMessage } from "../handlers/utils";
+import { queueDelete } from "../handlers/utils";
 import { Message } from "discord.js";
 import Util from "../util/Util";
 
@@ -17,6 +17,6 @@ export async function run(original: Message, updated: Message) {
         )) {
         const newMessage = await updated.channel.send(`${updated.author}: ${original.content || count}`);
         gdb.set("message", newMessage.id);
-        deleteMessage(original);
+        queueDelete([original]);
     };
 };

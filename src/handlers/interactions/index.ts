@@ -1,28 +1,25 @@
-import { ChatInputCommandInteraction, Interaction, InteractionType } from "discord.js";
-import { ModifiedClient } from "../../constants/types";
+import { Interaction } from "discord.js";
 import handleButton from "./buttons";
 import handleCommand from "./slash";
 import handleAutocomplete from "./autocomplete";
 
 export = async (interaction: Interaction) => {
     if (
-        interaction.type !== InteractionType.ApplicationCommand &&
-        !interaction.isButton() &&
-        interaction.type !== InteractionType.ApplicationCommandAutocomplete
+        !interaction.isChatInputCommand()
+        && !interaction.isButton()
+        && !interaction.isAutocomplete()
+        && !interaction.isContextMenuCommand()
     ) return;
 
     if (
-        (interaction.client as ModifiedClient).loading &&
-        (
-            interaction.type === InteractionType.ApplicationCommand ||
-            interaction.isButton()
-        )
-    ) return await interaction.reply({
+        interaction.client.loading &&
+        !interaction.isAutocomplete()
+    ) return interaction.reply({
         content: "🌀 Бот ещё запускается, подождите некоторое время...",
         ephemeral: true
     });
 
-    if (interaction instanceof ChatInputCommandInteraction) return await handleCommand(interaction);
-    if (interaction.isButton()) return await handleButton(interaction);
-    if (interaction.type === InteractionType.ApplicationCommandAutocomplete) return await handleAutocomplete(interaction);
+    if (interaction.isButton()) return handleButton(interaction);
+    if (interaction.isAutocomplete()) return handleAutocomplete(interaction);
+    if (interaction.isChatInputCommand() || interaction.isContextMenuCommand()) return handleCommand(interaction);
 };

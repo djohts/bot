@@ -1,29 +1,36 @@
-require("nodejs-better-console").overrideConsole();
-import { ShardingManager } from "discord.js";
+import { managerLogger } from "./util/logger/manager";
+import Sharding from "discord-hybrid-sharding";
+import utils from "./util/sharding";
 import axios from "axios";
 import config from "../config";
+import { inspect } from "util";
 
-export const manager = new ShardingManager(__dirname + "/bot.js", {
+managerLogger.info("=".repeat(55));
+
+export const manager = new Sharding.Manager(__dirname + "/bot.js", {
     totalShards: config.shards,
+    shardsPerClusters: config.shardsPerClusters,
     token: config.token,
+    execArgv: ["--no-warnings"],
     mode: "worker"
 });
+utils(manager);
 
-manager.on("shardCreate", (shard) => {
-    shard.on("message", (m) => {
-        if (m == "respawn") {
-            console.warn(`[Manager] Shard ${shard.id} has requested a restart.`);
-            shard.respawn();
+manager.on("clusterCreate", (cluster) => {
+    cluster.on("message", (m) => {
+        if (m === "respawn") {
+            managerLogger.warn(`Cluster ${cluster.id} has requested a restart.`);
+            cluster.respawn();
         };
     });
-    console.log(`[Manager] Shard ${shard.id} is starting.`);
+    managerLogger.info(`Cluster ${cluster.id} is starting.`);
 });
 
 if (config.port) {
     try {
         require("./web/")();
     } catch (e) {
-        console.error(e);
+        managerLogger.error(e);
     };
 };
 
@@ -31,22 +38,23 @@ manager.spawn({ timeout: -1 }).then(() => {
     setTimeout(() => {
         if (config.monitoring?.sdc && config.monitoring?.bc) {
             postStats();
+            setInterval(() => void postStats(), 1000 * 60 * 60);
         };
     }, 1 * 60 * 1000);
 });
 
-process.on("unhandledRejection", (e) => console.error("[Manager]", "unhandledRejection:", e));
-process.on("uncaughtException", (e) => console.error("[Manager]", "uncaughtException:", e));
+process.on("unhandledRejection", (e) => managerLogger.error("unhandledRejection:" + inspect(e)));
+process.on("uncaughtException", (e) => managerLogger.error("uncaughtException:" + inspect(e)));
 
-async function postStats() {
+async function postStats(): Promise<void> {
     const stats = {
         sdc: {
-            shards: manager.shards.size,
+            shards: manager.totalShards,
             servers: await manager.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((acc, val) => acc + val, 0))
         },
         bc: {
             servers: await manager.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((acc, val) => acc + val, 0)),
-            shards: manager.shards.size,
+            shards: manager.totalShards,
             users: await manager.broadcastEval((bot) =>
                 bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)
             ).then((res) => res.reduce((prev, val) => prev + val, 0))
@@ -63,7 +71,7 @@ async function postStats() {
             data: JSON.stringify(stats.sdc)
         }).then((res) => {
             if (res.status !== 200) {
-                console.error(`[Manager] Failed to post stats to SDC: ${res.status}`);
+                managerLogger.warn(`Failed to post stats to SDC: ${res.status}`);
             };
         }).catch(() => null),
         axios("https://api.boticord.top/v1/stats", {
@@ -75,12 +83,12 @@ async function postStats() {
             data: JSON.stringify(stats.bc)
         }).then((res) => {
             if (res.status !== 200) {
-                return console.error(`[Manager] Failed to post stats to BC: ${res.status}`);
+                return managerLogger.warn(`[Manager] Failed to post stats to BC: ${res.status}`);
             };
             if (!res.data.ok) {
-                return console.error(`[Manager] Failed to post stats to BC: ${res.statusText}`);
+                return managerLogger.warn(`[Manager] Failed to post stats to BC: ${res.statusText}`);
             };
         }).catch(() => null)
     ];
-    return Promise.all(promises).then(() => setTimeout(() => postStats(), 1 * 60 * 60 * 1000));
+    return void await Promise.all(promises);
 };

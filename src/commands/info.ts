@@ -3,31 +3,42 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("info")
     .setDescription("Посмотреть информацию о боте.")
+    .setDMPermission(false)
     .toJSON();
-export const permission = 0;
 
 import { ChatInputCommandInteraction } from "discord.js";
 import os from "os";
 const platform = `${os.type()} (${os.release()})`;
 import Util from "../util/Util.js";
 import { version } from "discord.js";
-let guilds = 0, users = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = Date.now();
+import { Client } from "discord-hybrid-sharding";
+import prettyMilliseconds from "pretty-ms";
+let guilds = 0, users = 0, clusterCount = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = 0;
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;
 
-        guilds = await interaction.client.shard.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, val) => prev + val, 0));
-        users = await interaction.client.shard.broadcastEval((bot) =>
+        guilds = await interaction.client.cluster.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, val) => prev + val, 0));
+        users = await interaction.client.cluster.broadcastEval((bot) =>
             bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)
         ).then((res) => res.reduce((prev, val) => prev + val, 0));
-        shardCount = interaction.client.shard.count;
+
+        clusterCount = Client.getInfo().CLUSTER_COUNT;
+        shardCount = Client.getInfo().TOTAL_SHARDS;
 
         const { rss, heapUsed } = process.memoryUsage();
 
         memoryUsageGlobal = Util.prettyBytes(rss, 2);
         memoryUsage = Util.prettyBytes(heapUsed, 2);
     };
+
+    const clusterGuilds = interaction.client.guilds.cache.size;
+    const clusterUsers = interaction.client.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b, 0);
+
+    const shardId = interaction.guild.shard.id;
+    const shardGuilds = interaction.client.guilds.cache.filter((g) => g.shard.id === shardId).size;
+    const shardUsers = interaction.client.guilds.cache.filter((g) => g.shard.id === shardId).map((g) => g.memberCount).reduce((prev, val) => prev + val, 0);
 
     await interaction.reply({
         embeds: [{
@@ -37,23 +48,27 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 value: [
                     `**ОС**: \`${platform}\``,
                     `**Библиотека**: \`discord.js v${version}\``,
+                    `**Кол-во кластеров**: \`${clusterCount.toLocaleString()}\``,
+                    `**Кол-во шардов**: \`${shardCount.toLocaleString()}\``,
                     `**Исп. ОЗУ**: \`${memoryUsageGlobal}\``
                 ].join("\n"),
                 inline: true
             }, {
-                name: "🌀 Статистика",
+                name: `🔷 Этот кластер (${interaction.client.cluster.id.toLocaleString()})`,
                 value: [
-                    `**Кол-во серверов**: \`${guilds}\``,
-                    `**Кол-во юзеров**: \`${users}\``,
-                    `**Кол-во шардов**: \`${shardCount}\``
+                    `**Кол-во серверов**: \`${clusterGuilds.toLocaleString()}\``,
+                    `**Кол-во юзеров**: \`${clusterUsers.toLocaleString()}\``,
+                    `**Кол-во шардов**: \`${interaction.client.cluster.ids.size.toLocaleString()}\``,
+                    `**Исп. ОЗУ**: \`${memoryUsage}\``,
+                    `**Аптайм**: \`${prettyMilliseconds(interaction.client.uptime)}\``
                 ].join("\n"),
                 inline: true
             }, {
-                name: `🔷 Этот шард (${interaction.guild.shard.id})`,
+                name: `🌀 Этот шард (${shardId.toLocaleString()})`,
                 value: [
-                    `**Кол-во серверов**: \`${interaction.client.guilds.cache.size}\``,
-                    `**Кол-во юзеров**: \`${interaction.client.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)}\``,
-                    `**Исп. ОЗУ**: \`${memoryUsage}\``
+                    `**Кол-во серверов**: \`${shardGuilds.toLocaleString()}\``,
+                    `**Кол-во юзеров**: \`${shardUsers.toLocaleString()}\``,
+                    `**Задержка сокета**: \`${interaction.guild.shard.ping.toLocaleString()}ms\``
                 ].join("\n"),
                 inline: true
             }, {
@@ -67,7 +82,15 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                     ].join("")})`,
                     "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)",
                     "[📰 Сайт бота](https://dob.djoh.xyz)"
-                ].join("\n")
+                ].join("\n"),
+                inline: true
+            }, {
+                name: "📈 Статистика",
+                value: [
+                    `**Кол-во серверов**: \`${guilds.toLocaleString()}\``,
+                    `**Кол-во юзеров**: \`${users.toLocaleString()}\``
+                ].join("\n"),
+                inline: true
             }]
         }]
     });

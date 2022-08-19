@@ -1,16 +1,15 @@
-require("nodejs-better-console").overrideConsole();
 import fs from "fs";
 import db from "./database/";
 import { inspect } from "util";
+import Sharding from "discord-hybrid-sharding";
 import Util from "./util/Util";
-import { ActivityType, GatewayIntentBits, Options, Partials } from "discord.js";
+import { ActivityType, Client, GatewayIntentBits, Options, Partials } from "discord.js";
 import prettyms from "pretty-ms";
 import tickers from "./handlers/tickers";
 import lavaHandler from "./handlers/lava";
-import { ModifiedClient } from "./constants/types";
 import prepareGuild from "./handlers/prepareGuilds";
 import { registerCommands } from "./handlers/interactions/slash";
-export const client = new ModifiedClient({
+export const client = new Client({
     makeCache: Options.cacheWithLimits({
         MessageManager: 4096
     }),
@@ -22,9 +21,8 @@ export const client = new ModifiedClient({
     },
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildBans,
+        GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildVoiceStates
     ],
     partials: [Partials.Channel],
@@ -34,58 +32,51 @@ export const client = new ModifiedClient({
             type: ActivityType.Watching,
             name: "the loading screen",
         }]
-    }
+    },
+    shards: Sharding.Client.getInfo().SHARD_LIST,
+    shardCount: Sharding.Client.getInfo().TOTAL_SHARDS
 });
-client.cfg = {
-    enslash: true,
-    enbr: true,
-    debug: false
-};
+client.database = db;
 Util.setClient(client).setDatabase(db);
+import { clientLogger } from "./util/logger/normal";
 
-export let shard = "[Shard N/A]";
-client.once("shardReady", async (shardId, unavailable = new Set()) => {
+export let cluster = `[Cluster ${client.cluster.id}]`;
+export let disabledGuilds: Set<string>;
+client.once("ready", async () => {
     let start = Date.now();
-    shard = `[Shard ${shardId}]`;
-
     client.loading = true;
 
+    clientLogger.info(`Ready as ${client.user!.tag}!`);
+
+    // remove this after first prod boot
     let slashPostStart = Date.now();
-    registerCommands(client).then((a) => {
-        console.log(`${shard} Refreshed slash commands for ${a.length}/${client.guilds.cache.size} guilds. [${prettyms(Date.now() - slashPostStart)}]`);
+    registerCommands(client).then(() => {
+        clientLogger.info(`Refreshed slash commands. [${prettyms(Date.now() - slashPostStart)}]`);
     });
 
-    console.log(`${shard} Ready as ${client.user?.tag}! Caching guilds.`);
+    Util.setLavaManager(lavaHandler(client));
 
-    let disabledGuilds = new Set<string>([...Array.from(unavailable), ...client.guilds.cache.map((g) => g.id)]);
-    let guildCachingStart = Date.now();
+    disabledGuilds = new Set<string>(client.guilds.cache.map((g) => g.id));
 
-    await db.cacheGSets(disabledGuilds);
-    await db.cacheGuilds(disabledGuilds);
-    await (await db.global()).reload();
-    console.log(`${shard} All ${disabledGuilds.size} guilds have been cached. Processing available guilds. [${Date.now() - guildCachingStart}ms]`);
-
-    let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user?.setPresence({
+    let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user!.setPresence({
         status: "dnd",
         activities: [{
             type: ActivityType.Watching,
             name: `${Math.floor((completed / client.guilds.cache.size) * 100)}%`
         }]
     }), 1000);
-    await Promise.all(client.guilds.cache.map(async (guild) => {
+    for (const guild of client.guilds.cache.values()) {
         await prepareGuild(guild);
         disabledGuilds.delete(guild.id);
         completed++;
-    }));
-    disabledGuilds = undefined;
+    };
     clearInterval(presenceInterval);
-    console.log(`${shard} All ${client.guilds.cache.size} available guilds have been processed. [${Date.now() - processingStartTimestamp}ms]`);
+    clientLogger.info(`Processed ${client.guilds.cache.size} guilds. [${Date.now() - processingStartTimestamp}ms]`);
 
-    Util.setLavaManager(lavaHandler(client));
     tickers();
 
     client.loading = false;
-    console.log(`${shard} Ready in ${prettyms(Date.now() - start)}`);
+    clientLogger.info(`Ready in ${prettyms(Date.now() - start)}`);
 });
 
 const eventFiles = fs.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
@@ -99,16 +90,24 @@ for (const filename of eventFiles) {
     };
 };
 
-client.on("error", (err) => console.error(shard, `Client error. ${inspect(err)}`));
-client.on("rateLimit", (rateLimitInfo) => console.warn(shard, `Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
-client.on("shardDisconnected", ({ code, reason }) => console.warn(shard, `Disconnected. (${code} - ${reason})`));
-client.on("warn", (info) => console.warn(shard, `Warning. ${info}`));
+client.on("error", (err) => void clientLogger.error(`Client error. ${inspect(err)}`));
+client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
+client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[Shard ${id}] Disconnected. (${code} - ${reason})`));
+client.on("shardReconnecting", (id) => void clientLogger.warn(`[Shard ${id}] Reconnecting.`));
+client.on("shardResume", (id, num) => void clientLogger.warn(`[Shard ${id}] Resumed. ${num} replayed events.`));
+client.on("shardReady", (id) => void clientLogger.info(`[Shard ${id}] Ready.`));
+client.on("warn", (info) => void clientLogger.warn(`Warning. ${inspect(info)}`));
 
 client.on("debug", (info) => {
-    if (client.cfg.debug) console.debug(shard, info);
+    if (client.cfg.debug) clientLogger.debug(info);
 });
 
-db.connection.then(() => client.login()).catch((e) => console.error(shard, e));
+db.connection.then(() => client.login()).catch((e) => {
+    clientLogger.error(e);
+    client.cluster.send("respawn");
+});
 
-process.on("unhandledRejection", (e) => console.error(shard, "unhandledRejection:", e));
-process.on("uncaughtException", (e) => console.error(shard, "uncaughtException:", e));
+process.on("unhandledRejection", (e) => void clientLogger.error("unhandledRejection: " + inspect(e)));
+process.on("uncaughtException", (e) => void clientLogger.error("uncaughtException:" + inspect(e)));
+
+clientLogger.info("=".repeat(55));

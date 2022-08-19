@@ -3,6 +3,8 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("flows")
     .setDescription("Настройки потоков.")
+    .setDefaultMemberPermissions(8)
+    .setDMPermission(false)
     .addSubcommand((c) => c.setName("create").setDescription("Создать новый поток."))
     .addSubcommand((c) => c.setName("list").setDescription("Посмотреть список созданных на этом сервере потоков."))
     .addSubcommand((c) =>
@@ -10,7 +12,6 @@ export const options = new SlashCommandBuilder()
             .addStringOption((o) => o.setName("id").setDescription("Id потока, который нужно удалить. (/flows list)").setRequired(true))
     )
     .toJSON();
-export const permission = 2;
 
 import {
     ChatInputCommandInteraction,
@@ -34,13 +35,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     if (cmd == "create") {
         if (Object.keys(flows).length >= limitFlows)
-            return await interaction.reply({
+            return interaction.reply({
                 content: `❌ Вы можете иметь только ${limitFlows} потоков.`,
                 ephemeral: true
             });
 
         if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels))
-            return await interaction.reply({
+            return interaction.reply({
                 content: "❌ У бота нету прав на создание каналов.",
                 ephemeral: true
             });
@@ -74,7 +75,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 }]
             }) as TextChannel;
         } catch {
-            return await interaction.reply("❌ Не удалось создать канал для создания потока.").catch(() => null);
+            return interaction.reply("❌ Не удалось создать канал для создания потока.").catch(() => null);
         };
         await interaction.reply({
             content: `🌀 Перейдите в ${channel} для настройки нового потока.`,
@@ -130,7 +131,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         } else await interaction.editReply("❌ Создание потока было отменено.").catch(() => null);
     } else if (cmd === "delete") {
         const flowId = interaction.options.getString("id");
-        if (!flows[flowId]) return await interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
+        if (!flows[flowId]) return interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
 
         gdb.removeFromObject("flows", flowId);
         global.removeFromArray("generatedIds", flowId);

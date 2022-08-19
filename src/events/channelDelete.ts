@@ -12,7 +12,7 @@ export const run = async (channel: Channel) => {
 
         try {
             let message = player.get("message") as Message | undefined;
-            if (!message || !message.editable) await text.send({ content: "Канал был удалён. Останавливаю плеер.", embeds: [] });
+            if (!message?.editable) await text.send({ content: "Канал был удалён. Останавливаю плеер.", embeds: [] });
             else await message.edit({ content: "Канал был удалён. Останавливаю плеер.", embeds: [] });
         } catch { };
         player.destroy();

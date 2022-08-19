@@ -1,13 +1,14 @@
 import { Schema, model } from "mongoose";
+import { inspect } from "util";
 import { GSetObject } from "../constants/types";
+import { clientLogger } from "../util/logger/normal";
 
 const dbCache = new Map<string, GSetObject>(), dbSaveQueue = new Map<string, string[]>();
 
 const gSetObject = {
     guildid: "",
-    delMuted: false,
     purgePinned: false,
-    voices: { enabled: false, lobby: "", parent: "" }
+    voices: { enabled: false, lobby: "" }
 } as GSetObject;
 
 const gSetSchema = new Schema(gSetObject, { minimize: true });
@@ -23,9 +24,9 @@ const get = (guildid: string) => new Promise((resolve, reject) => GSet.findOne({
 }));
 
 const load = async (guildid: string) => {
-    const guild = await get(guildid), guildCache = {}, freshGuildObject = gSetObject;
+    const guild = await get(guildid), guildCache = {} as GSetObject, freshGuildObject = gSetObject;
     for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
-    return dbCache.set(guildid, guildCache as any);
+    return dbCache.set(guildid, guildCache);
 };
 
 const save = async (guildid: string, changes: string[]) => {
@@ -39,12 +40,17 @@ const save = async (guildid: string, changes: string[]) => {
                 dbSaveQueue.delete(guildid);
                 save(guildid, newSaveQueue.filter((key) => !guildSaveQueue.includes(key)));
             } else dbSaveQueue.delete(guildid);
-        }).catch(console.log);
+        }).catch((e: any) => void clientLogger.error(inspect(e)));
     } else dbSaveQueue.get(guildid).push(...changes);
 };
 
+let timeout: NodeJS.Timeout | null = null;
 export default () => (async (guildid: string) => {
     if (!dbCache.has(guildid)) await load(guildid);
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        if (dbSaveQueue.has(guildid)) save(guildid, dbSaveQueue.get(guildid)).then(() => dbCache.delete(guildid));
+    }, 5 * 60 * 1000);
     return {
         reload: () => load(guildid),
         unload: () => dbCache.delete(guildid),
@@ -101,14 +107,14 @@ export default () => (async (guildid: string) => {
 });
 
 export async function cacheGSets(guilds: Set<string>) {
-    let gsdbs = await GSet.find({ $or: [...guilds].map((guildid) => ({ guildid })) });
-    return await Promise.all([...guilds].map(async (guildid) => {
-        const guild = gsdbs.find((db) => db.guildid == guildid) || { guildid };
-        const guildCache = {};
+    const gsdbs = await GSet.find({ $or: [...guilds].map((guildid) => ({ guildid })) });
+    return [...guilds].map((guildid) => {
+        const guild = gsdbs.find((db) => db.guildid === guildid) || { guildid };
+        const guildCache = {} as GSetObject;
         const freshGuildObject = gSetObject;
 
         for (const key in freshGuildObject) guildCache[key] = guild[key] || freshGuildObject[key];
 
-        return dbCache.set(guildid, guildCache as any);
-    }));
+        return dbCache.set(guildid, guildCache);
+    });
 };

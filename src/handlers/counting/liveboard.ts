@@ -1,5 +1,7 @@
-import { Client, Message, TextChannel } from "discord.js";
+import { Client, TextChannel } from "discord.js";
+import { inspect } from "util";
 import { formatScore } from "../../constants/";
+import { clientLogger } from "../../util/logger/normal";
 import Util from "../../util/Util";
 
 export = (client: Client) => Promise.all(client.guilds.cache.map(async (guild) => {
@@ -9,22 +11,20 @@ export = (client: Client) => Promise.all(client.guilds.cache.map(async (guild) =
     if (channelId && messageId) {
         const channel = client.channels.resolve(channelId) as TextChannel;
         if (!channel) return gdb.set("liveboard", {});
-        const message: Message = await channel.messages.fetch(messageId).catch(() => null);
-        if (!message || !message.editable) return gdb.set("liveboard", {});
 
         const top = Object.keys(users).sort((a, b) => users[b] - users[a]).slice(0, 25);
-        const leaderboard = top.map((id, index) => formatScore(id, index, users, message.author.id));
+        const leaderboard = top.map((id, index) => formatScore(id, index, users));
         const description = leaderboard.join("\n");
 
-        return await message.edit({
+        return channel.messages.edit(messageId, {
             content: null,
             embeds: [{
-                title: `Лидеры ${message.guild.name}`,
+                title: `Лидеры ${channel.guild.name}`,
                 thumbnail: {
-                    url: message.guild.iconURL()
+                    url: channel.guild.iconURL()
                 },
                 description
             }]
-        }).catch(() => null);
-    }
+        }).catch((e) => clientLogger.error(`[g${guild.id}c${channel.id}m${messageId}] ${inspect(e)}`));
+    };
 }));

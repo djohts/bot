@@ -3,18 +3,22 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Посмотреть задержку бота.")
+    .setDMPermission(false)
     .toJSON();
-export const permission = 0;
 
 import prettyms from "pretty-ms";
 import { ChatInputCommandInteraction } from "discord.js";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const server = Date.now() - interaction.createdTimestamp;
+    const then = Date.now();
+
+    await interaction.deferReply();
+
+    const server = Date.now() - then;
     const uptime = prettyms(interaction.client.uptime);
     const api = interaction.guild.shard.ping;
 
-    await interaction.reply({
+    return interaction.editReply({
         embeds: [{
             title: "🏓 Понг!",
             description: [

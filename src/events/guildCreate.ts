@@ -1,10 +1,5 @@
 import { Guild } from "discord.js";
-import config from "../../config";
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { commands } from "../handlers/interactions/slash";
 import Util from "../util/Util";
-const rest = new REST({ version: "9" }).setToken(config.token);
 
 export async function run(guild: Guild) {
     const members = await guild.members.fetch();
@@ -31,8 +26,4 @@ export async function run(guild: Guild) {
             }]
         }]
     }));
-
-    await rest.put(Routes.applicationGuildCommands(Util.client.user.id, guild.id), { body: commands }).catch((err) => {
-        if (!err.message.toLowerCase().includes("missing")) console.error(err);
-    });
 };

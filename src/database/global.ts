@@ -1,12 +1,12 @@
 import { Schema, model } from "mongoose";
+import { inspect } from "util";
 import { GlobalObject } from "../constants/types";
+import { clientLogger } from "../util/logger/normal";
 
 const dbCache = new Map<string, GlobalObject>(), dbSaveQueue = new Map<string, string[]>();
 
 const globalObject = {
     maintenance: false,
-    debug: false,
-    generatedIds: [],
     boticordBumps: []
 } as GlobalObject;
 
@@ -22,9 +22,9 @@ const get = () => new Promise((resolve, reject) => Global.findOne({}, (err: Erro
 }));
 
 const load = async () => {
-    let global = await get(), globalCache = {}, freshGlobalObject = globalObject;
+    let global = await get(), globalCache = {} as GlobalObject, freshGlobalObject = globalObject;
     for (const key in freshGlobalObject) globalCache[key] = global[key] || freshGlobalObject[key];
-    return dbCache.set("global", globalCache as any);
+    return dbCache.set("global", globalCache);
 };
 
 const save = async (changes: string[]) => {
@@ -39,7 +39,7 @@ const save = async (changes: string[]) => {
             dbSaveQueue.delete("global");
             save(newSaveQueue.filter((key: string) => !globalSaveQueue.includes(key)));
         } else dbSaveQueue.delete("global");
-    }).catch(console.log);
+    }).catch((e: any) => void clientLogger.error(inspect(e)));
 };
 
 export default () => (async () => {

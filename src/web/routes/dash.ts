@@ -1,7 +1,7 @@
 import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
-import { Guild, PermissionFlagsBits, PermissionsBitField, ShardClientUtil } from "discord.js";
+import { PermissionFlagsBits, PermissionsBitField } from "discord.js";
 import { manager } from "../../sharding";
-import { ModifiedClient, SessionUser } from "../../constants/types";
+import { SessionUser } from "../../constants/types";
 
 export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/", (req, res): any => res.redirect("/dash/guilds"));
@@ -11,16 +11,17 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         if (
             !id ||
             !user ||
-            !new PermissionsBitField().add(user.guilds.find((guild) => guild.id === id)?.permissions || "0" as any).has(PermissionFlagsBits.Administrator)
+            !new PermissionsBitField(user.guilds.find((guild) => guild.id === id)?.permissions || 0 as any).has(PermissionFlagsBits.Administrator)
         ) return res.redirect("/dash/guilds");
-        const guild: Guild | null = await manager.broadcastEval((bot: ModifiedClient, { id }) => {
+        const guild = await manager.broadcastEval((bot, id) => {
             const { inspect } = require("util");
             const guild = bot.guilds.cache.get(id);
-            return guild ? inspect(guild) : null;
+            return inspect(guild) as string;
         }, {
-            shard: ShardClientUtil.shardIdForGuildId(id, manager.shards.size),
-            context: { id }
+            guildId: id,
+            context: id
         });
+        return console.log(guild);
         if (!guild) {
             return res.redirect(`/api/invite/${id}`);
         };

@@ -3,6 +3,8 @@ import { SlashCommandBuilder } from "discord.js";
 export const options = new SlashCommandBuilder()
     .setName("settings")
     .setDescription("Настройки бота на сервере.")
+    .setDefaultMemberPermissions(8)
+    .setDMPermission(false)
     .addSubcommand((c) => c.setName("get").setDescription("Получить настройки сервера."))
     .addSubcommand((c) => c.setName("toggle").setDescription("Изменить значение найстройки.").addStringOption((o) =>
         o.setName("setting").setDescription("Настройка, которую надо изменить.").setRequired(true)
@@ -19,7 +21,6 @@ export const options = new SlashCommandBuilder()
         o.setName("channel").setDescription("Текстовый канал в котором пользователи смогут считать циферки.").setRequired(true).addChannelTypes(0)
     ))
     .toJSON();
-export const permission = 2;
 
 import { ChatInputCommandInteraction } from "discord.js";
 import Util from "../util/Util";

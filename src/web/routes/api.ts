@@ -2,8 +2,8 @@ import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
 import config from "../../../config";
 import discordoauth2 from "discord-oauth2";
 import { manager } from "../../sharding";
-import { ModifiedClient, SessionUser, CustomGuild, BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
-import { PermissionFlagsBits, PermissionsBitField, ShardClientUtil, WebhookClient } from "discord.js";
+import { SessionUser, CustomGuild, BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
+import { Client, PermissionFlagsBits, PermissionsBitField, WebhookClient } from "discord.js";
 import axios from "axios";
 const wh = new WebhookClient({ url: config.notifications_webhook });
 const oauth2 = new discordoauth2({
@@ -13,7 +13,7 @@ const oauth2 = new discordoauth2({
 });
 
 export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
-    fastify.get("/shards", async (_, res) => {
+    fastify.get("/stats", async (_, res) => {
         const newBotInfo = await manager.broadcastEval((bot) => ({
             status: bot.ws.status,
             guilds: bot.guilds.cache.size,
@@ -21,15 +21,15 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             channels: bot.channels.cache.size,
             users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
             ping: bot.ws.ping,
-            loading: (bot as ModifiedClient).loading
+            loading: bot.loading
         })).then((results) => results.reduce((info, next, index) => {
             for (const [key, value] of Object.entries(next)) {
                 if (["guilds", "cachedUsers", "channels", "users"].includes(key)) info[key] = (info[key] || 0) + value;
             };
-            info.shards[index] = next;
+            info.clusters[index] = next;
             return info;
         }, {
-            shards: {} as {
+            clusters: {} as {
                 status: string,
                 guilds: number,
                 cachedUsers: number,
@@ -48,8 +48,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         res.send(newBotInfo);
     });
     fastify.get("/metrics", async (req, res) => {
-        const sharddata = (await axios("http://localhost:4000/api/shards").then((response) => response.data)) as {
-            shards: {
+        const sharddata = (await axios("http://localhost:4000/api/stats").then((response) => response.data)) as {
+            clusters: {
                 [key: string]: {
                     status: string,
                     guilds: number,
@@ -72,7 +72,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             total_channels: sharddata.channels,
             total_users: sharddata.users,
             total_cached_users: sharddata.cachedUsers,
-            average_ping: Object.values(sharddata.shards).reduce((total, next) => total + next.ping, 0) / Object.keys(sharddata.shards).length,
+            average_ping: Object.values(sharddata.clusters).reduce((total, next) => total + next.ping, 0) / Object.keys(sharddata.clusters).length,
 
             shard_guilds: {},
             shard_channels: {},
@@ -81,7 +81,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             shard_ping: {},
         } as { [key: string]: number | { [key: string]: number } };
 
-        for (const [key, value] of Object.entries(sharddata.shards)) {
+        for (const [key, value] of Object.entries(sharddata.clusters)) {
             metricObject["shard_guilds"][key] = value.guilds;
             metricObject["shard_channels"][key] = value.channels;
             metricObject["shard_users"][key] = value.users;
@@ -136,8 +136,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/bot/isinuguild/:guild", async (req: any, res) => {
         const { guild } = req.params as { guild: string };
         if (!guild) return res.send({ isinuguild: false });
-        const isinuguild = await manager.broadcastEval((bot: ModifiedClient, guild: string) => !!bot.guilds.cache.get(guild), {
-            shard: ShardClientUtil.shardIdForGuildId(guild, manager.shards.size),
+        const isinuguild = await manager.broadcastEval((bot: Client, guild: string) => !!bot.guilds.cache.get(guild), {
+            guildId: guild,
             context: guild
         });
         res.send({ isinuguild });
@@ -164,10 +164,10 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
 
         switch (options.type) {
             case "new_bot_bump":
-                manager.broadcastEval((bot: ModifiedClient, options: BcBotBumpAction) => {
+                manager.broadcastEval((bot: Client, options: BcBotBumpAction) => {
                     bot.util.func.processBotBump(options);
                 }, {
-                    shard: ShardClientUtil.shardIdForGuildId("888870095659630664", manager.shards.size),
+                    guildId: "888870095659630664",
                     context: options
                 });
                 break;
