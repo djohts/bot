@@ -64,11 +64,11 @@ client.once("ready", async () => {
             name: `${Math.floor((completed / client.guilds.cache.size) * 100)}%`
         }]
     }), 1000);
-    for (const guild of client.guilds.cache.values()) {
+    await Promise.all(client.guilds.cache.map(async (guild) => {
         await prepareGuild(guild);
         disabledGuilds.delete(guild.id);
         completed++;
-    };
+    }));
     clearInterval(presenceInterval);
     clientLogger.info(`Processed ${client.guilds.cache.size} guilds. [${Date.now() - processingStartTimestamp}ms]`);
 
