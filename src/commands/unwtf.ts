@@ -14,13 +14,20 @@ export const run = async (interaction: ContextMenuCommandInteraction) => {
 
     const message = await interaction.channel.messages.fetch(interaction.targetId);
 
-    // replace english keyboard layout with cyrillic one
+    if (!message.content) {
+        return interaction.reply({
+            content: "❌ Это сообщение не имеет контента.",
+            ephemeral: true
+        });
+    };
+
     const text = message.content
         .replace(/q/g, "й")
         .replace(/w/g, "ц")
         .replace(/e/g, "у")
         .replace(/r/g, "к")
         .replace(/t/g, "е")
+        .replace(/`/g, "ё")
         .replace(/y/g, "н")
         .replace(/u/g, "г")
         .replace(/i/g, "ш")
@@ -38,7 +45,7 @@ export const run = async (interaction: ContextMenuCommandInteraction) => {
         .replace(/k/g, "л")
         .replace(/l/g, "д")
         .replace(/;/g, "ж")
-        .replace(/"/g, "э")
+        .replace(/'/g, "э")
         .replace(/z/g, "я")
         .replace(/x/g, "ч")
         .replace(/c/g, "с")
@@ -55,13 +62,14 @@ export const run = async (interaction: ContextMenuCommandInteraction) => {
         .replace(/E/g, "У")
         .replace(/R/g, "К")
         .replace(/T/g, "Е")
+        .replace(/~/g, "Ё")
         .replace(/Y/g, "Н")
         .replace(/U/g, "Г")
         .replace(/I/g, "Ш")
         .replace(/O/g, "Щ")
         .replace(/P/g, "З")
-        .replace(/\[/g, "Х")
-        .replace(/\]/g, "Ъ")
+        .replace(/\{/g, "Х")
+        .replace(/\}/g, "Ъ")
         .replace(/A/g, "Ф")
         .replace(/S/g, "Ы")
         .replace(/D/g, "В")
@@ -71,7 +79,7 @@ export const run = async (interaction: ContextMenuCommandInteraction) => {
         .replace(/J/g, "О")
         .replace(/K/g, "Л")
         .replace(/L/g, "Д")
-        .replace(/;/g, "Ж")
+        .replace(/:/g, "Ж")
         .replace(/"/g, "Э")
         .replace(/Z/g, "Я")
         .replace(/X/g, "Ч")
