@@ -22,6 +22,7 @@ export const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildVoiceStates
     ],
     partials: [Partials.Channel],
@@ -103,7 +104,7 @@ client.on("debug", (info) => {
 
 db.connection.then(() => client.login()).catch((e) => {
     clientLogger.error(e);
-    client.cluster.send("respawn");
+    process.exit();
 });
 
 process.on("unhandledRejection", (e) => void clientLogger.error("unhandledRejection: " + inspect(e)));

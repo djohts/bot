@@ -17,7 +17,7 @@ export = async (message: Message) => {
     if (
         (!modules.includes("allow-spam") && message.author.id === user) ||
         (!modules.includes("talking") && content !== `${count + 1}`) ||
-        content.split(/\s/)[0] !== `${count + 1}`
+        content.split(/\s/g)[0] !== `${count + 1}`
     ) {
         const countData = {
             count,
@@ -62,18 +62,26 @@ export = async (message: Message) => {
                     roles: [],
                     parse: [],
                 }
-            }) as Message;
+            });
             queueDelete([message]);
         };
     } catch (e) { }
     else if (modules.includes("embed")) try {
-        countingMessage = await message.channel.send({
-            embeds: [{
-                description: `${message.author}: ${content}`,
-                color: message.member.displayColor || 3553598
-            }]
-        });
-        queueDelete([message]);
+        const webhooks = await message.channel.fetchWebhooks();
+        let webhook: Webhook | null = webhooks.find((w: Webhook) => w.name === "Counting");
+        if (!webhook) webhook = await message.channel.createWebhook({ name: "Counting" });
+
+        if (webhook) {
+            countingMessage = await webhook.send({
+                embeds: [{
+                    description: `${content}`,
+                    color: message.member.displayColor
+                }],
+                username: message.author.username,
+                avatarURL: message.author.displayAvatarURL()
+            });
+            queueDelete([message]);
+        };
     } catch (e) { };
 
     gdb.set("message", countingMessage.id);
