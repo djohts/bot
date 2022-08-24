@@ -64,10 +64,10 @@
     ajv-formats "^2.1.1"
     fast-uri "^2.0.0"
 
-"@fastify/cookie@^7.3.1":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@fastify/cookie/-/cookie-7.4.0.tgz#a4782e24a0d230547d4c14f1dbbc13bcfc5dc52d"
-  integrity sha512-82MUHsZJY/Wl+rG2E+bnYxSifOtNRChm2M+8xnZHnKtYmyNfLvy/37ElCtqD3KzUyTycR+GE7v7uiDD/tY4TkA==
+"@fastify/cookie@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@fastify/cookie/-/cookie-8.0.0.tgz#470519200f96d966efd81e5e0fd1ddb1a6c87f54"
+  integrity sha512-VYEKAeJXx0ezormR7IlVd7iwMZDY+ksMUk50ruGKiMiuvMBkivzsPzNckR8dMme+5rxjXgOyfLunpS9jCvWlqA==
   dependencies:
     cookie "^0.5.0"
     fastify-plugin "^4.0.0"
