@@ -175,7 +175,7 @@
   resolved "https://registry.yarnpkg.com/@types/ejs/-/ejs-3.1.1.tgz#29c539826376a65e7f7d672d51301f37ed718f6d"
   integrity sha512-RQul5wEfY7BjWm0sYY86cmUN/pcXWGyVxWX93DFFJvcrxax5zKlieLwA3T77xJGwNcZW0YW6CYG70p1m8xPFmA==
 
-"@types/lodash@^4.14.182":
+"@types/lodash@^4.14.184":
   version "4.14.184"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.184.tgz#23f96cd2a21a28e106dc24d825d4aa966de7a9fe"
   integrity sha512-RoZphVtHbxPZizt4IcILciSWiC6dcn+eZ8oX9IWEYfDMcocdd42f7NPI6fQj+6zI8y4E0L7gu2pcZKLGTRaV9Q==
@@ -193,7 +193,7 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.11.tgz#486e72cfccde88da24e1f23ff1b7d8bfb64e6250"
   integrity sha512-KZhFpSLlmK/sdocfSAjqPETTMd0ug6HIMIAwkwUpU79olnZdQtMxpQP+G1wDzCH7na+FltSIhbaZuKdwZ8RDrw==
 
-"@types/node@^16.11.47":
+"@types/node@^16.11.55":
   version "16.11.55"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.55.tgz#4b1e4fa4238b083cf0d0b4ad9077629123950caa"
   integrity sha512-ZZepNkqPNCBy6PlCjeOY0gI1q91v7l5MUhVc5RMAUV39OxRO8lF8fqGnhY2j8FWz8fxcN8HvAUWoccWpOzl/Ug==
@@ -315,7 +315,6 @@ base64-js@^1.3.1:
 
 "bottleneck@github:SGrondin/bottleneck":
   version "2.19.5"
-  uid b83528333ba4d27cf70b81cc2be12e09d7ff692f
   resolved "https://codeload.github.com/SGrondin/bottleneck/tar.gz/b83528333ba4d27cf70b81cc2be12e09d7ff692f"
 
 brace-expansion@^1.1.7:
@@ -453,12 +452,12 @@ denque@^2.0.1:
   resolved "https://registry.yarnpkg.com/denque/-/denque-2.1.0.tgz#e93e1a6569fb5e66f16a3c2a2964617d349d6ab1"
   integrity sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==
 
-discord-api-types@^0.37.1, discord-api-types@^0.37.3:
+discord-api-types@^0.37.3, discord-api-types@^0.37.4:
   version "0.37.4"
   resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.4.tgz#fe36f37114c944e7178ee7f878f2638326f3d266"
   integrity sha512-QgqYlUokWM++hdwvAtgVNLjmFumPBzFy+uWnnfVDiwBXKm+5jXHJPk2lx2eilkv/706UpAJPLSk/uVCY9NocjA==
 
-discord-hybrid-sharding@^1.7.1:
+discord-hybrid-sharding@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/discord-hybrid-sharding/-/discord-hybrid-sharding-1.7.2.tgz#9b9e5f2afd8b3be63dea42987c95c04c857044f3"
   integrity sha512-IXC04in6NhD2XINpO+MKZ2skXi16iK7sN9NCjc9jqQyX2WN27ZIC5DeYayK1elhO4KABk6jnvyOVbeFhH7hr+A==
@@ -470,7 +469,7 @@ discord-oauth2@^2.10.0:
   resolved "https://registry.yarnpkg.com/discord-oauth2/-/discord-oauth2-2.10.0.tgz#7d31baced2b96c739b194c0ae42254cace3dcecd"
   integrity sha512-AV+pjKURHyGTCLCUO1vep83/M8zzlAaTkpjAB6bisBCjsyiQzJGihKR4dlM88UeAaJbyqDxnHIsHafePIO2ssg==
 
-discord.js@^14.1.2:
+discord.js@^14.3.0:
   version "14.3.0"
   resolved "https://registry.yarnpkg.com/discord.js/-/discord.js-14.3.0.tgz#9e43df7e4d2d14b11f3de751236e983159c3d3d0"
   integrity sha512-CpIwoAAuELiHSgVKRMzsCADS6ZlJwAZ9RlvcJYdEgS00aW36dSvXyBgE+S3pigkc7G+jU6BEalMUWIJFveqrBQ==
@@ -509,7 +508,6 @@ erela.js-spotify@^1.2.0:
 
 erela.js@^2.2.0, "erela.js@github:menudocs/erela.js#build":
   version "2.3.3"
-  uid "4f2011caa914e768b8338b584fba7aa42267bba8"
   resolved "https://codeload.github.com/menudocs/erela.js/tar.gz/4f2011caa914e768b8338b584fba7aa42267bba8"
   dependencies:
     "@discordjs/collection" "^0.2.1"
@@ -557,7 +555,7 @@ fastify-plugin@^4.0.0:
   resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-4.2.0.tgz#fb28ec08312777ad343059177f13277ca3e7c3b1"
   integrity sha512-hovKzEXZc2YgeuXn41/2EA/IaIOdRu1pB9WKgnzDBj3lhKSdDCEsckHa7I6LiT/LhflvAQX7ZY8IQ6eBX0htTg==
 
-fastify@^4.3.0:
+fastify@^4.5.2:
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/fastify/-/fastify-4.5.2.tgz#6da18ee9c8a466b365614a377a7f448f8c50a46b"
   integrity sha512-cDLhc0bh1ftzMoS7ccGGPUW/xTUnk6I51TktQqKFeJnhoAfk56tfn+xDs8JcJYfouPK23Ljx4OpMaEi+kIDwEg==
@@ -1149,7 +1147,7 @@ supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-terser@^5.14.2:
+terser@^5.15.0:
   version "5.15.0"
   resolved "https://registry.yarnpkg.com/terser/-/terser-5.15.0.tgz#e16967894eeba6e1091509ec83f0c60e179f2425"
   integrity sha512-L1BJiXVmheAQQy+as0oF3Pwtlo4s3Wi1X2zNZ2NxOB4wx9bdS9Vk67XQENLFdLYGCK/Z2di53mTj/hBafR+dTA==
