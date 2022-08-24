@@ -33,7 +33,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
 
-    if (cmd == "create") {
+    if (cmd === "create") {
         if (Object.keys(flows).length >= limitFlows)
             return interaction.reply({
                 content: `❌ Вы можете иметь только ${limitFlows} потоков.`,

@@ -10,7 +10,7 @@ export = async (interaction: ButtonInteraction) => {
         };
     };
 
-    if (interaction.customId == "reply:delete") return queueDelete([interaction.message as Message]);
+    if (interaction.customId === "reply:delete") return queueDelete([interaction.message as Message]);
     if (interaction.customId.startsWith("br:")) return buttonRoles(interaction);
     if (["subscribe"].some((i) => interaction.customId.startsWith(i))) return subscriptions(interaction);
 };

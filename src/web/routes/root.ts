@@ -1,5 +1,5 @@
 import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
-import fs from "fs";
+import { createReadStream } from "node:fs";
 
 export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/", (req: any, res) => {
@@ -16,9 +16,6 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/pp", (req: any, res) => {
         res.view("pp.ejs", { user: req.session.user });
     })
-    fastify.get("/favicon.ico", async (req, res) => {
-        const stream = fs.readFileSync(__dirname + "/../views/favicon.ico");
-        res.send(stream);
-    });
+    fastify.get("/favicon.ico", (req, res) => res.send(createReadStream(__dirname + "/../views/favicon.ico")));
     done();
 };

@@ -1,4 +1,4 @@
-import fs from "fs";
+import { readdirSync } from "node:fs";
 import db from "./database/";
 import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
@@ -39,7 +39,7 @@ client.database = db;
 Util.setClient(client).setDatabase(db);
 import { clientLogger } from "./util/logger/normal";
 
-export let cluster = `[Cluster ${client.cluster.id}]`;
+export const cluster = `[Cluster ${client.cluster.id}]`;
 export let disabledGuilds: Set<string>;
 client.once("ready", async () => {
     let start = Date.now();
@@ -78,7 +78,7 @@ client.once("ready", async () => {
     clientLogger.info(`Ready in ${prettyms(Date.now() - start)}`);
 });
 
-const eventFiles = fs.readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
+const eventFiles = readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
 for (const filename of eventFiles) {
     const file = require(`./events/${filename}`);
     const name = filename.split(".")[0];

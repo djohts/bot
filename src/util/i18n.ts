@@ -1,5 +1,5 @@
 import I18n from "@eartharoid/i18n";
-import { readdirSync } from "fs";
+import { readdirSync } from "node:fs";
 
 const localesObject = {};
 

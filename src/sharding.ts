@@ -38,7 +38,7 @@ manager.spawn({ timeout: -1 }).then(() => {
     setTimeout(() => {
         if (config.monitoring?.sdc && config.monitoring?.bc) {
             postStats();
-            setInterval(() => void postStats(), 1000 * 60 * 60);
+            setInterval(() => postStats(), 1000 * 60 * 60);
         };
     }, 1 * 60 * 1000);
 });
@@ -90,5 +90,6 @@ async function postStats(): Promise<void> {
             };
         }).catch(() => null)
     ];
-    return void await Promise.all(promises);
+    await Promise.all(promises);
+    return;
 };

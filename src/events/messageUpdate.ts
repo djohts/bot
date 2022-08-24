@@ -7,8 +7,8 @@ export async function run(original: Message, updated: Message) {
 
     const { modules, channel, message, count } = gdb.get();
     if (
-        channel == updated.channel.id
-        && message == updated.id
+        channel === updated.channel.id
+        && message === updated.id
         && !modules.includes("embed")
         && !modules.includes("webhook")
         && (

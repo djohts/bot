@@ -41,7 +41,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     }) as Message;
 
     const collector = m.createMessageComponentCollector({
-        filter: (i) => i.customId == "modules_menu" && i.user.id == interaction.user.id,
+        filter: (i) => i.user.id === interaction.user.id,
         componentType: ComponentType.SelectMenu,
         time: 60 * 1000,
         idle: 30 * 1000

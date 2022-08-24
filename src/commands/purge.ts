@@ -36,7 +36,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
     if (!gsdb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
-    if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id == interaction.options.getUser("member").id);
+    if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id === interaction.options.getUser("member").id);
     if (!toDelete.size) return interaction.editReply({ content: "❌ Не удалось найти сообщений для удаления." })
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
@@ -47,7 +47,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     await interaction.editReply({
         content:
             "✅ Удалено " + (
-                purged.size == 1 ?
+                purged.size === 1 ?
                     purged.size + " сообщение" :
                     [2, 3, 4].includes(purged.size) ?
                         purged.size + " сообщения" :

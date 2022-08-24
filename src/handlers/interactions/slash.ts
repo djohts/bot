@@ -1,12 +1,9 @@
-import { ChatInputCommandInteraction, Client, ContextMenuCommandInteraction, GuildMember } from "discord.js";
+import { ChatInputCommandInteraction, ContextMenuCommandInteraction, GuildMember } from "discord.js";
 import { getPermissionLevel } from "../../constants/";
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { readdirSync } from "fs";
+import { readdirSync } from "node:fs";
 import config from "../../../config";
 import { clientLogger } from "../../util/logger/normal";
 import { inspect } from "util";
-const rest = new REST().setToken(config.token);
 
 export default async (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
     if (
@@ -42,15 +39,6 @@ export default async (interaction: ChatInputCommandInteraction | ContextMenuComm
             interaction.channel.send(`❌ ${interaction.user}, ошибка выполнения команды. Свяжитесь с разработчиком.`);
         };
     };
-};
-
-export const registerCommands = (client: Client) => {
-    return Promise.all(client.guilds.cache.map((guild) => {
-        rest.put(Routes.applicationGuildCommands(client.user.id, guild.id), { body: [] })
-            .catch((err: any) => {
-                if (!err.message.toLowerCase().includes("missing")) clientLogger.error(err);
-            });
-    }));
 };
 
 const commands = [];

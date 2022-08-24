@@ -30,7 +30,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const gset = await Util.database.settings(interaction.guild.id);
     const gdb = await Util.database.guild(interaction.guild.id);
 
-    if (cmd == "get") {
+    if (cmd === "get") {
         await interaction.reply({
             embeds: [{
                 title: "Настройки " + interaction.guild.name,
@@ -55,11 +55,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 }]
             }]
         });
-    } else if (cmd == "toggle") {
+    } else if (cmd === "toggle") {
         const type = interaction.options.getString("setting");
         let idk = "";
 
-        if (type == "purgePinned") {
+        if (type === "purgePinned") {
             gset.get().purgePinned ? (() => {
                 gset.set("purgePinned", false);
                 idk = "**`Удаление закреплённых сообщений`** было выключено.";
@@ -68,7 +68,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 idk = "**`Удаление закреплённых сообщений`** было включено.";
             })();
             await interaction.reply({ content: idk });
-        } else if (type == "voices") {
+        } else if (type === "voices") {
             gset.get().voices.enabled ? (() => {
                 gset.setOnObject("voices", "enabled", false);
                 idk = "**`Временные голосовые каналы`** были выключены.";
@@ -78,11 +78,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             })();
             await interaction.reply({ content: idk });
         };
-    } else if (cmd == "setlobby") {
+    } else if (cmd === "setlobby") {
         let lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);
         await interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
-    } else if (cmd == "counting") {
+    } else if (cmd === "counting") {
         let counting = interaction.options.getChannel("channel");
         gdb.setMultiple({
             channel: counting.id,

@@ -9,7 +9,7 @@ export const flow = {
                 propertyTypes.numberX
             ],
             explanation: "Когда кто-то считает умножение {0}",
-            check: ({ count }, [number]) => count % number == 0
+            check: ({ count }, [number]) => count % number === 0
         },
         only: {
             short: "Только число X",
@@ -18,7 +18,7 @@ export const flow = {
                 propertyTypes.numberX
             ],
             explanation: "Когда кто-то считает число {0}",
-            check: ({ count }, [number]) => count == number
+            check: ({ count }, [number]) => count === number
         },
         score: {
             short: "Результат X",
@@ -27,7 +27,7 @@ export const flow = {
                 propertyTypes.numberX
             ],
             explanation: "Когда кто-нибудь получит результат {0}",
-            check: ({ score }, [number]) => score == number
+            check: ({ score }, [number]) => score === number
         },
         countfail: {
             short: "Ошибка счёта",
@@ -42,7 +42,7 @@ export const flow = {
             explanation: "Закрепит сообщение.",
             run: async ({ countingMessage }) => await countingMessage.pin().catch(async () => {
                 let pinned = await countingMessage.channel.messages.fetchPinned(false).catch(() => ({ size: 0 }));
-                if (pinned.size == 50) await pinned.last().unpin().then(() => countingMessage.pin().catch(() => null)).catch(() => null);
+                if (pinned.size === 50) await pinned.last().unpin().then(() => countingMessage.pin().catch(() => null)).catch(() => null);
             })
         },
         lock: {

@@ -191,8 +191,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 break;
             case "edit_bot_comment":
                 let vote: string;
-                if ((options as BcBotCommentAction).data.comment.vote.new == 1) vote = "Позитивная";
-                else if ((options as BcBotCommentAction).data.comment.vote.new == -1) vote = "Негативная";
+                if ((options as BcBotCommentAction).data.comment.vote.new === 1) vote = "Позитивная";
+                else if ((options as BcBotCommentAction).data.comment.vote.new === -1) vote = "Негативная";
                 else vote = "Нейтральная";
                 await wh.send({
                     embeds: [{
