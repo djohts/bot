@@ -28,4 +28,6 @@ export default function (manager: Manager) {
             };
         };
     });
+
+    rl.on("SIGINT", () => process.exit());
 };

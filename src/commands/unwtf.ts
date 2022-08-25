@@ -14,12 +14,11 @@ export const run = async (interaction: ContextMenuCommandInteraction) => {
 
     const message = await interaction.channel.messages.fetch(interaction.targetId);
 
-    if (!message.content) {
+    if (!message.content)
         return interaction.reply({
             content: "❌ Это сообщение не имеет контента.",
             ephemeral: true
         });
-    };
 
     const text = message.content
         .replace(/q/g, "й")
@@ -92,5 +91,5 @@ export const run = async (interaction: ContextMenuCommandInteraction) => {
         .replace(/\>/g, "Ю")
         .replace(/\?/g, ".");
 
-    await interaction.reply(text);
+    return interaction.reply(text);
 };
