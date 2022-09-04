@@ -3,8 +3,8 @@
     "description": "djoh's random discord bot",
     "main": "build/src/sharding",
     "scripts": {
-        "build:run": "npm run build && node --no-warnings --expose-gc .",
-        "build": "npx tsc && npm run copy",
+        "build:run": "yarn build && node --no-warnings --expose-gc .",
+        "build": "npx tsc && yarn copy",
         "start": "node --no-warnings --expose-gc .",
         "minify": "node minify.js",
         "copy": "npx copyfiles \"src/**/*.!(ts)\" build",
