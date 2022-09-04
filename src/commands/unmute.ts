@@ -10,7 +10,6 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
-import { clientLogger } from "../util/logger/normal";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const member = interaction.options.getMember("member") as GuildMember;
@@ -26,13 +25,10 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     let dmsent = false;
 
     return member.disableCommunicationUntil(0, interaction.user.tag + (reason ? `: ${reason}` : "")).then(() => {
-        interaction.reply({
+        return interaction.reply({
             content: `✅ ${member} был успешно размьючен.` +
                 (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
             allowedMentions: { parse: [] }
         });
-    }).catch((err) => {
-        clientLogger.error(err);
-        interaction.reply({ content: "❌ Произошла ошибка.", ephemeral: true });
     });
 };

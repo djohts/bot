@@ -12,37 +12,37 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, EmbedBuilder } from "discord.js";
-import { getPermissionLevel } from "../constants/";
 import { parseTime } from "../constants/resolvers";
 import prettyms from "pretty-ms";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const member = interaction.options.getMember("member") as GuildMember;
+    const user = interaction.options.getUser("member");
 
     if (
         !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
-        || !member.manageable
-    ) return interaction.reply({ content: "❌ Я не могу забанить этого участника.", ephemeral: true });
+    ) return interaction.reply({ content: "❌ У меня нет прав на выдачу банов.", ephemeral: true });
     if (
         interaction.options.getString("duration")
         && !parseTime(interaction.options.getString("duration"))
     ) return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
-    const bans = await interaction.guild.bans.fetch();
-    const guilddb = await Util.database.guild(interaction.guild.id);
-
-    if (bans.has(member.user.id))
-        return interaction.reply({ content: "❌ Этот пользователь уже забанен.", ephemeral: true });
-    if (getPermissionLevel(member) >= getPermissionLevel(interaction.member as GuildMember))
-        return interaction.reply({ content: "❌ Вы не можете забанить этого человека.", ephemeral: true });
-
     await interaction.deferReply();
 
+    if (await interaction.guild.bans.fetch(user).catch(() => 0))
+        return interaction.editReply("❌ Этот пользователь уже забанен.");
+    const member = await interaction.guild.members.fetch(user).catch(() => 0 as 0);
+
+    if (member) {
+        if (member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition)
+            return interaction.editReply("❌ Вы не можете забанить этого человека.");
+    };
+
+    const gdb = await Util.database.guild(interaction.guild.id);
     let dmsent = false;
     let time = 0;
-    let reason = interaction.options.getString("reason")?.trim();
-    let purgedays = interaction.options.getInteger("purgedays");
+    const reason = interaction.options.getString("reason")?.trim();
+    const deleteMessageDays = interaction.options.getInteger("purgedays");
     if (!interaction.options.getString("duration")) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("duration"));
 
@@ -67,18 +67,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         value: reason
     });
 
-    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => null);
+    await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => 0);
 
-    await interaction.guild.bans.create(member.id, {
+    await interaction.guild.bans.create(user, {
         reason: `${interaction.user.tag}: ${reason || "Не указана."}`,
-        deleteMessageDays: purgedays
-    }).then(async () => {
-        guilddb.setOnObject("bans", member.user.id, time);
-        await interaction.editReply({
-            content: `✅ ${member} был успешно забанен.` +
-                (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : "")
-        });
-    }).catch(async () => {
-        await interaction.editReply({ content: "❌ Произошла неизвестная ошибка." });
+        deleteMessageDays
+    }).then(() => {
+        if (time !== -1) gdb.setOnObject("bans", user.id, time);
+        return interaction.editReply(`✅ ${user} был успешно забанен.` + (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""));
     });
 };

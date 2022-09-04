@@ -38,15 +38,14 @@ import {
     Role,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonInteraction,
     EmbedBuilder,
     InteractionReplyOptions,
     InteractionUpdateOptions
 } from "discord.js";
-import { generateID } from "../constants/";
-import { paginate } from "../constants/resolvers";
 import { clientLogger } from "../util/logger/normal";
+import { paginate } from "../constants/resolvers";
 import { queueDelete } from "../handlers/utils";
+import { generateID } from "../constants/";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
@@ -58,13 +57,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (cmd === "create") {
         const channel = interaction.options.getChannel("channel") as TextChannel;
         const messageId = interaction.options.getString("message");
-        if (!(
-            channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ReadMessageHistory) ||
-            channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages) ||
-            channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ViewChannel)
-        )) {
+        if (
+            !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ViewChannel)
+            || !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ReadMessageHistory)
+            || !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages)
+        ) {
             return interaction.reply({
-                content: "❌ Недостаточно прав в укразанном канале. Проверьте наличие следующих прав: `VIEW_CHANNEL`, `READ_MESSAGE_HISTORY`, `SEND_MESSAGES`",
+                content: "❌ Недостаточно прав в укразанном канале. Проверьте наличие следующих прав: `ViewChannel`, `ReadMessageHistory`, `SendMessages`",
                 ephemeral: true
             });
         };
@@ -115,7 +114,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             });
         });
 
-        const message: Message | null = await channel.messages.fetch(messageId).catch(() => null);
+        const message: Message | 0 = await channel.messages.fetch(messageId).catch(() => 0);
         if (!message || !Object.values(gdb.get().brms).includes(message.id)) return interaction.editReply("❌ Сообщение не было найдено.");
         if (message.components[0].components.length >= 5) {
             return interaction.editReply("❌ На сообщении достигнут лимит РПК (5 штук).");
@@ -213,9 +212,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         const channelObject = new Collection<string, typeof messageObject>();
         const messageObject = new Collection<string, string[]>();
-        const channelsFlat = [...new Set(brcs.values())];
+        const channelIds = [...new Set(brcs.values())];
 
-        channelsFlat.map((channelId) => {
+        channelIds.map((channelId) => {
             const channelBrIds = [...brcs.filter((v) => v === channelId).keys()];
             channelBrIds.map((i) => {
                 const messageId = brms.get(i);
@@ -236,14 +235,14 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         const paginated = paginate(formattedArray, 1);
         let page = 0;
 
-        await interaction.reply(generateMessage(interaction, paginated, page)).then((m: any) => {
+        return interaction.reply(generateMessage(interaction, paginated, page)).then((m: any) => {
             const collector = (m as Message).createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: (x) => x.user.id === interaction.user.id,
                 idle: 60 * 1000
             });
 
-            collector.on("collect", async (i: ButtonInteraction) => {
+            collector.on("collect", async (i) => {
                 if (i.customId === "brlist:page:first") {
                     page = 0;
                     await i.update(generateMessage(interaction, paginated, page));
@@ -258,7 +257,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                     await i.update(generateMessage(interaction, paginated, page));
                 };
             });
-            collector.on("end", async () => await interaction.deleteReply().catch(() => null));
+            collector.on("end", () => interaction.deleteReply().catch(() => null));
         });
     };
 };

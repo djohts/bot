@@ -15,26 +15,16 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const volume = interaction.options.getInteger("volume");
 
     if (!member.voice.channel)
-        return interaction.reply({
-            content: "❌ Вы должны находится в голосовом канале.",
-            ephemeral: true
-        });
+        return interaction.reply({ content: "❌ Вы должны находится в голосовом канале.", ephemeral: true });
     if (
         interaction.guild.members.me.voice.channel
         && member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
-    ) return interaction.reply({
-        content: "❌ Вы должны находится в том же голосовом канале, что и я.",
-        ephemeral: true
-    });
+    ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
 
     const player = Util.lava.get(interaction.guildId);
-    if (!player) {
-        return interaction.reply({
-            content: "❌ На этом сервере ничего не играет.",
-            ephemeral: true
-        });
-    };
+    if (!player)
+        return interaction.reply({ content: "❌ На этом сервере ничего не играет.", ephemeral: true });
 
     await interaction.reply(`Новая громкость - \`${volume}%\``).then(() => player.setVolume(volume));
-    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
+    setTimeout(() => interaction.deleteReply().catch(() => 0), 30 * 1000);
 };

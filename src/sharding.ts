@@ -8,7 +8,7 @@ import { inspect } from "util";
 managerLogger.info("=".repeat(55));
 
 export const manager = new Sharding.Manager(__dirname + "/bot.js", {
-    totalShards: config.shards,
+    totalClusters: config.clusters,
     shardsPerClusters: config.shardsPerClusters,
     token: config.token,
     execArgv: ["--no-warnings"],

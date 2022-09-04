@@ -1,6 +1,7 @@
 import { flow } from "./flow";
 import limits from "./";
 import { Guild, Message, TextChannel, User } from "discord.js";
+import { queueDelete } from "../../handlers/utils";
 
 export async function formatExplanation({ type, data }) {
     let { properties, explanation } = flow.triggers[type] || flow.actions[type];
@@ -206,7 +207,7 @@ export async function flowWalkthrough(guild: Guild, author: User, channel: TextC
             else if (["help", "?"].includes(command)) messagesToDelete.push(await channel.send(`🔗 Проверьте закреплённое сообщение для помощи! ${pinned.url}`));
             else messagesToDelete.push(await channel.send("❌ Неверный запрос. Посмотрите закреплённое сообщение для помощи!"));
 
-            if (editing) setTimeout(async () => await channel.bulkDelete(messagesToDelete).catch(() => null), 5000);
+            if (editing) setTimeout(() => queueDelete(messagesToDelete), 5000);
         } catch (e) {
             editing = false;
         };

@@ -25,7 +25,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const res = await Util.lava.search(interaction.options.getString("query").trim(), interaction.user);
     if (!res.tracks.length) {
         await interaction.editReply("❌ По вашему запросу не удалось ничего найти.");
-        setTimeout(async () => await interaction.deleteReply().catch(() => { }), 20 * 1000);
+        setTimeout(() => interaction.deleteReply().catch(() => 0), 20 * 1000);
         return;
     };
 
@@ -39,13 +39,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (
         player.state !== "CONNECTED"
         && player.state !== "CONNECTING"
-    ) {
-        player.connect();
-    };
+    ) player.connect();
 
     if (player.queue.totalSize + 1 > 25) {
         await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");
-        setTimeout(async () => await interaction.deleteReply().catch(() => { }), 20 * 1000);
+        setTimeout(() => interaction.deleteReply().catch(() => 0), 20 * 1000);
         return;
     } else player.queue.add(res.tracks[0]);
     await interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
@@ -55,5 +53,5 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         && !player.paused
         && (!player.queue.size || player.queue.totalSize === res.tracks.length)
     ) player.play();
-    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 20 * 1000);
+    setTimeout(() => interaction.deleteReply().catch(() => 0), 20 * 1000);
 };

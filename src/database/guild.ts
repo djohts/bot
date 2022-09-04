@@ -1,10 +1,11 @@
-import { GuildMember } from "discord.js";
-import { Schema, model } from "mongoose";
-import { inspect } from "util";
-import { generateID } from "../constants";
-import { getDateFormatted } from "../constants/time";
 import { GuildObject, Warn } from "../constants/types";
+import { getDateFormatted } from "../constants/time";
 import { clientLogger } from "../util/logger/normal";
+import { generateID } from "../constants";
+import { Schema, model } from "mongoose";
+import { GuildMember } from "discord.js";
+import { isEqual } from "lodash";
+import { inspect } from "util";
 
 const dbCache = new Map<string, GuildObject>(), dbSaveQueue = new Map<string, string[]>();
 
@@ -66,7 +67,8 @@ const save = async (guildid: string, changes: string[]) => {
     } else dbSaveQueue.get(guildid).push(...changes);
 };
 
-let timeout: NodeJS.Timeout | null = null;
+type ValueType = string | number | object | boolean;
+let timeout: ReturnType<typeof setTimeout> | null = null;
 export default () => (async (guildid: string) => {
     if (!dbCache.has(guildid)) await load(guildid);
     if (timeout) clearTimeout(timeout);
@@ -78,7 +80,7 @@ export default () => (async (guildid: string) => {
         unload: () => dbCache.delete(guildid),
 
         get: () => Object.assign({}, dbCache.get(guildid)),
-        set: (key: string, value: string | number | object | boolean) => {
+        set: (key: string, value: ValueType) => {
             dbCache.get(guildid)[key] = value;
             save(guildid, [key]);
 
@@ -92,19 +94,19 @@ export default () => (async (guildid: string) => {
 
             return dbCache.get(guildid);
         },
-        addToArray: (array: string, value: string | number | object | boolean) => {
+        addToArray: (array: string, value: ValueType) => {
             dbCache.get(guildid)[array].push(value);
             save(guildid, [array]);
 
             return dbCache.get(guildid);
         },
-        removeFromArray: (array: string, value: string | number | object | boolean) => {
-            dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter((aValue: string | number | object | boolean) => aValue !== value);
+        removeFromArray: (array: string, value: ValueType) => {
+            dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter((aValue: ValueType) => !isEqual(aValue, value));
             save(guildid, [array]);
 
             return dbCache.get(guildid);
         },
-        setOnObject: (object: string, key: string, value: string | number | object | boolean) => {
+        setOnObject: (object: string, key: string, value: ValueType) => {
             dbCache.get(guildid)[object][key] = value;
             save(guildid, [object]);
 
@@ -117,12 +119,12 @@ export default () => (async (guildid: string) => {
             return dbCache.get(guildid);
         },
         addWarn: (userId: string, actionedById: string, reason?: string) => {
-            const warn = {
+            const warn: Warn = {
                 id: generateID(4),
                 timestamp: Date.now(),
                 userId,
                 actionedById
-            } as Warn;
+            };
 
             if (reason) warn.reason = reason;
 

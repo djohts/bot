@@ -21,8 +21,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             ephemeral: true
         });
     else {
-        cds.set(interaction.channel.id, Date.now() + 4000);
-        setTimeout(() => cds.delete(interaction.channel.id), 4000);
+        cds.set(interaction.channel.id, Date.now() + 3000);
+        setTimeout(() => cds.delete(interaction.channel.id), 3000);
     };
 
     if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageMessages))
@@ -31,7 +31,6 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     await interaction.deferReply();
 
     const gsdb = await Util.database.settings(interaction.guild.id);
-
     const limit = interaction.options.getInteger("amount");
 
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
@@ -40,7 +39,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (!toDelete.size) return interaction.editReply({ content: "❌ Не удалось найти сообщений для удаления." })
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
-    const purged = await interaction.channel.bulkDelete(toDelete, true).catch(() => null);
+    const purged = await interaction.channel.bulkDelete(toDelete, true).catch(() => 0 as 0);
     if (!purged) return interaction.editReply({ content: "❌ Не удалось удалить сообщения." })
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
@@ -56,5 +55,5 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 purged.size === toDelete.size ? "" : ` из ${toDelete.size}. ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель.`
             )
     });
-    setTimeout(() => interaction.deleteReply().catch(() => null), 3000);
+    setTimeout(() => interaction.deleteReply().catch(() => 0), 3000);
 };

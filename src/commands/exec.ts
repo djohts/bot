@@ -9,8 +9,8 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 export const permission = 4;
 
-import { exec } from "child_process";
 import { ChatInputCommandInteraction } from "discord.js";
+import { exec } from "child_process";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     await interaction.deferReply();

@@ -27,5 +27,5 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     player.paused
         ? await interaction.reply("Пауза выключена.").then(() => player.pause(false))
         : await interaction.reply("Пауза включёна.").then(() => player.pause(true));
-    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
+    setTimeout(() => interaction.deleteReply().catch(() => 0), 30 * 1000);
 };

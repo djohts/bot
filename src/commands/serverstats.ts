@@ -54,7 +54,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     switch (interaction.options.getSubcommand()) {
         case "set":
             const channel = interaction.options.getChannel("channel");
-            const text = interaction.options.getString("text");
+            const text = interaction.options.getString("text").replace(/\`/g, "");
 
             if (Object.keys(gdb.get().statschannels).length === 5)
                 return interaction.reply("Вы не можете установить больше 5 каналов статистики.");
@@ -63,16 +63,14 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             gdb.setOnObject("statschannels", channel.id, text);
 
-            await interaction.reply([
+            return interaction.reply([
                 `Канал статистики установлен: ${channel}`,
-                `Шаблон: \`${text.replace(/\`/g, "")}\``
+                `Шаблон: \`${text}\``
             ].join("\n"));
-            break;
         case "delete":
             const channelId = interaction.options.getString("channel");
             gdb.removeFromObject("statschannels", channelId);
-            await interaction.reply(`Канал статистики удален: <#${channelId}>`);
-            break;
+            return interaction.reply(`Канал статистики удален: <#${channelId}>`);
         case "list":
             const { statschannels } = gdb.get();
             const result: string[] = [];
@@ -84,12 +82,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 ].join("\n"));
             };
 
-            await interaction.reply({
+            return interaction.reply({
                 embeds: [{
                     title: "Каналы статистики",
                     description: result.join("\n\n") || "Тут пусто."
                 }]
             });
-            break;
     };
 };

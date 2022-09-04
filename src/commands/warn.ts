@@ -39,23 +39,20 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             const user = interaction.options.getUser("user");
             const reason = interaction.options.getString("reason");
 
-            if (user.id === interaction.user.id) {
+            if (user.id === interaction.user.id)
                 return interaction.reply("❌ Вы не можете выдать предупреждение самому себе.");
-            };
 
             const member = await interaction.guild.members.fetch(user.id).catch(() => false as false);
             if (
                 member
                 && member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition
-            ) {
-                return interaction.reply("❌ Вы не можете выдать предупреждение участнику с вышей ролью.");
-            };
+            ) return interaction.reply("❌ Вы не можете выдать предупреждение участнику с вышей ролью.");
 
             const newData = gdb.addWarn(user.id, interaction.user.id, reason);
             const warnId = newData.warns[newData.warns.length - 1].id;
 
             return interaction.reply({
-                content: `✅ Пользователю ${user} было выдано предупреждение \`${warnId}\`${reason ? `по причине: ${reason}` : ""}.`,
+                content: `✅ Пользователю ${user} было выдано предупреждение \`${warnId}\`${reason ? ` по причине: ${reason}` : "."}`,
                 allowedMentions: { parse: [] }
             });
         case "list":
@@ -70,18 +67,17 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             const mappedWarnings = gdb.get().warns.reverse().map(({ id, userId, actionedById, timestamp, reason }) => {
                 const userTag = users.get(userId)?.user.tag.replace(/\*/g, "\\*") ?? "Unknown#0000";
-                const actionedByTag = users.get(actionedById)?.user.tag.replace(/\*/g, "\\*") ?? "Unknown#0000";
                 const seconds = Math.round(timestamp / 1000);
 
                 return [
-                    `> \`${id}\` | <@${userId}> (**${userTag}**) | <@${actionedById}> (**${actionedByTag}**) | <t:${seconds}:f> (<t:${seconds}:R>)`,
+                    `> \`${id}\` | <@${userId}> (**${userTag}**) | <@${actionedById}> | <t:${seconds}:f> (<t:${seconds}:R>)`,
                     `${reason ?? "Не указана."}`
                 ].join("\n");
             });
             const pages = paginate(mappedWarnings, 5);
             let page = 0;
 
-            await interaction.editReply({ content: null, ...generateMessage(interaction, pages, page) });
+            await interaction.editReply({ content: null, ...generateMessage(pages, page) });
 
             const collector = (await interaction.fetchReply()).createMessageComponentCollector({
                 filter: (i) => i.user.id === interaction.user.id,
@@ -92,21 +88,21 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             collector.on("collect", async (i) => {
                 if (i.customId === "warns:page:first") {
                     page = 0;
-                    await i.update(generateMessage(interaction, pages, page));
+                    await i.update(generateMessage(pages, page));
                 } else if (i.customId === "warns:page:prev") {
                     page -= 1;
-                    await i.update(generateMessage(interaction, pages, page));
+                    await i.update(generateMessage(pages, page));
                 } else if (i.customId === "warns:page:next") {
                     page += 1;
-                    await i.update(generateMessage(interaction, pages, page));
+                    await i.update(generateMessage(pages, page));
                 } else if (i.customId === "warns:page:last") {
                     page = pages.length - 1;
-                    await i.update(generateMessage(interaction, pages, page));
+                    await i.update(generateMessage(pages, page));
                 };
             });
 
             collector.on("end", async () => {
-                await interaction.deleteReply();
+                await interaction.deleteReply().catch(() => 0);
             });
             return;
         case "remove":
@@ -116,11 +112,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     };
 };
 
-const generateMessage = (interaction: ChatInputCommandInteraction, pages: string[][], page: number): InteractionReplyOptions & InteractionUpdateOptions => {
+const generateMessage = (pages: string[][], page: number): InteractionReplyOptions & InteractionUpdateOptions => {
     return {
         embeds: [
             new EmbedBuilder()
-                .setTitle(`Список предупреждений - ${interaction.guild.name}`)
+                .setTitle("Список предупреждений")
                 .setDescription(pages[page]?.join("\n") || "Тут пусто")
                 .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
         ],

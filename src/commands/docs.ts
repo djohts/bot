@@ -8,8 +8,8 @@ export const options = new SlashCommandBuilder()
 
 import { ChatInputCommandInteraction } from "discord.js";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    await interaction.reply({
+export const run = (interaction: ChatInputCommandInteraction) => {
+    return interaction.reply({
         content: "Документация: https://djoh.gitbook.io/djoho-bot",
         ephemeral: true
     })

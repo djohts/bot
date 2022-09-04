@@ -31,20 +31,20 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
 
     if (cmd === "get") {
-        await interaction.reply({
+        return interaction.reply({
             embeds: [{
                 title: "Настройки " + interaction.guild.name,
                 fields: [{
                     name: "Удаление закреплённых сообщений",
                     value: gset.get().purgePinned ?
-                        "<:online:887393623845507082> **`Включено`**" :
-                        "<:dnd:887393623786803270> **`Выключено`**",
+                        "🟢 **`Включено`**" :
+                        "🔴 **`Выключено`**",
                     inline: true
                 }, {
                     name: "Временные голосовые каналы",
                     value: gset.get().voices.enabled ?
-                        "<:online:887393623845507082> **`Включены`**" :
-                        "<:dnd:887393623786803270> **`Выключены`**",
+                        "🟢 **`Включены`**" :
+                        "🔴 **`Выключены`**",
                     inline: true
                 }, {
                     name: "Лобби-канал",
@@ -67,7 +67,6 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 gset.set("purgePinned", true);
                 idk = "**`Удаление закреплённых сообщений`** было включено.";
             })();
-            await interaction.reply({ content: idk });
         } else if (type === "voices") {
             gset.get().voices.enabled ? (() => {
                 gset.setOnObject("voices", "enabled", false);
@@ -76,20 +75,20 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 gset.setOnObject("voices", "enabled", true);
                 idk = "**`Временные голосовые каналы`** были включены.";
             })();
-            await interaction.reply({ content: idk });
         };
+        return interaction.reply(idk);
     } else if (cmd === "setlobby") {
-        let lobby = interaction.options.getChannel("channel");
+        const lobby = interaction.options.getChannel("channel");
         gset.setOnObject("voices", "lobby", lobby.id);
-        await interaction.reply({ content: `✅ Лобби было установлено. (${lobby})` });
+        return interaction.reply(`✅ Лобби было установлено. (${lobby})`);
     } else if (cmd === "counting") {
-        let counting = interaction.options.getChannel("channel");
+        const channel = interaction.options.getChannel("channel");
         gdb.setMultiple({
-            channel: counting.id,
+            channel: channel.id,
             count: 0,
             user: "",
-            message: `${parseInt(interaction.id) + 1}`
+            message: interaction.id
         });
-        await interaction.reply({ content: `✅ Канал счёта был установлен. (${counting})` });
+        return interaction.reply(`✅ Канал счёта был установлен. (${channel})`);
     };
 };

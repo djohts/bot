@@ -1,14 +1,15 @@
-import { Schema, model } from "mongoose";
-import { inspect } from "util";
-import { GSetObject } from "../constants/types";
 import { clientLogger } from "../util/logger/normal";
+import { GSetObject } from "../constants/types";
+import { Schema, model } from "mongoose";
+import { isEqual } from "lodash";
+import { inspect } from "util";
 
 const dbCache = new Map<string, GSetObject>(), dbSaveQueue = new Map<string, string[]>();
 
 const gSetObject = {
     guildid: "",
     purgePinned: false,
-    voices: { enabled: false, lobby: "" }
+    voices: {}
 } as GSetObject;
 
 const gSetSchema = new Schema(gSetObject, { minimize: true });
@@ -44,7 +45,8 @@ const save = async (guildid: string, changes: string[]) => {
     } else dbSaveQueue.get(guildid).push(...changes);
 };
 
-let timeout: NodeJS.Timeout | null = null;
+type ValueType = string | number | object | boolean;
+let timeout: ReturnType<typeof setTimeout> | null = null;
 export default () => (async (guildid: string) => {
     if (!dbCache.has(guildid)) await load(guildid);
     if (timeout) clearTimeout(timeout);
@@ -56,7 +58,7 @@ export default () => (async (guildid: string) => {
         unload: () => dbCache.delete(guildid),
 
         get: (): GSetObject => Object.assign({}, dbCache.get(guildid)),
-        set: (key: string, value: string | number | object | boolean): GSetObject => {
+        set: (key: string, value: ValueType): GSetObject => {
             dbCache.get(guildid)[key] = value;
             save(guildid, [key]);
 
@@ -70,19 +72,19 @@ export default () => (async (guildid: string) => {
 
             return dbCache.get(guildid);
         },
-        addToArray: (array: string, value: string | number | object | boolean): GSetObject => {
+        addToArray: (array: string, value: ValueType): GSetObject => {
             dbCache.get(guildid)[array].push(value);
             save(guildid, [array]);
 
             return dbCache.get(guildid);
         },
-        removeFromArray: (array: string, value: string | number | object | boolean): GSetObject => {
-            dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter((aValue: string | number | object | boolean) => aValue !== value);
+        removeFromArray: (array: string, value: ValueType): GSetObject => {
+            dbCache.get(guildid)[array] = dbCache.get(guildid)[array].filter((aValue: ValueType) => !isEqual(aValue, value));
             save(guildid, [array]);
 
             return dbCache.get(guildid);
         },
-        setOnObject: (object: string, key: string, value: string | number | object | boolean): GSetObject => {
+        setOnObject: (object: string, key: string, value: ValueType): GSetObject => {
             dbCache.get(guildid)[object][key] = value;
             save(guildid, [object]);
 

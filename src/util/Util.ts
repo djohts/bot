@@ -3,7 +3,7 @@ import { BcBotBumpAction } from "../constants/types";
 import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
 import { Manager, Player } from "erela.js";
-import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, MessageOptions, TextChannel, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
+import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, TextChannel, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 import i18n from "./i18n";
@@ -35,11 +35,16 @@ class Util {
         return `${bytes.toFixed(maximumFractionDigits)} ${suffixes[i]}`;
     };
     public func = {
-        tickMusicPlayers: async (player: Player): Promise<void | Message> => {
+        tickMusicPlayer: async (player: Player): Promise<void | Message> => {
             try {
                 const track = player.queue.current;
                 const message = player.get("message") as Message | undefined;
-                if (!track || !message || !message.editable) return;
+                if (
+                    !track
+                    || !message
+                    || !message.channel
+                    || !message.editable
+                ) return;
 
                 const duration = Math.floor(track.duration / 1000) * 1000;
                 const position = Math.floor(player.position / 1000) * 1000;
@@ -186,7 +191,7 @@ class Util {
                 ? this._client.guilds.cache.get("957937585299292192").commands.set(loadCommands())
                 : this._client.application.commands.set(loadCommands());
         },
-        uselesslog: (opts: MessageOptions) => uselesswebhook.send(opts)
+        uselesslog: uselesswebhook.send
     };
 
     public setClient(client: Client): Util {

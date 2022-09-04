@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
 import { Subscription, UserObject } from "../constants/types";
-import { isEqual } from "lodash";
 import { clientLogger } from "../util/logger/normal";
+import { Schema, model } from "mongoose";
+import { isEqual } from "lodash";
 import { inspect } from "util";
 
 const dbCache = new Map<string, UserObject>(), dbSaveQueue = new Map<string, string[]>();
@@ -44,7 +44,8 @@ const save = async (userid: string, changes: string[]) => {
     } else dbSaveQueue.get(userid).push(...changes);
 };
 
-let timeout: NodeJS.Timeout | null = null;
+type ValueType = string | number | object | boolean;
+let timeout: ReturnType<typeof setTimeout> | null = null;
 export default () => (async (userid: string) => {
     if (!dbCache.has(userid)) await load(userid);
     if (timeout) clearTimeout(timeout);
@@ -56,7 +57,7 @@ export default () => (async (userid: string) => {
         unload: () => dbCache.delete(userid),
 
         get: () => Object.assign({}, dbCache.get(userid)),
-        set: (key: string, value: string | number | object | boolean) => {
+        set: (key: string, value: ValueType) => {
             dbCache.get(userid)[key] = value;
             save(userid, [key]);
 
@@ -70,19 +71,19 @@ export default () => (async (userid: string) => {
 
             return dbCache.get(userid);
         },
-        addToArray: (array: string, value: string | number | object | boolean) => {
+        addToArray: (array: string, value: ValueType) => {
             dbCache.get(userid)[array].push(value);
             save(userid, [array]);
 
             return dbCache.get(userid);
         },
-        removeFromArray: (array: string, value: string | number | object | boolean) => {
-            dbCache.get(userid)[array] = dbCache.get(userid)[array].filter((aValue: string | number | object | boolean) => !isEqual(aValue, value));
+        removeFromArray: (array: string, value: ValueType) => {
+            dbCache.get(userid)[array] = dbCache.get(userid)[array].filter((aValue: ValueType) => !isEqual(aValue, value));
             save(userid, [array]);
 
             return dbCache.get(userid);
         },
-        setOnObject: (object: string, key: string, value: string | number | object | boolean) => {
+        setOnObject: (object: string, key: string, value: ValueType) => {
             dbCache.get(userid)[object][key] = value;
             save(userid, [object]);
 

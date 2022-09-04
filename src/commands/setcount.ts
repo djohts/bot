@@ -17,5 +17,5 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     gdb.set("count", count);
 
-    await interaction.reply({ content: `✅ Новый текущий счёт - **\`${count}\`**.` });
+    return interaction.reply({ content: `✅ Новый текущий счёт - **\`${count}\`**.` });
 };

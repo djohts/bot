@@ -1,12 +1,12 @@
-import { Schema, model } from "mongoose";
-import { inspect } from "util";
-import { GlobalObject } from "../constants/types";
 import { clientLogger } from "../util/logger/normal";
+import { GlobalObject } from "../constants/types";
+import { Schema, model } from "mongoose";
+import { isEqual } from "lodash";
+import { inspect } from "util";
 
 const dbCache = new Map<string, GlobalObject>(), dbSaveQueue = new Map<string, string[]>();
 
 const globalObject = {
-    maintenance: false,
     boticordBumps: []
 } as GlobalObject;
 
@@ -42,6 +42,7 @@ const save = async (changes: string[]) => {
     }).catch((e: any) => void clientLogger.error(inspect(e)));
 };
 
+type ValueType = string | number | object | boolean;
 export default () => (async () => {
     if (!dbCache.has("global")) await load();
     return {
@@ -49,7 +50,7 @@ export default () => (async () => {
         unload: () => dbCache.delete("global"),
 
         get: () => Object.assign({}, dbCache.get("global")),
-        set: (key: string, value: string | number | object) => {
+        set: (key: string, value: ValueType) => {
             dbCache.get("global")[key] = value;
             save([key]);
 
@@ -63,19 +64,19 @@ export default () => (async () => {
 
             return dbCache.get("global");
         },
-        addToArray: (array: string, value: string | number | object | boolean) => {
+        addToArray: (array: string, value: ValueType) => {
             dbCache.get("global")[array].push(value);
             save([array]);
 
             return dbCache.get("global");
         },
-        removeFromArray: (array: string, value: string | number | object | boolean) => {
-            dbCache.get("global")[array] = dbCache.get("global")[array].filter((aValue: string | number | object | boolean) => aValue !== value);
+        removeFromArray: (array: string, value: ValueType) => {
+            dbCache.get("global")[array] = dbCache.get("global")[array].filter((aValue: ValueType) => !isEqual(aValue, value));
             save([array]);
 
             return dbCache.get("global");
         },
-        setOnObject: (object: string, key: string, value: string | number | object | boolean) => {
+        setOnObject: (object: string, key: string, value: ValueType) => {
             dbCache.get("global")[object][key] = value;
             save([object]);
 

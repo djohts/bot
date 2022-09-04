@@ -27,7 +27,7 @@ export interface Config {
         id: string;
         secret: string;
     };
-    shards: number;
+    clusters: number;
     shardsPerClusters: number;
     port: number;
     redirectUri: string;
@@ -81,8 +81,8 @@ export interface Warn {
 export interface GuildObject {
     guildid: string;
     locale: "" | GuildLocale;
-    voices: object;
-    bans: object;
+    voices: { [channelId: string]: string };
+    bans: { [userId: string]: number };
     warns: Warn[];
     channel: string;
     count: number;
@@ -90,12 +90,12 @@ export interface GuildObject {
     modules: string[];
     flows: object;
     message: string;
-    users: object;
+    users: { [userId: string]: number };
     liveboard: { channel?: string; message?: string };
-    log: object;
-    brcs: object;
-    brms: object;
-    brs: object;
+    log: { [date: string]: number };
+    brcs: { [id: string]: string };
+    brms: { [id: string]: string };
+    brs: { [id: string]: string };
     statschannels: { [channelId: string]: string };
 }
 
@@ -106,7 +106,6 @@ export interface GSetObject {
 }
 
 export interface GlobalObject {
-    maintenance: boolean;
     boticordBumps: BcBotBumpAction["data"][]
 }
 
@@ -145,6 +144,7 @@ export type Subscription = "boticord";
 declare module "discord.js" {
     interface Client {
         loading: boolean;
+        connecting: boolean;
         cfg: {
             enslash: boolean;
             enbr: boolean;

@@ -1,10 +1,10 @@
 import config from "../../config";
 import mongoose from "mongoose";
 
-import guild from "./guild";
-import settings from "./gset";
-import users from "./users";
 import global from "./global";
+import settings from "./gset";
+import guild from "./guild";
+import users from "./users";
 import { cacheGuilds } from "./guild";
 import { cacheGSets } from "./gset";
 

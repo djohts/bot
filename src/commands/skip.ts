@@ -20,10 +20,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
 
     const player = Util.lava.get(interaction.guildId);
-    if (!player) {
+    if (!player)
         return interaction.reply({ content: "❌ На этом сервере ничего не играет.", ephemeral: true });
-    };
 
     await interaction.reply("Пропускаю текущий трек.").then(() => player.stop());
-    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
+    setTimeout(() => interaction.deleteReply().catch(() => 0), 30 * 1000);
 };

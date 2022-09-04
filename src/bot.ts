@@ -1,16 +1,16 @@
+import { ActivityType, Client, GatewayIntentBits, Options, Partials } from "discord.js";
 import { readdirSync } from "node:fs";
-import db from "./database/";
 import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
-import Util from "./util/Util";
-import { ActivityType, Client, GatewayIntentBits, Options, Partials } from "discord.js";
 import prettyms from "pretty-ms";
-import tickers from "./handlers/tickers";
-import lavaHandler from "./handlers/lava";
 import prepareGuild from "./handlers/prepareGuilds";
+import lavaHandler from "./handlers/lava";
+import tickers from "./handlers/tickers";
+import Util from "./util/Util";
+import db from "./database/";
 export const client = new Client({
     makeCache: Options.cacheWithLimits({
-        MessageManager: 4096
+        MessageManager: 512
     }),
     sweepers: {
         messages: {
@@ -36,6 +36,8 @@ export const client = new Client({
     shards: Sharding.Client.getInfo().SHARD_LIST,
     shardCount: Sharding.Client.getInfo().TOTAL_SHARDS
 });
+client.connecting = true;
+client.loading = true;
 client.database = db;
 Util.setClient(client).setDatabase(db);
 import { clientLogger } from "./util/logger/normal";
@@ -44,7 +46,7 @@ export const cluster = `[Cluster ${client.cluster.id}]`;
 export let disabledGuilds: Set<string>;
 client.once("ready", async () => {
     let start = Date.now();
-    client.loading = true;
+    client.connecting = false;
 
     clientLogger.info(`Ready as ${client.user!.tag}!`);
 
@@ -90,12 +92,9 @@ for (const filename of eventFiles) {
     };
 };
 
-client.on("error", (err) => void clientLogger.error(`Client error. ${inspect(err)}`));
-client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate limited.\n${JSON.stringify(rateLimitInfo)}`));
+client.on("error", (err) => void clientLogger.error(`Error. ${inspect(err)}`));
+client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate limited.\n${inspect(rateLimitInfo)}`));
 client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[Shard ${id}] Disconnected. (${code} - ${reason})`));
-client.on("shardReconnecting", (id) => void clientLogger.warn(`[Shard ${id}] Reconnecting.`));
-client.on("shardResume", (id, num) => void clientLogger.warn(`[Shard ${id}] Resumed. ${num} replayed events.`));
-client.on("shardReady", (id) => void clientLogger.info(`[Shard ${id}] Ready.`));
 client.on("warn", (info) => void clientLogger.warn(`Warning. ${inspect(info)}`));
 
 client.on("debug", (info) => {
@@ -107,7 +106,7 @@ db.connection.then(() => client.login()).catch((e) => {
     process.exit();
 });
 
-process.on("unhandledRejection", (e) => void clientLogger.error("unhandledRejection: " + inspect(e)));
-process.on("uncaughtException", (e) => void clientLogger.error("uncaughtException:" + inspect(e)));
+process.on("unhandledRejection", (e) => void clientLogger.error(`unhandledRejection:\n${inspect(e)}`));
+process.on("uncaughtException", (e) => void clientLogger.error(`uncaughtException:\n${inspect(e)}`));
 
 clientLogger.info("=".repeat(55));

@@ -17,12 +17,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const top = sorted.slice(0, 25);
     const leaderboard = top.map((id, index) => formatScore(id, index, users, interaction.user.id));
     let description = leaderboard.join("\n");
+
     if (!top.includes(interaction.user.id)) {
         if (leaderboard.length) description = description + "\n^^^^^^^^^^^^^^^^^^^^^^^^^\n";
         description = description + formatScore(interaction.user.id, sorted.indexOf(interaction.user.id), users);
     };
 
-    await interaction.reply({
+    return interaction.reply({
         embeds: [{
             title: `Таблица лидеров ${interaction.guild.name}`,
             description

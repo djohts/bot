@@ -7,13 +7,13 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction } from "discord.js";
+import { Client } from "discord-hybrid-sharding";
+import { version } from "discord.js";
+import Util from "../util/Util.js";
+import prettyms from "pretty-ms";
 import os from "os";
 const platform = `${os.type()} (${os.release()})`;
-import Util from "../util/Util.js";
-import { version } from "discord.js";
-import { Client } from "discord-hybrid-sharding";
-import prettyMilliseconds from "pretty-ms";
-let guilds = 0, users = 0, clusterCount = 0, shardCount = 0, memoryUsage = "0MB", memoryUsageGlobal = "0MB", nextUpdate = 0;
+let guilds = 0, users = 0, clusterCount = 0, shardCount = 0, memoryUsage = 0, memoryUsageGlobal = 0, nextUpdate = 0;
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     if (nextUpdate < Date.now()) {
@@ -29,8 +29,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         const { rss, heapUsed } = process.memoryUsage();
 
-        memoryUsageGlobal = Util.prettyBytes(rss, 2);
-        memoryUsage = Util.prettyBytes(heapUsed, 2);
+        memoryUsageGlobal = rss;
+        memoryUsage = heapUsed;
     };
 
     const clusterGuilds = interaction.client.guilds.cache.size;
@@ -40,7 +40,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const shardGuilds = interaction.client.guilds.cache.filter((g) => g.shard.id === shardId).size;
     const shardUsers = interaction.client.guilds.cache.filter((g) => g.shard.id === shardId).map((g) => g.memberCount).reduce((prev, val) => prev + val, 0);
 
-    await interaction.reply({
+    return interaction.reply({
         embeds: [{
             title: `Информация о ${interaction.client.user.tag}`,
             fields: [{
@@ -50,7 +50,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                     `**Библиотека**: \`discord.js v${version}\``,
                     `**Кол-во кластеров**: \`${clusterCount.toLocaleString()}\``,
                     `**Кол-во шардов**: \`${shardCount.toLocaleString()}\``,
-                    `**Исп. ОЗУ**: \`${memoryUsageGlobal}\``
+                    `**Исп. ОЗУ**: \`${Util.prettyBytes(memoryUsageGlobal, 2)}\``
                 ].join("\n"),
                 inline: true
             }, {
@@ -59,8 +59,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                     `**Кол-во серверов**: \`${clusterGuilds.toLocaleString()}\``,
                     `**Кол-во юзеров**: \`${clusterUsers.toLocaleString()}\``,
                     `**Кол-во шардов**: \`${interaction.client.cluster.ids.size.toLocaleString()}\``,
-                    `**Исп. ОЗУ**: \`${memoryUsage}\``,
-                    `**Аптайм**: \`${prettyMilliseconds(interaction.client.uptime)}\``
+                    `**Исп. ОЗУ**: \`${Util.prettyBytes(memoryUsage, 2)}\``,
+                    `**Аптайм**: \`${prettyms(interaction.client.uptime)}\``
                 ].join("\n"),
                 inline: true
             }, {

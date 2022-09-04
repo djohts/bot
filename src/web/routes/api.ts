@@ -21,7 +21,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             channels: bot.channels.cache.size,
             users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
             ping: bot.ws.ping,
-            loading: bot.loading
+            loading: bot.loading,
+            connecting: bot.connecting
         })).then((results) => results.reduce((info, next, index) => {
             for (const [key, value] of Object.entries(next)) {
                 if (["guilds", "cachedUsers", "channels", "users"].includes(key)) info[key] = (info[key] || 0) + value;
@@ -30,13 +31,14 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
             return info;
         }, {
             clusters: {} as {
-                status: string,
-                guilds: number,
-                cachedUsers: number,
-                channels: number,
-                users: number,
-                ping: number,
-                loading: boolean
+                status: number;
+                guilds: number;
+                cachedUsers: number;
+                channels: number;
+                users: number;
+                ping: number;
+                loading: boolean;
+                connecting: boolean;
             },
             guilds: 0,
             cachedUsers: 0,
@@ -167,7 +169,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 manager.broadcastEval((bot: Client, options: BcBotBumpAction) => {
                     bot.util.func.processBotBump(options);
                 }, {
-                    guildId: "888870095659630664",
+                    cluster: 0,
                     context: options
                 });
                 break;
@@ -210,7 +212,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 });
                 break;
         };
-        return res.status(202).send();
+        return res.status(202);
     });
     done();
 };

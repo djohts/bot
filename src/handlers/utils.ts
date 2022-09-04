@@ -1,4 +1,4 @@
-import { GuildTextBasedChannel, Message } from "discord.js";
+import { GuildTextBasedChannel, Message, PermissionFlagsBits } from "discord.js";
 
 const bulks = new Map<string, Message[]>();
 export function queueDelete(messages: Message[]): void {
@@ -12,10 +12,17 @@ export function queueDelete(messages: Message[]): void {
     } else if (bulk) return void bulk.push(...messages);
     else bulks.set(channel.id, messages);
 
-    return void setTimeout(() => bulkDelete(channel), 5000);
+    return void setTimeout(() => void bulkDelete(channel), 5000);
 };
 
-function bulkDelete(channel: GuildTextBasedChannel): void {
+async function bulkDelete(channel: GuildTextBasedChannel): Promise<void> {
+    const me = await channel.guild.members.fetchMe();
+    if (
+        !channel.permissionsFor(me).has(PermissionFlagsBits.ViewChannel)
+        || !channel.permissionsFor(me).has(PermissionFlagsBits.ReadMessageHistory)
+        || !channel.permissionsFor(me).has(PermissionFlagsBits.ManageMessages)
+    ) return void bulks.delete(channel.id);
+
     const bulk = bulks.get(channel.id);
     if (!bulk?.length) return void bulks.delete(channel.id);
 
@@ -26,5 +33,5 @@ function bulkDelete(channel: GuildTextBasedChannel): void {
     if (!newBulk.length) return void bulks.delete(channel.id);
 
     bulks.set(channel.id, newBulk);
-    return void setTimeout(() => bulkDelete(channel), 3500);
+    return void setTimeout(() => void bulkDelete(channel), 3500);
 };

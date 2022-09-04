@@ -1,14 +1,15 @@
 import { Manager } from "discord-hybrid-sharding";
-import { createInterface } from "readline";
 import { managerLogger } from "./logger/manager";
+import { createInterface } from "readline";
+
+const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    completer
+});
 
 export default function (manager: Manager) {
-    const rl = createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    rl.on("line", (line) => {
+    rl.on("line", async (line) => {
         const [command, ...args] = line.split(" ");
 
         if (command === "updateCommands") {
@@ -26,8 +27,28 @@ export default function (manager: Manager) {
                     managerLogger.error(`Cluster ${clusterId} does not exist.`);
                 };
             };
+        } else if (["shutdown", "die"].includes(command)) {
+            managerLogger.info("Destroying all players...");
+            await manager.broadcastEval((client) => client.util.lava.players.map((p) => p.destroy()));
+            managerLogger.info("Exiting");
+            process.exit();
         };
     });
+};
 
-    rl.on("SIGINT", () => process.exit());
+function completer(line: string) {
+    const completions = ["updateCommands", "shutdown", "die"];
+    let cmds = line.split(" ");
+    const hits = completions.filter((c) => c.startsWith(cmds.slice(-1).join(" ")));
+
+    if ((cmds.length > 1) && (hits.length === 1)) {
+        let lastCmd = cmds.slice(-1)[0];
+        let pos = lastCmd.length;
+        // @ts-ignore
+        rl.line = line.slice(0, -pos).concat(hits[0]);
+        // @ts-ignore
+        rl.cursor = rl.line.length + 1;
+    };
+
+    return [hits.length ? hits.sort() : completions.sort(), line];
 };

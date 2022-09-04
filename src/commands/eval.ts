@@ -10,6 +10,7 @@ export const options = new SlashCommandBuilder()
 export const permission = 4;
 
 import { ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { inspect } from "util";
 import _Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
@@ -20,28 +21,30 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         // @ts-ignore
         const gdb = Util.database.guild(interaction.guild.id);
         let evaled = await eval(interaction.options.getString("script"));
-        if (typeof evaled !== "string") evaled = require("util").inspect(evaled);
+        if (typeof evaled !== "string") evaled = inspect(evaled);
 
         if (evaled.length >= 2000) return interaction.editReply("✅");
 
-        await interaction.editReply({
+        return interaction.editReply({
             content: `\`\`\`js\n${evaled}\n\`\`\``,
             components: [
-                new ActionRowBuilder<ButtonBuilder>().setComponents([
+                new ActionRowBuilder<ButtonBuilder>().setComponents(
                     new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
-                ])]
+                )
+            ]
         });
     } catch (e) {
         let err: any;
         if (typeof e === "string") err = e.replace(/`/g, "`" + String.fromCharCode(8203));
         else err = e;
 
-        await interaction.editReply({
+        return interaction.editReply({
             content: `\`\`\`fix\n${err}\n\`\`\``,
             components: [
-                new ActionRowBuilder<ButtonBuilder>().setComponents([
+                new ActionRowBuilder<ButtonBuilder>().setComponents(
                     new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
-                ])]
+                )
+            ]
         });
     };
 };

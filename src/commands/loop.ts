@@ -30,5 +30,5 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     player.trackRepeat
         ? await interaction.reply("Повтор выключен.").then(() => player.setTrackRepeat(false))
         : await interaction.reply("Повтор включён.").then(() => player.setTrackRepeat(true));
-    setTimeout(async () => await interaction.deleteReply().catch(() => { }), 30 * 1000);
+    setTimeout(() => interaction.deleteReply().catch(() => 0), 30 * 1000);
 };

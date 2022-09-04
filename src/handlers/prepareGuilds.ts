@@ -1,5 +1,4 @@
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-import { queueDelete } from "./utils";
 import prettyms from "pretty-ms";
 import { Guild, Message, PermissionFlagsBits, TextChannel } from "discord.js";
 import Util from "../util/Util";
@@ -44,18 +43,12 @@ export = async (guild: Guild) => {
                     };
                 };
 
-                if (fail) await alert?.edit("❌ Что-то пошло не так при подготовке канала.")
-                    .then(() => setTimeout(() => queueDelete([alert]), 10 * 1000))
-                    .catch(() => null);
-                else await alert?.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`)
-                    .then(() => setTimeout(() => queueDelete([alert]), 10 * 1000))
+                if (!fail && alert) alert.edit(`🔰 Канал готов! **\`[${prettyms(Date.now() - preparationStart)}]\`**`)
+                    .then(() => setTimeout(() => alert.deletable && alert?.delete(), 10 * 1000))
                     .catch(() => null);
             };
         };
     } catch (e) {
-        clientLogger.error(`[g${guild.id}c${channelId}] prepareGuilds: ${inspect(e)}`);
-        alert?.edit("❌ Что-то пошло не так при подготовке канала.")
-            .then(() => setTimeout(() => queueDelete([alert]), 10 * 1000))
-            .catch(() => null);
+        clientLogger.error(`[g${guild.id}] prepareGuilds: ${inspect(e)}`);
     };
 };

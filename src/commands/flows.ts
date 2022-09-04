@@ -21,15 +21,14 @@ import {
     TextChannel,
     ButtonStyle
 } from "discord.js";
-import { generateID } from "../constants/";
 import { flowWalkthrough, formatExplanation } from "../constants/flows/walkthrough";
+import { generateID } from "../constants/";
 import limits from "../constants/flows/";
 import Util from "../util/Util";
 const { limitFlows, limitTriggers, limitActions } = limits;
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
-    const global = await Util.database.global();
     const cmd = interaction.options.getSubcommand();
     const { flows } = gdb.get();
 
@@ -47,7 +46,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             });
 
         const flowId = generateID();
-        let channel: TextChannel;
+        let channel: TextChannel | null = null;
         try {
             channel = await interaction.guild.channels.create({
                 name: "dob-flow-editor",
@@ -73,9 +72,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                         PermissionFlagsBits.ViewChannel
                     ]
                 }]
-            }) as TextChannel;
+            });
         } catch {
-            return interaction.reply("❌ Не удалось создать канал для создания потока.").catch(() => null);
+            return interaction.reply("❌ Не удалось создать канал для создания потока.").catch(() => 0);
         };
         await interaction.reply({
             content: `🌀 Перейдите в ${channel} для настройки нового потока.`,
@@ -119,31 +118,29 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         });
         const pinned = await channel.send("Загрузка...");
 
-        await pinned.pin().catch(() => null);
+        await pinned.pin().catch(() => 0);
         const success = await flowWalkthrough(interaction.guild, interaction.user, channel, newFlow, generateEmbed, pinned);
 
-        await channel.delete().catch(() => null);
+        await channel.delete().catch(() => 0);
         if (success) {
             gdb.setOnObject("flows", flowId, newFlow);
-            global.addToArray("generatedIds", flowId);
 
-            await interaction.editReply("✅ Поток был успешно создан.").catch(() => null);
-        } else await interaction.editReply("❌ Создание потока было отменено.").catch(() => null);
+            return interaction.editReply("✅ Поток был успешно создан.").catch(() => 0);
+        } else return interaction.editReply("❌ Создание потока было отменено.").catch(() => 0);
     } else if (cmd === "delete") {
         const flowId = interaction.options.getString("id");
         if (!flows[flowId]) return interaction.reply({ content: "❌ Этот поток не существует.", ephemeral: true });
 
         gdb.removeFromObject("flows", flowId);
-        global.removeFromArray("generatedIds", flowId);
 
-        await interaction.reply({
+        return interaction.reply({
             content: `✅ Поток \`${flowId}\` был удалён.`
         });
     } else if (cmd === "list") {
         const flowIds = Object.keys(flows).slice(0, limitFlows);
 
         if (flowIds.length) {
-            await interaction.reply({
+            return interaction.reply({
                 embeds: [{
                     title: "Список потоков",
                     description: `У Вас использовано ${flowIds.length} из ${limitFlows} потоков.`,
@@ -167,7 +164,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                     ])
                 ]
             });
-        } else await interaction.reply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
+        } else return interaction.reply({ content: "❌ На этом сервере нету настроенных потоков.", ephemeral: true });
     };
 };
 

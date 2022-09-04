@@ -22,8 +22,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         return interaction.reply({ content: "❌ Этот участник не забанен.", ephemeral: true })
             .then(() => gdb.removeFromObject("bans", user.id));
 
-    await interaction.guild.bans.remove(user.id).then(async () => {
+    return interaction.guild.bans.remove(user.id).then(() => {
         gdb.removeFromObject("bans", user.id);
-        await interaction.reply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
+        return interaction.reply({ content: "✅ Юзер был успешно разбанен.", ephemeral: true });
     });
 };
