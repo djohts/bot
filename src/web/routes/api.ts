@@ -163,7 +163,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.post("/webhook/boticord", async (req, res) => {
         if (req.headers["x-hook-key"] !== config.monitoring.bc_hook_key) return res.status(403).send();
         const options = req.body as BcBotBumpAction | BcBotCommentAction;
-        console.log(options)
+        // @ts-ignore
+        console.log(options.data.comment)
         let vote: string;
 
         switch (options.type) {
