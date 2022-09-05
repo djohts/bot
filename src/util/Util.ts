@@ -156,7 +156,7 @@ class Util {
                         new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`)
                     )
                 ]
-            }).then(async () => { dmsent = true; }).catch(() => null);
+            }).then(() => { dmsent = true; }).catch(() => null);
 
             if (dmsent) {
                 await this.func.uselesslog({ content: `${user.tag} ${user} (\`${user.id}\`) bumped on boticord.top` });
