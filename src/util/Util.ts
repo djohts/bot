@@ -191,7 +191,7 @@ class Util {
                 ? this._client.guilds.cache.get("957937585299292192").commands.set(loadCommands())
                 : this._client.application.commands.set(loadCommands());
         },
-        uselesslog: uselesswebhook.send
+        uselesslog: (x: unknown) => uselesswebhook.send(x)
     };
 
     public setClient(client: Client): Util {
