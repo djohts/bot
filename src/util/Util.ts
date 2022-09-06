@@ -9,6 +9,7 @@ import prettyms from "pretty-ms";
 import i18n from "./i18n";
 import { UserFetcher } from "../handlers/bottleneck";
 import { loadCommands } from "../handlers/interactions/slash";
+import { clientLogger } from "./logger/normal";
 const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 
 let util: Util | null = null;
@@ -35,7 +36,7 @@ class Util {
         return `${bytes.toFixed(maximumFractionDigits)} ${suffixes[i]}`;
     };
     public func = {
-        tickMusicPlayer: async (player: Player): Promise<void | Message> => {
+        tickMusicPlayer: async (player: Player): Promise<void> => {
             try {
                 const track = player.queue.current;
                 const message = player.get("message") as Message | undefined;
@@ -43,7 +44,6 @@ class Util {
                     !track
                     || !message
                     || !message.channel
-                    || !message.editable
                 ) return;
 
                 const duration = Math.floor(track.duration / 1000) * 1000;
@@ -56,7 +56,7 @@ class Util {
                     prettyms(duration, { colonNotation: true, compact: true }),
                     `]`
                 ].join("");
-                return message.edit({
+                await message.edit({
                     content: null,
                     embeds: [{
                         title: track.title,
@@ -74,7 +74,11 @@ class Util {
                         }]
                     }]
                 });
-            } catch { return; };
+            } catch (e) {
+                if (this._client.cfg.debug) clientLogger.error(inspect(e));
+                player.set("message", undefined)
+                return;
+            };
         },
         updateGuildStatsChannels: async (guildId: string): Promise<void> => {
             let failed = false;
