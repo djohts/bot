@@ -26,7 +26,7 @@
     "dependencies": {
         "@eartharoid/i18n": "^1.0.4",
         "@fastify/cookie": "^8.0.0",
-        "@fastify/session": "^9.0.0",
+        "@fastify/session": "^10.0.0",
         "@fastify/view": "^7.1.0",
         "axios": "^0.27.2",
         "bottleneck": "github:SGrondin/bottleneck",
