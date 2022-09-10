@@ -1,4 +1,4 @@
-import { ButtonInteraction, GuildMember, PermissionFlagsBits, Role } from "discord.js";
+import { ButtonInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import Util from "../util/Util";
 import { clientLogger } from "../util/logger/normal";
 
@@ -16,7 +16,7 @@ export = async (interaction: ButtonInteraction) => {
     const iId = interaction.customId.slice(3);
     const rId = brs[iId];
 
-    const role: Role | null = await interaction.guild.roles.fetch(rId).catch(() => null);
+    const role = interaction.guild.roles.cache.get(rId);
     if (!role || (role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition))
         return interaction.editReply("❌ Роль не была найдена или её позиция выше моей.");
 
