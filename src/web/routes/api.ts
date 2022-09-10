@@ -106,22 +106,17 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.post("/webhook/boticord", async (req, res) => {
         if (req.headers["x-hook-key"] !== config.monitoring.bc_hook_key) return res.status(403).send();
         const options = req.body as BcBotBumpAction | BcBotCommentAction;
-        // @ts-ignore
-        console.log(options.data.comment)
         let vote: string;
 
         switch (options.type) {
             case "new_bot_bump":
                 manager.broadcastEval((bot: Client, options: BcBotBumpAction) => {
                     bot.util.func.processBotBump(options);
-                }, {
-                    cluster: 0,
-                    context: options
-                });
+                }, { cluster: 0, context: options });
                 break;
             case "new_bot_comment":
-                if ((options as BcBotCommentAction).data.comment.vote.new === 1) vote = "Позитивная";
-                else if ((options as BcBotCommentAction).data.comment.vote.new === -1) vote = "Негативная";
+                if ((options as BcBotCommentAction).data.comment.vote.new == 1) vote = "Позитивная";
+                else if ((options as BcBotCommentAction).data.comment.vote.new == -1) vote = "Негативная";
                 else vote = "Нейтральная";
                 await wh.send({
                     embeds: [{
@@ -139,8 +134,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 });
                 break;
             case "edit_bot_comment":
-                if ((options as BcBotCommentAction).data.comment.vote.new === 1) vote = "Позитивная";
-                else if ((options as BcBotCommentAction).data.comment.vote.new === -1) vote = "Негативная";
+                if ((options as BcBotCommentAction).data.comment.vote.new == 1) vote = "Позитивная";
+                else if ((options as BcBotCommentAction).data.comment.vote.new == -1) vote = "Негативная";
                 else vote = "Нейтральная";
                 await wh.send({
                     embeds: [{
