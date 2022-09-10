@@ -27,7 +27,7 @@ export interface Config {
         id: string;
         secret: string;
     };
-    clusters: number;
+    shards: number;
     shardsPerClusters: number;
     port: number;
     redirectUri: string;
@@ -59,13 +59,6 @@ export interface SessionUser {
         permissions: string;
         features: string[];
     }[];
-}
-
-export interface CustomGuild {
-    id: string;
-    name: string;
-    iconUrl: string | null;
-    managed: boolean;
 }
 
 type GuildLocale = "en" | "ua" | "ru";
@@ -130,8 +123,8 @@ export interface BcBotCommentAction {
         reason: "self" | "moderation";
         comment: {
             vote: {
-                old: -1 | 1 | null;
-                new: -1 | 1 | null;
+                old: -1 | 0 | 1 | null;
+                new: -1 | 0 | 1 | null;
             };
             old: string | null;
             new: string | null;

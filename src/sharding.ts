@@ -1,18 +1,18 @@
 import { managerLogger } from "./util/logger/manager";
+import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
 import utils from "./util/sharding";
-import axios from "axios";
 import config from "../config";
-import { inspect } from "util";
+import axios from "axios";
 
 managerLogger.info("=".repeat(55));
 
 export const manager = new Sharding.Manager(__dirname + "/bot.js", {
-    totalClusters: config.clusters,
+    totalShards: config.shards,
     shardsPerClusters: config.shardsPerClusters,
     token: config.token,
     execArgv: ["--no-warnings"],
-    mode: "worker"
+    mode: "process"
 });
 utils(manager);
 
@@ -34,7 +34,7 @@ if (config.port) {
     };
 };
 
-manager.spawn({ timeout: -1 }).then(() => {
+manager.spawn({ timeout: -1, delay: 6000 }).then(() => {
     setTimeout(() => {
         if (config.monitoring?.sdc && config.monitoring?.bc) {
             postStats();

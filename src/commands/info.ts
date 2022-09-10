@@ -21,7 +21,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         guilds = await interaction.client.cluster.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((prev, val) => prev + val, 0));
         users = await interaction.client.cluster.broadcastEval((bot) =>
-            bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)
+            bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b, 0)
         ).then((res) => res.reduce((prev, val) => prev + val, 0));
 
         clusterCount = Client.getInfo().CLUSTER_COUNT;

@@ -4,17 +4,17 @@ import { createReadStream } from "node:fs";
 export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/", (req: any, res) => {
         req.session.lastPage = "/";
-        res.view("index.ejs", { user: req.session.user });
+        res.view("index.ejs");
     });
     fastify.get("/stats", (req: any, res) => {
         req.session.lastPage = "/stats";
-        res.view("stats.ejs", { user: req.session.user });
+        res.view("stats.ejs");
     });
     fastify.get("/tos", (req: any, res) => {
-        res.view("tos.ejs", { user: req.session.user });
+        res.view("tos.ejs");
     })
     fastify.get("/pp", (req: any, res) => {
-        res.view("pp.ejs", { user: req.session.user });
+        res.view("pp.ejs");
     })
     fastify.get("/favicon.ico", (req, res) => res.send(createReadStream(__dirname + "/../views/favicon.ico")));
     done();

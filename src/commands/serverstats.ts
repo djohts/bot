@@ -1,5 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
-import { ChannelType } from "discord-api-types/v9";
+import { ChannelType, SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("serverstats")
@@ -15,7 +14,11 @@ export const options = new SlashCommandBuilder()
                     .setName("channel")
                     .setDescription("Канал.")
                     .addChannelTypes(
-                        ChannelType.GuildCategory, ChannelType.GuildText, ChannelType.GuildVoice, ChannelType.GuildNews, ChannelType.GuildStageVoice
+                        ChannelType.GuildCategory,
+                        ChannelType.GuildText,
+                        ChannelType.GuildVoice,
+                        ChannelType.GuildNews,
+                        ChannelType.GuildStageVoice
                     )
                     .setRequired(true)
             )

@@ -16,25 +16,17 @@
                     <div class="loader"></div>
                 </span>
             </div>
-            <!-- <div class="stats container">
-                <div class="title">Clusters</div>
-                <span id="shardCount">
-                    <div class="loader"></div>
-                </span>
-            </div> -->
         </div>
     </body>
     <script>
         window.onload = () => {
             fetch("/api/stats").then((res) => res.json()).then((res) => {
-                document.getElementById("userCount").innerText = res["users"];
-                document.getElementById("guildCount").innerText = res["guilds"];
-                // document.getElementById("shardCount").innerText = Object.keys(res["clusters"]).length;
+                document.getElementById("userCount").innerText = res["users"].toLocaleString();
+                document.getElementById("guildCount").innerText = res["guilds"].toLocaleString();
             }).catch((e) => {
                 console.log(e);
                 document.getElementById("userCount").innerText = "null";
                 document.getElementById("guildCount").innerText = "null";
-                // document.getElementById("shardCount").innerText = "null";
             });
         };
     </script>

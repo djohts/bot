@@ -36,24 +36,22 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
     if (!gsdb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
     if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id === interaction.options.getUser("member").id);
-    if (!toDelete.size) return interaction.editReply({ content: "❌ Не удалось найти сообщений для удаления." })
+    if (!toDelete.size) return interaction.editReply("❌ Не удалось найти сообщений для удаления.")
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
-    const purged = await interaction.channel.bulkDelete(toDelete, true).catch(() => 0 as 0);
-    if (!purged) return interaction.editReply({ content: "❌ Не удалось удалить сообщения." })
+    const purged = await interaction.channel.bulkDelete(toDelete, true).catch(() => 0 as const);
+    if (!purged) return interaction.editReply("❌ Не удалось удалить сообщения.")
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
-    await interaction.editReply({
-        content:
-            "✅ Удалено " + (
-                purged.size === 1 ?
-                    purged.size + " сообщение" :
-                    [2, 3, 4].includes(purged.size) ?
-                        purged.size + " сообщения" :
-                        purged.size + " сообщений"
-            ) + (
-                purged.size === toDelete.size ? "" : ` из ${toDelete.size}. ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель.`
-            )
-    });
-    setTimeout(() => interaction.deleteReply().catch(() => 0), 3000);
+    return interaction.editReply(
+        "✅ Удалено " + (
+            purged.size === 1 ?
+                purged.size + " сообщение" :
+                [2, 3, 4].includes(purged.size) ?
+                    purged.size + " сообщения" :
+                    purged.size + " сообщений"
+        ) + (
+            purged.size === toDelete.size ? "" : ` из ${toDelete.size}. ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель.`
+        )
+    ).then(() => setTimeout(() => interaction.deleteReply(), 3000));
 };

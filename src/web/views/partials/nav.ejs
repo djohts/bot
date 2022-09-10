@@ -28,38 +28,18 @@
                 <li class="nav-item">
                     <a href="/stats" class="nav-link font-weight-bold">Stats</a>
                 </li>
-                <% if (!user) { %>
-                    <li class="nav-item">
-                        <a href="/api/login" class="nav-link text-uppercase font-weight-bold">
-                            <i class="fa-solid fa-right-to-bracket"></i> Login
-                        </a>
-                    </li>
-                    <% } else { %>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link font-weight-bold dropdown-toggle" id="navbarDropdownMenuLink"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <%= `${user.username}#${user.discriminator}` %>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item font-weight-bold" href="/dash">Dash</a></li>
-                                <li><a class="dropdown-item font-weight-bold" href="/api/logout">Logout</a></li>
-                            </ul>
-                        </li>
-                        <% } %>
             </ul>
         </div>
     </div>
 </nav>
 
 <script>
-    $(function () {
-        $(window).on("scroll", () => {
-            if ($(window).scrollTop() > 10) {
-                $(".navbar").addClass("active");
-            } else {
-                $(".navbar").removeClass("active");
-            };
-        });
+    $(window).on("scroll", () => {
+        if ($(window).scrollTop() > 10) {
+            $(".navbar").addClass("active");
+        } else {
+            $(".navbar").removeClass("active");
+        };
     });
 </script>
 

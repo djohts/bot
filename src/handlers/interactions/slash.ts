@@ -1,9 +1,9 @@
 import { ChatInputCommandInteraction, ContextMenuCommandInteraction, GuildMember } from "discord.js";
+import { clientLogger } from "../../util/logger/normal";
 import { getPermissionLevel } from "../../constants/";
 import { readdirSync } from "node:fs";
-import config from "../../../config";
-import { clientLogger } from "../../util/logger/normal";
 import { inspect } from "util";
+import config from "../../../config";
 
 export default async (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
     if (
@@ -29,14 +29,14 @@ export default async (interaction: ChatInputCommandInteraction | ContextMenuComm
     } catch (e) {
         clientLogger.error(`[g${interaction.guild.id}c${interaction.channel.id}u${interaction.user.id}] ${commandName}: ${inspect(e)}`);
 
-        let failed = false;
-        if (!interaction.replied) {
-            await interaction.reply({ content: "❌ Ошибка выполнения команды. Свяжитесь с разработчиком.", ephemeral: true }).catch(() => failed = true);
-        } else {
-            await interaction.editReply({ content: "❌ Ошибка выполнения команды. Свяжитесь с разработчиком." }).catch(() => failed = true);
-        };
-        if (failed) {
-            interaction.channel.send(`❌ ${interaction.user}, ошибка выполнения команды. Свяжитесь с разработчиком.`);
+        try {
+            if (!interaction.replied) {
+                await interaction.reply({ content: "❌ Ошибка выполнения команды. Свяжитесь с разработчиком.", ephemeral: true });
+            } else {
+                await interaction.editReply("❌ Ошибка выполнения команды. Свяжитесь с разработчиком.");
+            };
+        } catch {
+            await interaction.channel.send(`❌ ${interaction.user}, ошибка выполнения команды. Свяжитесь с разработчиком.`).catch(() => 0);
         };
     };
 };

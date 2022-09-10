@@ -1,16 +1,10 @@
+import { BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
 import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
-import config from "../../../config";
-import discordoauth2 from "discord-oauth2";
+import { Client, WebhookClient } from "discord.js";
 import { manager } from "../../sharding";
-import { SessionUser, CustomGuild, BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
-import { Client, PermissionFlagsBits, PermissionsBitField, WebhookClient } from "discord.js";
+import config from "../../../config";
 import axios from "axios";
 const wh = new WebhookClient({ url: config.notifications_webhook });
-const oauth2 = new discordoauth2({
-    clientId: config.client.id,
-    clientSecret: config.client.secret,
-    redirectUri: config.redirectUri
-});
 
 export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/stats", async (_, res) => {
@@ -50,99 +44,48 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
         res.send(newBotInfo);
     });
     fastify.get("/metrics", async (req, res) => {
-        const sharddata = (await axios("http://localhost:4000/api/stats").then((response) => response.data)) as {
+        const data = (await axios("http://0.0.0.0:4000/api/stats").then((res) => res.data)) as {
             clusters: {
                 [key: string]: {
-                    status: string,
-                    guilds: number,
-                    cachedUsers: number,
-                    channels: number,
-                    users: number,
-                    ping: number,
-                    loading: boolean
-                }
-            },
-            guilds: number,
-            cachedUsers: number,
-            channels: number,
-            users: number,
-            lastUpdate: number
+                    status: string;
+                    guilds: number;
+                    cachedUsers: number;
+                    channels: number;
+                    users: number;
+                    ping: number;
+                    loading: boolean;
+                };
+            };
+            guilds: number;
+            cachedUsers: number;
+            channels: number;
+            users: number;
+            lastUpdate: number;
         };
 
         const metricObject = {
-            total_guilds: sharddata.guilds,
-            total_channels: sharddata.channels,
-            total_users: sharddata.users,
-            total_cached_users: sharddata.cachedUsers,
-            average_ping: Object.values(sharddata.clusters).reduce((total, next) => total + next.ping, 0) / Object.keys(sharddata.clusters).length,
+            total_guilds: data.guilds,
+            total_channels: data.channels,
+            total_users: data.users,
+            total_cached_users: data.cachedUsers,
+            average_ping: Object.values(data.clusters).reduce((total, next) => total + next.ping, 0) / Object.keys(data.clusters).length,
 
-            shard_guilds: {},
-            shard_channels: {},
-            shard_users: {},
-            shard_cached_users: {},
-            shard_ping: {},
+            cluster_guilds: {},
+            cluster_channels: {},
+            cluster_users: {},
+            cluster_cached_users: {},
+            cluster_ping: {},
         } as { [key: string]: number | { [key: string]: number } };
 
-        for (const [key, value] of Object.entries(sharddata.clusters)) {
-            metricObject["shard_guilds"][key] = value.guilds;
-            metricObject["shard_channels"][key] = value.channels;
-            metricObject["shard_users"][key] = value.users;
-            metricObject["shard_cached_users"][key] = value.cachedUsers;
-            metricObject["shard_ping"][key] = value.ping;
+        for (const [key, value] of Object.entries(data.clusters)) {
+            metricObject["cluster_guilds"][key] = value.guilds;
+            metricObject["cluster_channels"][key] = value.channels;
+            metricObject["cluster_users"][key] = value.users;
+            metricObject["cluster_cached_users"][key] = value.cachedUsers;
+            metricObject["cluster_ping"][key] = value.ping;
         };
 
-        res.type("text/plain");
-        res.send(prometheusMetrics(metricObject));
-    });
-    fastify.get("/login", (_, res) => {
-        res.redirect(oauth2.generateAuthUrl({
-            scope: ["identify", "guilds"],
-            responseType: "code",
-        }));
-    });
-    fastify.get("/logout", (req: any, res) => {
-        req.session.user = null;
-        res.redirect(req.session.lastPage);
-    });
-    fastify.get("/authorize", async (req: any, res) => {
-        const a = await oauth2.tokenRequest({
-            code: req.query.code,
-            scope: ["identify", "guilds"],
-            grantType: "authorization_code"
-        }).catch(() => res.redirect(req.session.lastPage));
-
-        if (!a.access_token) return res.redirect("/api/login");
-
-        const user = await oauth2.getUser(a.access_token);
-        req.session.user = user;
-        req.session.user.guilds = await oauth2.getUserGuilds(a.access_token);
-        res.redirect(req.session.lastPage);
-    });
-    fastify.get("/user/guilds", (req: any, res): any => {
-        const user = req.session.user as SessionUser | null;
-        if (!user) return res.redirect("/api/login");
-
-        const guilds: CustomGuild[] = [];
-
-        user.guilds.map((rawguild) => {
-            guilds.push({
-                id: rawguild.id,
-                name: rawguild.name,
-                iconUrl: rawguild.icon ? `https://cdn.discordapp.com/icons/${rawguild.id}/${rawguild.icon}.png` : null,
-                managed: new PermissionsBitField().add(rawguild.permissions as any).has(PermissionFlagsBits.Administrator)
-            });
-        });
-
-        res.send(guilds);
-    });
-    fastify.get("/bot/isinuguild/:guild", async (req: any, res) => {
-        const { guild } = req.params as { guild: string };
-        if (!guild) return res.send({ isinuguild: false });
-        const isinuguild = await manager.broadcastEval((bot: Client, guild: string) => !!bot.guilds.cache.get(guild), {
-            guildId: guild,
-            context: guild
-        });
-        res.send({ isinuguild });
+        res.type("text/plain").send(prometheusMetrics(metricObject));
     });
     fastify.get("/invite/:guildid", (req: any, res) => {
         const guildid = req.params.guildid;
