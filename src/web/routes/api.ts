@@ -115,8 +115,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 }, { cluster: 0, context: options });
                 break;
             case "new_bot_comment":
-                if ((options as BcBotCommentAction).data.comment.vote.new == 1) vote = "Позитивная";
-                else if ((options as BcBotCommentAction).data.comment.vote.new == -1) vote = "Негативная";
+                if ((options as BcBotCommentAction).data.comment.vote.new === 1) vote = "Позитивная";
+                else if ((options as BcBotCommentAction).data.comment.vote.new === -1) vote = "Негативная";
                 else vote = "Нейтральная";
                 await wh.send({
                     embeds: [{
@@ -134,8 +134,8 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
                 });
                 break;
             case "edit_bot_comment":
-                if ((options as BcBotCommentAction).data.comment.vote.new == 1) vote = "Позитивная";
-                else if ((options as BcBotCommentAction).data.comment.vote.new == -1) vote = "Негативная";
+                if ((options as BcBotCommentAction).data.comment.vote.new === 1) vote = "Позитивная";
+                else if ((options as BcBotCommentAction).data.comment.vote.new === -1) vote = "Негативная";
                 else vote = "Нейтральная";
                 await wh.send({
                     embeds: [{
