@@ -3,11 +3,9 @@ import { createReadStream } from "node:fs";
 
 export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/", (req: any, res) => {
-        req.session.lastPage = "/";
         res.view("index.ejs");
     });
     fastify.get("/stats", (req: any, res) => {
-        req.session.lastPage = "/stats";
         res.view("stats.ejs");
     });
     fastify.get("/tos", (req: any, res) => {
