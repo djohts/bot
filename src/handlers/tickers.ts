@@ -47,7 +47,7 @@ function processBotBumps() {
     Util.database.global().then((global) => {
         Promise.all(global.get().boticordBumps.map(async (data) => {
             try {
-                const delay = 6 * 60 * 60 * 1000;
+                const delay = 4 * 60 * 60 * 1000;
                 if (data.at + delay > Date.now()) return;
                 global.removeFromArray("boticordBumps", data);
                 const udb = await Util.database.users(data.user);
