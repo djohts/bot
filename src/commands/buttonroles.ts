@@ -51,7 +51,6 @@ import Util from "../util/Util";
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
     const global = await Util.database.global();
-    const addToGlobal = global.addToArray;
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "create") {
@@ -105,7 +104,6 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 ])
             ]
         }).then((m) => {
-            addToGlobal("generatedIds", id);
             gdb.setOnObject("brcs", id, channel.id);
             gdb.setOnObject("brms", id, m.id);
             gdb.setOnObject("brs", id, role.id);
@@ -139,7 +137,6 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             }]
         };
         await message.edit(newMessage).then((m) => {
-            addToGlobal("generatedIds", id);
             gdb.setOnObject("brcs", id, channel.id);
             gdb.setOnObject("brms", id, m.id);
             gdb.setOnObject("brs", id, role.id);
