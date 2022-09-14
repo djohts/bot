@@ -50,7 +50,6 @@ import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
-    const global = await Util.database.global();
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "create") {
