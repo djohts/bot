@@ -19,12 +19,12 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         return interaction.reply({ content: "❌ У меня нет прав на модерирование участников.", ephemeral: true });
     if (!member.moderatable)
         return interaction.reply({ content: "❌ Я не могу модерировать этого участника.", ephemeral: true });
-    if (member.communicationDisabledUntil.getTime() < Date.now())
+    if (member.communicationDisabledUntil?.getTime() < Date.now())
         return interaction.reply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
 
     let dmsent = false;
 
-    return member.disableCommunicationUntil(0, interaction.user.tag + (reason ? `: ${reason}` : "")).then(() => {
+    return member.disableCommunicationUntil(null, interaction.user.tag + (reason ? `: ${reason}` : "")).then(() => {
         return interaction.reply({
             content: `✅ ${member} был успешно размьючен.` +
                 (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
