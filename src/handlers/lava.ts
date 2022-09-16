@@ -21,7 +21,7 @@ export = (client: Client) => new Manager({
         clientLogger.error(`[g${player.guild}] ${track.title} failed to play: ${inspect(error)}`);
 
         try {
-            await text.send(`An error occured when trying to play \`${track.title}\`: ${error.exception?.cause || error.error}`);
+            await text.send(`An error occured when trying to play \`${track.title}\`: ${error.error}`);
         } catch { };
     })
     .on("trackStuck", async (player, track, error) => {
