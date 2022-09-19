@@ -1,31 +1,21 @@
-import { SlashCommandBuilder } from "discord.js";
+export const options = { name: "eval" };
 
-export const options = new SlashCommandBuilder()
-    .setName("eval")
-    .setDescription("Evaluate JavaScript.")
-    .setDefaultMemberPermissions(0)
-    .setDMPermission(false)
-    .addStringOption((o) => o.setName("script").setDescription("Script that'd be ran.").setRequired(true))
-    .toJSON();
-export const permission = 4;
-
-import { ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.js";
 import { inspect } from "util";
 import _Util from "../util/Util";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    await interaction.deferReply();
-
+export const run = async (message: Message) => {
     try {
+        const script = message.content.slice(27);
         const Util = _Util;
         // @ts-ignore
-        const gdb = Util.database.guild(interaction.guild.id);
-        let evaled = await eval(interaction.options.getString("script"));
+        const gdb = Util.database.guild(message.guild.id);
+        let evaled = await eval(script);
         if (typeof evaled !== "string") evaled = inspect(evaled);
 
-        if (evaled.length >= 2000) return interaction.editReply("✅");
+        if (evaled.length >= 2000) return message.reply("✅");
 
-        return interaction.editReply({
+        return message.reply({
             content: `\`\`\`js\n${evaled}\n\`\`\``,
             components: [
                 new ActionRowBuilder<ButtonBuilder>().setComponents(
@@ -38,7 +28,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         if (typeof e === "string") err = e.replace(/`/g, "`" + String.fromCharCode(8203));
         else err = e;
 
-        return interaction.editReply({
+        return message.reply({
             content: `\`\`\`fix\n${err}\n\`\`\``,
             components: [
                 new ActionRowBuilder<ButtonBuilder>().setComponents(

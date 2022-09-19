@@ -191,9 +191,11 @@ class Util {
         registerCommands: () => {
             const dev = !config.monitoring.bc;
 
+            const commands = loadCommands().filter((x) => !["eval", "exec"].includes(x.name));
+
             return dev
-                ? this._client.guilds.cache.get("957937585299292192").commands.set(loadCommands())
-                : this._client.application.commands.set(loadCommands());
+                ? this._client.guilds.cache.get("957937585299292192").commands.set(commands)
+                : this._client.application.commands.set(commands);
         },
         uselesslog: (x: unknown) => uselesswebhook.send(x)
     };

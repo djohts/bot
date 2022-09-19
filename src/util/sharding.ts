@@ -15,13 +15,15 @@ export default function (manager: Manager) {
         if (command === "updateCommands") {
             const clusterId = parseInt(args[0]);
             if (isNaN(clusterId)) {
-                manager.broadcastEval<any>((c) => c.util.func.registerCommands()).then((res: Map<string, object>[]) => {
-                    managerLogger.info(`Updated ${res[0].size} commands on clusters ${res.map((_, i) => i).join(", ")}`);
+                manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x) => x.size)).then((res: Map<string, object>[]) => {
+                    managerLogger.info(`Updated ${res[0]} commands on clusters ${res.map((_, i) => i).join(", ")}`);
                 });
             } else {
                 if (manager.clusters.has(clusterId)) {
-                    manager.broadcastEval<any>((c) => c.util.func.registerCommands(), { cluster: clusterId }).then((res: Map<string, object>[]) => {
-                        managerLogger.info(`Updated ${res[0].size} commands on cluster ${clusterId}`);
+                    manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x) => x.size), {
+                        cluster: clusterId
+                    }).then((res: Map<string, object>[]) => {
+                        managerLogger.info(`Updated ${res[0]} commands on cluster ${clusterId}`);
                     });
                 } else {
                     managerLogger.error(`Cluster ${clusterId} does not exist.`);

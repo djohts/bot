@@ -1,21 +1,20 @@
-import { SlashCommandBuilder } from "discord.js";
+export const options = { name: "eval" };
 
-export const options = new SlashCommandBuilder()
-    .setName("exec")
-    .setDescription("Execute bash script.")
-    .setDefaultMemberPermissions(0)
-    .setDMPermission(false)
-    .addStringOption((o) => o.setName("script").setDescription("Bash script that'd be ran.").setRequired(true))
-    .toJSON();
-export const permission = 4;
-
-import { ChatInputCommandInteraction } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.js";
+import _Util from "../util/Util";
 import { exec } from "child_process";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    await interaction.deferReply();
+export const run = async (message: Message) => {
+    const script = message.content.slice(27);
 
-    exec(interaction.options.getString("script"), (error, stdout) => {
-        return interaction.editReply(`\`\`\`\n${(error || stdout).toString().slice(0, 1990)}\n\`\`\``);
+    exec(script, (error, stdout) => {
+        return message.reply({
+            content: `\`\`\`\n${(error || stdout).toString().slice(0, 1990)}\n\`\`\``,
+            components: [
+                new ActionRowBuilder<ButtonBuilder>().setComponents(
+                    new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
+                )
+            ]
+        });
     });
 };

@@ -45,7 +45,7 @@ const commands = [];
 export const loadCommands = () => {
     commands.length = 0;
 
-    const files = readdirSync(__dirname + "/../../commands/");
+    const files = readdirSync(__dirname + "/../../commands/").filter((x) => x.endsWith(".js"));
 
     for (let filename of files) {
         let file = require(`../../commands/${filename}`);
