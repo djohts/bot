@@ -36,6 +36,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (member) {
         if (member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition)
             return interaction.editReply("❌ Вы не можете забанить этого человека.");
+        if (
+            !member.manageable
+        ) return interaction.editReply("❌ Я не могу забанить этого участника.");
     };
 
     const gdb = await Util.database.guild(interaction.guild.id);
