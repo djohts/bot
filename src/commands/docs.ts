@@ -14,7 +14,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const _ = Util.i18n.getLocale(gdb.get().locale);
 
     return interaction.reply({
-        content: _("commands.docs.docs", { link: "https://djoh.gitbook.io/djoho-bot" }),
+        content: _("commands.docs.docs", { link: "<https://djoh.gitbook.io/djoho-bot>" }),
         ephemeral: true
     });
 };
