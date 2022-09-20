@@ -41,8 +41,26 @@
         "docs": {
             "docs": "📚 Bot documentation can be found here: {link}"
         },
-        "flows": [],
-        "info": [],
+        "info": {
+            "title": "Bot information",
+            "host": "💠 Host",
+            "os": "**OS**: `{platform}`",
+            "library": "**Library**: `discord.js v{version}`",
+            "clusters": "**Clusters**: `{clusters}`",
+            "shards": "**Shards**: `{shards}`",
+            "ram": "**RAM**: `{ram}`",
+            "cluster": "🔷 This cluster ({id})",
+            "guilds": "**Guilds**: `{guilds}`",
+            "users": "**Users**: `{users}`",
+            "uptime": "**Uptime**: `{uptime}`",
+            "shard": "🌀 This shard ({id})",
+            "latency": "**Latency**: `{latency}ms`",
+            "links": "🌐 Links",
+            "invite": "[📥 Invite me!]({link})",
+            "support": "[📡 Support server]({link})",
+            "website": "[📰 Website]({link})",
+            "stats": "📈 Stats"
+        },
         "leaderboard": {
             "embedTitle": "Counting leaderboard ● {guild}"
         }
