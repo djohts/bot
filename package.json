@@ -4,11 +4,11 @@
     "main": "build/src/sharding",
     "scripts": {
         "build:run": "yarn build && node --no-warnings .",
-        "build": "npx tsc && yarn copy",
+        "build": "tsc && yarn copy",
         "start": "node --no-warnings .",
         "minify": "node minify.js",
-        "copy": "npx copyfiles \"src/**/*.!(ts)\" build",
-        "watch": "npx tsc -w"
+        "copy": "copyfiles \"src/**/*.!(ts)\" build",
+        "watch": "tsc -w"
     },
     "repository": {
         "type": "git",
@@ -47,6 +47,7 @@
         "@types/ejs": "^3.1.1",
         "@types/lodash": "^4.14.185",
         "@types/node": "^18.7.18",
+        "copyfiles": "^2.4.1",
         "recursive-readdir-synchronous": "^0.0.4",
         "terser": "^5.15.0",
         "typescript": "^4.8.3"
