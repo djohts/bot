@@ -9,7 +9,6 @@ import prettyms from "pretty-ms";
 import i18n from "./i18n";
 import { UserFetcher } from "../handlers/bottleneck";
 import { loadCommands } from "../handlers/interactions/slash";
-import { clientLogger } from "./logger/normal";
 const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 
 let util: Util | null = null;
@@ -75,7 +74,6 @@ class Util {
                     }]
                 });
             } catch (e) {
-                if (this._client.cfg.debug) clientLogger.error(inspect(e));
                 player.set("message", undefined)
                 return;
             };
@@ -202,11 +200,6 @@ class Util {
 
     public setClient(client: Client): Util {
         client.cluster = new Sharding.Client(client);
-        client.cfg = {
-            enslash: true,
-            enbr: true,
-            debug: false
-        };
         client.util = this;
         this._client = client;
         return this;

@@ -2,17 +2,17 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("purge")
-    .setDescription("Удалить указанное количество сообщений в канале.")
+    .setDescription("Purge messages in current channel.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
     .addIntegerOption((o) => o.setName("amount").setDescription("Количество сообщений которое надо удалить.").setRequired(true).setMinValue(2).setMaxValue(100))
     .addUserOption((o) => o.setName("member").setDescription("Участник, чьи сообщения должны быть очищены."))
     .toJSON();
 
-const cds = new Map<string, number>();
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import prettyMs from "pretty-ms";
 import Util from "../util/Util";
+const cds = new Map<string, number>();
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     if (cds.has(interaction.channel.id))

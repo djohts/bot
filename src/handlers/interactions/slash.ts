@@ -3,16 +3,8 @@ import { clientLogger } from "../../util/logger/normal";
 import { getPermissionLevel } from "../../constants/";
 import { readdirSync } from "node:fs";
 import { inspect } from "util";
-import config from "../../../config";
 
 export default async (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
-    if (
-        !interaction.client.cfg.enslash
-        && !config.admins.includes(interaction.user.id)
-    ) return interaction.reply({
-        content: "❌ Команды были выключены разработчиком. Если вы считаете, что это ошибка, обратитесь к нам: https://discord.gg/AaS4dwVHyA",
-        ephemeral: true
-    });
     const gdb = await interaction.client.database.guild(interaction.guild.id);
     if (gdb.get().channel === interaction.channel.id)
         return interaction.reply({ content: "❌ Команды недоступны в этом канале", ephemeral: true });

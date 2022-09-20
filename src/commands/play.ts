@@ -2,30 +2,33 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("play")
-    .setDescription("Слушать музыку.")
+    .setDescription("Queue a track.")
     .setDMPermission(false)
-    .addStringOption((o) => o.setName("query").setDescription("Трек, который вы хотите послушать.").setRequired(true))
+    .addStringOption((o) => o.setName("query").setDescription("Track to search.").setRequired(true))
     .toJSON();
 
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
+    const gdb = await Util.database.guild(interaction.guildId);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
+
     const member = interaction.member as GuildMember;
 
     if (!member.voice.channel)
-        return interaction.reply("❌ Вы должны находиться в голосовом канале.");
+        return interaction.reply({ content: _("commands.loop.novoice"), ephemeral: true });
     if (
         interaction.guild.members.me.voice.channel
-        && member.voice.channel?.id !== interaction.guild.members.me.voice.channel?.id
-    ) return interaction.reply({ content: "❌ Вы должны находится в том же голосовом канале, что и я.", ephemeral: true });
+        && member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
+    ) return interaction.reply({ content: _("commands.loop.notsame"), ephemeral: true });
 
     await interaction.deferReply();
 
     const res = await Util.lava.search(interaction.options.getString("query").trim(), interaction.user);
     if (!res.tracks.length) {
-        await interaction.editReply("❌ По вашему запросу не удалось ничего найти.");
-        setTimeout(() => interaction.deleteReply().catch(() => 0), 20 * 1000);
+        await interaction.editReply(_("commands.loop.notfound"));
+        setTimeout(() => interaction.deleteReply().catch(() => null), 20 * 1000);
         return;
     };
 
@@ -41,17 +44,19 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         && player.state !== "CONNECTING"
     ) player.connect();
 
-    if (player.queue.totalSize + 1 > 25) {
-        await interaction.editReply("❌ Размер очереди не может превышать 25 треков.");
-        setTimeout(() => interaction.deleteReply().catch(() => 0), 20 * 1000);
+    const queueLimit = 15;
+
+    if (player.queue.totalSize + 1 > queueLimit) {
+        await interaction.editReply(_("commands.loop.limit", { amount: `${queueLimit}` }));
+        setTimeout(() => interaction.deleteReply().catch(() => null), 20 * 1000);
         return;
     } else player.queue.add(res.tracks[0]);
-    await interaction.editReply(`Трек добавлен в очередь:\n\`${res.tracks[0].title}\``);
+    await interaction.editReply(_("commands.loop.queued", { track: `${res.tracks[0].title}` }));
 
     if (
         !player.playing
         && !player.paused
         && (!player.queue.size || player.queue.totalSize === res.tracks.length)
     ) player.play();
-    setTimeout(() => interaction.deleteReply().catch(() => 0), 20 * 1000);
+    setTimeout(() => interaction.deleteReply().catch(() => null), 20 * 1000);
 };
