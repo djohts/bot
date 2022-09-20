@@ -1,6 +1,6 @@
 import { GuildMember } from "discord.js";
-import config from "../../config";
 import crypto from "crypto";
+import config from "../../config";
 
 export const getPermissionLevel = (member: GuildMember): 5 | 4 | 0 => {
     if (config.admins[0] === member.user.id) return 5; // bot owner
@@ -25,6 +25,6 @@ const formatNumberSuffix = (n: number): string => {
 export const formatScore = (id: string, index: number, users: object, userid?: string): string => {
     const suffix = medals[index] ?? `**${formatNumberSuffix(index + 1)}**:`;
 
-    if (userid === id) return `${suffix} *__<@${id}>, **score:** ${users[id] ?? 0}__*`;
-    return `${suffix} <@${id}>, **score:** ${users[id] ?? 0}`;
+    if (userid === id) return `${suffix} *__<@${id}>, **счёт:** ${(users[id] || 0)}__*`;
+    return `${suffix} <@${id}>, **счёт:** ${(users[id] || 0)}`;
 };

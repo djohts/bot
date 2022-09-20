@@ -2,13 +2,13 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("ban")
-    .setDescription("Ban a user from the guild.")
+    .setDescription("Забанить участника.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
-    .addUserOption((o) => o.setName("member").setDescription("User that needs to be banned.").setRequired(true))
-    .addStringOption((o) => o.setName("duration").setDescription("Ban duration."))
-    .addStringOption((o) => o.setName("reason").setDescription("Ban reason."))
-    .addIntegerOption((o) => o.setName("purgedays").setDescription("Delete messages within this amount of days.").setMinValue(1).setMaxValue(7))
+    .addUserOption((o) => o.setName("member").setDescription("Пользователь, которого надо забанить.").setRequired(true))
+    .addStringOption((o) => o.setName("duration").setDescription("Время, на которое участник будет забанен."))
+    .addStringOption((o) => o.setName("reason").setDescription("Причина выдачи бана."))
+    .addIntegerOption((o) => o.setName("purgedays").setDescription("Удаление сообщений пользователя за указанное время, в днях.").setMaxValue(7).setMinValue(1))
     .toJSON();
 
 import { ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, EmbedBuilder } from "discord.js";
@@ -17,32 +17,31 @@ import prettyms from "pretty-ms";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
     const user = interaction.options.getUser("member");
 
     if (
         !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
-    ) return interaction.reply({ content: _("commands.ban.cannotBan"), ephemeral: true });
+    ) return interaction.reply({ content: "❌ У меня нет прав на выдачу банов.", ephemeral: true });
     if (
         interaction.options.getString("duration")
         && !parseTime(interaction.options.getString("duration"))
-    ) return interaction.reply({ content: _("commands.ban.cannotParseTime"), ephemeral: true });
+    ) return interaction.reply({ content: "❌ Не удалось обработать указанное время.", ephemeral: true });
 
     await interaction.deferReply();
 
     if (await interaction.guild.bans.fetch(user).catch(() => 0))
-        return interaction.editReply(_("commands.ban.alreadyBanned"));
-    const member = await interaction.guild.members.fetch(user).catch(() => 0 as const);
+        return interaction.editReply("❌ Этот пользователь уже забанен.");
+    const member = await interaction.guild.members.fetch(user).catch(() => 0 as 0);
 
     if (member) {
         if (member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition)
-            return interaction.editReply(_("commands.ban.noPerm"));
+            return interaction.editReply("❌ Вы не можете забанить этого человека.");
         if (
             !member.manageable
-        ) return interaction.editReply(_("commands.ban.cannotBan"));
+        ) return interaction.editReply("❌ Я не могу забанить этого участника.");
     };
 
+    const gdb = await Util.database.guild(interaction.guild.id);
     let dmsent = false;
     let time = 0;
     const reason = interaction.options.getString("reason")?.trim();
@@ -55,29 +54,29 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             name: interaction.guild.name,
             iconURL: interaction.guild.iconURL()
         })
-        .setTitle(_("commands.ban.dmEmbed.title"))
+        .setTitle("Вы были забанены")
         .addFields({
-            name: _("commands.ban.dmEmbed.staff"),
+            name: "Модератор",
             value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
             inline: true
         });
     if (time !== -1) dmemb.addFields({
-        name: _("commands.ban.dmEmbed.time"),
+        name: "Время",
         value: `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``,
         inline: true
     });
     if (reason) dmemb.addFields({
-        name: _("commands.ban.dmEmbed.reason"),
+        name: "Причина",
         value: reason
     });
 
     await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => 0);
 
     await interaction.guild.bans.create(user, {
-        reason: `${interaction.user.tag}: ${reason || _("commands.ban.notSpecified")}`,
+        reason: `${interaction.user.tag}: ${reason || "Не указана."}`,
         deleteMessageDays
     }).then(() => {
         if (time !== -1) gdb.setOnObject("bans", user.id, time);
-        return interaction.editReply(_("commands.ban.success", { user: `${user}` }) + (dmsent ? "\n[__" + _("commands.ban.notified") + "__]" : ""));
+        return interaction.editReply(`✅ ${user} был успешно забанен.` + (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""));
     });
 };
