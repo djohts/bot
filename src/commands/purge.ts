@@ -5,8 +5,8 @@ export const options = new SlashCommandBuilder()
     .setDescription("Purge messages in current channel.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
-    .addIntegerOption((o) => o.setName("amount").setDescription("Количество сообщений которое надо удалить.").setRequired(true).setMinValue(2).setMaxValue(100))
-    .addUserOption((o) => o.setName("member").setDescription("Участник, чьи сообщения должны быть очищены."))
+    .addIntegerOption((o) => o.setName("amount").setDescription("Amount of messages to delete.").setRequired(true).setMinValue(1).setMaxValue(100))
+    .addUserOption((o) => o.setName("member").setDescription("Only delete messages by this user."))
     .toJSON();
 
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
@@ -15,18 +15,21 @@ import Util from "../util/Util";
 const cds = new Map<string, number>();
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
+    const gdb = await Util.database.guild(interaction.guildId);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
+
     if (cds.has(interaction.channel.id))
         return interaction.reply({
-            content: `❌ Подождите ещё ${prettyMs(cds.get(interaction.channel.id) - Date.now())} перед повторным использованем команды.`,
+            content: _("commands.purge.cd", { time: prettyMs(cds.get(interaction.channel.id) - Date.now()) }),
             ephemeral: true
         });
     else {
-        cds.set(interaction.channel.id, Date.now() + 3000);
-        setTimeout(() => cds.delete(interaction.channel.id), 3000);
+        cds.set(interaction.channel.id, Date.now() + 3100);
+        setTimeout(() => cds.delete(interaction.channel.id), 3100);
     };
 
     if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageMessages))
-        return interaction.reply({ content: "❌ У меня нет прав на управление сообщениями в этом канале.", ephemeral: true });
+        return interaction.reply({ content: _("commands.purge.noperm"), ephemeral: true });
 
     await interaction.deferReply();
 
@@ -36,22 +39,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
     if (!gsdb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
     if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id === interaction.options.getUser("member").id);
-    if (!toDelete.size) return interaction.editReply("❌ Не удалось найти сообщений для удаления.")
+    if (!toDelete.size) return interaction.editReply(_("commands.purge.nomessages"))
         .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 
-    const purged = await interaction.channel.bulkDelete(toDelete, true).catch(() => 0 as const);
-    if (!purged) return interaction.editReply("❌ Не удалось удалить сообщения.")
-        .then(() => setTimeout(() => interaction.deleteReply(), 3000));
+    const purged = await interaction.channel.bulkDelete(toDelete, true);
 
-    return interaction.editReply(
-        "✅ Удалено " + (
-            purged.size === 1 ?
-                purged.size + " сообщение" :
-                [2, 3, 4].includes(purged.size) ?
-                    purged.size + " сообщения" :
-                    purged.size + " сообщений"
-        ) + (
-            purged.size === toDelete.size ? "" : ` из ${toDelete.size}. ⚠️ Некоторые сообщения не были удалены так как они старше 2-х недель.`
-        )
-    ).then(() => setTimeout(() => interaction.deleteReply(), 3000));
+    return interaction.editReply(_("commands.purge.done", { amount: `${purged.size}` }))
+        .then(() => setTimeout(() => interaction.deleteReply(), 3000));
 };

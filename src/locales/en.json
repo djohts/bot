@@ -62,7 +62,57 @@
             "stats": "📈 Stats"
         },
         "leaderboard": {
-            "embedTitle": "Counting leaderboard ● {guild}"
+            "title": "Counting leaderboard"
+        },
+        "loop": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notplaying": "❌ Nothing is playing at the moment.",
+            "enabled": "Song repeat was enabled.",
+            "disabled": "Song repeat was disabled."
+        },
+        "modules": {
+            "choose": "Choose modules.",
+            "timedout": "Timed out.",
+            "incompatible": "Modules {a} and {b} are incompatible.",
+            "empty": "Empty",
+            "changes": "​> **Changes:**",
+            "old": "Old modules: {oldList}",
+            "new": "New modules: {newList}"
+        },
+        "mute": {
+            "noperms": "❌ I don't have `ModerateMembers` permission.",
+            "cantmod": "❌ I can't moderate that user.",
+            "cantmute": "❌ You can't mute that user.",
+            "time": "❌ I can't parse that time.",
+            "muted": "✅ {user} has been muted.",
+            "notified": "User notified via DM message"
+        },
+        "pause": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notplaying": "❌ Nothing is playing at the moment.",
+            "enabled": "Player has been paused.",
+            "disabled": "Player has been un-paused."
+        },
+        "ping": {
+            "server": "Server",
+            "api": "API",
+            "uptime": "Uptime",
+            "pong": "🏓 Pong!"
+        },
+        "play": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notfound": "❌ I couldn't find anything with your query.",
+            "limit": "❌ Total queue length can't exceed {amount} tracks.",
+            "queued": "Track queued: {track}"
+        },
+        "purge": {
+            "cd": "⏳ Wait {time} before using this command.",
+            "noperm": "❌ I don't have `ManageMessages` permission.",
+            "nomessages": "❌ No deletable messages were found.",
+            "done": "✅ Purged {amount} message(-s)."
         }
     },
     "events": {
