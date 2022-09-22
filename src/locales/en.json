@@ -162,11 +162,43 @@
             "notplaying": "❌ Nothing is playing at the moment.",
             "stopped": "Player has been stopped."
         },
+        "unban": {
+            "noperm": "❌ I don't have `BanMembers` permission.",
+            "noban": "❌ That user is not banned.",
+            "done": "✅ User has been unbanned."
+        },
+        "unmute": {
+            "noperms": "❌ I don't have `ModerateMembers` permission.",
+            "cantmod": "❌ I can't moderate that user.",
+            "nomute": "❌ That user is not muted",
+            "unmuted": "✅ {user} has been unmuted.",
+            "notified": "User notified via DM message"
+        },
+        "unwtf": {
+            "nocontent": "❌ That message doesnt have any content."
+        },
         "volume": {
             "novoice": "❌ You need to be in a voice channel.",
             "notsame": "❌ You need to be in the same voice channel as me.",
             "notplaying": "❌ Nothing is playing at the moment.",
             "set": "Player volume has been set to {volume}"
+        },
+        "warn": {
+            "add": {
+                "sameuser": "❌ You can't warn yourself.",
+                "higher": "❌ You can't warn a user with higher role position.",
+                "warned": "✅ {user} has been warned."
+            },
+            "list": {
+                "failed": "❌ Failed to get list of users. Try again in a minute.",
+                "notspecified": "No reason specified.",
+                "title": "Warn list",
+                "empty": "its empty in here",
+                "page": "Page {page}/{total}"
+            },
+            "remove": {
+                "removed": "✅ Warn removed."
+            }
         }
     },
     "events": {

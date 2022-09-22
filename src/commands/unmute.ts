@@ -2,32 +2,34 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("unmute")
-    .setDescription("Размьютить участника.")
+    .setDescription("Remove timeout from a member.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
-    .addUserOption((o) => o.setName("member").setDescription("Участник которому надо снять мьют.").setRequired(true))
-    .addStringOption((o) => o.setName("reason").setDescription("Причина снятия мьюта."))
+    .addUserOption((o) => o.setName("member").setDescription("Member.").setRequired(true))
     .toJSON();
 
 import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
+import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
+    const gdb = await Util.database.guild(interaction.guild.id);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
+
     const member = interaction.options.getMember("member") as GuildMember;
-    const reason = interaction.options.getString("reason");
 
     if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
-        return interaction.reply({ content: "❌ У меня нет прав на модерирование участников.", ephemeral: true });
+        return interaction.reply({ content: _("commands.unmute.noperms"), ephemeral: true });
     if (!member.moderatable)
-        return interaction.reply({ content: "❌ Я не могу модерировать этого участника.", ephemeral: true });
+        return interaction.reply({ content: _("commands.unmute.cantmod"), ephemeral: true });
     if (member.communicationDisabledUntil?.getTime() < Date.now())
-        return interaction.reply({ content: "❌ Этот участник не замьючен.", ephemeral: true });
+        return interaction.reply({ content: _("commands.unmute.nomute"), ephemeral: true });
 
     let dmsent = false;
 
-    return member.disableCommunicationUntil(null, interaction.user.tag + (reason ? `: ${reason}` : "")).then(() => {
+    return member.disableCommunicationUntil(null, interaction.user.tag).then(() => {
         return interaction.reply({
-            content: `✅ ${member} был успешно размьючен.` +
-                (dmsent ? "\n[__Пользователь был уведомлён в лс__]" : ""),
+            content: _("commands.unmute.unmuted", { user: `${member}` }) +
+                (dmsent ? `\n[__${_("commands.unmute.notified")}__]` : ""),
             allowedMentions: { parse: [] }
         });
     });
