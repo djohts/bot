@@ -6,15 +6,10 @@ export const options = new SlashCommandBuilder()
     .setDMPermission(false)
     .toJSON();
 
-import { ChatInputCommandInteraction } from "discord.js";
 import prettyms from "pretty-ms";
-import Util from "../util/Util";
-import table from "text-table";
+import { ChatInputCommandInteraction } from "discord.js";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
-
     const then = Date.now();
 
     await interaction.deferReply();
@@ -23,18 +18,14 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const uptime = prettyms(interaction.client.uptime);
     const api = interaction.guild.shard.ping;
 
-    const a = table([
-        [_("commands.ping.server"), "::", `${server}ms`],
-        [_("commands.ping.api"), "::", `${api}ms`],
-        [_("commands.ping.uptime"), "::", uptime]
-    ], { align: ["l", "c", "l"] });
-
     return interaction.editReply({
         embeds: [{
-            title: _("commands.ping.pong"),
+            title: "🏓 Понг!",
             description: [
-                "```asciidoc",
-                a,
+                "```",
+                `Сервер   :: ${server}ms`,
+                `API      :: ${api}ms`,
+                `Аптайм   :: ${uptime}`,
                 "```"
             ].join("\n")
         }]

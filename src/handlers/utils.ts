@@ -12,7 +12,7 @@ export function queueDelete(messages: Message[]): void {
     } else if (bulk) return void bulk.push(...messages);
     else bulks.set(channel.id, messages);
 
-    return void setTimeout(() => void bulkDelete(channel), 5000);
+    return void setTimeout(() => void bulkDelete(channel), 3100);
 };
 
 async function bulkDelete(channel: GuildTextBasedChannel): Promise<void> {
@@ -33,5 +33,5 @@ async function bulkDelete(channel: GuildTextBasedChannel): Promise<void> {
     if (!newBulk.length) return void bulks.delete(channel.id);
 
     bulks.set(channel.id, newBulk);
-    return void setTimeout(() => void bulkDelete(channel), 3500);
+    return void setTimeout(() => void bulkDelete(channel), 3100);
 };

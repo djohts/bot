@@ -138,6 +138,11 @@ declare module "discord.js" {
     interface Client {
         loading: boolean;
         connecting: boolean;
+        cfg: {
+            enslash: boolean;
+            enbr: boolean;
+            debug: boolean;
+        };
         util: typeof Util;
         cluster: ShardingClient;
         database: typeof import("../database/");

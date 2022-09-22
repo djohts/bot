@@ -14,10 +14,12 @@ export = () => {
 function updatePresence() {
     Util.client.cluster.broadcastEval((bot) => bot.guilds.cache.size).then((res) => {
         const gc = res.reduce((prev, curr) => prev + curr, 0);
-        const a = gc < 400 ? "400" : gc < 500 ? "500" : gc < 600 ? "600" : gc < 700 ? "700" : gc < 800 ? "800" : gc < 900 ? "900" : "1000"
+        const a = gc < 400 ? "400" : gc < 500 ? "500" : gc < 600 ? "600" : gc < 700 ? "700" : gc < 800 ? "800" : gc < 900 ? "900" : "1000";
+        const formatted = gc.toLocaleString();
+
         Util.client.user.setPresence({
-            status: "idle",
-            activities: [{ type: ActivityType.Playing, name: Util.client.ptext?.replace(/{{gc}}/gi, gc.toString()) ?? `${a}? -> | ${gc} guilds` }],
+            status: "online",
+            activities: [{ type: ActivityType.Playing, name: Util.client.ptext?.replace(/{{gc}}/gi, formatted) ?? `${a}? -> | ${formatted} guilds` }],
         });
         setTimeout(() => updatePresence(), 1 * 60 * 1000);
     });
