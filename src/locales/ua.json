@@ -41,15 +41,169 @@
         "docs": {
             "docs": "📚 Документація бота може бути знайдена тут: {link}"
         },
-        "flows": [],
-        "info": [],
+        "info": {
+            "title": "Bot information",
+            "host": "💠 Host",
+            "os": "**OS**: `{platform}`",
+            "library": "**Library**: `discord.js v{version}`",
+            "clusters": "**Clusters**: `{clusters}`",
+            "shards": "**Shards**: `{shards}`",
+            "ram": "**RAM**: `{ram}`",
+            "cluster": "🔷 This cluster ({id})",
+            "guilds": "**Guilds**: `{guilds}`",
+            "users": "**Users**: `{users}`",
+            "uptime": "**Uptime**: `{uptime}`",
+            "shard": "🌀 This shard ({id})",
+            "latency": "**Latency**: `{latency}ms`",
+            "links": "🌐 Links",
+            "invite": "[📥 Invite me]({link})",
+            "support": "[📡 Support server]({link})",
+            "website": "[📰 Website]({link})",
+            "stats": "📈 Stats"
+        },
         "leaderboard": {
-            "embedTitle": "Таблиця лідерів рахування ● {guild}"
+            "title": "Counting leaderboard"
+        },
+        "loop": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notplaying": "❌ Nothing is playing at the moment.",
+            "enabled": "Song repeat was enabled.",
+            "disabled": "Song repeat was disabled."
+        },
+        "modules": {
+            "choose": "Choose modules.",
+            "timedout": "Timed out.",
+            "incompatible": "Modules {a} and {b} are incompatible.",
+            "empty": "Empty",
+            "changes": "​> **Changes:**",
+            "old": "Old modules: {oldList}",
+            "new": "New modules: {newList}"
+        },
+        "mute": {
+            "noperms": "❌ I don't have `ModerateMembers` permission.",
+            "cantmod": "❌ I can't moderate that user.",
+            "cantmute": "❌ You can't mute that user.",
+            "time": "❌ I can't parse that time.",
+            "muted": "✅ {user} has been muted.",
+            "notified": "User notified via DM message"
+        },
+        "pause": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notplaying": "❌ Nothing is playing at the moment.",
+            "enabled": "Player has been paused.",
+            "disabled": "Player has been un-paused."
+        },
+        "ping": {
+            "server": "Server",
+            "api": "API",
+            "uptime": "Uptime",
+            "pong": "🏓 Pong!"
+        },
+        "play": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notfound": "❌ I couldn't find anything with your query.",
+            "limit": "❌ Total queue length can't exceed {amount} tracks.",
+            "queued": "Track queued: {track}"
+        },
+        "purge": {
+            "cd": "⏳ Wait {time} before using this command.",
+            "noperm": "❌ I don't have `ManageMessages` permission.",
+            "nomessages": "❌ No deletable messages were found.",
+            "done": "✅ Purged {amount} message(-s)."
+        },
+        "serverstats": {
+            "set": {
+                "limit": "❌ You can't create more than {amount} stats channels.",
+                "template": "❌ Template length shouldn't exceed {amount} symbols.",
+                "done": "Stats channel set: {channel}\nTemplate: `{template}`"
+            },
+            "delete": {
+                "done": "✅ Stats channel removed."
+            },
+            "list": {
+                "title": "Stats channels",
+                "empty": "its empty in here"
+            }
+        },
+        "setcount": {
+            "done": "✅ Current count set to {count}"
+        },
+        "settings": {
+            "get": {
+                "settings": "Settings",
+                "purgepinned": "Purge pinned messages",
+                "tempvcs": "Voice rooms",
+                "tempvclobby": "Voice lobby",
+                "locale": "Current locale",
+                "enabled": "🟢 **`Enabled`**",
+                "disabled": "🔴 **`Disabled`**",
+                "notset": "**`Not set`**"
+            },
+            "toggle": {
+                "enabled": "🟢 Enabled.",
+                "disabled": "🔴 Disabled."
+            },
+            "locale": "✅ Guild locale has been changed to `{locale}`.",
+            "lobbyset": "✅ Lobby channel has been set to {channel}",
+            "countingset": "✅ Counting channel has been set to {channel}"
+        },
+        "skip": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notplaying": "❌ Nothing is playing at the moment.",
+            "skipped": "Skipping current track."
+        },
+        "stop": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notplaying": "❌ Nothing is playing at the moment.",
+            "stopped": "Player has been stopped."
+        },
+        "unban": {
+            "noperm": "❌ I don't have `BanMembers` permission.",
+            "noban": "❌ That user is not banned.",
+            "done": "✅ User has been unbanned."
+        },
+        "unmute": {
+            "noperms": "❌ I don't have `ModerateMembers` permission.",
+            "cantmod": "❌ I can't moderate that user.",
+            "nomute": "❌ That user is not muted",
+            "unmuted": "✅ {user} has been unmuted.",
+            "notified": "User notified via DM message"
+        },
+        "unwtf": {
+            "nocontent": "❌ That message doesnt have any content."
+        },
+        "volume": {
+            "novoice": "❌ You need to be in a voice channel.",
+            "notsame": "❌ You need to be in the same voice channel as me.",
+            "notplaying": "❌ Nothing is playing at the moment.",
+            "set": "Player volume has been set to {volume}"
+        },
+        "warn": {
+            "add": {
+                "sameuser": "❌ You can't warn yourself.",
+                "higher": "❌ You can't warn a user with higher role position.",
+                "warned": "✅ {user} has been warned."
+            },
+            "list": {
+                "failed": "❌ Failed to get list of users. Try again in a minute.",
+                "notspecified": "No reason specified.",
+                "title": "Warn list",
+                "empty": "its empty in here",
+                "page": "Page {page}/{total}"
+            },
+            "remove": {
+                "removed": "✅ Warn removed."
+            }
         }
     },
     "events": {
         "channelDelete": {
-            "playerStop": "Канал видалено. Зупинення плеєра."
+            "playerStop": "♻️ Channel deleted. Stopping player."
         },
         "voiceChannelJoin": {
             "roomName": "Кімната {user}"
@@ -68,35 +222,29 @@
         },
         "interactions": {
             "buttons": {
-                "no": "❌ Ви не можете використати це."
+                "nouse": "❌ You can't use this."
             },
             "index": {
-                "bot_loading": "🌀 Я ще завантажуюсь, будь ласка, зачекайте..."
+                "loading": "🌀 I'm still loading, please give me some time..."
             },
             "slash": {
                 "no_commands": "❌ Команди вимкнено розробником. Приєднуйтесь до {link} для отримання додаткової інформації.",
                 "channel": "❌ Команди вимкнено у цьому каналі.",
-                "noperm": "❌ У вас немає прав для виконання цієї команди."
+                "noperm": "❌ У вас немає прав для виконання цієї команди.",
+                "error": "❌ {user}, an error occured while executing the command. Please contact the developer."
             }
         },
         "buttonroles": {
             "noperm": "❌ У мене недостатньо прав для зміни ролей.",
-            "no_role": "❌ Роль не знайдено.",
-            "rolepos": "❌ Позиція ролі занадто висока. Роль: {role}, бот: {bot}",
+            "role": "❌ Role not found or its position is higher than mine.",
             "added": "✅ Роль додано: {role}.",
             "removed": "✅ Роль видалено: {role}.",
             "error": "❌ Сталася помилка. Будь ласка, зв'яжіться з розробником."
         },
         "lava": {
-            "empty_vc": "♻️ Всі користувачі вийшли з голосового каналу. Зупинка плеєра.",
+            "emptyvc": "♻️ All users have left the voice channel. Stopping the player.",
             "loading": "⏳ Завантаження...",
-            "empty_queue": "♻️ Плеєр досяг кінця черги."
-        },
-        "prepareGuilds": {
-            "in_process": "💢 Підготовка цього каналу до рахування...",
-            "in_process_time": "💢 Підготовка цього каналу для рахування... **`[{timestring}]`**",
-            "done": "🔰 Канал готовий до рахування! **`[{timestring}]`**",
-            "error": "❌ Щось пішло не так під час обробки цього каналу."
+            "emptyqueue": "♻️ Player reached the end of the queue."
         }
     },
     "generic": {
