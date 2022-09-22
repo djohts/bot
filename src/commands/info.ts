@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("info")
-    .setDescription("Посмотреть информацию о боте.")
+    .setDescription("Get information about the bot.")
     .setDMPermission(false)
     .toJSON();
 
@@ -16,6 +16,9 @@ const platform = `${os.type()} (${os.release()})`;
 let guilds = 0, users = 0, clusterCount = 0, shardCount = 0, memoryUsage = 0, memoryUsageGlobal = 0, nextUpdate = 0;
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
+    const gdb = await Util.database.guild(interaction.guildId);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
+
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;
 
@@ -42,53 +45,55 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     return interaction.reply({
         embeds: [{
-            title: `Информация о ${interaction.client.user.tag}`,
+            title: _("commands.info.title"),
             fields: [{
-                name: "💠 Хост",
+                name: _("commands.info.host"),
                 value: [
-                    `**ОС**: \`${platform}\``,
-                    `**Библиотека**: \`discord.js v${version}\``,
-                    `**Кол-во кластеров**: \`${clusterCount.toLocaleString()}\``,
-                    `**Кол-во шардов**: \`${shardCount.toLocaleString()}\``,
-                    `**Исп. ОЗУ**: \`${Util.prettyBytes(memoryUsageGlobal, 2)}\``
+                    _("commands.info.os", { platform }),
+                    _("commands.info.library", { version }),
+                    _("commands.info.clusters", { clusters: clusterCount.toLocaleString() }),
+                    _("commands.info.shards", { shards: shardCount.toLocaleString() }),
+                    _("commands.info.ram", { ram: Util.prettyBytes(memoryUsageGlobal, 2) })
                 ].join("\n"),
                 inline: true
             }, {
-                name: `🔷 Этот кластер (${interaction.client.cluster.id.toLocaleString()})`,
+                name: _("commands.info.cluster", { id: interaction.client.cluster.id.toLocaleString() }),
                 value: [
-                    `**Кол-во серверов**: \`${clusterGuilds.toLocaleString()}\``,
-                    `**Кол-во юзеров**: \`${clusterUsers.toLocaleString()}\``,
-                    `**Кол-во шардов**: \`${interaction.client.cluster.ids.size.toLocaleString()}\``,
-                    `**Исп. ОЗУ**: \`${Util.prettyBytes(memoryUsage, 2)}\``,
-                    `**Аптайм**: \`${prettyms(interaction.client.uptime)}\``
+                    _("commands.info.guilds", { guilds: clusterGuilds.toLocaleString() }),
+                    _("commands.info.users", { users: clusterUsers.toLocaleString() }),
+                    _("commands.info.shards", { shards: interaction.client.cluster.ids.size.toLocaleString() }),
+                    _("commands.info.ram", { ram: Util.prettyBytes(memoryUsage, 2) }),
+                    _("commands.info.uptime", { uptime: prettyms(interaction.client.uptime) })
                 ].join("\n"),
                 inline: true
             }, {
-                name: `🌀 Этот шард (${shardId.toLocaleString()})`,
+                name: _("commands.info.shard", { id: shardId.toLocaleString() }),
                 value: [
-                    `**Кол-во серверов**: \`${shardGuilds.toLocaleString()}\``,
-                    `**Кол-во юзеров**: \`${shardUsers.toLocaleString()}\``,
-                    `**Задержка сокета**: \`${interaction.guild.shard.ping.toLocaleString()}ms\``
+                    _("commands.info.guilds", { guilds: shardGuilds.toLocaleString() }),
+                    _("commands.info.users", { users: shardUsers.toLocaleString() }),
+                    _("commands.info.latency", { latency: interaction.guild.shard.ping.toLocaleString() })
                 ].join("\n"),
                 inline: true
             }, {
-                name: "🌐 Ссылки",
+                name: _("commands.info.links"),
                 value: [
-                    `[📥 Пригласить бота](${[
-                        "https://discord.com/oauth2/authorize",
-                        `?client_id=${interaction.client.user.id}`,
-                        "&scope=bot%20applications.commands",
-                        "&permissions=1375450033182"
-                    ].join("")})`,
-                    "[📡 Сервер поддержки](https://discord.gg/AaS4dwVHyA)",
-                    "[📰 Сайт бота](https://dob.djoh.xyz)"
+                    _("commands.info.invite", {
+                        link: [
+                            "https://discord.com/oauth2/authorize",
+                            `?client_id=${interaction.client.user.id}`,
+                            "&scope=bot%20applications.commands",
+                            "&permissions=1375450033182"
+                        ].join("")
+                    }),
+                    _("commands.info.support", { link: "https://discord.gg/AaS4dwVHyA" }),
+                    _("commands.info.website", { link: "https://dob.djoh.xyz" })
                 ].join("\n"),
                 inline: true
             }, {
-                name: "📈 Статистика",
+                name: _("commands.info.stats"),
                 value: [
-                    `**Кол-во серверов**: \`${guilds.toLocaleString()}\``,
-                    `**Кол-во юзеров**: \`${users.toLocaleString()}\``
+                    _("commands.info.guilds", { guilds: guilds.toLocaleString() }),
+                    _("commands.info.users", { users: users.toLocaleString() }),
                 ].join("\n"),
                 inline: true
             }]
