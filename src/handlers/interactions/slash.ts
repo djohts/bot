@@ -5,16 +5,18 @@ import { readdirSync } from "node:fs";
 import { inspect } from "util";
 
 export default async (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
-    const gdb = await interaction.client.database.guild(interaction.guild.id);
+    const gdb = await interaction.client.util.database.guild(interaction.guildId);
+    const _ = interaction.client.util.i18n.getLocale(gdb.get().locale);
+
     if (gdb.get().channel === interaction.channel.id)
-        return interaction.reply({ content: "❌ Команды недоступны в этом канале", ephemeral: true });
+        return interaction.reply({ content: _("handlers.interactions.slash.channel"), ephemeral: true });
 
     const commandName = interaction.commandName;
     const commandFile = require(`../../commands/${commandName}`);
     const permissionLevel = getPermissionLevel(interaction.member as GuildMember);
 
     if (permissionLevel < (commandFile.permission ?? 0))
-        return interaction.reply({ content: "❌ Недостаточно прав.", ephemeral: true });
+        return interaction.reply({ content: _("handlers.interactions.slash.noperm"), ephemeral: true });
 
     try {
         await commandFile.run(interaction);
@@ -23,12 +25,12 @@ export default async (interaction: ChatInputCommandInteraction | ContextMenuComm
 
         try {
             if (!interaction.replied) {
-                await interaction.reply({ content: "❌ Ошибка выполнения команды. Свяжитесь с разработчиком.", ephemeral: true });
+                await interaction.reply({ content: _("handlers.interactions.slash.error", { user: `${interaction.user}` }), ephemeral: true });
             } else {
-                await interaction.editReply("❌ Ошибка выполнения команды. Свяжитесь с разработчиком.");
+                await interaction.editReply(_("handlers.interactions.slash.error", { user: `${interaction.user}` }));
             };
         } catch {
-            await interaction.channel.send(`❌ ${interaction.user}, ошибка выполнения команды. Свяжитесь с разработчиком.`).catch(() => 0);
+            await interaction.channel.send(_("handlers.interactions.slash.error", { user: `${interaction.user}` })).catch(() => 0);
         };
     };
 };

@@ -6,9 +6,10 @@ export async function run(member: GuildMember, channel: VoiceBasedChannel) {
     const { voices } = gset.get();
     if (!voices.enabled || voices.lobby !== channel.id) return;
     const gdb = await Util.database.guild(member.guild.id);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
 
     await member.guild.channels.create({
-        name: "Комната " + member.user.tag,
+        name: _("events.voiceChannelJoin.roomName", { user: `${member.user.tag}` }),
         type: ChannelType.GuildVoice,
         parent: channel.parentId,
         permissionOverwrites: [{

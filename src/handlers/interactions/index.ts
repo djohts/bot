@@ -2,6 +2,7 @@ import { Interaction } from "discord.js";
 import handleButton from "./buttons";
 import handleCommand from "./slash";
 import handleAutocomplete from "./autocomplete";
+import Util from "../../util/Util";
 
 export = async (interaction: Interaction) => {
     if (
@@ -11,11 +12,14 @@ export = async (interaction: Interaction) => {
         && !interaction.isContextMenuCommand()
     ) return;
 
+    const gdb = await Util.database.guild(interaction.guildId);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
+
     if (
         interaction.client.loading
         && !interaction.isAutocomplete()
     ) return interaction.reply({
-        content: "🌀 Бот ещё запускается, подождите некоторое время...",
+        content: _("handlers.interactions.index.loading"),
         ephemeral: true
     });
 

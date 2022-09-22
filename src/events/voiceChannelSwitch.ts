@@ -2,9 +2,10 @@ import { GuildMember, ChannelType, PermissionFlagsBits, VoiceBasedChannel } from
 import Util from "../util/Util";
 
 export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, newChannel: VoiceBasedChannel) {
+    const gdb = await Util.database.guild(member.guild.id);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
     const gset = await Util.database.settings(member.guild.id);
     const { voices } = gset.get();
-    const gdb = await Util.database.guild(member.guild.id);
 
     if (gdb.get().voices[oldChannel.id] === member.user.id) {
         await oldChannel.delete().catch(() => null);
@@ -13,7 +14,7 @@ export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, ne
 
     if (voices.lobby === newChannel.id && voices.enabled) {
         await member.guild.channels.create({
-            name: "Комната " + member.user.tag,
+            name: _("events.voiceChannelJoin.roomName", { user: `${member.user.tag}` }),
             type: ChannelType.GuildVoice,
             parent: newChannel.parentId,
             permissionOverwrites: [{

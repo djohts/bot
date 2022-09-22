@@ -1,9 +1,5 @@
 import { ChannelType, Message, ThreadChannel, Webhook } from "discord.js";
-import { flow as _flow } from "../../constants/flows/flow";
-const { triggers: allTriggers, actions: allActions } = _flow;
 import { getPermissionLevel } from "../../constants";
-import limits from "../../constants/flows/";
-const { limitFlows, limitTriggers, limitActions } = limits;
 import { queueDelete } from "./../utils";
 import Util from "../../util/Util";
 
@@ -11,7 +7,7 @@ export = async (message: Message) => {
     const gdb = await Util.database.guild(message.guild.id);
     const permissionLevel = getPermissionLevel(message.member), content = message.content;
     if (content.startsWith("!") && permissionLevel >= 1) return;
-    let { count, user, modules, flows, users: scores } = gdb.get(), flowIDs = Object.keys(flows).slice(0, limitFlows);
+    let { count, user, modules } = gdb.get();
     if (message.client.loading) return queueDelete([message]);
 
     if (
@@ -19,24 +15,7 @@ export = async (message: Message) => {
         (!modules.includes("talking") && content !== `${count + 1}`) ||
         content.split(/\s/g)[0] !== `${count + 1}`
     ) {
-        const countData = {
-            count,
-            score: scores[message.author.id] || 0,
-            message,
-            countingMessage: message,
-            gdb
-        };
-
-        queueDelete([message]);
-
-        for (const flowId of flowIDs) try {
-            const flow = flows[flowId];
-            if (flow.triggers.slice(0, limitTriggers).find((t) => t.type === "countfail"))
-                for (const action of flow.actions.slice(0, limitActions).filter((a) => a)) try {
-                    await allActions[action.type].run(countData, action.data);
-                } catch (e) { };
-        } catch (e) { };
-        return;
+        return queueDelete([message]);
     };
 
     count++;
@@ -85,25 +64,4 @@ export = async (message: Message) => {
     } catch (e) { };
 
     gdb.set("message", countingMessage.id);
-
-    const countData = {
-        count,
-        score: scores[message.author.id] || 0,
-        message,
-        countingMessage,
-        gdb
-    };
-
-    for (const flowID of flowIDs) try {
-        const flow = flows[flowID];
-        let success: boolean;
-        for (const trigger of flow.triggers.slice(0, limitTriggers).filter((t) => t)) {
-            success = await allTriggers[trigger.type].check(countData, trigger.data);
-            if (success) break;
-        };
-        if (success)
-            for (const action of flow.actions.slice(0, limitActions).filter((a) => a)) try {
-                await allActions[action.type].run(countData, action.data);
-            } catch (e) { };
-    } catch (e) { };
 };
