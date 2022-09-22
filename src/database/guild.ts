@@ -21,11 +21,8 @@ const guildObject = {
     count: 0,
     user: "",
     modules: [],
-    flows: {},
     message: "",
     users: {},
-    liveboard: {},
-    log: {},
     // buttonroles
     brcs: {},
     brms: {},

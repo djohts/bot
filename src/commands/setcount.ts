@@ -13,9 +13,10 @@ import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
     const count = interaction.options.getInteger("count");
 
     gdb.set("count", count);
 
-    return interaction.reply({ content: `✅ Новый текущий счёт - **\`${count}\`**.` });
+    return interaction.reply(_("commands.setcount.done", { count: `${count}` }));
 };

@@ -162,6 +162,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.7.18.tgz#633184f55c322e4fb08612307c274ee6d5ed3154"
   integrity sha512-m+6nTEOadJZuTPkKR/SYK3A2d7FZrgElol9UP1Kae90VVU4a6mxnPuLiIW1m4Cq4gZ/nWb9GrdVXJCoCazDAbg==
 
+"@types/text-table@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@types/text-table/-/text-table-0.2.2.tgz#774c90cfcfbc8b4b0ebb00fecbe861dc8b1e8e26"
+  integrity sha512-dGoI5Af7To0R2XE8wJuc6vwlavWARsCh3UKJPjWs1YEqGUqfgBI/j/4GX0yf19/DsDPPf0YAXWAp8psNeIehLg==
+
 "@types/webidl-conversions@*":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@types/webidl-conversions/-/webidl-conversions-7.0.0.tgz#2b8e60e33906459219aa587e9d1a612ae994cfe7"
@@ -284,7 +289,6 @@ base64-js@^1.3.1:
 
 "bottleneck@github:SGrondin/bottleneck":
   version "2.19.5"
-  uid b83528333ba4d27cf70b81cc2be12e09d7ff692f
   resolved "https://codeload.github.com/SGrondin/bottleneck/tar.gz/b83528333ba4d27cf70b81cc2be12e09d7ff692f"
 
 brace-expansion@^1.1.7:
@@ -500,7 +504,6 @@ erela.js-spotify@^1.2.0:
 
 erela.js@^2.2.0, "erela.js@github:menudocs/erela.js#build":
   version "2.3.3"
-  uid "2e2e65cd9a3bb3bffdc9ef4f4b9953f386096f28"
   resolved "https://codeload.github.com/menudocs/erela.js/tar.gz/2e2e65cd9a3bb3bffdc9ef4f4b9953f386096f28"
   dependencies:
     "@discordjs/collection" "^1.1.0"
@@ -1291,6 +1294,11 @@ text-hex@1.0.x:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/text-hex/-/text-hex-1.0.0.tgz#69dc9c1b17446ee79a92bf5b884bb4b9127506f5"
   integrity sha512-uuVGNWzgJ4yhRaNSiubPY7OjISw4sw4E5Uv0wbjp+OzcbmVU/rsT8ujgcXJhn9ypzsgr5vlzpPqP+MBBKcGvbg==
+
+text-table@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
+  integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
 
 thread-stream@^2.0.0:
   version "2.2.0"

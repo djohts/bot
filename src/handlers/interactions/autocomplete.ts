@@ -3,6 +3,8 @@ import Util from "../../util/Util";
 
 export = async (interaction: AutocompleteInteraction) => {
     const gdb = await Util.database.guild(interaction.guildId);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
+
     if (
         interaction.commandName === "serverstats"
         && interaction.options.getSubcommand() === "delete"
@@ -27,7 +29,7 @@ export = async (interaction: AutocompleteInteraction) => {
                 ? reason.length > 64
                     ? reason.substring(0, 64) + "..."
                     : reason
-                : "Причина не указана.";
+                : _("commands.warn.list.notspecified");
             const userTag = await interaction.client.users.fetch(userId).then((u) => u.tag).catch(() => "Unknown#0000");
 
             respond.push({

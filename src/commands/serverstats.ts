@@ -2,17 +2,17 @@ import { ChannelType, SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("serverstats")
-    .setDescription("Управлять каналами статистики.")
+    .setDescription("Manage stats channels.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
     .addSubcommand(c =>
         c
             .setName("set")
-            .setDescription("Установить канал статистики.")
+            .setDescription("Set a stats channel.")
             .addChannelOption(o =>
                 o
                     .setName("channel")
-                    .setDescription("Канал.")
+                    .setDescription("Channel.")
                     .addChannelTypes(
                         ChannelType.GuildCategory,
                         ChannelType.GuildText,
@@ -25,18 +25,18 @@ export const options = new SlashCommandBuilder()
             .addStringOption(o =>
                 o
                     .setName("text")
-                    .setDescription("Шаблонизатор. Ссылка на гайд в команде /docs")
+                    .setDescription("Template. For placehoolders check /docs")
                     .setRequired(true)
             )
     )
     .addSubcommand(c =>
         c
             .setName("delete")
-            .setDescription("Удалить канал статистики.")
+            .setDescription("Delete a stats channel.")
             .addStringOption(o =>
                 o
                     .setName("channel")
-                    .setDescription("Айди канала. Доступно автозаполнение.")
+                    .setDescription("Channel ID.")
                     .setAutocomplete(true)
                     .setRequired(true)
             )
@@ -44,7 +44,7 @@ export const options = new SlashCommandBuilder()
     .addSubcommand(c =>
         c
             .setName("list")
-            .setDescription("Список каналов статистики.")
+            .setDescription("List all stats channels.")
     )
     .toJSON();
 
@@ -53,27 +53,28 @@ import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
 
     switch (interaction.options.getSubcommand()) {
         case "set":
             const channel = interaction.options.getChannel("channel");
             const text = interaction.options.getString("text").replace(/\`/g, "");
 
-            if (Object.keys(gdb.get().statschannels).length === 5)
-                return interaction.reply("Вы не можете установить больше 5 каналов статистики.");
+            const limit = 5;
+
+            if (Object.keys(gdb.get().statschannels).length >= limit)
+                return interaction.reply(_("commands.serverstats.set.limit", { amount: `${limit}` }));
             if (text.length > 64)
-                return interaction.reply("Длина шаблона должна быть не длиннее 64 символов.");
+                return interaction.reply(_("commands.serverstats.set.template", { amount: "64" }));
 
             gdb.setOnObject("statschannels", channel.id, text);
 
-            return interaction.reply([
-                `Канал статистики установлен: ${channel}`,
-                `Шаблон: \`${text}\``
-            ].join("\n"));
+            return interaction.reply(_("commands.serverstats.set.limit", { channel: `${channel}`, template: text }));
         case "delete":
             const channelId = interaction.options.getString("channel");
             gdb.removeFromObject("statschannels", channelId);
-            return interaction.reply(`Канал статистики удален: <#${channelId}>`);
+
+            return interaction.reply(_("commands.serverstats.delete.done"));
         case "list":
             const { statschannels } = gdb.get();
             const result: string[] = [];
@@ -87,8 +88,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             return interaction.reply({
                 embeds: [{
-                    title: "Каналы статистики",
-                    description: result.join("\n\n") || "Тут пусто."
+                    title: _("commands.serverstats.list.title"),
+                    description: result.join("\n\n") || _("commands.serverstats.list.empty")
                 }]
             });
     };

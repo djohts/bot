@@ -99,10 +99,6 @@ client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate li
 client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[Shard ${id}] Disconnected. (${code} - ${reason})`));
 client.on("warn", (info) => void clientLogger.warn(`Warning. ${inspect(info)}`));
 
-client.on("debug", (info) => {
-    if (client.cfg.debug) clientLogger.debug(info);
-});
-
 db.connection.then(() => client.login()).catch((e) => {
     clientLogger.error(e);
     process.exit();

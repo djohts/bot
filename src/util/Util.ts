@@ -3,13 +3,12 @@ import { BcBotBumpAction } from "../constants/types";
 import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
 import { Manager, Player } from "erela.js";
-import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, TextChannel, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
+import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
 import { splitBar } from "string-progressbar";
 import prettyms from "pretty-ms";
 import i18n from "./i18n";
 import { UserFetcher } from "../handlers/bottleneck";
 import { loadCommands } from "../handlers/interactions/slash";
-import { clientLogger } from "./logger/normal";
 const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 
 let util: Util | null = null;
@@ -37,6 +36,9 @@ class Util {
     };
     public func = {
         tickMusicPlayer: async (player: Player): Promise<void> => {
+            const gdb = await this.database.guild(player.guild);
+            const _ = this.i18n.getLocale(gdb.get().locale);
+
             try {
                 const track = player.queue.current;
                 const message = player.get("message") as Message | undefined;
@@ -65,17 +67,16 @@ class Util {
                             url: track.thumbnail
                         },
                         fields: [{
-                            name: "Автор",
+                            name: _("generic.musicTicker.channel"),
                             value: track.author,
                             inline: true
                         }, {
-                            name: "Прогресс",
+                            name: _("generic.musicTicker.progress"),
                             value: progressComponent,
                         }]
                     }]
                 });
             } catch (e) {
-                if (this._client.cfg.debug) clientLogger.error(inspect(e));
                 player.set("message", undefined)
                 return;
             };
@@ -145,8 +146,6 @@ class Util {
             const fetchUser = (data: BcBotBumpAction["data"]) => this.client.users.fetch(data.user).catch(() => null);
             const user = await UserFetcher.schedule(fetchUser, data);
 
-            let dmsent = false;
-
             await user.send({
                 embeds: [{
                     title: "Мониторинг",
@@ -160,33 +159,9 @@ class Util {
                         new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`)
                     )
                 ]
-            }).then(() => { dmsent = true; }).catch(() => null);
+            }).catch(() => null);
 
-            if (dmsent) {
-                await this.func.uselesslog({ content: `${user.tag} ${user} (\`${user.id}\`) bumped on boticord.top` });
-            } else {
-                const channel = this.client.channels.cache.get("957937585999736858") as TextChannel;
-
-                await channel.send({
-                    content: `${user},`,
-                    embeds: [{
-                        title: "Мониторинг",
-                        description: [
-                            "Спасибо за ап на `boticord.top`!",
-                            "Нажав на кнопку ниже, вы подпишетесь на уведомления о возможности поднимать в рейтинге нашего бота.",
-                            "Дайте боту возможность писать вам в личные сообщения, посредством удаления из чёрного списка бота или выдавая доступ на общих серверах с ботом писать в личные сообщения пользователям без добавления в друзья"
-                        ].join("\n"),
-                        image: {
-                            url: "https://cdn.discordapp.com/attachments/768041170076827648/999436594664702012/UR4yHOER.gif"
-                        }
-                    }],
-                    components: [
-                        new ActionRowBuilder<ButtonBuilder>().addComponents(
-                            new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`)
-                        )
-                    ]
-                });
-            };
+            await this.func.uselesslog({ content: `${user.tag} ${user} (\`${user.id}\`) bumped on boticord.top` });
         },
         registerCommands: () => {
             const dev = !config.monitoring.bc;
@@ -202,11 +177,6 @@ class Util {
 
     public setClient(client: Client): Util {
         client.cluster = new Sharding.Client(client);
-        client.cfg = {
-            enslash: true,
-            enbr: true,
-            debug: false
-        };
         client.util = this;
         this._client = client;
         return this;

@@ -8,17 +8,18 @@ export const options = new ContextMenuCommandBuilder()
     .toJSON();
 
 import { ContextMenuCommandInteraction } from "discord.js";
+import Util from "../util/Util";
 
 export const run = async (interaction: ContextMenuCommandInteraction) => {
+    const gdb = await Util.database.guild(interaction.guild.id);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
+
     if (interaction.commandType !== ApplicationCommandType.Message) return;
 
     const message = await interaction.channel.messages.fetch(interaction.targetId);
 
     if (!message.content)
-        return interaction.reply({
-            content: "❌ Это сообщение не имеет контента.",
-            ephemeral: true
-        });
+        return interaction.reply({ content: _("commands.unwtf.nocontent"), ephemeral: true });
 
     const text = message.content
         .replace(/q/g, "й")

@@ -2,27 +2,27 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("buttonroles")
-    .setDescription("Настройки РПК.")
+    .setDescription("BR settings.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
     .addSubcommand((c) =>
-        c.setName("create").setDescription("Создать новую РПК.").addChannelOption((o) =>
-            o.setName("channel").setDescription("Канал в котором будет создано РПК.").setRequired(true).addChannelTypes(0, 5)
+        c.setName("create").setDescription("Create new BR.").addChannelOption((o) =>
+            o.setName("channel").setDescription("Channel in which the selection menu will be created.").setRequired(true).addChannelTypes(0, 5)
         )
             .addRoleOption((o) =>
-                o.setName("role").setDescription("Роль, которая будет выдаваться.").setRequired(true)
+                o.setName("role").setDescription("Role that will be given.").setRequired(true)
             )
             .addStringOption((o) =>
-                o.setName("emoji").setDescription("Эмодзи. Используется для указания роли в панели и кнопке.").setRequired(true)
+                o.setName("emoji").setDescription("Emoji.").setRequired(true)
             )
             .addStringOption((o) =>
-                o.setName("message").setDescription("Id сообщения в которое добавить РПК. Если не указать - бот отправит новое сообщение.")
+                o.setName("message").setDescription("Message ID. Will send a new message if not specified.")
             )
     )
-    .addSubcommand((c) => c.setName("list").setDescription("Посмотреть список РПК этого сервера."))
+    .addSubcommand((c) => c.setName("list").setDescription("List of BR."))
     .addSubcommand((c) =>
-        c.setName("delete").setDescription("Удалить РПК.").addStringOption((o) =>
-            o.setName("id").setDescription("Id РПК, которую нужно удалить. (Id можно получить в /buttonroles list)").setRequired(true)
+        c.setName("delete").setDescription("Delete BR.").addStringOption((o) =>
+            o.setName("id").setDescription("BR ID. Can be found in /buttonroles list").setRequired(true)
         )
     )
     .toJSON();
@@ -34,7 +34,6 @@ import {
     ChatInputCommandInteraction,
     Collection,
     TextChannel,
-    Message,
     Role,
     ActionRowBuilder,
     ButtonBuilder,
@@ -42,7 +41,6 @@ import {
     InteractionReplyOptions,
     InteractionUpdateOptions
 } from "discord.js";
-import { clientLogger } from "../util/logger/normal";
 import { paginate } from "../constants/resolvers";
 import { queueDelete } from "../handlers/utils";
 import { generateID } from "../constants/";
@@ -50,6 +48,7 @@ import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const gdb = await Util.database.guild(interaction.guild.id);
+    const _ = Util.i18n.getLocale(gdb.get().locale);
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "create") {
@@ -59,39 +58,33 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ViewChannel)
             || !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ReadMessageHistory)
             || !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages)
-        ) {
-            return interaction.reply({
-                content: "❌ Недостаточно прав в укразанном канале. Проверьте наличие следующих прав: `ViewChannel`, `ReadMessageHistory`, `SendMessages`",
-                ephemeral: true
-            });
-        };
-        const role = interaction.options.getRole("role") as Role;
-        if (
-            role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition ||
-            role.managed ||
-            interaction.guild.id === role.id
-        ) {
-            return interaction.reply({
-                content: "❌ Эту роль невозможно выдать.",
-                ephemeral: true
-            });
-        };
-        const emoji = interaction.options.getString("emoji").match(/\p{Extended_Pictographic}/ug)?.[0];
-        if (!emoji) {
-            return interaction.reply({
-                content: `❌ \`${interaction.options.getString("emoji")}\` не является действительным unicode-эмоджи.`,
-                ephemeral: true
-            });
-        };
-        await interaction.reply({
-            content: "💢 Работаю...",
+        ) return interaction.reply({
+            content: _("commands.buttonroles.create.noPerms", { perms: "`ViewChannel`, `ReadMessageHistory`, `SendMessages`" }),
             ephemeral: true
         });
+
+        const role = interaction.options.getRole("role") as Role;
+        if (
+            role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition
+            || role.managed
+            || interaction.guild.id === role.id
+        ) return interaction.reply({
+            content: _("commands.buttonroles.create.cantGive"),
+            ephemeral: true
+        });
+
+        const emoji = interaction.options.getString("emoji").match(/\p{Extended_Pictographic}/ug)?.[0];
+        if (!emoji) return interaction.reply({
+            content: _("commands.buttonroles.create.invalidEmoji", { emoji: `\`${interaction.options.getString("emoji")}\`` }),
+            ephemeral: true
+        });
+
+        await interaction.deferReply({ ephemeral: true }).catch(() => 0);
         const id = generateID();
 
         if (!messageId) return channel.send({
             embeds: [{
-                title: "Выбор ролей",
+                title: _("commands.buttonroles.create.chooseRoles"),
                 description: `${emoji} - ${role}`
             }],
             components: [
@@ -106,19 +99,18 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             gdb.setOnObject("brcs", id, channel.id);
             gdb.setOnObject("brms", id, m.id);
             gdb.setOnObject("brs", id, role.id);
-            interaction.editReply({
-                content: "✅ Готово."
-            });
+
+            interaction.editReply(_("commands.buttonroles.create.done"));
         });
 
-        const message: Message | 0 = await channel.messages.fetch(messageId).catch(() => 0);
-        if (!message || !Object.values(gdb.get().brms).includes(message.id)) return interaction.editReply("❌ Сообщение не было найдено.");
-        if (message.components[0].components.length >= 5) {
-            return interaction.editReply("❌ На сообщении достигнут лимит РПК (5 штук).");
-        };
-        if (message.embeds[0].description.includes(role.id)) {
-            return interaction.editReply("❌ На этом сообщении уже есть РПК с этой ролью.");
-        };
+        const message = await channel.messages.fetch(messageId).catch(() => 0 as const);
+        if (!message || !Object.values(gdb.get().brms).includes(message.id))
+            return interaction.editReply(_("commands.buttonroles.create.noMessage"));
+        if (message.components[0].components.length >= 5)
+            return interaction.editReply(_("commands.buttonroles.create.limitReached", { limit: "5" }));
+        if (message.embeds[0].description.includes(role.id))
+            return interaction.editReply(_("commands.buttonroles.create.alreadyExists"));
+
         (message.components[0].components as unknown as ButtonBuilder[]).push(
             new ButtonBuilder()
                 .setCustomId(`br:${id}`)
@@ -127,7 +119,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         );
         const newMessage = {
             embeds: [{
-                title: "Выбор роли",
+                title: _("commands.buttonroles.create.chooseRoles"),
                 description: message.embeds[0].description + `\n${emoji} - ${role}`
             }],
             components: [{
@@ -140,10 +132,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             gdb.setOnObject("brms", id, m.id);
             gdb.setOnObject("brs", id, role.id);
 
-            interaction.editReply("✅ Готово.");
-        }).catch((e) => {
-            clientLogger.error(e);
-            interaction.reply("❌ Произошла ошибка.");
+            interaction.editReply(_("commands.buttonroles.create.done"));
         });
     } else if (cmd === "delete") {
         const brId = interaction.options.getString("id");
@@ -151,20 +140,20 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         const brm = gdb.get().brms[brId];
         const br = gdb.get().brs[brId];
 
-        await interaction.deferReply({ ephemeral: true }).catch(() => null);
+        await interaction.deferReply({ ephemeral: true }).catch(() => 0);
 
-        const channel = interaction.guild.channels.resolve(brc);
+        const channel = interaction.guild.channels.cache.get(brc);
         if (
             !channel ||
             !(channel instanceof TextChannel)
-        ) return interaction.editReply(`✅ РПК \`${brId}\` было удалено.`).then(() => {
+        ) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
             gdb.removeFromObject("brcs", brId);
             gdb.removeFromObject("brms", brId);
             gdb.removeFromObject("brs", brId);
         });
 
-        const message: Message | null = await channel.messages.fetch(brm).catch(() => null);
-        if (!message) return interaction.editReply(`✅ РПК \`${brId}\` было удалено.`).then(() => {
+        const message = await channel.messages.fetch(brm).catch(() => 0 as const);
+        if (!message) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
             gdb.removeFromObject("brcs", brId);
             gdb.removeFromObject("brms", brId);
             gdb.removeFromObject("brs", brId);
@@ -183,18 +172,20 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         if (
             !newMessage.embeds[0].description?.length ||
             !newMessage.components[0].components?.length
-        ) return interaction.editReply(`✅ РПК \`${brId}\` было удалено.`).then(() => {
-            queueDelete([message]);
+        ) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
             gdb.removeFromObject("brcs", brId);
             gdb.removeFromObject("brms", brId);
             gdb.removeFromObject("brs", brId);
+
+            queueDelete([message]);
         });
 
-        return message.edit(newMessage).then(async () => {
-            await interaction.editReply(`✅ РПК \`${brId}\` было удалено.`);
+        return message.edit(newMessage).then(() => {
             gdb.removeFromObject("brcs", brId);
             gdb.removeFromObject("brms", brId);
             gdb.removeFromObject("brs", brId);
+
+            interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId }));
         });
     } else if (cmd === "list") {
         const { brcs: brcs1, brms: brms1, brs: brs1 } = gdb.get();
@@ -231,26 +222,26 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         const paginated = paginate(formattedArray, 1);
         let page = 0;
 
-        return interaction.reply(generateMessage(interaction, paginated, page)).then((m: any) => {
-            const collector = (m as Message).createMessageComponentCollector({
+        return interaction.reply({ ...generateMessage(paginated, page, _), fetchReply: true }).then((m) => {
+            const collector = m.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: (x) => x.user.id === interaction.user.id,
                 idle: 60 * 1000
             });
 
-            collector.on("collect", async (i) => {
+            collector.on("collect", (i) => {
                 if (i.customId === "brlist:page:first") {
                     page = 0;
-                    await i.update(generateMessage(interaction, paginated, page));
+                    void i.update(generateMessage(paginated, page, _));
                 } else if (i.customId === "brlist:page:prev") {
                     page--;
-                    await i.update(generateMessage(interaction, paginated, page));
+                    void i.update(generateMessage(paginated, page, _));
                 } else if (i.customId === "brlist:page:next") {
                     page++;
-                    await i.update(generateMessage(interaction, paginated, page));
+                    void i.update(generateMessage(paginated, page, _));
                 } else if (i.customId === "brlist:page:last") {
                     page = paginated.length - 1;
-                    await i.update(generateMessage(interaction, paginated, page));
+                    void i.update(generateMessage(paginated, page, _));
                 };
             });
             collector.on("end", () => interaction.deleteReply().catch(() => null));
@@ -258,15 +249,18 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     };
 };
 
-const generateMessage = (interaction: ChatInputCommandInteraction, pages: string[][], page: number): InteractionReplyOptions & InteractionUpdateOptions => {
+const generateMessage = (
+    pages: string[][],
+    page: number,
+    _: (message: string, ...args: any) => string
+): InteractionReplyOptions & InteractionUpdateOptions => {
     return {
         embeds: [
             new EmbedBuilder()
-                .setTitle(`Список РПК - ${interaction.guild.name}`)
-                .setDescription(pages[page]?.join("\n") || "Тут пусто")
-                .setFooter({ text: `Страница: ${page + 1}/${pages.length}` })
+                .setTitle(_("commands.buttonroles.list.embedTitle"))
+                .setDescription(pages[page]?.join("\n") || _("commands.buttonroles.list.empty"))
+                .setFooter({ text: _("commands.buttonroles.list.embedTitle", { page: `${page + 1}`, total: `${pages.length}` }) })
         ],
-        fetchReply: true,
         components: [
             new ActionRowBuilder<ButtonBuilder>().setComponents([
                 new ButtonBuilder().setCustomId("brlist:page:first").setEmoji("⏮️").setStyle(ButtonStyle.Secondary).setDisabled(page <= 0),
