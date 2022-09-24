@@ -31,7 +31,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageMessages))
         return interaction.reply({ content: _("commands.purge.noperm"), ephemeral: true });
 
-    await interaction.deferReply();
+    await interaction.deferReply({ ephemeral: true });
 
     const gsdb = await Util.database.settings(interaction.guild.id);
     const limit = interaction.options.getInteger("amount");
@@ -39,11 +39,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
     if (!gsdb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
     if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id === interaction.options.getUser("member").id);
-    if (!toDelete.size) return interaction.editReply(_("commands.purge.nomessages"))
-        .then(() => setTimeout(() => interaction.deleteReply(), 3000));
+    if (!toDelete.size) return interaction.editReply(_("commands.purge.nomessages"));
 
     const purged = await interaction.channel.bulkDelete(toDelete, true);
 
-    return interaction.editReply(_("commands.purge.done", { amount: `${purged.size}` }))
-        .then(() => setTimeout(() => interaction.deleteReply(), 3000));
+    return interaction.editReply(_("commands.purge.done", { amount: `${purged.size}` }));
 };
