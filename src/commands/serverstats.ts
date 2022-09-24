@@ -17,7 +17,7 @@ export const options = new SlashCommandBuilder()
                         ChannelType.GuildCategory,
                         ChannelType.GuildText,
                         ChannelType.GuildVoice,
-                        ChannelType.GuildNews,
+                        ChannelType.GuildAnnouncement,
                         ChannelType.GuildStageVoice
                     )
                     .setRequired(true)
