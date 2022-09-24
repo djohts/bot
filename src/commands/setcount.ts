@@ -2,10 +2,10 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("setcount")
-    .setDescription("Сменить текущий счёт.")
+    .setDescription("Set current count.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
-    .addIntegerOption((o) => o.setName("count").setDescription("Новый счёт.").setRequired(true).setMinValue(0))
+    .addIntegerOption((o) => o.setName("count").setDescription("New count.").setRequired(true).setMinValue(0))
     .toJSON();
 
 import { ChatInputCommandInteraction } from "discord.js";

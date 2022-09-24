@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("ping")
-    .setDescription("Посмотреть задержку бота.")
+    .setDescription("Check bot latency.")
     .setDMPermission(false)
     .toJSON();
 

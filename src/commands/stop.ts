@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("stop")
-    .setDescription("Остановить плеер.")
+    .setDescription("Stop the player.")
     .setDMPermission(false)
     .toJSON();
 

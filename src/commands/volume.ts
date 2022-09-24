@@ -2,9 +2,9 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("volume")
-    .setDescription("Установить громкость плеера.")
+    .setDescription("Set player volume.")
     .setDMPermission(false)
-    .addIntegerOption((o) => o.setName("volume").setDescription("Новая громкость плеера.").setRequired(true).setMinValue(1).setMaxValue(200))
+    .addIntegerOption((o) => o.setName("volume").setDescription("New volume.").setRequired(true).setMinValue(1).setMaxValue(200))
     .toJSON();
 
 import { ChatInputCommandInteraction, GuildMember } from "discord.js";

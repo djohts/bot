@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("docs")
-    .setDescription("Документация по использованию бота.")
+    .setDescription("Bot usage documentation.")
     .setDMPermission(false)
     .toJSON();
 
