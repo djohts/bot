@@ -1,4 +1,4 @@
-import { GuildObject, Warn } from "../constants/types";
+import { GuildObject, Warn } from "../../types";
 import { getDateFormatted } from "../constants/time";
 import { clientLogger } from "../util/logger/normal";
 import { generateID } from "../constants";

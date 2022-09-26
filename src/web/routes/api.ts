@@ -1,4 +1,4 @@
-import { BcBotBumpAction, BcBotCommentAction } from "../../constants/types";
+import { BcBotBumpAction, BcBotCommentAction } from "../../../types";
 import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
 import { Client, WebhookClient } from "discord.js";
 import { manager } from "../../sharding";

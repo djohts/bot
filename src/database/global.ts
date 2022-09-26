@@ -1,5 +1,5 @@
 import { clientLogger } from "../util/logger/normal";
-import { GlobalObject } from "../constants/types";
+import { GlobalObject } from "../../types";
 import { Schema, model } from "mongoose";
 import { isEqual } from "lodash";
 import { inspect } from "util";

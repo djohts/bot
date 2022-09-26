@@ -2,7 +2,7 @@ import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { Client as ShardingClient } from "discord-hybrid-sharding";
 import { ChatInputCommandInteraction } from "discord.js";
 import { NodeOptions } from "erela.js";
-import Util from "../util/Util";
+import Util from "./src//util/Util";
 
 export interface Config {
     token: string;
@@ -140,7 +140,7 @@ declare module "discord.js" {
         connecting: boolean;
         util: typeof Util;
         cluster: ShardingClient;
-        database: typeof import("../database/");
+        database: typeof import("./src/database/");
         ptext: string;
     }
 }

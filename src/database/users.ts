@@ -1,4 +1,4 @@
-import { Subscription, UserObject } from "../constants/types";
+import { Subscription, UserObject } from "../../types";
 import { clientLogger } from "../util/logger/normal";
 import { Schema, model } from "mongoose";
 import { isEqual } from "lodash";

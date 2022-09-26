@@ -1,5 +1,5 @@
 import config from "../../config";
-import { BcBotBumpAction } from "../constants/types";
+import { BcBotBumpAction } from "../../types";
 import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
 import { Manager, Player } from "erela.js";
