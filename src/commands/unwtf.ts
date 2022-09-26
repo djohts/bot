@@ -1,5 +1,4 @@
-import { ContextMenuCommandBuilder } from "discord.js";
-import { ApplicationCommandType } from "discord-api-types/v10";
+import { ApplicationCommandType, ContextMenuCommandBuilder } from "discord.js";
 
 export const options = new ContextMenuCommandBuilder()
     .setName("unwtf")
