@@ -36,7 +36,7 @@
         "erela.js-spotify": "^1.2.0",
         "fastify": "^4.6.0",
         "lodash": "^4.17.21",
-        "mongoose": "^6.6.1",
+        "mongoose": "^6.6.2",
         "pretty-ms": "^7.0.1",
         "sanitize-filename": "^1.6.3",
         "string-progressbar": "^1.0.4",
