@@ -6,7 +6,6 @@
         "build:run": "yarn build && yarn start",
         "build": "tsc && yarn copy",
         "start": "node --no-warnings .",
-        "minify": "node minify.js",
         "copy": "copyfiles \"src/**/*.!(ts)\" build",
         "watch": "tsc -w"
     },
