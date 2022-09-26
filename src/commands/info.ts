@@ -12,6 +12,7 @@ import { version } from "discord.js";
 import Util from "../util/Util.js";
 import prettyms from "pretty-ms";
 import os from "os";
+
 const platform = `${os.type()} (${os.release()})`;
 let guilds = 0, users = 0, clusterCount = 0, shardCount = 0, memoryUsage = 0, memoryUsageGlobal = 0, nextUpdate = 0;
 

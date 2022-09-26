@@ -1,7 +1,7 @@
 import { Interaction } from "discord.js";
+import handleAutocomplete from "./autocomplete";
 import handleButton from "./buttons";
 import handleCommand from "./slash";
-import handleAutocomplete from "./autocomplete";
 import Util from "../../util/Util";
 
 export = async (interaction: Interaction) => {

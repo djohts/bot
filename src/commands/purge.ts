@@ -12,6 +12,7 @@ export const options = new SlashCommandBuilder()
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import prettyMs from "pretty-ms";
 import Util from "../util/Util";
+
 const cds = new Map<string, number>();
 
 export const run = async (interaction: ChatInputCommandInteraction) => {

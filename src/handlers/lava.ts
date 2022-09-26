@@ -1,11 +1,12 @@
 import { TextChannel, VoiceBasedChannel, Message, Client } from "discord.js";
-import { Manager } from "erela.js";
-import Spotify from "erela.js-spotify";
-import { inspect } from "util";
-import config from "../../config";
-const { lava: { nodes, spotify: { clientId, clientSecret } } } = config;
 import { clientLogger } from "../util/logger/normal";
+import { Manager } from "erela.js";
+import { inspect } from "util";
+import Spotify from "erela.js-spotify";
+import config from "../../config";
 import Util from "../util/Util";
+
+const { lava: { nodes, spotify: { clientId, clientSecret } } } = config;
 
 export = (client: Client) => new Manager({
     nodes: nodes,

@@ -1,5 +1,3 @@
-// TODO: implement handler
-
 import Bottleneck from "bottleneck";
 
 export const UserFetcher = new Bottleneck({

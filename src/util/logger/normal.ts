@@ -1,7 +1,7 @@
-import { join } from "path";
 import { createLogger, format, transports } from "winston";
-import DailyRotateFile from "winston-daily-rotate-file";
 import { cluster } from "../../bot";
+import { join } from "path";
+import DailyRotateFile from "winston-daily-rotate-file";
 
 export const clientLogger = createLogger({
     format: format.combine(

@@ -1,14 +1,14 @@
-import config from "../../config";
+import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
+import { loadCommands } from "../handlers/interactions/slash";
+import { UserFetcher } from "../handlers/bottleneck";
 import { BcBotBumpAction } from "../../types";
+import { splitBar } from "string-progressbar";
+import { Manager, Player } from "erela.js";
 import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
-import { Manager, Player } from "erela.js";
-import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
-import { splitBar } from "string-progressbar";
+import config from "../../config";
 import prettyms from "pretty-ms";
 import i18n from "./i18n";
-import { UserFetcher } from "../handlers/bottleneck";
-import { loadCommands } from "../handlers/interactions/slash";
 const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 
 let util: Util | null = null;

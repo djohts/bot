@@ -1,6 +1,6 @@
 import { ButtonInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
-import Util from "../util/Util";
 import { clientLogger } from "../util/logger/normal";
+import Util from "../util/Util";
 
 export = async (interaction: ButtonInteraction) => {
     const gdb = await Util.database.guild(interaction.guildId);

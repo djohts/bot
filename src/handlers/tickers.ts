@@ -1,7 +1,7 @@
 import { ActionRowBuilder, ActivityType, ButtonBuilder, ButtonStyle } from "discord.js";
-import Util from "../util/Util";
 import { clientLogger } from "../util/logger/normal";
 import { inspect } from "node:util";
+import Util from "../util/Util";
 
 export = () => {
     updatePresence();

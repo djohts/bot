@@ -1,6 +1,5 @@
-import { GuildObject, Warn } from "../../types";
-import { getDateFormatted } from "../constants/time";
 import { clientLogger } from "../util/logger/normal";
+import { GuildObject, Warn } from "../../types";
 import { generateID } from "../constants";
 import { Schema, model } from "mongoose";
 import { GuildMember } from "discord.js";
@@ -152,13 +151,6 @@ export default () => (async (guildid: string) => {
 
             if (!guildCache.users[member.id]) guildCache.users[member.id] = 0;
             guildCache.users[member.id]++;
-
-            let dateFormat = getDateFormatted(new Date());
-            if (!guildCache.log[dateFormat]) {
-                guildCache.log[dateFormat] = 0;
-                while (Object.keys(guildCache.log).length > 7) delete guildCache.log[Object.keys(guildCache.log)[0]];
-            };
-            guildCache.log[dateFormat] += 1;
 
             save(guildid, ["count", "user", "users", "log", "message"]);
 

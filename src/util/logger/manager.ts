@@ -1,5 +1,5 @@
-import { join } from "path";
 import { createLogger, format, transports } from "winston";
+import { join } from "path";
 import DailyRotateFile from "winston-daily-rotate-file";
 
 export const managerLogger = createLogger({
