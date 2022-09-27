@@ -99,7 +99,7 @@ export interface GSetObject {
 }
 
 export interface GlobalObject {
-    boticordBumps: BcBotBumpAction["data"][]
+    boticordBumps: { user: string; next: number; }[]
 }
 
 export interface UserObject {
@@ -109,6 +109,10 @@ export interface UserObject {
 
 export interface BcBotBumpAction {
     type: "new_bot_bump";
+    bonus: {
+        status: boolean;
+        expiresAt: number;
+    };
     data: {
         user: string;
         at: number;

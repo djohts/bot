@@ -1,4 +1,3 @@
-import { queueDelete } from "../../handlers/utils";
 import { ButtonInteraction } from "discord.js";
 import subscriptions from "../subscriptions";
 import buttonRoles from "../buttonroles";
@@ -14,7 +13,7 @@ export = async (interaction: ButtonInteraction) => {
             interaction.user.id !== interaction.message.interaction?.user.id
             && !config.admins.includes(interaction.user.id)
         ) return interaction.reply({ content: _("handlers.interactions.buttons.nouse"), ephemeral: true });
-        return queueDelete([interaction.message])
+        return interaction.message.delete();
     };
 
     if (interaction.customId.startsWith("br:")) return buttonRoles(interaction);

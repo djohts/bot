@@ -1,6 +1,5 @@
 import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
 import { loadCommands } from "../handlers/interactions/slash";
-import { UserFetcher } from "../handlers/bottleneck";
 import { BcBotBumpAction } from "../../types";
 import { splitBar } from "string-progressbar";
 import { Manager, Player } from "erela.js";
@@ -82,9 +81,11 @@ class Util {
             };
         },
         updateGuildStatsChannels: async (guildId: string): Promise<void> => {
-            let failed = false;
             const guild = this.client.guilds.cache.get(guildId);
-            if (!guild) return;
+            if (
+                !guild
+                || !guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels)
+            ) return;
             const gdb = await this._database.guild(guildId);
             let { statschannels } = gdb.get();
             if (!Object.keys(statschannels).length) return;
@@ -92,8 +93,8 @@ class Util {
             const whethertofetchmembers = Object.values(statschannels).some((x) => x.includes("{users}") || x.includes("{bots}"));
 
             let fetchedMembers: null | Collection<string, GuildMember> = null;
-            if (whethertofetchmembers) fetchedMembers = await guild.members.fetch({ force: true, time: 30_000 }).catch(() => { failed = true; return null; });
-            if (failed) return;
+            if (whethertofetchmembers) fetchedMembers = await guild.members.fetch({ time: 15_000 }).catch(() => null);
+            if (!fetchedMembers) return;
 
             const statsdata = {
                 members: guild.memberCount,
@@ -109,14 +110,15 @@ class Util {
                     gdb.removeFromObject("statschannels", channelId);
                     continue;
                 };
-                let newtext = text
-                    .replace(/\{members\}/g, statsdata.members.toString())
-                    .replace(/\{channels\}/g, statsdata.channels.toString())
-                    .replace(/\{roles\}/g, statsdata.roles.toString());
 
-                if (whethertofetchmembers) newtext = newtext
-                    .replace(/\{users\}/g, statsdata.users.toString())
-                    .replace(/\{bots\}/g, statsdata.bots.toString());
+                let newtext = text
+                    .replace(/\{members\}/g, statsdata.members.toLocaleString())
+                    .replace(/\{channels\}/g, statsdata.channels.toLocaleString())
+                    .replace(/\{roles\}/g, statsdata.roles.toLocaleString());
+
+                if (fetchedMembers) newtext = newtext
+                    .replace(/\{users\}/g, statsdata.users.toLocaleString())
+                    .replace(/\{bots\}/g, statsdata.bots.toLocaleString());
 
                 await channel.edit({ name: newtext });
             };
@@ -129,7 +131,7 @@ class Util {
 
             const gdb = await this.database.guild(guild.id);
             let { bans } = gdb.get();
-            let ids = Object.keys(bans).filter((key) => bans[key] !== -1 && bans[key] <= Date.now());
+            let ids = Object.keys(bans).filter((key) => bans[key] <= Date.now());
             if (!ids.length) return;
 
             await Promise.all(ids.map((key) =>
@@ -139,12 +141,13 @@ class Util {
             ));
         },
         processBotBump: async (options: BcBotBumpAction) => {
-            const { data } = options;
             const global = await this.database.global();
-            global.addToArray("boticordBumps", data);
+            global.addToArray("boticordBumps", {
+                user: options.data.user,
+                next: options.data.at + (options.bonus?.status ? 6 * 60 * 60 * 1000 : 4 * 60 * 60 * 1000)
+            });
 
-            const fetchUser = (data: BcBotBumpAction["data"]) => this.client.users.fetch(data.user).catch(() => null);
-            const user = await UserFetcher.schedule(fetchUser, data);
+            const user = await this.client.users.fetch(options.data.user);
 
             await user.send({
                 embeds: [{
@@ -156,7 +159,7 @@ class Util {
                 }],
                 components: [
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${data.user}`)
+                        new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${options.data.user}`)
                     )
                 ]
             }).catch(() => null);

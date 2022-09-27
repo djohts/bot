@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ActivityType, ButtonBuilder, ButtonStyle } from "discord.js";
 import { clientLogger } from "../util/logger/normal";
 import { inspect } from "node:util";
+import config from "../../config";
 import Util from "../util/Util";
 
 export = () => {
@@ -8,7 +9,13 @@ export = () => {
     checkBans();
     tickMusicPlayers();
     updateGuildStatsChannels();
-    if (Util.client.cluster.id === 0) processBotBumps();
+    if (
+        Util.client.cluster.id === 0
+        && (
+            !config.monitoring.bc
+            || !config.monitoring.sdc
+        )
+    ) processBotBumps();
 };
 
 function updatePresence() {
@@ -49,8 +56,8 @@ function processBotBumps() {
     Util.database.global().then((global) => {
         Promise.all(global.get().boticordBumps.map(async (data) => {
             try {
-                const delay = 4 * 60 * 60 * 1000;
-                if (data.at + delay > Date.now()) return;
+                if (data.next > Date.now()) return;
+
                 global.removeFromArray("boticordBumps", data);
                 const udb = await Util.database.users(data.user);
 
@@ -78,7 +85,7 @@ function processBotBumps() {
                                 });
                             };
                         })
-                        .catch(() => 0);
+                        .catch((a) => null);
                 };
             } catch (e) { clientLogger.error(e); };
         })).then(() => void setTimeout(() => processBotBumps(), 30 * 1000));
