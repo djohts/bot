@@ -12,8 +12,8 @@ export = () => {
     if (
         Util.client.cluster.id === 0
         && (
-            !config.monitoring.bc
-            || !config.monitoring.sdc
+            config.monitoring.bc
+            || config.monitoring.sdc
         )
     ) processBotBumps();
 };
