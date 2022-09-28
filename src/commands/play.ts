@@ -17,17 +17,17 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const member = interaction.member as GuildMember;
 
     if (!member.voice.channel)
-        return interaction.reply({ content: _("commands.loop.novoice"), ephemeral: true });
+        return interaction.reply({ content: _("commands.play.novoice"), ephemeral: true });
     if (
         interaction.guild.members.me.voice.channel
         && member.voice.channel.id !== interaction.guild.members.me.voice.channel.id
-    ) return interaction.reply({ content: _("commands.loop.notsame"), ephemeral: true });
+    ) return interaction.reply({ content: _("commands.play.notsame"), ephemeral: true });
 
     await interaction.deferReply();
 
     const res = await Util.lava.search(interaction.options.getString("query").trim(), interaction.user);
     if (!res.tracks.length) {
-        await interaction.editReply(_("commands.loop.notfound"));
+        await interaction.editReply(_("commands.play.notfound"));
         setTimeout(() => interaction.deleteReply().catch(() => null), 20 * 1000);
         return;
     };
@@ -47,11 +47,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const queueLimit = 15;
 
     if (player.queue.totalSize + 1 > queueLimit) {
-        await interaction.editReply(_("commands.loop.limit", { amount: `${queueLimit}` }));
+        await interaction.editReply(_("commands.play.limit", { amount: `${queueLimit}` }));
         setTimeout(() => interaction.deleteReply().catch(() => null), 20 * 1000);
         return;
     } else player.queue.add(res.tracks[0]);
-    await interaction.editReply(_("commands.loop.queued", { track: `${res.tracks[0].title}` }));
+    await interaction.editReply(_("commands.play.queued", { track: `${res.tracks[0].title}` }));
 
     if (
         !player.playing
