@@ -510,9 +510,18 @@ erela.js-spotify@^1.2.0:
     axios "^0.20.0"
     erela.js "^2.2.0"
 
-erela.js@^2.2.0, "erela.js@github:menudocs/erela.js#build":
+erela.js@^2.2.0:
   version "2.3.3"
   resolved "https://codeload.github.com/menudocs/erela.js/tar.gz/2e2e65cd9a3bb3bffdc9ef4f4b9953f386096f28"
+  dependencies:
+    "@discordjs/collection" "^1.1.0"
+    tslib "^2.4.0"
+    undici "^5.10.0"
+    ws "^8.8.1"
+
+"erela.js@github:menudocs/erela.js#build":
+  version "2.4.0"
+  resolved "https://codeload.github.com/menudocs/erela.js/tar.gz/10704438b413b1d6add330bd6fd3add646ea9321"
   dependencies:
     "@discordjs/collection" "^1.1.0"
     tslib "^2.4.0"
