@@ -11,6 +11,7 @@ const { lava: { nodes, spotify: { clientId, clientSecret } } } = config;
 export = (client: Client) => new Manager({
     nodes: nodes,
     plugins: [
+        // @ts-ignore
         new Spotify({ clientID: clientId, clientSecret })
     ],
     send(id, payload) {

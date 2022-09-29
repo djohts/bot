@@ -1,13 +1,13 @@
 import { ActionRowBuilder, ActivityType, ButtonBuilder, ButtonStyle } from "discord.js";
 import { clientLogger } from "../util/logger/normal";
-import { inspect } from "node:util";
+// import { inspect } from "node:util";
 import config from "../../config";
 import Util from "../util/Util";
 
 export = () => {
     updatePresence();
     checkBans();
-    tickMusicPlayers();
+    // tickMusicPlayers();
     updateGuildStatsChannels();
     if (
         Util.client.cluster.id === 0
@@ -37,15 +37,15 @@ function checkBans() {
         .then(() => void setTimeout(() => checkBans(), 10 * 1000));
 };
 
-function tickMusicPlayers() {
-    if (Util.lava) Promise.all(Util.lava.players.map((player) => Util.func.tickMusicPlayer(player)))
-        .then(() => void setTimeout(() => tickMusicPlayers(), 5 * 1000))
-        .catch((e) => {
-            clientLogger.error(inspect(e));
-            setTimeout(() => tickMusicPlayers(), 5 * 1000)
-        });
-    else setTimeout(() => tickMusicPlayers(), 5 * 1000);
-};
+// function tickMusicPlayers() {
+//     if (Util.lava) Promise.all(Util.lava.players.map((player) => Util.func.tickMusicPlayer(player)))
+//         .then(() => void setTimeout(() => tickMusicPlayers(), 5 * 1000))
+//         .catch((e) => {
+//             clientLogger.error(inspect(e));
+//             setTimeout(() => tickMusicPlayers(), 5 * 1000)
+//         });
+//     else setTimeout(() => tickMusicPlayers(), 5 * 1000);
+// };
 
 function updateGuildStatsChannels() {
     Promise.all(Util.client.guilds.cache.map((guild) => Util.func.updateGuildStatsChannels(guild.id)))
