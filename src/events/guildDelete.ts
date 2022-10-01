@@ -10,7 +10,8 @@ export async function run(guild: Guild) {
             title: `${guild.name} - ${guild.id}`,
             author: {
                 name: `${owner.tag} - ${owner.id}`,
-                icon_url: owner.avatarURL()
+                icon_url: owner.avatarURL(),
+                url: `https://discord.com/users/${owner.id}`
             },
             thumbnail: {
                 url: guild.iconURL({ size: 512 })

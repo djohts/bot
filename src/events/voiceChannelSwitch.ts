@@ -28,8 +28,8 @@ export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, ne
                 ]
             }]
         })
-            .then(async (ch) =>
-                await member.voice.setChannel(ch.id)
+            .then((ch) =>
+                member.voice.setChannel(ch.id)
                     .then(() => gdb.setOnObject("voices", ch.id, member.user.id))
                     .catch(() => ch.delete().catch(() => null))
             )

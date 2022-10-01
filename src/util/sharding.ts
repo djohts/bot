@@ -31,7 +31,7 @@ export default function (manager: Manager) {
             };
         } else if (["shutdown", "die"].includes(command)) {
             managerLogger.info("Destroying all players...");
-            await manager.broadcastEval((client) => client.util.lava.players.map((p) => p.destroy()));
+            await manager.broadcastEval((client) => client.util.lava?.players.map((p) => p.destroy())).catch(() => null);
             managerLogger.info("Killing all clusters...");
             for (const [_, cluster] of manager.clusters) {
                 cluster.kill();
