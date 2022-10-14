@@ -33,7 +33,7 @@
                 "deleted": "✅ Successfully deleted button role ID: {id}."
             },
             "list": {
-                "embedTitle": "Button roles ● {guild}",
+                "embedTitle": "Button roles",
                 "empty": "its empty in here",
                 "page": "Page {page}"
             }
