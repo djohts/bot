@@ -59,11 +59,8 @@ export interface GuildObject {
     count: number;
     user: string;
     modules: string[];
-    flows: object;
     message: string;
     users: { [userId: string]: number };
-    liveboard: { channel?: string; message?: string };
-    log: { [date: string]: number };
     brcs: { [id: string]: string };
     brms: { [id: string]: string };
     brs: { [id: string]: string };
