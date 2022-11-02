@@ -211,6 +211,3 @@ $RECYCLE.BIN/
 target/
 build/
 logs/
-
-script.js
-tmp/
