@@ -60,22 +60,28 @@ async function postStats(): Promise<void> {
     };
 
     const promises = [
-        axios.post("https://api.boticord.top/v2/stats", JSON.stringify({
-            servers: stats.guilds,
-            shards: stats.guildsPerShard.length,
-            users: stats.users
-        }), {
+        axios("https://api.boticord.top/v2/stats", {
+            data: JSON.stringify({
+                servers: stats.guilds,
+                shards: stats.guildsPerShard.length,
+                users: stats.users
+            }),
+            method: "POST",
             headers: {
-                Authorization: `Bot ${config.monitoring.bc}`
+                Authorization: `Bot ${config.monitoring.bc}`,
+                "Content-Type": "application/json"
             }
         }).catch((e) => {
             managerLogger.error(`failed to post stats to boticord: ${e}`);
         }),
-        axios.post(`https://top.gg/api/bots/${config.client.id}/stats`, JSON.stringify({
-            server_count: stats.guildsPerShard
-        }), {
+        axios(`https://top.gg/api/bots/${config.client.id}/stats`, {
+            data: JSON.stringify({
+                server_count: stats.guildsPerShard
+            }),
+            method: "POST",
             headers: {
-                Authorization: config.monitoring.topgg
+                Authorization: config.monitoring.topgg,
+                "Content-Type": "application/json"
             }
         }).catch((e) => {
             managerLogger.error(`failed to post stats to topgg: ${e}`);
