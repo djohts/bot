@@ -6,9 +6,7 @@
         "build": "tsc && yarn copy",
         "build:run": "yarn build && yarn start",
         "start": "node --no-warnings .",
-        "copy": "yarn copy:env && yarn copy:locales",
-        "copy:env": "copyfiles .env build",
-        "copy:locales": "copyfiles -u 1 \"src/locales/*\" build",
+        "copy": "copyfiles .env build",
         "watch": "tsc -w"
     },
     "repository": {

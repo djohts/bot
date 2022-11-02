@@ -28,8 +28,6 @@ const config: Config = {
         }
     },
     port: parseInt(process.env["PORT"]),
-    redirectUri: process.env["REDIRECT_URI"],
-
     shards: parseInt(process.env["SHARDS"]),
     clusters: parseInt(process.env["CLUSTERS"]),
     shardsPerClusters: parseInt(process.env["SHARDS_PER_CLUSTERS"])

@@ -30,7 +30,6 @@ export interface Config {
     clusters?: number;
     shardsPerClusters?: number;
     port: number;
-    redirectUri: string;
 };
 
 type GuildLocale = "en" | "ua" | "ru";
