@@ -49,11 +49,12 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction } from "discord.js";
+import { getGuildDocument } from "../database";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
 
     switch (interaction.options.getSubcommand()) {
         case "set":
@@ -62,34 +63,32 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             const limit = 5;
 
-            if (Object.keys(gdb.get().statschannels).length >= limit)
+            if (document.statschannels.size >= limit)
                 return interaction.reply(_("commands.serverstats.set.limit", { amount: `${limit}` }));
             if (text.length > 64)
                 return interaction.reply(_("commands.serverstats.set.template", { amount: "64" }));
 
-            gdb.setOnObject("statschannels", channel.id, text);
+            document.statschannels.set(channel.id, { template: text });
+            document.safeSave();
 
-            return interaction.reply(_("commands.serverstats.set.limit", { channel: `${channel}`, template: text }));
+            return interaction.reply(_("commands.serverstats.set.done", { channel: `${channel}`, template: text }));
         case "delete":
             const channelId = interaction.options.getString("channel");
-            gdb.removeFromObject("statschannels", channelId);
+
+            document.statschannels.delete(channelId);
+            document.safeSave();
 
             return interaction.reply(_("commands.serverstats.delete.done"));
         case "list":
-            const { statschannels } = gdb.get();
-            const result: string[] = [];
-
-            for (const [channelId, text] of Object.entries(statschannels)) {
-                result.push([
-                    `> <#${channelId}> (\`${channelId}\`)`,
-                    `\`${text.replace(/\`/g, "")}\``
-                ].join("\n"));
-            };
+            const list = Array.from(document.statschannels).map(([channelId, { template }]) => [
+                `> <#${channelId}> (\`${channelId}\`)`,
+                `\`${template.replace(/\`/g, "")}\``
+            ].join("\n"));
 
             return interaction.reply({
                 embeds: [{
                     title: _("commands.serverstats.list.title"),
-                    description: result.join("\n\n") || _("commands.serverstats.list.empty")
+                    description: list.join("\n\n") || _("commands.serverstats.list.empty")
                 }]
             });
     };

@@ -7,13 +7,14 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction } from "discord.js";
+import { getGuildDocument } from "../database";
 import prettyms from "pretty-ms";
 import Util from "../util/Util";
 import table from "text-table";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
 
     const then = Date.now();
 

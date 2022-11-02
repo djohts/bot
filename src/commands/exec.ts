@@ -1,8 +1,7 @@
 export const options = { name: "eval" };
 
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.js";
-import _Util from "../util/Util";
-import { exec } from "child_process";
+import { exec } from "node:child_process";
 
 export const run = async (message: Message) => {
     const script = message.content.slice(27);

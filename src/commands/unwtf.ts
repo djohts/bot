@@ -7,11 +7,12 @@ export const options = new ContextMenuCommandBuilder()
     .toJSON();
 
 import { ContextMenuCommandInteraction } from "discord.js";
+import { getGuildDocument } from "../database";
 import Util from "../util/Util";
 
 export const run = async (interaction: ContextMenuCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
 
     if (interaction.commandType !== ApplicationCommandType.Message) return;
 

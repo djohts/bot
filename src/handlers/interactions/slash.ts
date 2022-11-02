@@ -1,22 +1,18 @@
-import { ChatInputCommandInteraction, ContextMenuCommandInteraction, GuildMember } from "discord.js";
-import { clientLogger } from "../../util/logger/normal";
-import { getPermissionLevel } from "../../constants/";
+import { ChatInputCommandInteraction, ContextMenuCommandInteraction } from "discord.js";
+import { clientLogger } from "../../util/logger/cluster";
+import { getGuildDocument } from "../../database";
 import { readdirSync } from "node:fs";
 import { inspect } from "util";
 
-export default async (interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) => {
-    const gdb = await interaction.client.util.database.guild(interaction.guildId);
-    const _ = interaction.client.util.i18n.getLocale(gdb.get().locale);
+export default async (interaction: ChatInputCommandInteraction<"cached"> | ContextMenuCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = interaction.client.util.i18n.getLocale(document.locale);
 
-    if (gdb.get().channel === interaction.channel.id)
+    if (document.counting.channelId === interaction.channelId)
         return interaction.reply({ content: _("handlers.interactions.slash.channel"), ephemeral: true });
 
     const commandName = interaction.commandName;
-    const commandFile = require(`../../commands/${commandName}`);
-    const permissionLevel = getPermissionLevel(interaction.member as GuildMember);
-
-    if (permissionLevel < (commandFile.permission ?? 0))
-        return interaction.reply({ content: _("handlers.interactions.slash.noperm"), ephemeral: true });
+    const commandFile = await import(`../../commands/${commandName}`);
 
     try {
         await commandFile.run(interaction);
@@ -30,7 +26,7 @@ export default async (interaction: ChatInputCommandInteraction | ContextMenuComm
                 await interaction.editReply(_("handlers.interactions.slash.error", { user: `${interaction.user}` }));
             };
         } catch {
-            await interaction.channel.send(_("handlers.interactions.slash.error", { user: `${interaction.user}` })).catch(() => 0);
+            await interaction.channel.send(_("handlers.interactions.slash.error", { user: `${interaction.user}` })).catch(() => null);
         };
     };
 };

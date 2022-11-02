@@ -38,12 +38,13 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction } from "discord.js";
+import { getGuildDocument } from "../database";
+import { GuildLocale } from "../../types";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gset = await Util.database.settings(interaction.guild.id);
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "get") {
@@ -52,20 +53,20 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 title: _("commands.settings.get.settings"),
                 fields: [{
                     name: _("commands.settings.get.purgepinned"),
-                    value: gset.get().purgePinned ?
+                    value: document.settings.purgePinned ?
                         _("commands.settings.get.enabled") :
                         _("commands.settings.get.disabled"),
                     inline: true
                 }, {
                     name: _("commands.settings.get.tempvcs"),
-                    value: gset.get().voices.enabled ?
+                    value: document.settings.voices_enabled ?
                         _("commands.settings.get.enabled") :
                         _("commands.settings.get.disabled"),
                     inline: true
                 }, {
                     name: _("commands.settings.get.tempvclobby"),
-                    value: gset.get().voices.lobby ?
-                        `<#${gset.get().voices.lobby}>` :
+                    value: document.settings.voices_lobby ?
+                        `<#${document.settings.voices_lobby}>` :
                         _("commands.settings.get.notset"),
                     inline: true
                 }]
@@ -76,45 +77,49 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         let idk = "";
 
         if (type === "purgePinned") {
-            gset.get().purgePinned ? (() => {
-                gset.set("purgePinned", false);
+            document.settings.purgePinned ? (() => {
+                document.settings.purgePinned = false;
                 idk = _("commands.settings.toggle.disabled");
             })() : (() => {
-                gset.set("purgePinned", true);
+                document.settings.purgePinned = true;
                 idk = _("commands.settings.toggle.enabled");
             })();
         } else if (type === "voices") {
-            gset.get().voices.enabled ? (() => {
-                gset.setOnObject("voices", "enabled", false);
+            document.settings.voices_enabled ? (() => {
+                document.settings.voices_enabled = false;
                 idk = _("commands.settings.toggle.disabled");
             })() : (() => {
-                gset.setOnObject("voices", "enabled", true);
+                document.settings.voices_enabled = true;
                 idk = _("commands.settings.toggle.enabled");
             })();
         };
 
+        document.safeSave();
         return interaction.reply(idk);
     } else if (cmd === "locale") {
-        const locale = interaction.options.getString("locale");
+        const locale = interaction.options.getString("locale") as GuildLocale;
 
-        gdb.set("locale", locale);
+        document.locale = locale;
+        document.safeSave();
 
         return interaction.reply(_("commands.settings.locale", { locale }))
     } else if (cmd === "setlobby") {
         const lobby = interaction.options.getChannel("channel");
 
-        gset.setOnObject("voices", "lobby", lobby.id);
+        document.settings.voices_lobby = lobby.id;
+        document.safeSave();
 
         return interaction.reply(_("commands.settings.lobbyset", { channel: `${lobby}` }));
     } else if (cmd === "counting") {
         const channel = interaction.options.getChannel("channel");
 
-        gdb.setMultiple({
-            channel: channel.id,
+        document.counting = {
+            channelId: channel.id,
             count: 0,
-            user: "",
-            message: interaction.id
-        });
+            userId: "",
+            messageId: interaction.id
+        };
+        document.safeSave();
 
         return interaction.reply(_("commands.settings.countingset", { channel: `${channel}` }));
     };

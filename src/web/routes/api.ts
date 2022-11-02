@@ -2,11 +2,11 @@ import { BcBotBumpAction, BcBotCommentAction } from "../../../types";
 import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
 import { Client, WebhookClient } from "discord.js";
 import { manager } from "../../sharding";
-import config from "../../../config";
+import config from "../../constants/config";
 import axios from "axios";
 const wh = new WebhookClient({ url: config.notifications_webhook });
 
-export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
+export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
     fastify.get("/stats", async (_, res) => {
         const newBotInfo = await manager.broadcastEval((bot) => ({
             status: bot.ws.status,
@@ -87,22 +87,6 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
 
         res.type("text/plain").send(prometheusMetrics(metricObject));
     });
-    fastify.get("/invite/:guildid", (req: any, res) => {
-        const guildid = req.params.guildid;
-        const botid = config.client.id;
-        guildid ? res.redirect([
-            "https://discord.com/oauth2/authorize",
-            `?client_id=${botid}`,
-            `&guild_id=${guildid}`,
-            "&scope=bot%20applications.commands",
-            "&permissions=1375450033182"
-        ].join("")) : res.redirect([
-            "https://discord.com/oauth2/authorize",
-            `?client_id=${botid}`,
-            "&scope=bot%20applications.commands",
-            "&permissions=1375450033182"
-        ].join(""));
-    });
     fastify.post("/webhook/boticord", async (req, res) => {
         if (req.headers["x-hook-key"] !== config.monitoring.bc_hook_key) return res.status(403).send();
         const options = req.body as BcBotBumpAction | BcBotCommentAction;
@@ -160,7 +144,7 @@ export = (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
 
 const isdev = !config.monitoring.bc;
 function prometheusMetrics(obj: { [key: string]: number | { [key: string]: number } }): string {
-    const metrics = [];
+    const metrics: string[] = [];
     for (let [key, value] of Object.entries(obj)) {
         if (isdev) key = `d${key}`;
         const prefix = [

@@ -1,14 +1,15 @@
 import { queueDelete } from "../handlers/utils";
+import { getGuildDocument } from "../database";
 import { Message } from "discord.js";
-import Util from "../util/Util";
 
 export async function run(original: Message, updated: Message) {
-    const gdb = await Util.database.guild(updated.guild.id);
+    const document = await getGuildDocument(updated.guild.id);
 
-    const { modules, channel, message, count } = gdb.get();
+    const { modules, channelId, messageId, count } = document.counting;
+
     if (
-        channel === updated.channel.id
-        && message === updated.id
+        channelId === updated.channel.id
+        && messageId === updated.id
         && !modules.includes("embed")
         && !modules.includes("webhook")
         && (
@@ -18,7 +19,8 @@ export async function run(original: Message, updated: Message) {
         )
     ) {
         const newMessage = await updated.channel.send(`${updated.author}: ${original.content || count}`);
-        gdb.set("message", newMessage.id);
+        document.counting.messageId = newMessage.id;
+        document.safeSave();
         queueDelete([original]);
     };
 };

@@ -2,16 +2,20 @@ import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { Client as ShardingClient } from "discord-hybrid-sharding";
 import { ChatInputCommandInteraction } from "discord.js";
 import { NodeOptions } from "erela.js";
-import Util from "./src//util/Util";
+import Util from "./src/util/Util";
 
 export interface Config {
     token: string;
     database_uri: string;
+    client: {
+        id?: string;
+    };
     monitoring: {
-        sdc?: string;
+        topgg?: string;
         bc?: string;
         bc_hook_key: string;
     };
+    sirens_api: string;
     notifications_webhook: string;
     useless_webhook: string;
     admins: string[];
@@ -22,65 +26,14 @@ export interface Config {
             clientSecret: string;
         };
     };
-    secretsomething: string;
-    client: {
-        id: string;
-        secret: string;
-    };
-    shards: number;
-    shardsPerClusters: number;
+    shards?: number;
+    clusters?: number;
+    shardsPerClusters?: number;
     port: number;
     redirectUri: string;
-}
-
-export interface SlashCommand {
-    options: RESTPostAPIApplicationCommandsJSONBody;
-    permissions: 0 | 1 | 2 | 3 | 4 | 5;
-    run(interaction: ChatInputCommandInteraction): Promise<void>;
-}
+};
 
 type GuildLocale = "en" | "ua" | "ru";
-
-export interface Warn {
-    id: string;
-    timestamp: number;
-    userId: string;
-    actionedById: string;
-    reason?: string;
-}
-
-export interface GuildObject {
-    guildid: string;
-    locale: "" | GuildLocale;
-    voices: { [channelId: string]: string };
-    bans: { [userId: string]: number };
-    warns: Warn[];
-    channel: string;
-    count: number;
-    user: string;
-    modules: string[];
-    message: string;
-    users: { [userId: string]: number };
-    brcs: { [id: string]: string };
-    brms: { [id: string]: string };
-    brs: { [id: string]: string };
-    statschannels: { [channelId: string]: string };
-}
-
-export interface GSetObject {
-    guildid: string;
-    purgePinned: boolean;
-    voices: { enabled: boolean; lobby: string; };
-}
-
-export interface GlobalObject {
-    boticordBumps: { user: string; next: number; }[]
-}
-
-export interface UserObject {
-    userid: string;
-    subscriptions: Subscription[];
-}
 
 export interface BcBotBumpAction {
     type: "new_bot_bump";
@@ -92,7 +45,7 @@ export interface BcBotBumpAction {
         user: string;
         at: number;
     };
-}
+};
 
 export interface BcBotCommentAction {
     type: "new_bot_comment" | "edit_bot_comment" | "delete_bot_comment" | "new_server_comment" | "edit_server_comment" | "delete_server_comment";
@@ -109,7 +62,7 @@ export interface BcBotCommentAction {
             new: string | null;
         };
     };
-}
+};
 
 export type Subscription = "boticord";
 
@@ -119,7 +72,6 @@ declare module "discord.js" {
         connecting: boolean;
         util: typeof Util;
         cluster: ShardingClient;
-        database: typeof import("./src/database/");
         ptext?: string;
-    }
-}
+    };
+};

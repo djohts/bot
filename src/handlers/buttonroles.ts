@@ -1,11 +1,11 @@
 import { ButtonInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
-import { clientLogger } from "../util/logger/normal";
+import { clientLogger } from "../util/logger/cluster";
+import { getGuildDocument } from "../database";
 import Util from "../util/Util";
 
 export = async (interaction: ButtonInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
-    const { brs } = gdb.get();
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
     const member = interaction.member as GuildMember;
     const guild = interaction.guild;
 
@@ -15,7 +15,7 @@ export = async (interaction: ButtonInteraction) => {
     await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
     const iId = interaction.customId.slice(3);
-    const rId = brs[iId];
+    const rId = document.brs.get(iId);
 
     const role = interaction.guild.roles.cache.get(rId);
     if (!role || (role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition))

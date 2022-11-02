@@ -1,7 +1,7 @@
 export const paginate = <T>(arr: T[], itemsPerPage: number): T[][] => {
     return arr.reduce((acc, val, i) => {
-        let idx = Math.floor(i / itemsPerPage);
-        let page = acc[idx] || (acc[idx] = []);
+        const idx = Math.floor(i / itemsPerPage);
+        const page = acc[idx] || (acc[idx] = []);
         page.push(val);
 
         return acc;
@@ -11,7 +11,7 @@ export const paginate = <T>(arr: T[], itemsPerPage: number): T[][] => {
 export const parseTime = (input: string, outputType = "ms") => {
     const durationRE = /(-?(?:\d+\.?\d*|\d*\.?\d+)(?:e[-+]?\d+)?)\s*([\p{L}]*)/uig;
 
-    let parse: any = {};
+    const parse: any = {};
 
     parse.nanosecond =
         parse.ns = 1 / 1e6;

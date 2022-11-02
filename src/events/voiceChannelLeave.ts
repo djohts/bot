@@ -1,11 +1,13 @@
 import { GuildMember, VoiceBasedChannel } from "discord.js";
-import Util from "../util/Util";
+import { getGuildDocument } from "../database/guild";
 
 export async function run(member: GuildMember, channel: VoiceBasedChannel) {
-    const gdb = await Util.database.guild(member.guild.id);
+    const document = await getGuildDocument(member.guild.id);
 
-    if (gdb.get().voices[channel.id] === member.user.id) {
-        await channel.delete().catch(() => null);
-        gdb.removeFromObject("voices", channel.id);
+    if (document.voices.get(channel.id)?.ownerId === member.id) {
+        document.voices.delete(channel.id);
+        document.safeSave();
+
+        return channel.delete().catch(() => null);
     };
 };

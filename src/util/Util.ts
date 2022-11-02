@@ -1,11 +1,11 @@
 import { Collection, Guild, GuildMember, Message, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
+import { getGlobalDocument, getGuildDocument } from "../database";
 import { loadCommands } from "../handlers/interactions/slash";
 import { BcBotBumpAction } from "../../types";
 import { splitBar } from "string-progressbar";
 import { Manager, Player } from "erela.js";
 import { inspect } from "util";
-import Sharding from "discord-hybrid-sharding";
-import config from "../../config";
+import config from "../constants/config";
 import prettyms from "pretty-ms";
 import i18n from "./i18n";
 const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
@@ -19,7 +19,6 @@ class Util {
     };
 
     private _client: Client | null = null;
-    private _database: typeof import("../database") | null = null;
     private _lavaManager: Manager | null = null;
     public i18n = i18n;
     public inspect = inspect;
@@ -35,12 +34,12 @@ class Util {
     };
     public func = {
         tickMusicPlayer: async (player: Player): Promise<void> => {
-            const gdb = await this.database.guild(player.guild);
-            const _ = this.i18n.getLocale(gdb.get().locale);
+            const document = await getGuildDocument(player.guild);
+            const _ = this.i18n.getLocale(document.locale);
 
             try {
                 const track = player.queue.current;
-                const message = player.get("message") as Message | undefined;
+                const message = player.get<Message<true>>("message");
                 if (
                     !track
                     || !message
@@ -57,6 +56,7 @@ class Util {
                     prettyms(duration, { colonNotation: true, compact: true }),
                     `]`
                 ].join("");
+
                 await message.edit({
                     content: null,
                     embeds: [{
@@ -76,8 +76,7 @@ class Util {
                     }]
                 });
             } catch (e) {
-                player.set("message", undefined)
-                return;
+                return player.set("message", undefined);
             };
         },
         updateGuildStatsChannels: async (guildId: string): Promise<void> => {
@@ -86,13 +85,13 @@ class Util {
                 !guild
                 || !guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels)
             ) return;
-            const gdb = await this._database.guild(guildId);
-            let { statschannels } = gdb.get();
-            if (!Object.keys(statschannels).length) return;
+            const document = await getGuildDocument(guildId);
+            if (!Object.keys(document.statschannels).length) return;
 
-            const whethertofetchmembers = Object.values(statschannels).some((x) => x.includes("{users}") || x.includes("{bots}"));
+            const whethertofetchmembers = Array.from(document.statschannels.values())
+                .some(({ template }) => template.includes("{users}") || template.includes("{bots}"));
 
-            let fetchedMembers: null | Collection<string, GuildMember> = null;
+            let fetchedMembers: Collection<string, GuildMember>;
             if (whethertofetchmembers) fetchedMembers = await guild.members.fetch({ time: 15_000 }).catch(() => null);
             if (!fetchedMembers) return;
 
@@ -104,14 +103,14 @@ class Util {
                 bots: fetchedMembers?.filter((m) => m.user.bot).size
             };
 
-            for (const [channelId, text] of Object.entries(statschannels)) {
+            for (const [channelId, { template }] of Array.from(document.statschannels)) {
                 const channel = guild.channels.cache.get(channelId);
                 if (!channel) {
-                    gdb.removeFromObject("statschannels", channelId);
+                    document.statschannels.delete(channelId);
                     continue;
                 };
 
-                let newtext = text
+                let newtext = template
                     .replace(/\{members\}/g, statsdata.members.toLocaleString())
                     .replace(/\{channels\}/g, statsdata.channels.toLocaleString())
                     .replace(/\{roles\}/g, statsdata.roles.toLocaleString());
@@ -122,6 +121,8 @@ class Util {
 
                 await channel.edit({ name: newtext });
             };
+
+            document.safeSave();
         },
         checkGuildBans: async (guild: Guild) => {
             if (
@@ -129,21 +130,22 @@ class Util {
                 || !guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
             ) return;
 
-            const gdb = await this.database.guild(guild.id);
-            let { bans } = gdb.get();
-            let ids = Object.keys(bans).filter((key) => bans[key] <= Date.now());
+            const document = await getGuildDocument(guild.id);
+
+            const ids = Array.from(document.bans.keys()).filter((k) => (document.bans.get(k)?.expiresTimestamp ?? 0) <= Date.now());
             if (!ids.length) return;
 
-            await Promise.all(ids.map((key) =>
+            await Promise.all<Promise<void>>(ids.map((key) =>
                 guild.bans.remove(key)
-                    .then(() => gdb.removeFromObject("bans", key))
-                    .catch(() => gdb.removeFromObject("bans", key))
+                    .then(() => void document.bans.delete(key))
+                    .catch(() => void document.bans.delete(key))
             ));
+            document.safeSave();
         },
         processBotBump: async (options: BcBotBumpAction) => {
-            const global = await this.database.global();
-            global.addToArray("boticordBumps", {
-                user: options.data.user,
+            const global = await getGlobalDocument();
+            global.addBump({
+                userId: options.data.user,
                 next: options.data.at + (options.bonus?.status ? 6 * 60 * 60 * 1000 : 4 * 60 * 60 * 1000)
             });
 
@@ -175,17 +177,24 @@ class Util {
                 ? this._client.guilds.cache.get("957937585299292192").commands.set(commands)
                 : this._client.application.commands.set(commands);
         },
+        getCommandMention: async (name: string) => {
+            const dev = !config.monitoring.bc;
+
+            const commands = dev
+                ? await this._client.guilds.cache.get("957937585299292192").commands.fetch()
+                : await this._client.application.commands.fetch();
+
+            const root_name = name.split(" ")[0];
+            const command = commands.find((c) => c.name === root_name);
+
+            return `</${name}:${command.id}>`;
+        },
         uselesslog: (x: unknown) => uselesswebhook.send(x)
     };
 
     public setClient(client: Client): Util {
-        client.cluster = new Sharding.Client(client);
         client.util = this;
         this._client = client;
-        return this;
-    };
-    public setDatabase(database: typeof import("../database/")): Util {
-        this._database = database;
         return this;
     };
     public setLavaManager(lavaManager: Manager): Util {
@@ -195,9 +204,6 @@ class Util {
 
     get client() {
         return this._client;
-    };
-    get database() {
-        return this._database;
     };
     get lava() {
         return this._lavaManager;

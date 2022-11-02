@@ -7,21 +7,22 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction } from "discord.js";
+import { getGuildDocument } from "../database";
 import { formatScore } from "../constants/";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
-    const { users } = gdb.get();
-    const sorted = Object.keys(users).sort((a, b) => users[b] - users[a]);
+    const document = await getGuildDocument(interaction.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
+    const { scores } = document.counting;
+    const sorted = Array.from(scores.keys()).sort((a, b) => scores.get(b) - scores.get(a));
     const top = sorted.slice(0, 25);
-    const leaderboard = top.map((id, index) => formatScore(id, index, users, interaction.user.id));
+    const leaderboard = top.map((id, index) => formatScore(id, index, scores, interaction.user.id));
     let description = leaderboard.join("\n");
 
     if (!top.includes(interaction.user.id)) {
         if (leaderboard.length) description = description + "\n^^^^^^^^^^^^^^^^^^^^^^^^^\n";
-        description = description + formatScore(interaction.user.id, sorted.indexOf(interaction.user.id), users);
+        description = description + formatScore(interaction.user.id, sorted.indexOf(interaction.user.id), scores);
     };
 
     return interaction.reply({

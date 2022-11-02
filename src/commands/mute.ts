@@ -12,11 +12,12 @@ export const options = new SlashCommandBuilder()
 
 import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import { parseTime } from "../constants/resolvers";
+import { getGuildDocument } from "../database";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
 
     const member = interaction.options.getMember("member") as GuildMember;
     const timeString = interaction.options.getString("time");

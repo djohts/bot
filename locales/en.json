@@ -150,6 +150,13 @@
             "lobbyset": "✅ Lobby channel has been set to {channel}",
             "countingset": "✅ Counting channel has been set to {channel}"
         },
+        "siren": {
+            "set": {
+                "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {perms}",
+                "loading": "⏳ Loading...",
+                "done": "✅ Done."
+            }
+        },
         "skip": {
             "novoice": "❌ You need to be in a voice channel.",
             "notsame": "❌ You need to be in the same voice channel as me.",
@@ -202,6 +209,11 @@
         }
     },
     "events": {
+        "messageCreate": {
+            "welcome_l1": "👋 Hi! I use slash commands. (`/`)",
+            "welcome_l2": "📚 You can find docs on how to use me using {docs}.",
+            "welcome_l3": "❓ If you still have some questions, join my support server. ({info})"
+        },
         "channelDelete": {
             "playerStop": "♻️ Channel deleted. Stopping player."
         },
@@ -213,13 +225,6 @@
         }
     },
     "handlers": {
-        "counting": {
-            "liveboard": {
-                "embed": {
-                    "title": "{guild} ● Counting leaders"
-                }
-            }
-        },
         "interactions": {
             "buttons": {
                 "nouse": "❌ You can't use this."

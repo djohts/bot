@@ -12,7 +12,7 @@ export const clientLogger = createLogger({
     ),
     transports: [
         new DailyRotateFile({
-            filename: join(__dirname, `../../../../logs/%DATE%-clusters.log`),
+            filename: join(__dirname, `../../../logs/%DATE%-clusters.log`),
             datePattern: "YYYY-MM-DD",
             zippedArchive: false,
             maxFiles: "7d",

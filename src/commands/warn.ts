@@ -15,7 +15,7 @@ export const options = new SlashCommandBuilder()
     )
     .addSubcommand((c) =>
         c.setName("remove").setDescription("Remove a warning.")
-            .addStringOption((s) => s.setName("warnid").setDescription("Warn ID.").setRequired(true).setAutocomplete(true))
+            .addStringOption((s) => s.setName("id").setDescription("Warn ID.").setRequired(true).setAutocomplete(true))
     )
     .toJSON();
 
@@ -29,11 +29,12 @@ import {
     ChatInputCommandInteraction
 } from "discord.js";
 import { paginate } from "../constants/resolvers";
+import { getGuildDocument } from "../database";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
 
     switch (interaction.options.getSubcommand()) {
         case "add":
@@ -49,7 +50,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 && member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition
             ) return interaction.reply(_("commands.warn.add.higher"));
 
-            gdb.addWarn(user.id, interaction.user.id, reason);
+            document.addWarn(user.id, interaction.user.id, reason);
 
             return interaction.reply({
                 content: _("commands.warn.add.warned", { user: `${user}` }),
@@ -58,22 +59,24 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         case "list":
             await interaction.deferReply();
 
-            const { warns } = gdb.get();
+            const warns = Array.from(document.warns.values());
             const users = await interaction.guild.members.fetch({
                 user: [...warns.map((x) => x.userId), ...warns.map((x) => x.actionedById)],
-                time: 1000 * 30
-            }).catch(() => false as false);
+                time: 1000 * 10
+            }).catch(() => false as const);
             if (!users) return interaction.editReply(_("commands.warn.list.failed"));
 
-            const mappedWarnings = gdb.get().warns.reverse().map(({ id, userId, actionedById, timestamp, reason }) => {
-                const userTag = users.get(userId)?.user.tag.replace(/\*/g, "\\*") ?? "Unknown#0000";
-                const seconds = Math.round(timestamp / 1000);
+            const mappedWarnings = warns
+                .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
+                .map(({ id, userId, actionedById, createdTimestamp, reason }) => {
+                    const userTag = users.get(userId)?.user.tag.replace(/\*/g, "\\*") ?? "Unknown#0000";
+                    const seconds = Math.round(createdTimestamp / 1000);
 
-                return [
-                    `> \`${id}\` | <@${userId}> (**${userTag}**) | <@${actionedById}> | <t:${seconds}:f> (<t:${seconds}:R>)`,
-                    `${reason ?? _("commands.warn.list.notspecified")}`
-                ].join("\n");
-            });
+                    return [
+                        `> \`${id}\` | <@${userId}> (**${userTag}**) | <@${actionedById}> | <t:${seconds}:f> (<t:${seconds}:R>)`,
+                        `${reason ?? _("commands.warn.list.notspecified")}`
+                    ].join("\n");
+                });
             const pages = paginate(mappedWarnings, 5);
             let page = 0;
 
@@ -106,7 +109,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             });
             return;
         case "remove":
-            gdb.removeWarn(interaction.options.getString("warnid"));
+            document.removeWarn(interaction.options.getString("id"));
 
             return interaction.reply(_("commands.warn.remove.removed"));
     };

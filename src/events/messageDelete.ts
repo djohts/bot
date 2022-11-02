@@ -1,16 +1,17 @@
+import { getGuildDocument } from "../database";
 import { Message } from "discord.js";
-import Util from "../util/Util";
 
 export async function run(deleted: Message) {
-    const gdb = await Util.database.guild(deleted.guild.id);
-    const { modules, channel, message, user, count } = gdb.get();
+    const document = await getGuildDocument(deleted.guild.id);
+    const { modules, channelId, messageId, userId, count } = document.counting;
     if (
-        channel === deleted.channel.id
-        && message === deleted.id
+        channelId === deleted.channel.id
+        && messageId === deleted.id
         && !modules.includes("embed")
         && !modules.includes("webhook")
     ) {
-        const newMessage = await deleted.channel.send(`${deleted.author || `<@${user}>`}: ${deleted.content || count}`);
-        gdb.set("message", newMessage.id);
+        const newMessage = await deleted.channel.send(`${deleted.author || `<@${userId}>`}: ${deleted.content || count}`);
+        document.counting.messageId = newMessage.id;
+        document.safeSave();
     };
 };

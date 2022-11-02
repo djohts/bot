@@ -1,4 +1,7 @@
 import { ActivityType, Client, GatewayIntentBits, Options, Partials } from "discord.js";
+import { touchGuildDocument } from "./database/guild";
+import { clientLogger } from "./util/logger/cluster";
+import { connection } from "./database/";
 import { readdirSync } from "node:fs";
 import { inspect } from "util";
 import prepareGuild from "./handlers/prepareGuilds";
@@ -6,7 +9,7 @@ import Sharding from "discord-hybrid-sharding";
 // import lavaHandler from "./handlers/lava";
 import tickers from "./handlers/tickers";
 import Util from "./util/Util";
-import db from "./database/";
+
 export const client = new Client({
     makeCache: Options.cacheWithLimits({
         MessageManager: 512
@@ -14,7 +17,7 @@ export const client = new Client({
     sweepers: {
         messages: {
             interval: 600,
-            lifetime: 24 * 60 * 60 // 24 hours
+            lifetime: 60 * 60 * 24 // 24 hours
         }
     },
     intents: [
@@ -24,7 +27,7 @@ export const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildVoiceStates
     ],
-    partials: [Partials.Channel],
+    partials: [Partials.Channel, Partials.Message],
     presence: {
         status: "dnd",
         activities: [{
@@ -35,17 +38,18 @@ export const client = new Client({
     shards: Sharding.Client.getInfo().SHARD_LIST,
     shardCount: Sharding.Client.getInfo().TOTAL_SHARDS
 });
+
+Util.setClient(client);
+
+client.cluster = new Sharding.Client(client);
 client.connecting = true;
 client.loading = true;
-client.database = db;
-Util.setClient(client).setDatabase(db);
-import { clientLogger } from "./util/logger/normal";
 
 export const cluster = `[Cluster ${client.cluster.id}]`;
 export let disabledGuilds: Set<string>;
 const loggingin = Date.now();
 client.once("ready", async () => {
-    let start = Date.now();
+    const start = Date.now();
     client.connecting = false;
 
     clientLogger.info(`Logged in as ${client.user!.tag} in ${Date.now() - loggingin}ms`);
@@ -56,9 +60,7 @@ client.once("ready", async () => {
 
     if (client.guilds.cache.size) {
         const guildCachingStart = Date.now();
-        await db.cacheGSets(disabledGuilds);
-        await db.cacheGuilds(disabledGuilds);
-        await (await db.global()).reload();
+        await touchGuildDocument([...disabledGuilds]);
         clientLogger.info(`Cached ${disabledGuilds.size} guilds. [${Date.now() - guildCachingStart}ms]`);
 
         let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user!.setPresence({
@@ -99,7 +101,7 @@ client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate li
 client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[Shard ${id}] Disconnected. (${code} - ${reason})`));
 client.on("warn", (info) => void clientLogger.warn(`Warning. ${inspect(info)}`));
 
-db.connection.then(() => client.login()).catch((e) => {
+connection.then(() => client.login()).catch((e) => {
     clientLogger.error(e);
     process.exit();
 });

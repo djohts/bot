@@ -1,34 +1,36 @@
-import { ChannelType, Message, ThreadChannel, Webhook } from "discord.js";
-import { getPermissionLevel } from "../../constants";
+import { Message, PermissionFlagsBits } from "discord.js";
+import { getGuildDocument } from "../../database";
 import { queueDelete } from "./../utils";
-import Util from "../../util/Util";
 
 export = async (message: Message) => {
-    const gdb = await Util.database.guild(message.guild.id);
-    const permissionLevel = getPermissionLevel(message.member), content = message.content;
-    if (content.startsWith("!") && permissionLevel >= 1) return;
-    let { count, user, modules } = gdb.get();
-    if (message.client.loading) return queueDelete([message]);
+    const document = await getGuildDocument(message.guild.id);
+    const content = message.content;
+    if (content.startsWith("!") && message.member.permissions.has(PermissionFlagsBits.ManageMessages)) return;
+    let { count, userId, modules } = document.counting;
 
     if (
-        (!modules.includes("allow-spam") && message.author.id === user) ||
-        (!modules.includes("talking") && content !== `${count + 1}`) ||
-        content.split(/\s/g)[0] !== `${count + 1}`
-    ) {
-        return queueDelete([message]);
-    };
+        message.client.loading
+        || (!modules.includes("spam") && message.author.id === userId)
+        || (!modules.includes("talking") && content !== `${count + 1}`)
+        || content.split(/\s/g)[0] !== `${count + 1}`
+    ) return queueDelete([message]);
 
-    count++;
-    gdb.addToCount(message.member);
+    document.counting.count++;
+    userId = message.member.id;
+    document.counting.scores.set(
+        message.author.id,
+        (document.counting.scores.get(message.author.id) ?? 0) + 1
+    );
 
     let countingMessage = message;
     if (
-        message.channel.type === ChannelType.DM ||
-        message.channel instanceof ThreadChannel
+        message.channel.isDMBased()
+        || message.channel.isThread()
     ) return;
+
     if (modules.includes("webhook")) try {
         const webhooks = await message.channel.fetchWebhooks();
-        let webhook: Webhook | null = webhooks.find((w: Webhook) => w.name === "Counting");
+        let webhook = webhooks.find((w) => w.name === "Counting");
         if (!webhook) webhook = await message.channel.createWebhook({ name: "Counting" });
 
         if (webhook) {
@@ -42,12 +44,13 @@ export = async (message: Message) => {
                     parse: [],
                 }
             });
+
             queueDelete([message]);
         };
     } catch (e) { }
     else if (modules.includes("embed")) try {
         const webhooks = await message.channel.fetchWebhooks();
-        let webhook: Webhook | null = webhooks.find((w: Webhook) => w.name === "Counting");
+        let webhook = webhooks.find((w) => w.name === "Counting");
         if (!webhook) webhook = await message.channel.createWebhook({ name: "Counting" });
 
         if (webhook) {
@@ -59,9 +62,12 @@ export = async (message: Message) => {
                 username: message.author.username,
                 avatarURL: message.author.displayAvatarURL()
             });
+
             queueDelete([message]);
         };
     } catch (e) { };
 
-    gdb.set("message", countingMessage.id);
+    document.counting.messageId = countingMessage.id;
+
+    document.safeSave();
 };

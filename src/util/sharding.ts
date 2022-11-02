@@ -1,6 +1,7 @@
 import { Manager } from "discord-hybrid-sharding";
 import { managerLogger } from "./logger/manager";
-import { createInterface } from "readline";
+import { createInterface } from "node:readline";
+import ChildProcess from "node:child_process";
 
 const rl = createInterface({
     input: process.stdin,
@@ -14,30 +15,58 @@ export default function (manager: Manager) {
 
         if (command === "updateCommands") {
             const clusterId = parseInt(args[0]);
+
             if (isNaN(clusterId)) {
-                manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x) => x.size)).then((res: Map<string, object>[]) => {
+                await manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x) => x.size)).then((res: Map<string, object>[]) => {
                     managerLogger.info(`Updated ${res[0]} commands on clusters ${res.map((_, i) => i).join(", ")}`);
                 });
             } else {
                 if (manager.clusters.has(clusterId)) {
-                    manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x) => x.size), {
+                    await manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x) => x.size), {
                         cluster: clusterId
                     }).then((res: Map<string, object>[]) => {
                         managerLogger.info(`Updated ${res[0]} commands on cluster ${clusterId}`);
                     });
                 } else {
-                    managerLogger.error(`Cluster ${clusterId} does not exist.`);
+                    managerLogger.warn(`Cluster ${clusterId} does not exist.`);
+                };
+            };
+        } else if (command === "respawn") {
+            const clusterId = parseInt(args[0]);
+
+            if (!isNaN(clusterId)) {
+                if (manager.clusters.has(clusterId)) {
+                    managerLogger.info(`Cluster ${clusterId} is rebooting.`);
+                    await manager.clusters.get(clusterId).respawn({ delay: 0 });
+                } else {
+                    managerLogger.warn(`Cluster ${clusterId} does not exist.`);
                 };
             };
         } else if (["shutdown", "die"].includes(command)) {
             managerLogger.info("Destroying all players...");
             await manager.broadcastEval((client) => client.util.lava?.players.map((p) => p.destroy())).catch(() => null);
+
             managerLogger.info("Killing all clusters...");
             for (const [_, cluster] of manager.clusters) {
-                cluster.kill();
+                try { cluster.kill(); } catch { };
             };
+
             managerLogger.info("Exiting");
             process.exit();
+        } else {
+            const child = ChildProcess.spawn("bash", ["-c", `${command} ${args.join(" ")}`]);
+
+            child.stdout.on("data", (data) => {
+                managerLogger.info(`${data}`.trim());
+            });
+
+            child.stderr.on("data", (data) => {
+                managerLogger.error(`${data}`.trim());
+            });
+
+            child.on("close", (code) => {
+                managerLogger.info(`process died with code ${code}`);
+            });
         };
     });
 

@@ -1,8 +1,8 @@
 import { managerLogger } from "./util/logger/manager";
 import { inspect } from "util";
 import Sharding from "discord-hybrid-sharding";
+import config from "./constants/config";
 import utils from "./util/sharding";
-import config from "../config";
 import axios from "axios";
 
 managerLogger.info("=".repeat(55));
@@ -34,13 +34,13 @@ if (config.port) {
     };
 };
 
-manager.spawn({ timeout: -1, delay: 6000 }).then(() => {
+manager.spawn({ timeout: -1, delay: 10000 }).then(() => {
     setTimeout(() => {
-        if (config.monitoring?.sdc && config.monitoring?.bc) {
+        if (config.monitoring?.bc && config.monitoring.topgg) {
             postStats();
             setInterval(() => postStats(), 1000 * 60 * 60);
         };
-    }, 1 * 60 * 1000);
+    }, 2 * 60 * 1000);
 });
 
 process.on("unhandledRejection", (e) => managerLogger.error("unhandledRejection:" + inspect(e)));
@@ -48,48 +48,39 @@ process.on("uncaughtException", (e) => managerLogger.error("uncaughtException:" 
 
 async function postStats(): Promise<void> {
     const stats = {
-        sdc: {
-            shards: manager.totalShards,
-            servers: await manager.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((acc, val) => acc + val, 0))
-        },
-        bc: {
-            servers: await manager.broadcastEval((bot) => bot.guilds.cache.size).then((res) => res.reduce((acc, val) => acc + val, 0)),
-            shards: manager.totalShards,
-            users: await manager.broadcastEval((bot) =>
-                bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b)
-            ).then((res) => res.reduce((prev, val) => prev + val, 0))
-        }
+        guilds: await manager
+            .broadcastEval((bot) => bot.guilds.cache.size)
+            .then((res) => res.reduce((acc, val) => acc + val, 0)),
+        users: await manager
+            .broadcastEval((bot) => bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b))
+            .then((res) => res.reduce((prev, val) => prev + val, 0)),
+        guildsPerShard: await manager
+            .broadcastEval((bot) => bot.ws.shards.map((shard) => bot.guilds.cache.filter((g) => g.shardId === shard.id).size))
+            .then((res) => res.flat())
     };
 
     const promises = [
-        axios("https://api.server-discord.com/v2/bots/889214509544247306/stats", {
-            method: "POST",
+        axios.post("https://api.boticord.top/v2/stats", JSON.stringify({
+            servers: stats.guilds,
+            shards: stats.guildsPerShard.length,
+            users: stats.users
+        }), {
             headers: {
-                "Authorization": `SDC ${config.monitoring.sdc}`,
-                "Content-Type": "application/json"
-            },
-            data: JSON.stringify(stats.sdc)
-        }).then((res) => {
-            if (res.status !== 200) {
-                managerLogger.warn(`Failed to post stats to SDC: ${res.status}`);
-            };
-        }).catch(() => null),
-        axios("https://api.boticord.top/v1/stats", {
-            method: "POST",
+                Authorization: `Bot ${config.monitoring.bc}`
+            }
+        }).catch((e) => {
+            managerLogger.error(`failed to post stats to boticord: ${e}`);
+        }),
+        axios.post(`https://top.gg/api/bots/${config.client.id}/stats`, JSON.stringify({
+            server_count: stats.guildsPerShard
+        }), {
             headers: {
-                "Authorization": config.monitoring.bc,
-                "Content-Type": "application/json"
-            },
-            data: JSON.stringify(stats.bc)
-        }).then((res) => {
-            if (res.status !== 200) {
-                return managerLogger.warn(`[Manager] Failed to post stats to BC: ${res.status}`);
-            };
-            if (!res.data.ok) {
-                return managerLogger.warn(`[Manager] Failed to post stats to BC: ${res.statusText}`);
-            };
-        }).catch(() => null)
+                Authorization: config.monitoring.topgg
+            }
+        }).catch((e) => {
+            managerLogger.error(`failed to post stats to topgg: ${e}`);
+        })
     ];
-    await Promise.all(promises);
-    return;
+
+    return void Promise.all(promises);
 };

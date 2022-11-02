@@ -7,6 +7,7 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction } from "discord.js";
+import { getGuildDocument } from "../database/guild.js";
 import { Client } from "discord-hybrid-sharding";
 import { version } from "discord.js";
 import Util from "../util/Util.js";
@@ -17,8 +18,8 @@ const platform = `${os.type()} (${os.release()})`;
 let guilds = 0, users = 0, clusterCount = 0, shardCount = 0, memoryUsage = 0, memoryUsageGlobal = 0, nextUpdate = 0;
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
 
     if (nextUpdate < Date.now()) {
         nextUpdate = Date.now() + 10 * 1000;

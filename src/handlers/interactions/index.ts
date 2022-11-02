@@ -1,10 +1,11 @@
+import { getGuildDocument } from "../../database";
 import { Interaction } from "discord.js";
 import handleAutocomplete from "./autocomplete";
 import handleButton from "./buttons";
 import handleCommand from "./slash";
 import Util from "../../util/Util";
 
-export = async (interaction: Interaction) => {
+export = async (interaction: Interaction<"cached">) => {
     if (
         !interaction.isChatInputCommand()
         && !interaction.isButton()
@@ -12,8 +13,8 @@ export = async (interaction: Interaction) => {
         && !interaction.isContextMenuCommand()
     ) return;
 
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
 
     if (
         interaction.client.loading

@@ -13,12 +13,13 @@ export const options = new SlashCommandBuilder()
 
 import { ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, EmbedBuilder } from "discord.js";
 import { parseTime } from "../constants/resolvers";
+import { getGuildDocument } from "../database";
 import prettyms from "pretty-ms";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
     const user = interaction.options.getUser("member");
 
     if (
@@ -47,6 +48,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     let time = 0;
     const reason = interaction.options.getString("reason")?.trim();
     const deleteMessageDays = interaction.options.getInteger("purgedays");
+
     if (!interaction.options.getString("duration")) time = -1;
     else time = Date.now() + parseTime(interaction.options.getString("duration"));
 
@@ -77,7 +79,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         reason: `${interaction.user.tag}: ${reason || _("commands.ban.notSpecified")}`,
         deleteMessageDays
     }).then(() => {
-        if (time !== -1) gdb.setOnObject("bans", user.id, time);
-        return interaction.editReply(_("commands.ban.success", { user: `${user}` }) + (dmsent ? "\n[__" + _("commands.ban.notified") + "__]" : ""));
+        document.bans.set(user.id, { userId: user.id, createdTimestamp: Date.now(), expiresTimestamp: time });
+        document.safeSave();
+
+        return interaction.editReply(_("commands.ban.success", { user: `${user}` }) + (dmsent ? `\n[__${_("commands.ban.notified")}__]` : ""));
     });
 };

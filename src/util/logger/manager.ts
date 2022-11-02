@@ -11,7 +11,7 @@ export const managerLogger = createLogger({
     ),
     transports: [
         new DailyRotateFile({
-            filename: join(__dirname, "../../../../logs/%DATE%-manager.log"),
+            filename: join(__dirname, "../../../logs/%DATE%-manager.log"),
             datePattern: "YYYY-MM-DD",
             zippedArchive: false,
             maxFiles: "7d",

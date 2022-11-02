@@ -1,14 +1,14 @@
 import { GuildMember, ChannelType, PermissionFlagsBits, VoiceBasedChannel } from "discord.js";
+import { getGuildDocument } from "../database/guild";
 import Util from "../util/Util";
 
 export async function run(member: GuildMember, channel: VoiceBasedChannel) {
-    const gset = await Util.database.settings(member.guild.id);
-    const { voices } = gset.get();
-    if (!voices.enabled || voices.lobby !== channel.id) return;
-    const gdb = await Util.database.guild(member.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(member.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
 
-    await member.guild.channels.create({
+    if (!document.settings.voices_enabled || document.settings.voices_lobby !== channel.id) return;
+
+    return member.guild.channels.create({
         name: _("events.voiceChannelJoin.roomName", { user: `${member.user.tag}` }),
         type: ChannelType.GuildVoice,
         parent: channel.parentId,
@@ -25,7 +25,10 @@ export async function run(member: GuildMember, channel: VoiceBasedChannel) {
     })
         .then((ch) =>
             member.voice.setChannel(ch.id)
-                .then(() => gdb.setOnObject("voices", ch.id, member.user.id))
+                .then(() => {
+                    document.voices.set(ch.id, { ownerId: member.id });
+                    document.safeSave();
+                })
                 .catch(() => ch.delete().catch(() => null))
         )
         .catch(() => null);

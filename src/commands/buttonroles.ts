@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { ButtonComponent, SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("buttonroles")
@@ -22,7 +22,7 @@ export const options = new SlashCommandBuilder()
     .addSubcommand((c) => c.setName("list").setDescription("List of BR."))
     .addSubcommand((c) =>
         c.setName("delete").setDescription("Delete BR.").addStringOption((o) =>
-            o.setName("id").setDescription("BR ID. Can be found in /buttonroles list").setRequired(true)
+            o.setName("id").setDescription("BR ID. Can be found in /buttonroles list").setRequired(true).setAutocomplete(true)
         )
     )
     .toJSON();
@@ -43,21 +43,24 @@ import {
 } from "discord.js";
 import { paginate } from "../constants/resolvers";
 import { queueDelete } from "../handlers/utils";
-import { generateID } from "../constants/";
+import { getGuildDocument } from "../database";
+import { generateId } from "../constants/";
 import Util from "../util/Util";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "create") {
         const channel = interaction.options.getChannel("channel") as TextChannel;
         const messageId = interaction.options.getString("message");
+        const me = await interaction.guild.members.fetchMe();
+
         if (
-            !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ViewChannel)
-            || !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ReadMessageHistory)
-            || !channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.SendMessages)
+            !channel.permissionsFor(me).has(PermissionFlagsBits.ViewChannel)
+            || !channel.permissionsFor(me).has(PermissionFlagsBits.ReadMessageHistory)
+            || !channel.permissionsFor(me).has(PermissionFlagsBits.SendMessages)
         ) return interaction.reply({
             content: _("commands.buttonroles.create.noPerms", { perms: "`ViewChannel`, `ReadMessageHistory`, `SendMessages`" }),
             ephemeral: true
@@ -79,8 +82,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             ephemeral: true
         });
 
-        await interaction.deferReply({ ephemeral: true }).catch(() => 0);
-        const id = generateID();
+        await interaction.deferReply({ ephemeral: true }).catch(() => null);
+        const id = generateId(6);
 
         if (!messageId) return channel.send({
             embeds: [{
@@ -96,119 +99,137 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 ])
             ]
         }).then((m) => {
-            gdb.setOnObject("brcs", id, channel.id);
-            gdb.setOnObject("brms", id, m.id);
-            gdb.setOnObject("brs", id, role.id);
+            document.brcs.set(id, channel.id);
+            document.brms.set(id, m.id);
+            document.brs.set(id, role.id);
+
+            document.safeSave();
 
             interaction.editReply(_("commands.buttonroles.create.done"));
         });
 
         const message = await channel.messages.fetch(messageId).catch(() => 0 as const);
-        if (!message || !Object.values(gdb.get().brms).includes(message.id))
+        if (!message || !Array.from(document.brms.values()).includes(message.id))
             return interaction.editReply(_("commands.buttonroles.create.noMessage"));
         if (message.components[0].components.length >= 5)
             return interaction.editReply(_("commands.buttonroles.create.limitReached", { limit: "5" }));
         if (message.embeds[0].description.includes(role.id))
             return interaction.editReply(_("commands.buttonroles.create.alreadyExists"));
 
-        (message.components[0].components as unknown as ButtonBuilder[]).push(
-            new ButtonBuilder()
-                .setCustomId(`br:${id}`)
-                .setEmoji(emoji)
-                .setStyle(ButtonStyle.Danger)
-        );
+        const row = new ActionRowBuilder<ButtonBuilder>()
+            .setComponents(
+                ...(message.components[0].components as ButtonComponent[]).map((x) => ButtonBuilder.from(x)),
+                new ButtonBuilder()
+                    .setCustomId(`br:${id}`)
+                    .setEmoji(emoji)
+                    .setStyle(ButtonStyle.Danger)
+            );
+
         const newMessage = {
             embeds: [{
                 title: _("commands.buttonroles.create.chooseRoles"),
                 description: message.embeds[0].description + `\n${emoji} - ${role}`
             }],
-            components: [{
-                type: 1,
-                components: message.components[0].components
-            }]
+            components: [row]
         };
         await message.edit(newMessage).then((m) => {
-            gdb.setOnObject("brcs", id, channel.id);
-            gdb.setOnObject("brms", id, m.id);
-            gdb.setOnObject("brs", id, role.id);
+            document.brcs.set(id, channel.id);
+            document.brms.set(id, m.id);
+            document.brs.set(id, role.id);
+
+            document.safeSave();
 
             interaction.editReply(_("commands.buttonroles.create.done"));
         });
     } else if (cmd === "delete") {
         const brId = interaction.options.getString("id");
-        const brc = gdb.get().brcs[brId];
-        const brm = gdb.get().brms[brId];
-        const br = gdb.get().brs[brId];
+        const brc = document.brcs.get(brId);
+        const brm = document.brms.get(brId);
+        const br = document.brs.get(brId);
 
-        await interaction.deferReply({ ephemeral: true }).catch(() => 0);
+        await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
         const channel = interaction.guild.channels.cache.get(brc);
         if (
             !channel ||
             !(channel instanceof TextChannel)
         ) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
-            gdb.removeFromObject("brcs", brId);
-            gdb.removeFromObject("brms", brId);
-            gdb.removeFromObject("brs", brId);
+            document.brcs.delete(brId);
+            document.brms.delete(brId);
+            document.brs.delete(brId);
+
+            document.safeSave();
         });
 
         const message = await channel.messages.fetch(brm).catch(() => 0 as const);
         if (!message) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
-            gdb.removeFromObject("brcs", brId);
-            gdb.removeFromObject("brms", brId);
-            gdb.removeFromObject("brs", brId);
+            document.brcs.delete(brId);
+            document.brms.delete(brId);
+            document.brs.delete(brId);
+
+            document.safeSave();
         });
+
+        const row = new ActionRowBuilder<ButtonBuilder>()
+            .setComponents(
+                ...(message.components[0].components as ButtonComponent[])
+                    .filter((x) => !x.customId.includes(brId))
+                    .map((x) => ButtonBuilder.from(x))
+            );
 
         const newMessage = {
             embeds: [{
                 title: "Выбор роли",
                 description: message.embeds[0].description.split("\n").filter((a) => !a.includes(br)).join("\n")
             }],
-            components: [{
-                type: 1,
-                components: message.components[0].components.filter((a) => !a.customId.includes(brId))
-            }]
+            components: [row]
         };
+
         if (
             !newMessage.embeds[0].description?.length ||
             !newMessage.components[0].components?.length
         ) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
-            gdb.removeFromObject("brcs", brId);
-            gdb.removeFromObject("brms", brId);
-            gdb.removeFromObject("brs", brId);
+            document.brcs.delete(brId);
+            document.brms.delete(brId);
+            document.brs.delete(brId);
+
+            document.safeSave();
 
             queueDelete([message]);
         });
 
         return message.edit(newMessage).then(() => {
-            gdb.removeFromObject("brcs", brId);
-            gdb.removeFromObject("brms", brId);
-            gdb.removeFromObject("brs", brId);
+            document.brcs.delete(brId);
+            document.brms.delete(brId);
+            document.brs.delete(brId);
+
+            document.safeSave();
 
             interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId }));
         });
     } else if (cmd === "list") {
-        const { brcs: brcs1, brms: brms1, brs: brs1 } = gdb.get();
-        const brcs = new Collection<string, string>();
-        const brms = new Collection<string, string>();
-        const brs = new Collection<string, string>();
-
-        for (const key in brcs1) brcs.set(key, brcs1[key]);
-        for (const key in brms1) brms.set(key, brms1[key]);
-        for (const key in brs1) brs.set(key, brs1[key]);
+        const { brcs, brms, brs } = document;
 
         const channelObject = new Collection<string, typeof messageObject>();
         const messageObject = new Collection<string, string[]>();
         const channelIds = [...new Set(brcs.values())];
 
         channelIds.map((channelId) => {
-            const channelBrIds = [...brcs.filter((v) => v === channelId).keys()];
+            const channelBrIds = [...Array.from(brcs).filter(([, v]) => v === channelId).map(([k]) => k)];
+
             channelBrIds.map((i) => {
                 const messageId = brms.get(i);
-                const messageBrIds = [...brms.filter((v) => v === messageId).keys()];
-                messageObject.set(messageId, brs.filter((_, x) => messageBrIds.includes(x)).map((roleId, brId) => `${brId}.${roleId}`));
+                const messageBrIds = [...Array.from(brms).filter(([, v]) => v === messageId).map(([k]) => k)];
+
+                messageObject.set(
+                    messageId,
+                    Array.from(brs).filter(([k]) => messageBrIds.includes(k)).map(([brId, roleId]) => `${brId}.${roleId}`)
+                );
             });
-            channelObject.set(channelId, messageObject.filter((_, messageId) => channelBrIds.includes(brms.findKey((v) => v === messageId))));
+
+            channelObject.set(channelId, messageObject.filter((_, messageId) =>
+                channelBrIds.includes(Array.from(brms).find(([, v]) => v === messageId)[0])
+            ));
         });
 
         const formattedArray = channelObject.map((messages, channelId) => {
@@ -226,7 +247,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             const collector = m.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: (x) => x.user.id === interaction.user.id,
-                idle: 60 * 1000
+                time: 1000 * 60,
+                idle: 1000 * 20
             });
 
             collector.on("collect", (i) => {
@@ -259,7 +281,7 @@ const generateMessage = (
             new EmbedBuilder()
                 .setTitle(_("commands.buttonroles.list.embedTitle"))
                 .setDescription(pages[page]?.join("\n") || _("commands.buttonroles.list.empty"))
-                .setFooter({ text: _("commands.buttonroles.list.embedTitle", { page: `${page + 1}`, total: `${pages.length}` }) })
+                .setFooter({ text: _("commands.buttonroles.list.page", { page: `${page + 1}`, total: `${pages.length}` }) })
         ],
         components: [
             new ActionRowBuilder<ButtonBuilder>().setComponents([

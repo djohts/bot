@@ -1,20 +1,8 @@
-import config from "../../config";
+import config from "../constants/config";
 import mongoose from "mongoose";
 
-import { cacheGuilds } from "./guild";
-import { cacheGSets } from "./gset";
-import global from "./global";
-import settings from "./gset";
-import guild from "./guild";
-import users from "./users";
+export * from "./global";
+export * from "./guild";
+export * from "./users";
 
-export = {
-    connection: mongoose.connect(config.database_uri),
-
-    guild: guild(),
-    settings: settings(),
-    users: users(),
-    global: global(),
-    cacheGuilds: cacheGuilds,
-    cacheGSets: cacheGSets
-};
+export const connection = mongoose.connect(config.database_uri);

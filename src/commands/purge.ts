@@ -10,14 +10,15 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
+import { getGuildDocument } from "../database";
 import prettyMs from "pretty-ms";
 import Util from "../util/Util";
 
 const cds = new Map<string, number>();
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
 
     if (cds.has(interaction.channel.id))
         return interaction.reply({
@@ -34,11 +35,10 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     await interaction.deferReply({ ephemeral: true });
 
-    const gsdb = await Util.database.settings(interaction.guild.id);
     const limit = interaction.options.getInteger("amount");
 
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
-    if (!gsdb.get().purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
+    if (!document.settings.purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
     if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id === interaction.options.getUser("member").id);
     if (!toDelete.size) return interaction.editReply(_("commands.purge.nomessages"));
 

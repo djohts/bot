@@ -207,8 +207,10 @@ $RECYCLE.BIN/
 
 # custom
 
-**/config*
 .idea
 target/
 build/
 logs/
+
+script.js
+tmp/

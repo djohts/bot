@@ -1,19 +1,23 @@
 import { GuildMember, ChannelType, PermissionFlagsBits, VoiceBasedChannel } from "discord.js";
+import { getGuildDocument } from "../database/guild";
 import Util from "../util/Util";
 
 export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, newChannel: VoiceBasedChannel) {
-    const gdb = await Util.database.guild(member.guild.id);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
-    const gset = await Util.database.settings(member.guild.id);
-    const { voices } = gset.get();
+    const document = await getGuildDocument(member.guild.id);
+    const _ = Util.i18n.getLocale(document.locale);
 
-    if (gdb.get().voices[oldChannel.id] === member.user.id) {
-        await oldChannel.delete().catch(() => null);
-        gdb.removeFromObject("voices", oldChannel.id);
+    const voices = Array.from(document.voices.keys());
+
+    if (document.voices.get(oldChannel.id)?.ownerId === member.id) {
+        document.voices.delete(oldChannel.id);
+        document.safeSave();
+        void oldChannel.delete().catch(() => null);
     };
 
-    if (voices.lobby === newChannel.id && voices.enabled) {
-        await member.guild.channels.create({
+    if (document.settings.voices_enabled && document.settings.voices_lobby === newChannel.id) {
+        if (voices.includes(oldChannel.id)) return;
+
+        return member.guild.channels.create({
             name: _("events.voiceChannelJoin.roomName", { user: `${member.user.tag}` }),
             type: ChannelType.GuildVoice,
             parent: newChannel.parentId,
@@ -28,11 +32,12 @@ export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, ne
                 ]
             }]
         })
-            .then((ch) =>
-                member.voice.setChannel(ch.id)
-                    .then(() => gdb.setOnObject("voices", ch.id, member.user.id))
-                    .catch(() => ch.delete().catch(() => null))
-            )
+            .then((ch) => member.voice.setChannel(ch.id)
+                .then(() => {
+                    document.voices.set(ch.id, { ownerId: member.id });
+                    document.safeSave();
+                })
+                .catch(() => ch.delete().catch(() => null)))
             .catch(() => null);
     };
 };

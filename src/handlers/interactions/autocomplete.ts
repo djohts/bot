@@ -1,43 +1,62 @@
 import { AutocompleteInteraction } from "discord.js";
+import { getGuildDocument } from "../../database";
 import Util from "../../util/Util";
 
 export = async (interaction: AutocompleteInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
 
     if (
         interaction.commandName === "serverstats"
         && interaction.options.getSubcommand() === "delete"
     ) {
-        const { statschannels } = gdb.get();
-        const respond = [];
+        const response = [];
 
-        for (const [channelId, text] of Object.entries(statschannels)) {
-            respond.push({
-                name: text,
+        for (const [channelId, text] of document.statschannels) {
+            response.push({
+                name: `${channelId} | ${text}`,
                 value: channelId
             });
         };
 
-        await interaction.respond(respond);
+        return interaction.respond(response);
     } else if (interaction.commandName === "warn" && interaction.options.getSubcommand() === "remove") {
-        const { warns } = gdb.get();
-        const respond = [] as { name: string; value: string }[];
+        const response: { name: string; value: string; }[] = [];
 
-        for (const { userId, reason, id } of warns) {
-            let formattedReason = reason
+        for (const [id, { userId, reason }] of document.warns) {
+            if (!id.startsWith(interaction.options.getString("id"))) continue;
+
+            const formattedReason = reason
                 ? reason.length > 64
                     ? reason.substring(0, 64) + "..."
                     : reason
                 : _("commands.warn.list.notspecified");
             const userTag = await interaction.client.users.fetch(userId).then((u) => u.tag).catch(() => "Unknown#0000");
 
-            respond.push({
+            response.push({
                 name: `${id} | ${userTag} - ${formattedReason}`,
                 value: id
             });
         };
 
-        await interaction.respond(respond);
+        return interaction.respond(response);
+    } else if (interaction.commandName === "buttonroles" && interaction.options.getSubcommand() === "delete") {
+        const response: { name: string; value: string; }[] = [];
+
+        for (const [id, roleId] of document.brs) {
+            if (!id.startsWith(interaction.options.getString("id"))) continue;
+
+            const channelId = document.brcs.get(id);
+
+            const role = interaction.guild.roles.cache.get(roleId);
+            const channel = interaction.guild.channels.cache.get(channelId);
+
+            response.push({
+                name: `${id} | @${role?.name ?? "Unknown role"} - #${channel?.name ?? "Unknown channel"}`,
+                value: id
+            });
+        };
+
+        return interaction.respond(response);
     };
 };

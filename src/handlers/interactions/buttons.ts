@@ -1,12 +1,13 @@
+import { getGuildDocument } from "../../database";
 import { ButtonInteraction } from "discord.js";
 import subscriptions from "../subscriptions";
 import buttonRoles from "../buttonroles";
-import config from "../../../config";
+import config from "../../constants/config";
 import Util from "../../util/Util";
 
 export = async (interaction: ButtonInteraction) => {
-    const gdb = await Util.database.guild(interaction.guildId);
-    const _ = Util.i18n.getLocale(gdb.get().locale);
+    const document = await getGuildDocument(interaction.guildId);
+    const _ = Util.i18n.getLocale(document.locale);
 
     if (interaction.customId === "reply:delete") {
         if (
