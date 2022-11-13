@@ -1,4 +1,4 @@
-import { ButtonComponent, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("buttonroles")
@@ -28,8 +28,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import {
+    ButtonComponent,
     ButtonStyle,
     ComponentType,
+    parseEmoji,
     PermissionFlagsBits,
     ChatInputCommandInteraction,
     Collection,
@@ -76,7 +78,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             ephemeral: true
         });
 
-        const emoji = interaction.options.getString("emoji").match(/\p{Extended_Pictographic}/ug)?.[0];
+        const emoji = parseEmoji(interaction.options.getString("emoji"));
         if (!emoji) return interaction.reply({
             content: _("commands.buttonroles.create.invalidEmoji", { emoji: `\`${interaction.options.getString("emoji")}\`` }),
             ephemeral: true
@@ -88,7 +90,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         if (!messageId) return channel.send({
             embeds: [{
                 title: _("commands.buttonroles.create.chooseRoles"),
-                description: `${emoji} - ${role}`
+                description: `${emoji.id ? `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>` : emoji.name} - ${role}`
             }],
             components: [
                 new ActionRowBuilder<ButtonBuilder>().setComponents([
@@ -128,7 +130,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         const newMessage = {
             embeds: [{
                 title: _("commands.buttonroles.create.chooseRoles"),
-                description: message.embeds[0].description + `\n${emoji} - ${role}`
+                description: message.embeds[0].description
+                    + `\n${emoji.id ? `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>` : emoji.name} - ${role}`
             }],
             components: [row]
         };

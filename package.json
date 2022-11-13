@@ -43,7 +43,7 @@
         "winston-daily-rotate-file": "^4.7.1"
     },
     "devDependencies": {
-        "@types/lodash": "^4.14.187",
+        "@types/lodash": "^4.14.188",
         "@types/node": "^18.11.9",
         "@types/text-table": "^0.2.2",
         "copyfiles": "^2.4.1",
