@@ -13,7 +13,7 @@ export const run = async (message: Message) => {
 
         Util; gdb;
 
-        let evaled = await eval(script);
+        let evaled = await eval(`(async () => { ${script} })()`);
         if (typeof evaled !== "string") evaled = inspect(evaled);
 
         if (evaled.length >= 2000) return message.reply("✅");
