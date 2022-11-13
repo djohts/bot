@@ -1,6 +1,4 @@
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 import { Client as ShardingClient } from "discord-hybrid-sharding";
-import { ChatInputCommandInteraction } from "discord.js";
 import { NodeOptions } from "erela.js";
 import Util from "./src/util/Util";
 
