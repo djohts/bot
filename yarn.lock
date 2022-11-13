@@ -856,9 +856,9 @@ denque@^2.1.0:
   integrity sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==
 
 discord-api-types@^0.37.12:
-  version "0.37.16"
-  resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.16.tgz#3cc5fb56d34d12f57f20f81708ac0963b24c3e96"
-  integrity sha512-H0FDY6+ww4YZe1+L+2ERWU3KsVSInWLvK0TeImhiTi49DXff8sFLnqqnEiEdMEhwFlkQMUIe4xL5Py046s+Ksg==
+  version "0.37.17"
+  resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.17.tgz#314e4225fdff31b08b83ba5104d46564bc02303c"
+  integrity sha512-5ZIw1VtkmToBy8ziketjHkZnW1FoLevyXdK/TslNFLozijug2RnB3MyBNtSGzML1c72koU3neeGkvFZ8OiU0tQ==
 
 discord-hybrid-sharding@^1.7.4:
   version "1.7.4"
@@ -915,6 +915,7 @@ erela.js-spotify@^1.2.0:
 
 erela.js@^2.2.0, "erela.js@github:menudocs/erela.js#build":
   version "2.4.0"
+  uid "8912254c7ea30aa34a102c28fb97ef0f92d366a9"
   resolved "https://codeload.github.com/menudocs/erela.js/tar.gz/8912254c7ea30aa34a102c28fb97ef0f92d366a9"
   dependencies:
     "@discordjs/collection" "^1.1.0"
@@ -953,9 +954,9 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
 fast-json-stringify@^5.0.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/fast-json-stringify/-/fast-json-stringify-5.4.0.tgz#6d5066a13bb84f237141375588ddaabfaad6ba2d"
-  integrity sha512-PIzon53oX/zEGLrGbu4DpfNcYiV4K4rk+JsVrawRPO/G8cNBEMZ3KlIk2BCGqN+m1KCCA4zt5E7Hh3GG9ojRVA==
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/fast-json-stringify/-/fast-json-stringify-5.4.1.tgz#06c18426c21d8cfbb0c925f99370e583c4ce4cc5"
+  integrity sha512-P7S9WXEnMqu6seBnzAFmgZ+T3KCD+Do+pNIJsmk/6OlDHZVjl6KzsQB3TFHKQb2Q8N7C9l31WS7/LZGF5hT1FA==
   dependencies:
     "@fastify/deepmerge" "^1.0.0"
     ajv "^8.10.0"
@@ -1251,9 +1252,9 @@ logform@^2.3.2, logform@^2.4.0:
     triple-beam "^1.3.0"
 
 loglevel@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.8.0.tgz#e7ec73a57e1e7b419cb6c6ac06bf050b67356114"
-  integrity sha512-G6A/nJLRgWOuuwdNuA6koovfEV1YpqqAG4pRUlFaz3jj2QNZ8M4vBqnVA+HBTmU/AMNUtlOsMmSpF6NyOjztbA==
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.8.1.tgz#5c621f83d5b48c54ae93b6156353f555963377b4"
+  integrity sha512-tCRIJM51SHjAayKwC+QAg8hT8vg6z7GSgLJKGvzuPb1Wc+hLzqtuVLxp6/HzSPOozuK+8ErAhy7U/sVzw8Dgfg==
 
 lru-cache@^6.0.0:
   version "6.0.0"
@@ -1923,9 +1924,9 @@ truncate-utf8-bytes@^1.0.0:
     utf8-byte-length "^1.0.1"
 
 ts-mixer@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/ts-mixer/-/ts-mixer-6.0.1.tgz#7c2627fb98047eb5f3c7f2fee39d1521d18fe87a"
-  integrity sha512-hvE+ZYXuINrx6Ei6D6hz+PTim0Uf++dYbK9FFifLNwQj+RwKquhQpn868yZsCtJYiclZF1u8l6WZxxKi+vv7Rg==
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/ts-mixer/-/ts-mixer-6.0.2.tgz#3e4e4bb8daffb24435f6980b15204cb5b287e016"
+  integrity sha512-zvHx3VM83m2WYCE8XL99uaM7mFwYSkjR2OZti98fabHrwkjsCvgwChda5xctein3xGOyaQhtTeDq/1H/GNvF3A==
 
 tslib@^2.4.0:
   version "2.4.1"
@@ -2050,9 +2051,9 @@ wrappy@1:
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
 
 ws@^8.8.1, ws@^8.9.0:
-  version "8.10.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.10.0.tgz#00a28c09dfb76eae4eb45c3b565f771d6951aa51"
-  integrity sha512-+s49uSmZpvtAsd2h37vIPy1RBusaLawVe8of+GyEPsaJTCMpj/2v8NpeK1SHXjBlQ95lQTmQofOJnFiLoaN3yw==
+  version "8.11.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.11.0.tgz#6a0d36b8edfd9f96d8b25683db2f8d7de6e8e143"
+  integrity sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==
 
 xhr@^2.0.1:
   version "2.6.0"
