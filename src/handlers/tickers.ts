@@ -101,7 +101,7 @@ function updateSirenMaps() {
 
             setTimeout(() => updateSirenMaps(), 1000 * 60 * 0.5);
         });
-    });
+    }).catch(() => void setTimeout(() => updateSirenMaps(), 1000 * 30));
 
     function changeColor(xml: string, region: string, color: string) {
         const regionName = region.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
