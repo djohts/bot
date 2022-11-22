@@ -2,7 +2,6 @@ import { ActionRowBuilder, ActivityType, AttachmentBuilder, ButtonBuilder, Butto
 import { getGlobalDocument, getGuildDocument, getUserDocument } from "../database";
 import { clientLogger } from "../util/logger/cluster";
 import { readFileSync } from "node:fs";
-import { inspect } from "node:util";
 import config from "../constants/config";
 import Util from "../util/Util";
 import svg2img from "svg2img";
@@ -11,7 +10,6 @@ import axios from "axios";
 export = () => {
     updatePresence();
     checkBans();
-    tickMusicPlayers();
     updateGuildStatsChannels();
     updateSirenMaps();
     if (
@@ -37,16 +35,6 @@ function updatePresence() {
 function checkBans() {
     Promise.all(Util.client!.guilds.cache.map((guild) => Util.func.checkGuildBans(guild)))
         .then(() => void setTimeout(() => checkBans(), 10 * 1000));
-};
-
-function tickMusicPlayers() {
-    if (Util.lava) Promise.all(Util.lava.players.map((player) => Util.func.tickMusicPlayer(player)))
-        .then(() => void setTimeout(() => tickMusicPlayers(), 5 * 1000))
-        .catch((e) => {
-            clientLogger.error(inspect(e));
-            setTimeout(() => tickMusicPlayers(), 5 * 1000);
-        });
-    else setTimeout(() => tickMusicPlayers(), 5 * 1000);
 };
 
 function updateGuildStatsChannels() {

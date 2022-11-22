@@ -6,7 +6,6 @@ import { readdirSync } from "node:fs";
 import { inspect } from "util";
 import prepareGuild from "./handlers/prepareGuilds";
 import Sharding from "discord-hybrid-sharding";
-// import lavaHandler from "./handlers/lava";
 import tickers from "./handlers/tickers";
 import Util from "./util/Util";
 
@@ -53,8 +52,6 @@ client.once("ready", async () => {
     client.connecting = false;
 
     clientLogger.info(`Logged in as ${client.user!.tag} in ${Date.now() - loggingin}ms`);
-
-    //Util.setLavaManager(lavaHandler(client));
 
     disabledGuilds = new Set<string>(client.guilds.cache.map((g) => g.id));
 
