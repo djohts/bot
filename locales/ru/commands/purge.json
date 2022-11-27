@@ -1,8 +1,9 @@
 {
-    "cd": "⏳ Wait {{time}} before using this command.",
-    "noperm": "❌ I don't have `ManageMessages` permission.",
-    "nomessages": "❌ No deletable messages were found.",
-    "done_one": "✅ Purged {{count}} message.",
-    "done_two": "✅ Purged {{count}} messages.",
-    "done_other": "✅ Purged {{count}} messages."
+    "cd": "⏳ Подождите {{time}} перед использованием этой команды.",
+    "noperm": "❌ У меня нет разрешения `ManageMessages`.",
+    "nomessages": "❌ Не найдено удаляемых сообщений.",
+    "done_one": "✅ Удалено {{count}} сообщение.",
+    "done_two": "✅ Удалено {{count}} сообщения.",
+    "done_other": "✅ Удалено {{count}} сообщений.",
+    "done_few": "✅ Удалено {{count}} сообщения."
 }
