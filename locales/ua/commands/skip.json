@@ -1,6 +1,6 @@
 {
-    "novoice": "❌ You need to be in a voice channel.",
-    "notsame": "❌ You need to be in the same voice channel as me.",
-    "notplaying": "❌ Nothing is playing at the moment.",
-    "skipped": "Skipping current track."
+    "novoice": "❌ Ви повинні знаходитися в голосовому каналі.",
+    "notsame": "❌ Ви повинні бути в тому ж голосовому каналі, що і я.",
+    "notplaying": "❌ Зараз нічого не грає.",
+    "skipped": "Пропускаю поточний трек."
 }
