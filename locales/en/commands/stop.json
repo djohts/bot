@@ -1,0 +1,6 @@
+{
+    "novoice": "❌ You need to be in a voice channel.",
+    "notsame": "❌ You need to be in the same voice channel as me.",
+    "notplaying": "❌ Nothing is playing at the moment.",
+    "stopped": "Player has been stopped."
+}
