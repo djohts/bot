@@ -1,10 +1,10 @@
 import { AutocompleteInteraction } from "discord.js";
 import { getGuildDocument } from "../../database";
-import Util from "../../util/Util";
+import i18next from "i18next";
 
 export = async (interaction: AutocompleteInteraction) => {
     const document = await getGuildDocument(interaction.guildId);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, null);
 
     if (
         interaction.commandName === "serverstats"
@@ -30,7 +30,7 @@ export = async (interaction: AutocompleteInteraction) => {
                 ? reason.length > 64
                     ? reason.substring(0, 64) + "..."
                     : reason
-                : _("commands.warn.list.notspecified");
+                : t("commands.warn.list.notspecified");
             const userTag = await interaction.client.users.fetch(userId).then((u) => u.tag).catch(() => "Unknown#0000");
 
             response.push({

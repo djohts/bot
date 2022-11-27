@@ -47,11 +47,11 @@ import { paginate } from "../constants/resolvers";
 import { queueDelete } from "../handlers/utils";
 import { getGuildDocument } from "../database";
 import { generateId } from "../constants/";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.buttonroles");
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "create") {
@@ -64,7 +64,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             || !channel.permissionsFor(me).has(PermissionFlagsBits.ReadMessageHistory)
             || !channel.permissionsFor(me).has(PermissionFlagsBits.SendMessages)
         ) return interaction.reply({
-            content: _("commands.buttonroles.create.noPerms", { perms: "`ViewChannel`, `ReadMessageHistory`, `SendMessages`" }),
+            content: t("create.noPerms", { perms: "`ViewChannel`, `ReadMessageHistory`, `SendMessages`" }),
             ephemeral: true
         });
 
@@ -74,13 +74,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             || role.managed
             || interaction.guild.id === role.id
         ) return interaction.reply({
-            content: _("commands.buttonroles.create.cantGive"),
+            content: t("create.cantGive"),
             ephemeral: true
         });
 
         const emoji = parseEmoji(interaction.options.getString("emoji"));
         if (!emoji) return interaction.reply({
-            content: _("commands.buttonroles.create.invalidEmoji", { emoji: `\`${interaction.options.getString("emoji")}\`` }),
+            content: t("create.invalidEmoji", { emoji: `\`${interaction.options.getString("emoji")}\`` }),
             ephemeral: true
         });
 
@@ -89,7 +89,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         if (!messageId) return channel.send({
             embeds: [{
-                title: _("commands.buttonroles.create.chooseRoles"),
+                title: t("create.chooseRoles"),
                 description: `${emoji.id ? `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>` : emoji.name} - ${role}`
             }],
             components: [
@@ -107,16 +107,16 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             document.safeSave();
 
-            interaction.editReply(_("commands.buttonroles.create.done"));
+            interaction.editReply(t("create.done"));
         });
 
         const message = await channel.messages.fetch(messageId).catch(() => 0 as const);
         if (!message || !Array.from(document.brms.values()).includes(message.id))
-            return interaction.editReply(_("commands.buttonroles.create.noMessage"));
+            return interaction.editReply(t("create.noMessage"));
         if (message.components[0].components.length >= 5)
-            return interaction.editReply(_("commands.buttonroles.create.limitReached", { limit: "5" }));
+            return interaction.editReply(t("create.limitReached", { limit: "5" }));
         if (message.embeds[0].description.includes(role.id))
-            return interaction.editReply(_("commands.buttonroles.create.alreadyExists"));
+            return interaction.editReply(t("create.alreadyExists"));
 
         const row = new ActionRowBuilder<ButtonBuilder>()
             .setComponents(
@@ -129,7 +129,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         const newMessage = {
             embeds: [{
-                title: _("commands.buttonroles.create.chooseRoles"),
+                title: t("create.chooseRoles"),
                 description: message.embeds[0].description
                     + `\n${emoji.id ? `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>` : emoji.name} - ${role}`
             }],
@@ -142,7 +142,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             document.safeSave();
 
-            interaction.editReply(_("commands.buttonroles.create.done"));
+            interaction.editReply(t("create.done"));
         });
     } else if (cmd === "delete") {
         const brId = interaction.options.getString("id");
@@ -156,7 +156,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         if (
             !channel ||
             !(channel instanceof TextChannel)
-        ) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
+        ) return interaction.editReply(t("delete.deleted", { id: brId })).then(() => {
             document.brcs.delete(brId);
             document.brms.delete(brId);
             document.brs.delete(brId);
@@ -165,7 +165,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         });
 
         const message = await channel.messages.fetch(brm).catch(() => 0 as const);
-        if (!message) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
+        if (!message) return interaction.editReply(t("delete.deleted", { id: brId })).then(() => {
             document.brcs.delete(brId);
             document.brms.delete(brId);
             document.brs.delete(brId);
@@ -182,7 +182,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         const newMessage = {
             embeds: [{
-                title: "Выбор роли",
+                title: t("create.chooseRoles"),
                 description: message.embeds[0].description.split("\n").filter((a) => !a.includes(br)).join("\n")
             }],
             components: [row]
@@ -191,7 +191,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         if (
             !newMessage.embeds[0].description?.length ||
             !newMessage.components[0].components?.length
-        ) return interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId })).then(() => {
+        ) return interaction.editReply(t("delete.deleted", { id: brId })).then(() => {
             document.brcs.delete(brId);
             document.brms.delete(brId);
             document.brs.delete(brId);
@@ -208,7 +208,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             document.safeSave();
 
-            interaction.editReply(_("commands.buttonroles.delete.deleted", { id: brId }));
+            interaction.editReply(t("delete.deleted", { id: brId }));
         });
     } else if (cmd === "list") {
         const { brcs, brms, brs } = document;
@@ -230,7 +230,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 );
             });
 
-            channelObject.set(channelId, messageObject.filter((_, messageId) =>
+            channelObject.set(channelId, messageObject.filter((t, messageId) =>
                 channelBrIds.includes(Array.from(brms).find(([, v]) => v === messageId)[0])
             ));
         });
@@ -246,7 +246,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         const paginated = paginate(formattedArray, 1);
         let page = 0;
 
-        return interaction.reply({ ...generateMessage(paginated, page, _), fetchReply: true }).then((m) => {
+        return interaction.reply({ ...generateMessage(paginated, page, t), fetchReply: true }).then((m) => {
             const collector = m.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: (x) => x.user.id === interaction.user.id,
@@ -257,16 +257,16 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             collector.on("collect", (i) => {
                 if (i.customId === "brlist:page:first") {
                     page = 0;
-                    void i.update(generateMessage(paginated, page, _));
+                    void i.update(generateMessage(paginated, page, t));
                 } else if (i.customId === "brlist:page:prev") {
                     page--;
-                    void i.update(generateMessage(paginated, page, _));
+                    void i.update(generateMessage(paginated, page, t));
                 } else if (i.customId === "brlist:page:next") {
                     page++;
-                    void i.update(generateMessage(paginated, page, _));
+                    void i.update(generateMessage(paginated, page, t));
                 } else if (i.customId === "brlist:page:last") {
                     page = paginated.length - 1;
-                    void i.update(generateMessage(paginated, page, _));
+                    void i.update(generateMessage(paginated, page, t));
                 };
             });
             collector.on("end", () => interaction.deleteReply().catch(() => null));
@@ -277,14 +277,14 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 const generateMessage = (
     pages: string[][],
     page: number,
-    _: (message: string, ...args: any) => string
+    t: (message: string, ...args: any) => string
 ): InteractionReplyOptions & InteractionUpdateOptions => {
     return {
         embeds: [
             new EmbedBuilder()
-                .setTitle(_("commands.buttonroles.list.embedTitle"))
-                .setDescription(pages[page]?.join("\n") || _("commands.buttonroles.list.empty"))
-                .setFooter({ text: _("commands.buttonroles.list.page", { page: `${page + 1}`, total: `${pages.length}` }) })
+                .setTitle(t("list.embedTitle"))
+                .setDescription(pages[page]?.join("\n") || t("list.empty"))
+                .setFooter({ text: t("list.page", { page: `${page + 1}`, total: `${pages.length}` }) })
         ],
         components: [
             new ActionRowBuilder<ButtonBuilder>().setComponents([

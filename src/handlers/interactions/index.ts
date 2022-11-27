@@ -3,7 +3,7 @@ import { Interaction } from "discord.js";
 import handleAutocomplete from "./autocomplete";
 import handleButton from "./buttons";
 import handleCommand from "./slash";
-import Util from "../../util/Util";
+import i18next from "i18next";
 
 export = async (interaction: Interaction<"cached">) => {
     if (
@@ -14,13 +14,13 @@ export = async (interaction: Interaction<"cached">) => {
     ) return;
 
     const document = await getGuildDocument(interaction.guildId);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "handlers.interactions.index");
 
     if (
         interaction.client.loading
         && !interaction.isAutocomplete()
     ) return interaction.reply({
-        content: _("handlers.interactions.index.loading"),
+        content: t("loading"),
         ephemeral: true
     });
 

@@ -10,15 +10,15 @@ export const options = new SlashCommandBuilder()
 
 import { ChatInputCommandInteraction } from "discord.js";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.setcount");
     const count = interaction.options.getInteger("count");
 
     document.counting.count = count;
     document.safeSave();
 
-    return interaction.reply(_("commands.setcount.done", { count: `${count}` }));
+    return interaction.reply(t("done", { count: count }));
 };

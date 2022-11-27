@@ -10,27 +10,27 @@ export const options = new SlashCommandBuilder()
 
 import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.unmute");
 
     const member = interaction.options.getMember("member") as GuildMember;
 
     if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
-        return interaction.reply({ content: _("commands.unmute.noperms"), ephemeral: true });
+        return interaction.reply({ content: t("noperms"), ephemeral: true });
     if (!member.moderatable)
-        return interaction.reply({ content: _("commands.unmute.cantmod"), ephemeral: true });
+        return interaction.reply({ content: t("cantmod"), ephemeral: true });
     if (member.communicationDisabledUntil?.getTime() < Date.now())
-        return interaction.reply({ content: _("commands.unmute.nomute"), ephemeral: true });
+        return interaction.reply({ content: t("nomute"), ephemeral: true });
 
     let dmsent = false;
 
     return member.disableCommunicationUntil(null, interaction.user.tag).then(() => {
         return interaction.reply({
-            content: _("commands.unmute.unmuted", { user: `${member}` }) +
-                (dmsent ? `\n[__${_("commands.unmute.notified")}__]` : ""),
+            content: t("unmuted", { user: `${member}` }) +
+                (dmsent ? `\n[__${t("notified")}__]` : ""),
             allowedMentions: { parse: [] }
         });
     });

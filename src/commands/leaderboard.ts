@@ -9,11 +9,11 @@ export const options = new SlashCommandBuilder()
 import { ChatInputCommandInteraction } from "discord.js";
 import { getGuildDocument } from "../database";
 import { formatScore } from "../constants/";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.leaderboard");
     const { scores } = document.counting;
     const sorted = Array.from(scores.keys()).sort((a, b) => scores.get(b) - scores.get(a));
     const top = sorted.slice(0, 25);
@@ -27,7 +27,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     return interaction.reply({
         embeds: [{
-            title: _("commands.leaderboard.title"),
+            title: t("title"),
             description
         }]
     });

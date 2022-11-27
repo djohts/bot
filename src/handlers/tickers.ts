@@ -1,8 +1,7 @@
 import { ActionRowBuilder, ActivityType, AttachmentBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } from "discord.js";
 import { getGlobalDocument, getGuildDocument, getUserDocument } from "../database";
 import { clientLogger } from "../util/logger/cluster";
-import { readFileSync } from "fs";
-// import { inspect } from "node:util";
+import { readFileSync } from "node:fs";
 import config from "../constants/config";
 import Util from "../util/Util";
 import svg2img from "svg2img";
@@ -11,7 +10,6 @@ import axios from "axios";
 export = () => {
     updatePresence();
     checkBans();
-    // tickMusicPlayers();
     updateGuildStatsChannels();
     updateSirenMaps();
     if (
@@ -39,24 +37,14 @@ function checkBans() {
         .then(() => void setTimeout(() => checkBans(), 10 * 1000));
 };
 
-// function tickMusicPlayers() {
-//     if (Util.lava) Promise.all(Util.lava.players.map((player) => Util.func.tickMusicPlayer(player)))
-//         .then(() => void setTimeout(() => tickMusicPlayers(), 5 * 1000))
-//         .catch((e) => {
-//             clientLogger.error(inspect(e));
-//             setTimeout(() => tickMusicPlayers(), 5 * 1000)
-//         });
-//     else setTimeout(() => tickMusicPlayers(), 5 * 1000);
-// };
-
 function updateGuildStatsChannels() {
     Promise.all(Util.client!.guilds.cache.map((guild) => Util.func.updateGuildStatsChannels(guild.id)))
         .then(() => void setTimeout(() => updateGuildStatsChannels(), 10 * 60 * 1000));
 };
 
 function updateSirenMaps() {
-    axios.get(config.sirens_api).then(async (res) => {
-        const data = res.data as SirenApiResponse;
+    axios.get<SirenApiResponse>(config.sirens_api).then((res) => {
+        const data = res.data;
         let xml = readFileSync(__dirname + "/../../files/ua-map.svg", { encoding: "utf8" });
 
         for (const [k, v] of Object.entries(data)) {
@@ -71,8 +59,8 @@ function updateSirenMaps() {
             };
         };
 
-        svg2img(xml, async (_, buffer) => {
-            await Promise.all(Util.client.guilds.cache.map(async (g) => {
+        svg2img(xml, (_, buffer) => {
+            Promise.all(Util.client.guilds.cache.map(async (g) => {
                 const document = await getGuildDocument(g.id);
                 const me = await g.members.fetchMe();
 
@@ -97,11 +85,9 @@ function updateSirenMaps() {
                 };
 
                 document.safeSave();
-            }));
-
-            setTimeout(() => updateSirenMaps(), 1000 * 60 * 0.5);
+            })).then(() => void setTimeout(() => updateSirenMaps(), 1000 * 30));
         });
-    });
+    }).catch(() => void setTimeout(() => updateSirenMaps(), 1000 * 30));
 
     function changeColor(xml: string, region: string, color: string) {
         const regionName = region.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

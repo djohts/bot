@@ -3,17 +3,15 @@ export const options = { name: "eval" };
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.js";
 import { getGuildDocument } from "../database";
 import { inspect } from "util";
-import _Util from "../util/Util";
 
 export const run = async (message: Message) => {
     try {
         const script = message.content.slice(27);
-        const Util = _Util;
         const gdb = await getGuildDocument(message.guild.id);
 
-        Util; gdb;
+        gdb;
 
-        let evaled = await eval(`(async () => { ${script} })()`);
+        let evaled = await eval(`(async () => ${script})()`);
         if (typeof evaled !== "string") evaled = inspect(evaled);
 
         if (evaled.length >= 2000) return message.reply("✅");

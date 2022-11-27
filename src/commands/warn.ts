@@ -30,11 +30,11 @@ import {
 } from "discord.js";
 import { paginate } from "../constants/resolvers";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.warn");
 
     switch (interaction.options.getSubcommand()) {
         case "add":
@@ -42,18 +42,18 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             const reason = interaction.options.getString("reason");
 
             if (user.id === interaction.user.id)
-                return interaction.reply(_("commands.warn.add.sameuser"));
+                return interaction.reply(t("add.sameuser"));
 
             const member = await interaction.guild.members.fetch(user.id).catch(() => false as false);
             if (
                 member
                 && member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition
-            ) return interaction.reply(_("commands.warn.add.higher"));
+            ) return interaction.reply(t("add.higher"));
 
             document.addWarn(user.id, interaction.user.id, reason);
 
             return interaction.reply({
-                content: _("commands.warn.add.warned", { user: `${user}` }),
+                content: t("add.warned", { user: `${user}` }),
                 allowedMentions: { parse: [] }
             });
         case "list":
@@ -64,7 +64,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 user: [...warns.map((x) => x.userId), ...warns.map((x) => x.actionedById)],
                 time: 1000 * 10
             }).catch(() => false as const);
-            if (!users) return interaction.editReply(_("commands.warn.list.failed"));
+            if (!users) return interaction.editReply(t("list.failed"));
 
             const mappedWarnings = warns
                 .sort((a, b) => b.createdTimestamp - a.createdTimestamp)
@@ -74,13 +74,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
                     return [
                         `> \`${id}\` | <@${userId}> (**${userTag}**) | <@${actionedById}> | <t:${seconds}:f> (<t:${seconds}:R>)`,
-                        `${reason ?? _("commands.warn.list.notspecified")}`
+                        `${reason ?? t("list.notspecified")}`
                     ].join("\n");
                 });
             const pages = paginate(mappedWarnings, 5);
             let page = 0;
 
-            await interaction.editReply({ content: null, ...generateMessage(pages, page, _) });
+            await interaction.editReply({ content: null, ...generateMessage(pages, page, t) });
 
             const collector = (await interaction.fetchReply()).createMessageComponentCollector({
                 filter: (i) => i.user.id === interaction.user.id,
@@ -91,16 +91,16 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             collector.on("collect", async (i) => {
                 if (i.customId === "warns:page:first") {
                     page = 0;
-                    await i.update(generateMessage(pages, page, _));
+                    await i.update(generateMessage(pages, page, t));
                 } else if (i.customId === "warns:page:prev") {
                     page -= 1;
-                    await i.update(generateMessage(pages, page, _));
+                    await i.update(generateMessage(pages, page, t));
                 } else if (i.customId === "warns:page:next") {
                     page += 1;
-                    await i.update(generateMessage(pages, page, _));
+                    await i.update(generateMessage(pages, page, t));
                 } else if (i.customId === "warns:page:last") {
                     page = pages.length - 1;
-                    await i.update(generateMessage(pages, page, _));
+                    await i.update(generateMessage(pages, page, t));
                 };
             });
 
@@ -111,21 +111,21 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         case "remove":
             document.removeWarn(interaction.options.getString("id"));
 
-            return interaction.reply(_("commands.warn.remove.removed"));
+            return interaction.reply(t("remove.removed"));
     };
 };
 
 const generateMessage = (
     pages: string[][],
     page: number,
-    _: (message: string, ...args: any) => string
+    t: (message: string, ...args: any) => string
 ): InteractionReplyOptions & InteractionUpdateOptions => {
     return {
         embeds: [
             new EmbedBuilder()
-                .setTitle(_("commands.warn.list.title"))
-                .setDescription(pages[page]?.join("\n") || _("commands.warn.list.empty"))
-                .setFooter({ text: _("commands.warn.list.page", { page: `${page + 1}`, total: `${pages.length}` }) })
+                .setTitle(t("list.title"))
+                .setDescription(pages[page]?.join("\n") || t("list.empty"))
+                .setFooter({ text: t("list.page", { page: `${page + 1}`, total: `${pages.length}` }) })
         ],
         components: [
             new ActionRowBuilder<ButtonBuilder>().setComponents([

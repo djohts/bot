@@ -15,11 +15,11 @@ export const options = new SlashCommandBuilder()
 import { PermissionFlagsBits, ChatInputCommandInteraction, TextChannel } from "discord.js";
 import { getGuildDocument } from "../database";
 import { generateId } from "../constants";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.siren");
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "set") {
@@ -31,7 +31,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             || !channel.permissionsFor(me).has(PermissionFlagsBits.ReadMessageHistory)
             || !channel.permissionsFor(me).has(PermissionFlagsBits.SendMessages)
         ) return interaction.reply({
-            content: _("commands.siren.set.noPerms", { perms: "`ViewChannel`, `ReadMessageHistory`, `SendMessages`" }),
+            content: t("set.noPerms", { perms: "`ViewChannel`, `ReadMessageHistory`, `SendMessages`" }),
             ephemeral: true
         });
 
@@ -41,7 +41,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
-        const message = await channel.send(_("commands.siren.set.loading"));
+        const message = await channel.send(t("set.loading"));
         const id = generateId(4);
 
         document.sirens.set(id, {
@@ -51,6 +51,6 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         });
         document.safeSave();
 
-        return void interaction.editReply(_("commands.siren.set.done"));
+        return void interaction.editReply(t("set.done"));
     };
 };

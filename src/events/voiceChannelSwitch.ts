@@ -1,10 +1,10 @@
 import { GuildMember, ChannelType, PermissionFlagsBits, VoiceBasedChannel } from "discord.js";
+import i18next from "i18next";
 import { getGuildDocument } from "../database/guild";
-import Util from "../util/Util";
 
 export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, newChannel: VoiceBasedChannel) {
     const document = await getGuildDocument(member.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "events.voiceChannelJoin");
 
     const voices = Array.from(document.voices.keys());
 
@@ -18,7 +18,7 @@ export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, ne
         if (voices.includes(oldChannel.id)) return;
 
         return member.guild.channels.create({
-            name: _("events.voiceChannelJoin.roomName", { user: `${member.user.tag}` }),
+            name: t("roomName", { user: `${member.user.tag}` }),
             type: ChannelType.GuildVoice,
             parent: newChannel.parentId,
             permissionOverwrites: [{

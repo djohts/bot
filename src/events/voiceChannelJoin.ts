@@ -1,15 +1,15 @@
 import { GuildMember, ChannelType, PermissionFlagsBits, VoiceBasedChannel } from "discord.js";
 import { getGuildDocument } from "../database/guild";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export async function run(member: GuildMember, channel: VoiceBasedChannel) {
     const document = await getGuildDocument(member.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "events.voiceChannelJoin");
 
     if (!document.settings.voices_enabled || document.settings.voices_lobby !== channel.id) return;
 
     return member.guild.channels.create({
-        name: _("events.voiceChannelJoin.roomName", { user: `${member.user.tag}` }),
+        name: t("roomName", { user: `${member.user.tag}` }),
         type: ChannelType.GuildVoice,
         parent: channel.parentId,
         permissionOverwrites: [{
