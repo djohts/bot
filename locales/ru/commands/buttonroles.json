@@ -1,22 +1,22 @@
 {
     "create": {
-        "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {{perms}}",
-        "cantGive": "❌ I can't give this role out.",
-        "invalidEmoji": "❌ {{emoji}} is not a valid emoji.",
-        "working": "💢 Working...",
-        "chooseRoles": "Choose roles",
-        "done": "✅ Done.",
-        "noMessage": "❌ Message not found.",
-        "limitReached": "❌ You can only create **{{limit}}** button roles per message.",
-        "alreadyExists": "❌ The message already has this button role.",
-        "unknownError": "❌ An unknown error occurred."
+        "noPerms": "❌ У меня недостаточно прав в выбранном канале. Пожалуйста, убедитесь, что у меня есть следующие права: {{perms}}",
+        "cantGive": "❌ Я не могу выдать эту роль.",
+        "invalidEmoji": "❌ {{emoji}} не является эмоджи.",
+        "working": "💢 Работаю...",
+        "chooseRoles": "Выберите роли",
+        "done": "✅ Готово.",
+        "noMessage": "❌ Сообщение не было найдено.",
+        "limitReached": "❌ Вы можете создавать только **{{limit}}** РПК для каждого сообщения.",
+        "alreadyExists": "❌ Сообщение уже имеет эту РПК.",
+        "unknownError": "❌ Произошла неизвестная ошибка."
     },
     "delete": {
-        "deleted": "✅ Successfully deleted button role with ID `{{id}}`."
+        "deleted": "✅ Успешно удалён РПК с ID `{{id}}`."
     },
     "list": {
-        "embedTitle": "Button roles",
-        "empty": "its empty in here",
-        "page": "Page {{page}}"
+        "embedTitle": "РПК",
+        "empty": "Тут пусто",
+        "page": "Страница {{page}}"
     }
 }
