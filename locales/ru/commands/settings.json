@@ -1,19 +1,19 @@
 {
     "get": {
-        "settings": "Settings",
-        "purgepinned": "Purge pinned messages",
-        "tempvcs": "Voice rooms",
-        "tempvclobby": "Voice lobby",
-        "locale": "Current locale",
-        "enabled": "🟢 **`Enabled`**",
-        "disabled": "🔴 **`Disabled`**",
-        "notset": "**`Not set`**"
+        "settings": "Настройки",
+        "purgepinned": "Очистка закрепленных сообщений",
+        "tempvcs": "Голосовые комнаты",
+        "tempvclobby": "Голосовое лобби",
+        "locale": "Текущий язык",
+        "enabled": "🟢 **`Включено`**",
+        "disabled": "🔴 **`Выключено`**",
+        "notset": "**`Не установлен`**"
     },
     "toggle": {
-        "enabled": "🟢 Enabled.",
-        "disabled": "🔴 Disabled."
+        "enabled": "🟢 Включено.",
+        "disabled": "🔴 Выключено."
     },
-    "locale": "✅ Guild locale has been changed to `{{locale}}`.",
-    "lobbyset": "✅ Lobby channel has been set to {{channel}}",
-    "countingset": "✅ Counting channel has been set to {{channel}}"
+    "locale": "✅ Язык сервера был изменен на `{{locale}}`.",
+    "lobbyset": "✅ Канал лобби установлен в {{channel}}",
+    "countingset": "✅ Канал счёта установлен на {{channel}}"
 }
