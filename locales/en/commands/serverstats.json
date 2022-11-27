@@ -1,0 +1,14 @@
+{
+    "set": {
+        "limit": "❌ You can't create more than {{amount}} stats channels.",
+        "template": "❌ Template length shouldn't exceed {{amount}} symbols.",
+        "done": "Stats channel set: {{channel}}\nTemplate: `{{template}}`"
+    },
+    "delete": {
+        "done": "✅ Stats channel removed."
+    },
+    "list": {
+        "title": "Stats channels",
+        "empty": "its empty in here"
+    }
+}
