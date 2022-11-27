@@ -4,7 +4,7 @@ import { getGuildDocument } from "../database/guild";
 
 export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, newChannel: VoiceBasedChannel) {
     const document = await getGuildDocument(member.guild.id);
-    const t = i18next.getFixedT(document.locale, null, null);
+    const t = i18next.getFixedT(document.locale, null, "events.voiceChannelJoin");
 
     const voices = Array.from(document.voices.keys());
 
@@ -18,7 +18,7 @@ export async function run(member: GuildMember, oldChannel: VoiceBasedChannel, ne
         if (voices.includes(oldChannel.id)) return;
 
         return member.guild.channels.create({
-            name: t("events.voiceChannelJoin.roomName", { user: `${member.user.tag}` }),
+            name: t("roomName", { user: `${member.user.tag}` }),
             type: ChannelType.GuildVoice,
             parent: newChannel.parentId,
             permissionOverwrites: [{

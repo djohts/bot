@@ -27,9 +27,10 @@ export async function run(message: Message) {
     if (message.content.match(`^<@!?${Util.client.user.id}>`)) {
         void message.react("👋").catch(() => null);
         void message.reply(
-            t("events.messageCreate.welcome", {
+            t("welcome", {
                 docs: await Util.func.getCommandMention("docs"),
-                info: await Util.func.getCommandMention("info")
+                info: await Util.func.getCommandMention("info"),
+                joinArrays: "\n"
             })
         ).catch(() => null);
     };
