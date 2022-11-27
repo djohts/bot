@@ -1,7 +1,7 @@
 {
-    "noperm": "❌ I don't have enough permissions to change roles.",
-    "role": "❌ Role not found or its position is higher than mine.",
-    "added": "✅ Role added: {{role}}.",
-    "removed": "✅ Role removed: {{role}}.",
-    "error": "❌ An error occured. Please contact the developer."
+    "noperm": "❌ У меня недостаточно прав для изменения ролей.",
+    "role": "❌ Роль не найдена или ее позиция выше моей.",
+    "added": "✅ Роль выдана: {{role}}.",
+    "removed": "✅ Роль забрана: {{role}}.",
+    "error": "❌ Произошла непредвиденная ошибка. Пожалуйста, свяжитесь с разработчиком."
 }
