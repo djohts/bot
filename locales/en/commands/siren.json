@@ -1,0 +1,7 @@
+{
+    "set": {
+        "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {{perms}}",
+        "loading": "⏳ Loading...",
+        "done": "✅ Done."
+    }
+}
