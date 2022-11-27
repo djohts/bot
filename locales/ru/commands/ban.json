@@ -1,16 +1,16 @@
 {
-    "cannotBan": "❌ I can't ban this user.",
-    "cannotParseTime": "❌ I can't parse that time.",
-    "alreadyBanned": "❌ This user is already banned.",
-    "noPerm": "❌ You don't have permission to ban this user.",
-    "notSpecified": "Not specified.",
+    "cannotBan": "❌ Я не могу забанить этого пользователя.",
+    "cannotParseTime": "❌ Я не могу разобрать это время.",
+    "alreadyBanned": "❌ Этот пользователь уже забанен.",
+    "noPerm": "❌ У вас недостаточно прав для бана этого пользователя.",
+    "notSpecified": "Не указано.",
     "dmEmbed": {
-        "title": "Banned",
-        "staff": "Moderator",
-        "time": "Time",
-        "reason": "Reason"
+        "title": "Забанен",
+        "staff": "Модератор",
+        "time": "Время",
+        "reason": "Причина"
     },
-    "success": "✅ Successfully banned {{user}}.",
-    "notified": "User notified via DM message",
-    "unknownError": "❌ An unknown error occurred."
+    "success": "✅ {{user}} успешно забанен.",
+    "notified": "Пользователь уведомлен через ЛС",
+    "unknownError": "❌ Произошла неизвестная ошибка."
 }
