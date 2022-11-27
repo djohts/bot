@@ -1,0 +1,14 @@
+{
+    "buttons": {
+        "nouse": "❌ You can't use this."
+    },
+    "index": {
+        "loading": "🌀 I'm still loading, please give me some time..."
+    },
+    "slash": {
+        "no_commands": "❌ Commands were disabled by developer. Join {{link}} for further information.",
+        "channel": "❌ Commands are disabled in this channel.",
+        "noperm": "❌ You don't have permission to use this command.",
+        "error": "❌ {{user}}, an error occured while executing the command. Please contact the developer."
+    }
+}
