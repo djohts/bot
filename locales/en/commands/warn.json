@@ -1,0 +1,17 @@
+{
+    "add": {
+        "sameuser": "❌ You can't warn yourself.",
+        "higher": "❌ You can't warn a user with higher role position.",
+        "warned": "✅ {{user}} has been warned."
+    },
+    "list": {
+        "failed": "❌ Failed to get list of users. Try again in a minute.",
+        "notspecified": "No reason specified.",
+        "title": "Warn list",
+        "empty": "its empty in here",
+        "page": "Page {{page}}/{{total}}"
+    },
+    "remove": {
+        "removed": "✅ Warn removed."
+    }
+}
