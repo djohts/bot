@@ -1,0 +1,9 @@
+{
+    "cd": "⏳ Wait {{time}} before using this command.",
+    "noperm": "❌ I don't have `ManageMessages` permission.",
+    "nomessages": "❌ No deletable messages were found.",
+    "done_one": "✅ Purged {{count}} message.",
+    "done_two": "✅ Purged {{count}} messages.",
+    "done_few": "✅ Purged {{count}} messages.",
+    "done_other": "✅ Purged {{count}} messages."
+}

@@ -10,21 +10,21 @@ export const options = new SlashCommandBuilder()
 
 import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.unban");
 
     if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers))
-        return interaction.reply({ content: _("commands.unban.noperm"), ephemeral: true });
+        return interaction.reply({ content: t("noperm"), ephemeral: true });
 
     await interaction.deferReply({ ephemeral: true });
 
     const user = interaction.options.getUser("user");
 
     if (!(await interaction.guild.bans.fetch(user).catch(() => 0)))
-        return interaction.editReply(_("commands.unban.noban"))
+        return interaction.editReply(t("noban"))
             .then(() => {
                 document.bans.delete(user.id);
                 document.safeSave();
@@ -34,6 +34,6 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         document.bans.delete(user.id);
         document.safeSave();
 
-        return interaction.editReply(_("commands.unban.done"));
+        return interaction.editReply(t("done"));
     });
 };

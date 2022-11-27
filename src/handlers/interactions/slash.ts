@@ -3,13 +3,16 @@ import { clientLogger } from "../../util/logger/cluster";
 import { getGuildDocument } from "../../database";
 import { readdirSync } from "node:fs";
 import { inspect } from "util";
+import i18next from "i18next";
 
 export default async (interaction: ChatInputCommandInteraction<"cached"> | ContextMenuCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
-    const _ = interaction.client.util.i18n.getLocale(document.locale);
+    // @ts-ignore
+    const t = i18next.getFixedT(document.locale, null, "handlers.interactions.slash");
 
     if (document.counting.channelId === interaction.channelId)
-        return interaction.reply({ content: _("handlers.interactions.slash.channel"), ephemeral: true });
+        // @ts-ignore
+        return interaction.reply({ content: t("channel"), ephemeral: true });
 
     const commandName = interaction.commandName;
     const commandFile = await import(`../../commands/${commandName}`);
@@ -21,12 +24,12 @@ export default async (interaction: ChatInputCommandInteraction<"cached"> | Conte
 
         try {
             if (!interaction.replied) {
-                await interaction.reply({ content: _("handlers.interactions.slash.error", { user: `${interaction.user}` }), ephemeral: true });
+                await interaction.reply({ content: t("error", { user: `${interaction.user}` }), ephemeral: true });
             } else {
-                await interaction.editReply(_("handlers.interactions.slash.error", { user: `${interaction.user}` }));
+                await interaction.editReply(t("error", { user: `${interaction.user}` }));
             };
         } catch {
-            await interaction.channel.send(_("handlers.interactions.slash.error", { user: `${interaction.user}` })).catch(() => null);
+            await interaction.channel.send(t("error", { user: `${interaction.user}` })).catch(() => null);
         };
     };
 };

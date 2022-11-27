@@ -9,12 +9,12 @@ export const options = new SlashCommandBuilder()
 import { ChatInputCommandInteraction } from "discord.js";
 import { getGuildDocument } from "../database";
 import prettyms from "pretty-ms";
-import Util from "../util/Util";
 import table from "text-table";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guildId);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.ping");
 
     const then = Date.now();
 
@@ -25,14 +25,14 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const api = interaction.guild.shard.ping;
 
     const a = table([
-        [_("commands.ping.server"), "::", `${server}ms`],
-        [_("commands.ping.api"), "::", `${api}ms`],
-        [_("commands.ping.uptime"), "::", uptime]
+        [t("server"), "::", `${server}ms`],
+        [t("api"), "::", `${api}ms`],
+        [t("uptime"), "::", uptime]
     ], { align: ["l", "c", "l"] });
 
     return interaction.editReply({
         embeds: [{
-            title: _("commands.ping.pong"),
+            title: t("pong"),
             description: [
                 "```asciidoc",
                 a,

@@ -4,9 +4,8 @@ import { loadCommands } from "../handlers/interactions/slash";
 import { BcBotBumpAction } from "../../types";
 import { inspect } from "util";
 import config from "../constants/config";
-import i18n from "./i18n";
-const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 
+const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
 let util: Util | null = null;
 
 class Util {
@@ -16,7 +15,6 @@ class Util {
     };
 
     private _client: Client | null = null;
-    public i18n = i18n;
     public inspect = inspect;
     public wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
     public prettyBytes = (bytes: number, maximumFractionDigits = 2): string => {

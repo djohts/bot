@@ -48,47 +48,47 @@ export const options = new SlashCommandBuilder()
     )
     .toJSON();
 
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, escapeMarkdown } from "discord.js";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.serverstats");
 
     switch (interaction.options.getSubcommand()) {
         case "set":
             const channel = interaction.options.getChannel("channel");
-            const text = interaction.options.getString("text").replace(/\`/g, "");
+            const text = interaction.options.getString("text");
 
             const limit = 5;
 
             if (document.statschannels.size >= limit)
-                return interaction.reply(_("commands.serverstats.set.limit", { amount: `${limit}` }));
+                return interaction.reply(t("set.limit", { count: limit }));
             if (text.length > 64)
-                return interaction.reply(_("commands.serverstats.set.template", { amount: "64" }));
+                return interaction.reply(t("set.template", { count: 64 }));
 
             document.statschannels.set(channel.id, { template: text });
             document.safeSave();
 
-            return interaction.reply(_("commands.serverstats.set.done", { channel: `${channel}`, template: text }));
+            return interaction.reply(t("set.done", { channel: `${channel}`, template: escapeMarkdown(text) }));
         case "delete":
             const channelId = interaction.options.getString("channel");
 
             document.statschannels.delete(channelId);
             document.safeSave();
 
-            return interaction.reply(_("commands.serverstats.delete.done"));
+            return interaction.reply(t("delete.done"));
         case "list":
             const list = Array.from(document.statschannels).map(([channelId, { template }]) => [
                 `> <#${channelId}> (\`${channelId}\`)`,
-                `\`${template.replace(/\`/g, "")}\``
+                `\`${escapeMarkdown(template)}\``
             ].join("\n"));
 
             return interaction.reply({
                 embeds: [{
-                    title: _("commands.serverstats.list.title"),
-                    description: list.join("\n\n") || _("commands.serverstats.list.empty")
+                    title: t("list.title"),
+                    description: list.join("\n\n") || t("list.empty")
                 }]
             });
     };

@@ -38,6 +38,8 @@ export const client = new Client({
     shardCount: Sharding.Client.getInfo().TOTAL_SHARDS
 });
 
+import "./lib/i18n";
+
 Util.setClient(client);
 
 client.cluster = new Sharding.Client(client);

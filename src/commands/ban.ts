@@ -15,33 +15,33 @@ import { ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, EmbedBui
 import { parseTime } from "../constants/resolvers";
 import { getGuildDocument } from "../database";
 import prettyms from "pretty-ms";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.ban");
     const user = interaction.options.getUser("member");
 
     if (
         !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
-    ) return interaction.reply({ content: _("commands.ban.cannotBan"), ephemeral: true });
+    ) return interaction.reply({ content: t("cannotBan"), ephemeral: true });
     if (
         interaction.options.getString("duration")
         && !parseTime(interaction.options.getString("duration"))
-    ) return interaction.reply({ content: _("commands.ban.cannotParseTime"), ephemeral: true });
+    ) return interaction.reply({ content: t("cannotParseTime"), ephemeral: true });
 
     await interaction.deferReply();
 
     if (await interaction.guild.bans.fetch(user).catch(() => 0))
-        return interaction.editReply(_("commands.ban.alreadyBanned"));
+        return interaction.editReply(t("alreadyBanned"));
     const member = await interaction.guild.members.fetch(user).catch(() => 0 as const);
 
     if (member) {
         if (member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition)
-            return interaction.editReply(_("commands.ban.noPerm"));
+            return interaction.editReply(t("noPerm"));
         if (
             !member.manageable
-        ) return interaction.editReply(_("commands.ban.cannotBan"));
+        ) return interaction.editReply(t("cannotBan"));
     };
 
     let dmsent = false;
@@ -57,31 +57,31 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             name: interaction.guild.name,
             iconURL: interaction.guild.iconURL()
         })
-        .setTitle(_("commands.ban.dmEmbed.title"))
+        .setTitle(t("dmEmbed.title"))
         .addFields({
-            name: _("commands.ban.dmEmbed.staff"),
+            name: t("dmEmbed.staff"),
             value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
             inline: true
         });
     if (time !== -1) dmemb.addFields({
-        name: _("commands.ban.dmEmbed.time"),
+        name: t("dmEmbed.time"),
         value: `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``,
         inline: true
     });
     if (reason) dmemb.addFields({
-        name: _("commands.ban.dmEmbed.reason"),
+        name: t("dmEmbed.reason"),
         value: reason
     });
 
     await user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => 0);
 
     await interaction.guild.bans.create(user, {
-        reason: `${interaction.user.tag}: ${reason || _("commands.ban.notSpecified")}`,
+        reason: `${interaction.user.tag}: ${reason || t("notSpecified")}`,
         deleteMessageDays
     }).then(() => {
         document.bans.set(user.id, { userId: user.id, createdTimestamp: Date.now(), expiresTimestamp: time });
         document.safeSave();
 
-        return interaction.editReply(_("commands.ban.success", { user: `${user}` }) + (dmsent ? `\n[__${_("commands.ban.notified")}__]` : ""));
+        return interaction.editReply(t("success", { user: `${user}` }) + (dmsent ? `\n[__${t("notified")}__]` : ""));
     });
 };

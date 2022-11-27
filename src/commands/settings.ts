@@ -40,34 +40,34 @@ export const options = new SlashCommandBuilder()
 import { ChatInputCommandInteraction } from "discord.js";
 import { getGuildDocument } from "../database";
 import { GuildLocale } from "../../types";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.settings");
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "get") {
         return interaction.reply({
             embeds: [{
-                title: _("commands.settings.get.settings"),
+                title: t("get.settings"),
                 fields: [{
-                    name: _("commands.settings.get.purgepinned"),
+                    name: t("get.purgepinned"),
                     value: document.settings.purgePinned ?
-                        _("commands.settings.get.enabled") :
-                        _("commands.settings.get.disabled"),
+                        t("get.enabled") :
+                        t("get.disabled"),
                     inline: true
                 }, {
-                    name: _("commands.settings.get.tempvcs"),
+                    name: t("get.tempvcs"),
                     value: document.settings.voices_enabled ?
-                        _("commands.settings.get.enabled") :
-                        _("commands.settings.get.disabled"),
+                        t("get.enabled") :
+                        t("get.disabled"),
                     inline: true
                 }, {
-                    name: _("commands.settings.get.tempvclobby"),
+                    name: t("get.tempvclobby"),
                     value: document.settings.voices_lobby ?
                         `<#${document.settings.voices_lobby}>` :
-                        _("commands.settings.get.notset"),
+                        t("get.notset"),
                     inline: true
                 }]
             }]
@@ -79,18 +79,18 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         if (type === "purgePinned") {
             document.settings.purgePinned ? (() => {
                 document.settings.purgePinned = false;
-                idk = _("commands.settings.toggle.disabled");
+                idk = t("toggle.disabled");
             })() : (() => {
                 document.settings.purgePinned = true;
-                idk = _("commands.settings.toggle.enabled");
+                idk = t("toggle.enabled");
             })();
         } else if (type === "voices") {
             document.settings.voices_enabled ? (() => {
                 document.settings.voices_enabled = false;
-                idk = _("commands.settings.toggle.disabled");
+                idk = t("toggle.disabled");
             })() : (() => {
                 document.settings.voices_enabled = true;
-                idk = _("commands.settings.toggle.enabled");
+                idk = t("toggle.enabled");
             })();
         };
 
@@ -102,14 +102,14 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         document.locale = locale;
         document.safeSave();
 
-        return interaction.reply(_("commands.settings.locale", { locale }))
+        return interaction.reply(t("locale", { locale }))
     } else if (cmd === "setlobby") {
         const lobby = interaction.options.getChannel("channel");
 
         document.settings.voices_lobby = lobby.id;
         document.safeSave();
 
-        return interaction.reply(_("commands.settings.lobbyset", { channel: `${lobby}` }));
+        return interaction.reply(t("lobbyset", { channel: `${lobby}` }));
     } else if (cmd === "counting") {
         const channel = interaction.options.getChannel("channel");
 
@@ -121,6 +121,6 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         };
         document.safeSave();
 
-        return interaction.reply(_("commands.settings.countingset", { channel: `${channel}` }));
+        return interaction.reply(t("countingset", { channel: `${channel}` }));
     };
 };

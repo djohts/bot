@@ -8,9 +8,10 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, SelectMenuBuilder, ComponentType, ButtonStyle } from "discord.js";
-import allModules from "../constants/modules";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import allModules from "../constants/modules";
+import i18next from "i18next";
+
 const names = {
     spam: "Allow spam",
     embed: "Embed",
@@ -20,7 +21,7 @@ const names = {
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.modules");
     const { modules: oldModules } = document.counting;
 
     const m = await interaction.reply({
@@ -28,7 +29,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         components: [
             new ActionRowBuilder<SelectMenuBuilder>().setComponents([
                 new SelectMenuBuilder()
-                    .setPlaceholder(_("commands.modules.choose"))
+                    .setPlaceholder(t("choose"))
                     .setCustomId("modules_menu")
                     .setMinValues(0)
                     .setMaxValues(4)
@@ -44,14 +45,14 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     const collector = m.createMessageComponentCollector({
         filter: (i) => i.user.id === interaction.user.id,
-        componentType: ComponentType.SelectMenu,
+        componentType: ComponentType.StringSelect,
         time: 60 * 1000
     });
 
     collector.on("collect", () => collector.stop("a"));
     collector.on("end", (a, r) => {
         if (r !== "a") return void interaction.editReply({
-            content: _("commands.modules.timedout"),
+            content: t("timedout"),
             components: [
                 new ActionRowBuilder<ButtonBuilder>().setComponents([
                     new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
@@ -63,7 +64,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         if (newModules.includes("embed") && newModules.includes("webhook"))
             return void a.first().update({
-                content: _("commands.modules.incompatible", { a: "Embed", b: "Webhook" }),
+                content: t("incompatible", { a: "Embed", b: "Webhook" }),
                 components: [
                     new ActionRowBuilder<ButtonBuilder>().setComponents([
                         new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
@@ -71,17 +72,17 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 ]
             });
 
-        const oldList = oldModules?.map((m) => `**${names[m]}**`).join(",") || _("commands.modules.empty");
-        const newList = newModules?.map((m) => `**${names[m]}**`).join(",") || _("commands.modules.empty");
+        const oldList = oldModules?.map((m) => `**${names[m]}**`).join(",") || t("empty");
+        const newList = newModules?.map((m) => `**${names[m]}**`).join(",") || t("empty");
 
         document.counting.modules = newModules;
         document.safeSave();
 
         return void a.first().update({
             content: [
-                _("commands.modules.changes"),
-                _("commands.modules.old", { oldList }),
-                _("commands.modules.new", { newList })
+                t("changes"),
+                t("old", { oldList }),
+                t("new", { newList })
             ].join("\n"),
             components: [
                 new ActionRowBuilder<ButtonBuilder>().setComponents([

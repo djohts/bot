@@ -13,11 +13,11 @@ export const options = new SlashCommandBuilder()
 import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import { parseTime } from "../constants/resolvers";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction) => {
     const document = await getGuildDocument(interaction.guildId);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "commands.mute");
 
     const member = interaction.options.getMember("member") as GuildMember;
     const timeString = interaction.options.getString("time");
@@ -26,20 +26,20 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const time = parseTime(timeString);
 
     if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
-        return interaction.reply({ content: _("commands.mute.noperms"), ephemeral: true });
+        return interaction.reply({ content: t("noperms"), ephemeral: true });
     if (!member.moderatable)
-        return interaction.reply({ content: _("commands.mute.cantmod"), ephemeral: true });
+        return interaction.reply({ content: t("cantmod"), ephemeral: true });
     if (member.roles.highest.rawPosition >= (interaction.member as GuildMember).roles.highest.rawPosition)
-        return interaction.reply({ content: _("commands.mute.cantmute"), ephemeral: true });
+        return interaction.reply({ content: t("cantmute"), ephemeral: true });
     if (!time || time > 28 * 24 * 60 * 60 * 1000)
-        return interaction.reply({ content: _("commands.mute.time"), ephemeral: true });
+        return interaction.reply({ content: t("time"), ephemeral: true });
 
     let dmsent = false;
 
     return member.disableCommunicationUntil(Date.now() + time, interaction.user.tag + (reason ? `: ${reason}` : "")).then((m) => {
         interaction.reply({
-            content: _("commands.mute.muted", { user: `${m}` }) +
-                (dmsent ? `\n[__${_("commands.mute.notified")}__]` : ""),
+            content: t("muted", { user: `${m}` }) +
+                (dmsent ? `\n[__${t("notified")}__]` : ""),
             allowedMentions: { parse: [] }
         });
     });

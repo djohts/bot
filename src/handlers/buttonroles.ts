@@ -1,16 +1,16 @@
 import { ButtonInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import { clientLogger } from "../util/logger/cluster";
 import { getGuildDocument } from "../database";
-import Util from "../util/Util";
+import i18next from "i18next";
 
 export = async (interaction: ButtonInteraction) => {
     const document = await getGuildDocument(interaction.guildId);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "handlers.buttonroles");
     const member = interaction.member as GuildMember;
     const guild = interaction.guild;
 
     if (!guild.members.me.permissions.has(PermissionFlagsBits.ManageRoles))
-        return interaction.reply({ content: _("handlers.buttonroles.noperm"), ephemeral: true });
+        return interaction.reply({ content: t("noperm"), ephemeral: true });
 
     await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
@@ -19,19 +19,19 @@ export = async (interaction: ButtonInteraction) => {
 
     const role = interaction.guild.roles.cache.get(rId);
     if (!role || (role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition))
-        return interaction.editReply(_("handlers.buttonroles.role"));
+        return interaction.editReply(t("role"));
 
     return member.roles.cache.has(role.id)
         ? member.roles.remove(role)
-            .then(() => interaction.editReply(_("handlers.buttonroles.removed", { role: `${role}` })))
+            .then(() => interaction.editReply(t("removed", { role: `${role}` })))
             .catch((e) => {
                 clientLogger.error(e);
-                interaction.editReply(_("handlers.buttonroles.error"));
+                interaction.editReply(t("error"));
             })
         : member.roles.add(role)
-            .then(() => interaction.editReply(_("handlers.buttonroles.added", { role: `${role}` })))
+            .then(() => interaction.editReply(t("added", { role: `${role}` })))
             .catch((e) => {
                 clientLogger.error(e);
-                interaction.editReply(_("handlers.buttonroles.error"));
+                interaction.editReply(t("error"));
             });
 };

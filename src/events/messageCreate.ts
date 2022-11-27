@@ -3,6 +3,7 @@ import { getGuildDocument } from "../database";
 import countingHandler from "../handlers/counting/handler";
 import config from "../constants/config";
 import Util from "../util/Util";
+import i18next from "i18next";
 
 export async function run(message: Message) {
     if (
@@ -11,7 +12,7 @@ export async function run(message: Message) {
     ) return;
 
     const document = await getGuildDocument(message.guild.id);
-    const _ = Util.i18n.getLocale(document.locale);
+    const t = i18next.getFixedT(document.locale, null, "events.messageCreate");
 
     if (
         message.content.startsWith(`<@${Util.client.user.id}> eval`)
@@ -25,10 +26,11 @@ export async function run(message: Message) {
     if (document.counting.channelId === message.channel.id) return countingHandler(message);
     if (message.content.match(`^<@!?${Util.client.user.id}>`)) {
         void message.react("👋").catch(() => null);
-        void message.reply([
-            _("events.messageCreate.welcome_l1"),
-            _("events.messageCreate.welcome_l2", { docs: await Util.func.getCommandMention("docs") }),
-            _("events.messageCreate.welcome_l3", { info: await Util.func.getCommandMention("info") })
-        ].join("\n")).catch(() => null);
+        void message.reply(
+            t("events.messageCreate.welcome", {
+                docs: await Util.func.getCommandMention("docs"),
+                info: await Util.func.getCommandMention("info")
+            })
+        ).catch(() => null);
     };
 };

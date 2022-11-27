@@ -1,0 +1,16 @@
+{
+    "cannotBan": "❌ I can't ban this user.",
+    "cannotParseTime": "❌ I can't parse that time.",
+    "alreadyBanned": "❌ This user is already banned.",
+    "noPerm": "❌ You don't have permission to ban this user.",
+    "notSpecified": "Not specified.",
+    "dmEmbed": {
+        "title": "Banned",
+        "staff": "Moderator",
+        "time": "Time",
+        "reason": "Reason"
+    },
+    "success": "✅ Successfully banned {{user}}.",
+    "notified": "User notified via DM message",
+    "unknownError": "❌ An unknown error occurred."
+}
