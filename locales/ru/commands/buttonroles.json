@@ -1,6 +1,6 @@
 {
     "create": {
-        "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {{perms}}",
+        "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {perms}",
         "cantGive": "❌ I can't give this role out.",
         "invalidEmoji": "❌ {{emoji}} is not a valid emoji.",
         "working": "💢 Working...",
