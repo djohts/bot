@@ -1,6 +1,6 @@
 {
-    "novoice": "❌ You need to be in a voice channel.",
-    "notsame": "❌ You need to be in the same voice channel as me.",
-    "notplaying": "❌ Nothing is playing at the moment.",
-    "set": "Player volume has been set to {{volume}}"
+    "novoice": "❌ Вы должны быть в голосовом канале.",
+    "notsame": "❌ Вы должны быть в том же голосовом канале, что и я.",
+    "notplaying": "❌ На данный момент ничего не играет.",
+    "set": "Громкость плеера установлена на {{volume}}"
 }
