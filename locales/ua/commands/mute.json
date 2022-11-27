@@ -1,8 +1,8 @@
 {
-    "noperms": "❌ I don't have `ModerateMembers` permission.",
-    "cantmod": "❌ I can't moderate that user.",
-    "cantmute": "❌ You can't mute that user.",
-    "time": "❌ I can't parse that time.",
-    "muted": "✅ {{user}} has been muted.",
-    "notified": "User notified via DM message"
+    "noperms": "❌ У мене немає дозволу `ModerateMembers`.",
+    "cantmod": "❌ Я не можу модерувати цього користувача.",
+    "cantmute": "❌ Ви не можете заглушити цього користувача.",
+    "time": "❌ Я не можу опрацювати цей час.",
+    "muted": "✅ {{user}} заглушений.",
+    "notified": "Користувач був сповіщений у ПП"
 }
