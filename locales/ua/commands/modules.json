@@ -1,9 +1,9 @@
 {
-    "choose": "Choose modules.",
-    "timedout": "Timed out.",
-    "incompatible": "Modules {{a}} and {{b}} are incompatible.",
-    "empty": "Empty",
-    "changes": "​> **Changes:**",
-    "old": "Old modules: {{oldList}}",
-    "new": "New modules: {{newList}}"
+    "choose": "Виберіть модулі.",
+    "timedout": "Час вийшов.",
+    "incompatible": "Модулі {{a}} і {{b}} несумісні.",
+    "empty": "Порожньо",
+    "changes": "​> **Зміни:**",
+    "old": "Старі модулі: {{oldList}}",
+    "new": "Нові модулі: {{newList}}"
 }
