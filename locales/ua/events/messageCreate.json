@@ -1,6 +1,6 @@
 {
     "welcome": [
-        "👋 Hi! I use slash commands. (`/`)",
+        "👋 Hello there! I use slash commands.",
         "📚 You can find docs on how to use me using {{docs}}.",
         "❓ If you still have some questions, join my support server. ({{info}})"
     ]
