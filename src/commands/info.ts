@@ -6,10 +6,9 @@ export const options = new SlashCommandBuilder()
     .setDMPermission(false)
     .toJSON();
 
-import { ChatInputCommandInteraction } from "discord.js";
-import { getGuildDocument } from "../database/guild.js";
+import { ChatInputCommandInteraction, version } from "discord.js";
 import { Client } from "discord-hybrid-sharding";
-import { version } from "discord.js";
+import { getGuildDocument } from "../database";
 import prettyms from "pretty-ms";
 import i18next from "i18next";
 import os from "os";

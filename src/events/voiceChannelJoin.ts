@@ -1,5 +1,5 @@
 import { GuildMember, ChannelType, PermissionFlagsBits, VoiceBasedChannel } from "discord.js";
-import { getGuildDocument } from "../database/guild";
+import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
 export async function run(member: GuildMember, channel: VoiceBasedChannel) {

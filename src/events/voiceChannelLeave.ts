@@ -1,5 +1,5 @@
 import { GuildMember, VoiceBasedChannel } from "discord.js";
-import { getGuildDocument } from "../database/guild";
+import { getGuildDocument } from "../database";
 
 export async function run(member: GuildMember, channel: VoiceBasedChannel) {
     const document = await getGuildDocument(member.guild.id);

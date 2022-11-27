@@ -1,7 +1,6 @@
 import { ActivityType, Client, GatewayIntentBits, Options, Partials } from "discord.js";
-import { touchGuildDocument } from "./database/guild";
+import { connection, touchGuildDocument } from "./database";
 import { clientLogger } from "./util/logger/cluster";
-import { connection } from "./database/";
 import { readdirSync } from "node:fs";
 import { inspect } from "util";
 import prepareGuild from "./handlers/prepareGuilds";
