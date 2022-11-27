@@ -1,0 +1,19 @@
+{
+    "get": {
+        "settings": "Settings",
+        "purgepinned": "Purge pinned messages",
+        "tempvcs": "Voice rooms",
+        "tempvclobby": "Voice lobby",
+        "locale": "Current locale",
+        "enabled": "🟢 **`Enabled`**",
+        "disabled": "🔴 **`Disabled`**",
+        "notset": "**`Not set`**"
+    },
+    "toggle": {
+        "enabled": "🟢 Enabled.",
+        "disabled": "🔴 Disabled."
+    },
+    "locale": "✅ Guild locale has been changed to `{{locale}}`.",
+    "lobbyset": "✅ Lobby channel has been set to {{channel}}",
+    "countingset": "✅ Counting channel has been set to {{channel}}"
+}
