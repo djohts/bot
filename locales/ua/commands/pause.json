@@ -1,7 +1,7 @@
 {
-    "novoice": "❌ You need to be in a voice channel.",
-    "notsame": "❌ You need to be in the same voice channel as me.",
-    "notplaying": "❌ Nothing is playing at the moment.",
-    "enabled": "Player has been paused.",
-    "disabled": "Player has been un-paused."
+    "novoice": "❌ Ви повинні знаходитися в голосовому каналі.",
+    "notsame": "❌ Ви повинні бути в тому ж голосовому каналі, що і я.",
+    "notplaying": "❌ Зараз нічого не грає.",
+    "enabled": "Плеєр поставлений на паузу.",
+    "disabled": "Плеєр знято з паузи."
 }
