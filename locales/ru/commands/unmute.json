@@ -1,7 +1,7 @@
 {
-    "noperms": "❌ I don't have `ModerateMembers` permission.",
-    "cantmod": "❌ I can't moderate that user.",
-    "nomute": "❌ That user is not muted",
-    "unmuted": "✅ {{user}} has been unmuted.",
-    "notified": "User notified via DM message"
+    "noperms": "❌ У меня нет разрешения `ModerateMembers`.",
+    "cantmod": "❌ Я не могу модерировать этого пользователя.",
+    "nomute": "❌ Этот пользователь не замьючен",
+    "unmuted": "✅ {{user}} был размьючен.",
+    "notified": "Пользователь уведомлен через ЛС"
 }
