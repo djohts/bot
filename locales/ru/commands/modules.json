@@ -1,9 +1,9 @@
 {
-    "choose": "Choose modules.",
-    "timedout": "Timed out.",
-    "incompatible": "Modules {{a}} and {{b}} are incompatible.",
-    "empty": "Empty",
-    "changes": "​> **Changes:**",
-    "old": "Old modules: {{oldList}}",
-    "new": "New modules: {{newList}}"
+    "choose": "Выберите модули.",
+    "timedout": "Истекло время ожидания.",
+    "incompatible": "Модули {{a}} и {{b}} несовместимы.",
+    "empty": "Пусто",
+    "changes": "​> **Изменения:**",
+    "old": "Старые модули: {{oldList}}",
+    "new": "Новые модули: {{newList}}"
 }
