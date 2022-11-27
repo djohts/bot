@@ -26,8 +26,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             ephemeral: true
         });
     else {
-        cds.set(interaction.channel.id, Date.now() + 3100);
-        setTimeout(() => cds.delete(interaction.channel.id), 3100);
+        cds.set(interaction.channel.id, Date.now() + 3500);
+        setTimeout(() => cds.delete(interaction.channel.id), 3500);
     };
 
     if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageMessages))
