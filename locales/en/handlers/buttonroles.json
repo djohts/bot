@@ -1,0 +1,7 @@
+{
+    "noperm": "❌ I don't have enough permissions to change roles.",
+    "role": "❌ Role not found or its position is higher than mine.",
+    "added": "✅ Role added: {{role}}.",
+    "removed": "✅ Role removed: {{role}}.",
+    "error": "❌ An error occured. Please contact the developer."
+}
