@@ -1,5 +1,5 @@
 {
-    "noperm": "❌ I don't have `BanMembers` permission.",
-    "noban": "❌ That user is not banned.",
-    "done": "✅ User has been unbanned."
+    "noperm": "❌ У мене немає дозволу `BanMembers`.",
+    "noban": "❌ Цей користувач не заблокований.",
+    "done": "✅ Користувач розблокований."
 }
