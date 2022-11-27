@@ -1,7 +1,7 @@
 {
     "set": {
-        "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {{perms}}",
-        "loading": "⏳ Loading...",
-        "done": "✅ Done."
+        "noPerms": "❌ У мене недостатньо прав у вибраному каналі. Будь ласка, переконайтеся, що у мене є наступні права: {{perms}}",
+        "loading": "⏳ Завантаження...",
+        "done": "✅ Готово."
     }
 }
