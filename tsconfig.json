@@ -8,6 +8,7 @@
             "ES2022"
         ],
         "module": "CommonJS",
+        "rootDir": "./src",
         "outDir": "./build",
         "strict": false,
         "strictPropertyInitialization": false,
@@ -22,8 +23,5 @@
         "noPropertyAccessFromIndexSignature": true,
         "noEmitOnError": true,
         "skipLibCheck": true
-    },
-    "include": [
-        "./src"
-    ]
+    }
 }

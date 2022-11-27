@@ -4,6 +4,7 @@ import { Client, WebhookClient } from "discord.js";
 import { manager } from "../../sharding";
 import config from "../../constants/config";
 import axios from "axios";
+
 const wh = new WebhookClient({ url: config.notifications_webhook });
 
 export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction) => {
@@ -25,14 +26,16 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
             return info;
         }, {
             clusters: {} as {
-                status: number;
-                guilds: number;
-                cachedUsers: number;
-                channels: number;
-                users: number;
-                ping: number;
-                loading: boolean;
-                connecting: boolean;
+                [key: string]: {
+                    status: number;
+                    guilds: number;
+                    cachedUsers: number;
+                    channels: number;
+                    users: number;
+                    ping: number;
+                    loading: boolean;
+                    connecting: boolean;
+                }
             },
             guilds: 0,
             cachedUsers: 0,
@@ -43,6 +46,7 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
         newBotInfo.lastUpdate = Date.now();
         res.send(newBotInfo);
     });
+
     fastify.get("/metrics", async (req, res) => {
         const data = (await axios("http://0.0.0.0:4000/api/stats").then((res) => res.data)) as {
             clusters: {
@@ -68,25 +72,12 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
             total_channels: data.channels,
             total_users: data.users,
             total_cached_users: data.cachedUsers,
-            average_ping: Object.values(data.clusters).reduce((total, next) => total + next.ping, 0) / Object.keys(data.clusters).length,
-
-            cluster_guilds: {},
-            cluster_channels: {},
-            cluster_users: {},
-            cluster_cached_users: {},
-            cluster_ping: {},
-        } as { [key: string]: number | { [key: string]: number } };
-
-        for (const [key, value] of Object.entries(data.clusters)) {
-            metricObject["cluster_guilds"][key] = value.guilds;
-            metricObject["cluster_channels"][key] = value.channels;
-            metricObject["cluster_users"][key] = value.users;
-            metricObject["cluster_cached_users"][key] = value.cachedUsers;
-            metricObject["cluster_ping"][key] = value.ping;
-        };
+            average_ping: Object.values(data.clusters).reduce((total, next) => total + next.ping, 0) / Object.keys(data.clusters).length
+        } as const;
 
         res.type("text/plain").send(prometheusMetrics(metricObject));
     });
+
     fastify.post("/webhook/boticord", async (req, res) => {
         if (req.headers["x-hook-key"] !== config.monitoring.bc_hook_key) return res.status(403).send();
         const options = req.body as BcBotBumpAction | BcBotCommentAction;
@@ -121,6 +112,7 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
                 if ((options as BcBotCommentAction).data.comment.vote.new === 1) vote = "Позитивная";
                 else if ((options as BcBotCommentAction).data.comment.vote.new === -1) vote = "Негативная";
                 else vote = "Нейтральная";
+
                 await wh.send({
                     embeds: [{
                         title: "Комментарий изменён",
@@ -139,28 +131,25 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
         };
         return res.status(202);
     });
+
     done();
 };
 
 const isdev = !config.monitoring.bc;
-function prometheusMetrics(obj: { [key: string]: number | { [key: string]: number } }): string {
+function prometheusMetrics(obj: { [key: string]: number }): string {
     const metrics: string[] = [];
+
     for (let [key, value] of Object.entries(obj)) {
         if (isdev) key = `d${key}`;
-        const prefix = [
-            `# HELP ${key} todo`,
-            `# TYPE ${key} gauge`
-        ].join("\n");
 
-        metrics.push(prefix);
-
-        if (typeof value === "number") {
-            metrics.push(`${key} ${value}`);
-        } else {
-            for (const subkey in value) {
-                metrics.push(`${key}{subkey="${subkey}",} ${value[subkey]}`);
-            };
+        if (typeof value !== "object") {
+            metrics.push([
+                `# HELP ${key} todo`,
+                `# TYPE ${key} gauge`,
+                `${key} ${value}`
+            ].join("\n"));
         };
     };
-    return metrics.join("\n");
+
+    return metrics.join("\n\n");
 };
