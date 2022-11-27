@@ -1,6 +1,6 @@
 {
-    "server": "Server",
+    "server": "Сервер",
     "api": "API",
-    "uptime": "Uptime",
-    "pong": "🏓 Pong!"
+    "uptime": "Час роботи",
+    "pong": "🏓 Понг!"
 }
