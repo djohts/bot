@@ -3,7 +3,7 @@ import i18next from "i18next";
 import fs from "fs";
 
 const loadLocales = () => {
-    const localesPath = `${__dirname}/../../locales-new/`;
+    const localesPath = `${__dirname}/../../locales/`;
     const obj = {};
     const dirs = fs.readdirSync(localesPath);
 
