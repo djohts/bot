@@ -1,22 +1,22 @@
 {
     "create": {
-        "noPerms": "❌ I don't have enough permissions in the selected channel. Please make sure I have these permissions: {{perms}}",
-        "cantGive": "❌ I can't give this role out.",
-        "invalidEmoji": "❌ {{emoji}} is not a valid emoji.",
-        "working": "💢 Working...",
-        "chooseRoles": "Choose roles",
-        "done": "✅ Done.",
-        "noMessage": "❌ Message not found.",
-        "limitReached": "❌ You can only create **{{limit}}** button roles per message.",
-        "alreadyExists": "❌ The message already has this button role.",
-        "unknownError": "❌ An unknown error occurred."
+        "noPerms": "❌ У мене недостатньо прав у вибраному каналі. Будь ласка, переконайтеся, що у мене є наступні права: {{perms}}",
+        "cantGive": "❌ Я не можу видати цю роль.",
+        "invalidEmoji": "❌ {{emoji}} не є дійсним емодзі.",
+        "working": "💢 Працюю...",
+        "chooseRoles": "Виберіть ролі",
+        "done": "✅ Готово.",
+        "noMessage": "❌ Повідомлення не знайдено.",
+        "limitReached": "❌ Ви можете створити максимум **{{limit}}** РПК на одному повідомленні.",
+        "alreadyExists": "❌ Повідомлення вже має кнопку з цією роллю.",
+        "unknownError": "❌ Сталася невідома помилка."
     },
     "delete": {
-        "deleted": "✅ Successfully deleted button role with ID `{{id}}`."
+        "deleted": "✅ Успішно видалено РПК з ID `{{id}}`."
     },
     "list": {
-        "embedTitle": "Button roles",
-        "empty": "its empty in here",
-        "page": "Page {{page}}"
+        "embedTitle": "РПК",
+        "empty": "Тут пусто",
+        "page": "Сторінка {{page}}"
     }
 }
