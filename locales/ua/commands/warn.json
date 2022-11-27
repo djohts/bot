@@ -1,17 +1,17 @@
 {
     "add": {
-        "sameuser": "❌ You can't warn yourself.",
-        "higher": "❌ You can't warn a user with higher role position.",
-        "warned": "✅ {{user}} has been warned."
+        "sameuser": "❌ Ви не можете видавати попередження собі.",
+        "higher": "❌ Ви не можете попередити користувача з вищою позицією ролі.",
+        "warned": "✅ {{user}} було попереджено."
     },
     "list": {
-        "failed": "❌ Failed to get list of users. Try again in a minute.",
-        "notspecified": "No reason specified.",
-        "title": "Warn list",
-        "empty": "its empty in here",
-        "page": "Page {{page}}/{{total}}"
+        "failed": "❌ Не вдалося отримати список користувачів. Спробуйте знову через хвилину.",
+        "notspecified": "Причину не вказано.",
+        "title": "Список попереджень",
+        "empty": "Тут пусто",
+        "page": "Сторінка {{page}}/{{total}}"
     },
     "remove": {
-        "removed": "✅ Warn removed."
+        "removed": "✅ Попередження видалено."
     }
 }
