@@ -1,17 +1,17 @@
 {
     "add": {
-        "sameuser": "❌ You can't warn yourself.",
-        "higher": "❌ You can't warn a user with higher role position.",
-        "warned": "✅ {{user}} has been warned."
+        "sameuser": "❌ Вы не можете выдать предупреждение самому себе.",
+        "higher": "❌ Вы не можете предупредить пользователя с более высокой ролью.",
+        "warned": "✅ {{user}} был предупреждён."
     },
     "list": {
-        "failed": "❌ Failed to get list of users. Try again in a minute.",
-        "notspecified": "No reason specified.",
-        "title": "Warn list",
-        "empty": "its empty in here",
-        "page": "Page {{page}}/{{total}}"
+        "failed": "❌ Не удалось получить список пользователей. Попробуйте еще раз через минуту.",
+        "notspecified": "Причина не указана.",
+        "title": "Список предупреждений",
+        "empty": "Тут пусто",
+        "page": "Страница {{page}}/{{total}}"
     },
     "remove": {
-        "removed": "✅ Warn removed."
+        "removed": "✅ Предупреждение удалено."
     }
 }
