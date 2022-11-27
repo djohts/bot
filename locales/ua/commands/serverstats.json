@@ -1,14 +1,14 @@
 {
     "set": {
-        "limit": "❌ You can't create more than {{amount}} stats channels.",
-        "template": "❌ Template length shouldn't exceed {{amount}} symbols.",
-        "done": "Stats channel set: {{channel}}\nTemplate: `{{template}}`"
+        "limit": "❌ Ви не можете створити більше ніж {{amount}} каналів статистики.",
+        "template": "❌ Довжина шаблону не повинна перевищувати {{amount}} символів.",
+        "done": "Канал статистики встановлено: {{channel}}\nШаблон: `{{template}}`"
     },
     "delete": {
-        "done": "✅ Stats channel removed."
+        "done": "✅ Канал статистики видалено."
     },
     "list": {
-        "title": "Stats channels",
-        "empty": "its empty in here"
+        "title": "Канали статистики",
+        "empty": "Тут пусто"
     }
 }
