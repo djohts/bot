@@ -1,14 +1,14 @@
 {
     "buttons": {
-        "nouse": "❌ You can't use this."
+        "nouse": "❌ Ви не можете використовувати це."
     },
     "index": {
-        "loading": "🌀 I'm still loading, please give me some time..."
+        "loading": "🌀 Я ще завантажуюсь, будь ласка, зачекайте..."
     },
     "slash": {
-        "no_commands": "❌ Commands were disabled by developer. Join {{link}} for further information.",
-        "channel": "❌ Commands are disabled in this channel.",
-        "noperm": "❌ You don't have permission to use this command.",
-        "error": "❌ {{user}}, an error occured while executing the command. Please contact the developer."
+        "no_commands": "❌ Команди вимкнено розробником. Приєднуйтесь до {{link}} для отримання додаткової інформації.",
+        "channel": "❌ Команди вимкнено у цьому каналі.",
+        "noperm": "❌ У вас немає прав для виконання цієї команди.",
+        "error": "❌ {{user}}, виникла помилка під час виконання команди. Будь ласка, зв'яжіться з розробником."
     }
 }
