@@ -31,7 +31,7 @@
         "fastify": "^4.10.2",
         "i18next": "^22.0.6",
         "lodash": "^4.17.21",
-        "mongoose": "~6.6.0",
+        "mongoose": "~6.8.0",
         "pretty-ms": "^7.0.1",
         "sanitize-filename": "^1.6.3",
         "svg2img": "^1.0.0-beta.2",
