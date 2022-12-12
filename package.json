@@ -23,7 +23,7 @@
         "node": ">=18"
     },
     "dependencies": {
-        "@typegoose/typegoose": "^9.12.1",
+        "@typegoose/typegoose": "^10.0.0",
         "axios": "^1.2.0",
         "discord-hybrid-sharding": "^1.7.5",
         "discord.js": "^14.6.0",
