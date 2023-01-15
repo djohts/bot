@@ -1,21 +1,21 @@
 {
     "add": {
-        "limit_one": "❌ You can have max {{count}} autorole.",
-        "limit_few": "❌ You can have max {{count}} autoroles.",
-        "limit_many": "❌ You can have max {{count}} autoroles.",
-        "limit_other": "❌ You can have max {{count}} autoroles.",
-        "managed": "❌ That role is managed by another application.",
-        "noperm": "❌ I don't have `ManageRoles` permission.",
-        "rolepos": "❌ The role you provided is higher than my highest role or is the same as my highest role.",
-        "done": "✅ {{role}} now will be given to every new member."
+        "limit_one": "❌ Ви можете мати максимум {{count}} автороль.",
+        "limit_few": "❌ Ви можете мати максимум {{count}} авторолі.",
+        "limit_many": "❌ Ви можете мати максимум {{count}} авторолей.",
+        "limit_other": "❌ Ви можете мати максимум {{count}} авторолей.",
+        "managed": "❌ Ця роль керується іншою програмою.",
+        "noperm": "❌ У мене немає дозволу `ManageRoles`.",
+        "rolepos": "❌ Указана вами роль вища за мою найвищу роль або така ж, як моя найвища роль.",
+        "done": "✅ {{role}} тепер буде видана кожному новому учаснику."
     },
     "list": {
-        "title": "List of autoroles",
-        "empty": "It's empty in here.",
-        "createdby": "Created by {{user}}",
-        "createdat": "Created at {{absolute}} ({{relative}})"
+        "title": "Список авторолей",
+        "empty": "Тут пусто.",
+        "createdby": "Створив(-ла) {{user}}",
+        "createdat": "Створено {{absolute}} ({{relative}})"
     },
     "remove": {
-        "done": "✅ Role removed."
+        "done": "✅ Роль видалено."
     }
 }
