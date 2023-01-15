@@ -81,7 +81,12 @@ class Util {
 
             const document = await getGuildDocument(guild.id);
 
-            const ids = Array.from(document.bans.keys()).filter((k) => (document.bans.get(k)?.expiresTimestamp ?? 0) <= Date.now());
+            const ids = Array
+                .from(document.bans.keys())
+                .filter((k) => {
+                    const ban = document.bans.get(k)!;
+                    return ban.expiresTimestamp !== -1 && ban.expiresTimestamp <= Date.now();
+                });
             if (!ids.length) return;
 
             await Promise.all<Promise<void>>(ids.map((key) =>
