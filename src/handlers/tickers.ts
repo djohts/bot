@@ -2,6 +2,7 @@ import { ActionRowBuilder, ActivityType, AttachmentBuilder, ButtonBuilder, Butto
 import { getGlobalDocument, getGuildDocument, getUserDocument } from "../database";
 import { clientLogger } from "../utils/logger/cluster";
 import { readFileSync } from "node:fs";
+import { isEqual } from "lodash";
 import config from "../constants/config";
 import Util from "../utils/Util";
 import svg2img from "svg2img";
@@ -45,6 +46,9 @@ function updateGuildStatsChannels() {
 function updateSirenMaps() {
     axios.get<SirenApiResponse>(config.sirens_api).then((res) => {
         const data = res.data;
+        prevData = data;
+        if (isEqual(data, prevData)) return void setTimeout(() => updateSirenMaps(), 1000 * 30);
+
         let xml = readFileSync(__dirname + "/../../files/ua-map.svg", { encoding: "utf8" });
 
         for (const [k, v] of Object.entries(data)) {
