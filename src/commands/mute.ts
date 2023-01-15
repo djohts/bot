@@ -15,17 +15,20 @@ import { parseTime } from "../constants/resolvers";
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
-    const t = i18next.getFixedT(document.locale, null, "commands.mute");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.mute");
+    const me = await interaction.guild.members.fetchMe();
 
-    const member = interaction.options.getMember("member") as GuildMember;
-    const timeString = interaction.options.getString("time");
+    const member = interaction.options.getMember("member");
+    const timeString = interaction.options.getString("time", true);
     const reason = interaction.options.getString("reason");
 
     const time = parseTime(timeString);
 
-    if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
+    if (!member)
+        return interaction.reply({ content: t("nouser"), ephemeral: true });
+    if (!me.permissions.has(PermissionFlagsBits.ModerateMembers))
         return interaction.reply({ content: t("noperms"), ephemeral: true });
     if (!member.moderatable)
         return interaction.reply({ content: t("cantmod"), ephemeral: true });

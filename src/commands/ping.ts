@@ -12,9 +12,9 @@ import prettyms from "pretty-ms";
 import table from "text-table";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
-    const t = i18next.getFixedT(document.locale, null, "commands.ping");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.ping");
 
     const then = Date.now();
 

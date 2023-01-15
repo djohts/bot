@@ -1,4 +1,4 @@
-import { Client as ShardingClient } from "discord-hybrid-sharding";
+import { ClusterClient } from "discord-hybrid-sharding";
 import { NodeOptions } from "erela.js";
 import Util from "./src/util/Util";
 
@@ -66,9 +66,8 @@ export type Subscription = "boticord";
 declare module "discord.js" {
     interface Client {
         loading: boolean;
-        connecting: boolean;
         util: typeof Util;
-        cluster: ShardingClient;
+        cluster: ClusterClient;
         ptext?: string;
     };
 };

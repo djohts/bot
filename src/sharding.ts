@@ -1,18 +1,21 @@
-import { managerLogger } from "./util/logger/manager";
+import { ClusterManager } from "discord-hybrid-sharding";
+import { managerLogger } from "./utils/logger/manager";
 import { inspect } from "util";
-import Sharding from "discord-hybrid-sharding";
 import config from "./constants/config";
-import utils from "./util/sharding";
+import utils from "./utils/sharding";
 import axios from "axios";
 
 managerLogger.info("=".repeat(55));
 
-export const manager = new Sharding.Manager(__dirname + "/bot.js", {
+export const manager = new ClusterManager(__dirname + "/bot.js", {
+    totalClusters: config.clusters,
     totalShards: config.shards,
-    shardsPerClusters: config.shardsPerClusters,
     token: config.token,
     execArgv: ["--no-warnings"],
-    mode: "process"
+    mode: "process",
+    queue: {
+        auto: false
+    }
 });
 utils(manager);
 
@@ -42,6 +45,7 @@ manager.spawn({ timeout: -1, delay: 10000 }).then(() => {
         };
     }, 2 * 60 * 1000);
 });
+manager.queue.next();
 
 process.on("unhandledRejection", (e) => managerLogger.error("unhandledRejection:" + inspect(e)));
 process.on("uncaughtException", (e) => managerLogger.error("uncaughtException:" + inspect(e)));

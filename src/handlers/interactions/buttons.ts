@@ -5,9 +5,9 @@ import config from "../../constants/config";
 import buttonRoles from "../buttonroles";
 import i18next from "i18next";
 
-export = async (interaction: ButtonInteraction) => {
+export = async (interaction: ButtonInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
-    const t = i18next.getFixedT(document.locale, null, "handlers.interactions.buttons");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "handlers.interactions.buttons");
 
     if (interaction.customId === "reply:delete") {
         if (

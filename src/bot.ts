@@ -1,12 +1,12 @@
 import { ActivityType, Client, GatewayIntentBits, Options, Partials } from "discord.js";
+import { ClusterClient, getInfo } from "discord-hybrid-sharding";
 import { connection, touchGuildDocument } from "./database";
-import { clientLogger } from "./util/logger/cluster";
+import { clientLogger } from "./utils/logger/cluster";
 import { readdirSync } from "node:fs";
 import { inspect } from "util";
 import prepareGuild from "./handlers/prepareGuilds";
-import Sharding from "discord-hybrid-sharding";
 import tickers from "./handlers/tickers";
-import Util from "./util/Util";
+import Util from "./utils/Util";
 
 export const client = new Client({
     makeCache: Options.cacheWithLimits({
@@ -25,7 +25,10 @@ export const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildVoiceStates
     ],
-    partials: [Partials.Channel, Partials.Message],
+    partials: [
+        Partials.Message,
+        Partials.GuildMember
+    ],
     presence: {
         status: "dnd",
         activities: [{
@@ -33,16 +36,15 @@ export const client = new Client({
             name: "the loading screen",
         }]
     },
-    shards: Sharding.Client.getInfo().SHARD_LIST,
-    shardCount: Sharding.Client.getInfo().TOTAL_SHARDS
+    shards: getInfo().SHARD_LIST,
+    shardCount: getInfo().TOTAL_SHARDS
 });
 
 import "./lib/i18n";
 
 Util.setClient(client);
 
-client.cluster = new Sharding.Client(client);
-client.connecting = true;
+client.cluster = new ClusterClient(client);
 client.loading = true;
 
 export const cluster = `[Cluster ${client.cluster.id}]`;
@@ -50,9 +52,10 @@ export let disabledGuilds: Set<string>;
 const loggingin = Date.now();
 client.once("ready", async () => {
     const start = Date.now();
-    client.connecting = false;
 
     clientLogger.info(`Logged in as ${client.user!.tag} in ${Date.now() - loggingin}ms`);
+    const shards = client.options.shards as number[];
+    clientLogger.info(`Serving ${shards.length} shards: ${shards.join(", ")}`)
 
     disabledGuilds = new Set<string>(client.guilds.cache.map((g) => g.id));
 
@@ -81,12 +84,14 @@ client.once("ready", async () => {
 
     client.loading = false;
     clientLogger.info(`Ready in ${Date.now() - start}ms`);
+
+    client.cluster.spawnNextCluster();
 });
 
 const eventFiles = readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
 for (const filename of eventFiles) {
     const file = require(`./events/${filename}`);
-    const name = filename.split(".")[0];
+    const name = filename.split(".")[0]!;
     if (file.once) {
         client.once(name, file.run);
     } else {
@@ -95,9 +100,11 @@ for (const filename of eventFiles) {
 };
 
 client.on("error", (err) => void clientLogger.error(`Error. ${inspect(err)}`));
-client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate limited.\n${inspect(rateLimitInfo)}`));
-client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[Shard ${id}] Disconnected. (${code} - ${reason})`));
 client.on("warn", (info) => void clientLogger.warn(`Warning. ${inspect(info)}`));
+client.on("shardReconnecting", (id) => void clientLogger.warn(`[Shard ${id}] Reconnecting.`));
+client.on("shardResume", (id, events) => void clientLogger.warn(`[Shard ${id}] Resumed. ${events} replayed events.`));
+client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[Shard ${id}] Disconnected. (${code} - ${reason})`));
+client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate limited.\n${inspect(rateLimitInfo)}`));
 
 connection.then(() => client.login()).catch((e) => {
     clientLogger.error(e);

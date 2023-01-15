@@ -42,9 +42,9 @@ import { getGuildDocument } from "../database";
 import { GuildLocale } from "../../types";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.settings");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.settings");
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "get") {
@@ -104,20 +104,22 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         return interaction.reply(t("locale", { locale }))
     } else if (cmd === "setlobby") {
-        const lobby = interaction.options.getChannel("channel");
+        const lobby = interaction.options.getChannel("channel", true);
 
         document.settings.voices_lobby = lobby.id;
         document.safeSave();
 
         return interaction.reply(t("lobbyset", { channel: `${lobby}` }));
     } else if (cmd === "counting") {
-        const channel = interaction.options.getChannel("channel");
+        const channel = interaction.options.getChannel("channel", true);
 
         document.counting = {
             channelId: channel.id,
             count: 0,
             userId: "",
-            messageId: interaction.id
+            messageId: interaction.id,
+            modules: document.counting.modules,
+            scores: document.counting.scores
         };
         document.safeSave();
 

@@ -26,12 +26,12 @@ class WarnSchema {
 
 @modelOptions({ schemaOptions: { _id: false }, options: { allowMixed: Severity.ALLOW } })
 class CountingSchema {
-    @prop({ type: String }) channelId?: Snowflake;
-    @prop({ type: Number }) count?: number;
-    @prop({ type: String }) userId?: Snowflake;
-    @prop({ type: [String] }, PropType.ARRAY) modules?: string[];
-    @prop({ type: String }) messageId?: Snowflake;
-    @prop({ type: Object, default: {} }, PropType.MAP) scores?: Map<Snowflake, number>;
+    @prop({ type: String, default: "" }) channelId!: Snowflake;
+    @prop({ type: Number, default: 0 }) count!: number;
+    @prop({ type: String, default: "" }) userId!: Snowflake;
+    @prop({ type: [String], default: [] }, PropType.ARRAY) modules!: string[];
+    @prop({ type: String, default: "" }) messageId!: Snowflake;
+    @prop({ type: Object, default: {} }, PropType.MAP) scores!: Map<Snowflake, number>;
 };
 
 @modelOptions({ schemaOptions: { _id: false }, options: { allowMixed: Severity.ALLOW } })
@@ -53,6 +53,19 @@ class SirensSchema {
     @prop({ type: String, required: true }) messageId!: Snowflake;
 };
 
+export enum AutoroleMode {
+    All = 0,
+    User = 1,
+    Bot = 2
+};
+@modelOptions({ schemaOptions: { _id: false }, options: { allowMixed: Severity.ALLOW } })
+class AutoroleSchema {
+    @prop({ type: String, unique: true, required: true }) id!: Snowflake;
+    @prop({ type: Number, required: true }) mode!: number;
+    @prop({ type: String, required: true }) createdTimestamp!: number;
+    @prop({ type: String, required: true }) createdBy!: Snowflake;
+};
+
 const saveQueue = new Map<Snowflake, 1 | 2>();
 
 @modelOptions({ schemaOptions: { collection: "guilds" }, options: { allowMixed: Severity.ALLOW } })
@@ -69,8 +82,9 @@ class GuildSchema {
     @prop({ type: Object, default: {} }, PropType.MAP) brs!: Map<string, Snowflake>;
     @prop({ type: Object, default: {} }, PropType.MAP) statschannels!: Map<Snowflake, StatsChannelsSchema>;
     @prop({ type: Object, default: {} }, PropType.MAP) sirens!: Map<string, SirensSchema>;
+    @prop({ type: Object, default: {} }, PropType.MAP) autoroles!: Map<string, AutoroleSchema>;
 
-    addWarn(this: GuildDocument, userId: string, actionedById: string, reason?: string): WarnSchema {
+    addWarn(this: GuildDocument, userId: string, actionedById: string, reason: string | null): WarnSchema {
         const warn: WarnSchema = {
             id: generateId(4),
             createdTimestamp: Date.now(),
@@ -83,7 +97,7 @@ class GuildSchema {
         this.warns.set(warn.id, warn);
         this.safeSave();
 
-        return this.warns.get(warn.id);
+        return warn;
     };
 
     removeWarn(this: GuildDocument, warnId: string): boolean {

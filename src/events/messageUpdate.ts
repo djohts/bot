@@ -3,7 +3,8 @@ import { getGuildDocument } from "../database";
 import { Message } from "discord.js";
 
 export async function run(original: Message, updated: Message) {
-    const document = await getGuildDocument(updated.guild.id);
+    if (updated.partial) await updated.fetch();
+    const document = await getGuildDocument(updated.guildId!);
 
     const { modules, channelId, messageId, count } = document.counting;
 

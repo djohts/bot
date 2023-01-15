@@ -11,11 +11,11 @@ import { getGuildDocument } from "../database";
 import { formatScore } from "../constants/";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.leaderboard");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.leaderboard");
     const { scores } = document.counting;
-    const sorted = Array.from(scores.keys()).sort((a, b) => scores.get(b) - scores.get(a));
+    const sorted = Array.from(scores.keys()).sort((a, b) => scores.get(b)! - scores.get(a)!);
     const top = sorted.slice(0, 25);
     const leaderboard = top.map((id, index) => formatScore(id, index, scores, interaction.user.id));
     let description = leaderboard.join("\n");

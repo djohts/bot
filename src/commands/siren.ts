@@ -17,9 +17,9 @@ import { getGuildDocument } from "../database";
 import { generateId } from "../constants";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.siren");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.siren");
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "set") {
@@ -36,7 +36,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         });
 
         if (Array.from(document.sirens.keys()).length)
-            document.sirens.delete(Array.from(document.sirens.keys())[0]);
+            document.sirens.delete(Array.from(document.sirens.keys())[0]!);
         document.safeSave();
 
         await interaction.deferReply({ ephemeral: true }).catch(() => null);

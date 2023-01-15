@@ -49,9 +49,9 @@ import { getGuildDocument } from "../database";
 import { generateId } from "../constants/";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.buttonroles");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.buttonroles");
     const cmd = interaction.options.getSubcommand();
 
     if (cmd === "create") {
@@ -70,15 +70,15 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         const role = interaction.options.getRole("role") as Role;
         if (
-            role.rawPosition > interaction.guild.members.me.roles.highest.rawPosition
+            role.rawPosition > me.roles.highest.rawPosition
             || role.managed
-            || interaction.guild.id === role.id
+            || interaction.guildId === role.id
         ) return interaction.reply({
             content: t("create.cantGive"),
             ephemeral: true
         });
 
-        const emoji = parseEmoji(interaction.options.getString("emoji"));
+        const emoji = parseEmoji(interaction.options.getString("emoji", true));
         if (!emoji) return interaction.reply({
             content: t("create.invalidEmoji", { emoji: `\`${interaction.options.getString("emoji")}\`` }),
             ephemeral: true
@@ -96,7 +96,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 new ActionRowBuilder<ButtonBuilder>().setComponents([
                     new ButtonBuilder()
                         .setCustomId(`br:${id}`)
-                        .setEmoji(emoji)
+                        .setEmoji({
+                            animated: emoji.animated,
+                            name: emoji.name,
+                            id: emoji.id ?? undefined
+                        })
                         .setStyle(ButtonStyle.Danger)
                 ])
             ]
@@ -110,27 +114,31 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             interaction.editReply(t("create.done"));
         });
 
-        const message = await channel.messages.fetch(messageId).catch(() => 0 as const);
+        const message = await channel.messages.fetch(messageId).catch(() => null);
         if (!message || !Array.from(document.brms.values()).includes(message.id))
             return interaction.editReply(t("create.noMessage"));
-        if (message.components[0].components.length >= 5)
+        if (message.components[0]!.components.length >= 5)
             return interaction.editReply(t("create.limitReached", { limit: "5" }));
-        if (message.embeds[0].description.includes(role.id))
+        if (message.embeds[0]!.description!.includes(role.id))
             return interaction.editReply(t("create.alreadyExists"));
 
         const row = new ActionRowBuilder<ButtonBuilder>()
             .setComponents(
-                ...(message.components[0].components as ButtonComponent[]).map((x) => ButtonBuilder.from(x)),
+                ...(message.components[0]!.components as ButtonComponent[]).map((x) => ButtonBuilder.from(x)),
                 new ButtonBuilder()
                     .setCustomId(`br:${id}`)
-                    .setEmoji(emoji)
+                    .setEmoji({
+                        animated: emoji.animated,
+                        name: emoji.name,
+                        id: emoji.id ?? undefined
+                    })
                     .setStyle(ButtonStyle.Danger)
             );
 
         const newMessage = {
             embeds: [{
                 title: t("create.chooseRoles"),
-                description: message.embeds[0].description
+                description: message.embeds[0]!.description
                     + `\n${emoji.id ? `<${emoji.animated ? "a" : ""}:${emoji.name}:${emoji.id}>` : emoji.name} - ${role}`
             }],
             components: [row]
@@ -145,10 +153,10 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             interaction.editReply(t("create.done"));
         });
     } else if (cmd === "delete") {
-        const brId = interaction.options.getString("id");
-        const brc = document.brcs.get(brId);
-        const brm = document.brms.get(brId);
-        const br = document.brs.get(brId);
+        const brId = interaction.options.getString("id", true);
+        const brc = document.brcs.get(brId)!;
+        const brm = document.brms.get(brId)!;
+        const br = document.brs.get(brId)!;
 
         await interaction.deferReply({ ephemeral: true }).catch(() => null);
 
@@ -164,7 +172,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             document.safeSave();
         });
 
-        const message = await channel.messages.fetch(brm).catch(() => 0 as const);
+        const message = await channel.messages.fetch(brm).catch(() => null);
         if (!message) return interaction.editReply(t("delete.deleted", { id: brId })).then(() => {
             document.brcs.delete(brId);
             document.brms.delete(brId);
@@ -175,22 +183,22 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
         const row = new ActionRowBuilder<ButtonBuilder>()
             .setComponents(
-                ...(message.components[0].components as ButtonComponent[])
-                    .filter((x) => !x.customId.includes(brId))
+                ...(message.components[0]!.components as ButtonComponent[])
+                    .filter((x) => !x.customId!.includes(brId))
                     .map((x) => ButtonBuilder.from(x))
             );
 
         const newMessage = {
             embeds: [{
                 title: t("create.chooseRoles"),
-                description: message.embeds[0].description.split("\n").filter((a) => !a.includes(br)).join("\n")
+                description: message.embeds[0]!.description!.split("\n").filter((a) => !a.includes(br)).join("\n")
             }],
             components: [row]
         };
 
         if (
-            !newMessage.embeds[0].description?.length ||
-            !newMessage.components[0].components?.length
+            !newMessage.embeds[0]!.description?.length ||
+            !newMessage.components[0]!.components?.length
         ) return interaction.editReply(t("delete.deleted", { id: brId })).then(() => {
             document.brcs.delete(brId);
             document.brms.delete(brId);
@@ -221,7 +229,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             const channelBrIds = [...Array.from(brcs).filter(([, v]) => v === channelId).map(([k]) => k)];
 
             channelBrIds.map((i) => {
-                const messageId = brms.get(i);
+                const messageId = brms.get(i)!;
                 const messageBrIds = [...Array.from(brms).filter(([, v]) => v === messageId).map(([k]) => k)];
 
                 messageObject.set(
@@ -231,7 +239,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             });
 
             channelObject.set(channelId, messageObject.filter((t, messageId) =>
-                channelBrIds.includes(Array.from(brms).find(([, v]) => v === messageId)[0])
+                channelBrIds.includes(Array.from(brms).find(([, v]) => v === messageId)![0])
             ));
         });
 
@@ -269,7 +277,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                     void i.update(generateMessage(paginated, page, t));
                 };
             });
-            collector.on("end", () => interaction.deleteReply().catch(() => null));
+            collector.on("end", () => void interaction.deleteReply().catch(() => null));
         });
     };
 };

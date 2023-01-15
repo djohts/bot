@@ -5,7 +5,7 @@ export const paginate = <T>(arr: T[], itemsPerPage: number): T[][] => {
         page.push(val);
 
         return acc;
-    }, []);
+    }, [] as T[][]);
 };
 
 export const parseTime = (input: string, outputType = "ms") => {

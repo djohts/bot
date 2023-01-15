@@ -1,7 +1,7 @@
 import { ButtonInteraction } from "discord.js";
 import { getUserDocument } from "../database";
 
-export = async (interaction: ButtonInteraction) => {
+export = async (interaction: ButtonInteraction<"cached">) => {
     const document = await getUserDocument(interaction.user.id);
     const cmd = interaction.customId.split(":")[0];
 

@@ -2,34 +2,24 @@ import { join } from "path";
 import i18next from "i18next";
 import fs from "fs";
 
-const loadLocales = () => {
-    const localesPath = `${__dirname}/../../locales/`;
-    const obj = {};
-    const dirs = fs.readdirSync(localesPath);
-
-    for (const dir of dirs) {
-        obj[dir] = { translation: {} };
-
-        if (fs.lstatSync(join(localesPath, dir)).isDirectory()) {
-            const dirs = fs.readdirSync(join(localesPath, dir));
-
-            for (const subdir of dirs) {
-                if (fs.lstatSync(join(localesPath, dir, subdir)).isDirectory()) {
-                    obj[dir]["translation"][subdir] = {};
-                    const files = fs.readdirSync(join(localesPath, dir, subdir));
-
-                    for (const file of files) {
-                        const name = file.split(".")[0];
-                        const content = fs.readFileSync(`${join(localesPath, dir, subdir)}/${file}`, { encoding: "utf-8" });
-                        const json = JSON.parse(content);
-
-                        obj[dir]["translation"][subdir][name] = json;
-                    };
-                };
-            };
-        };
-    };
-
+function readLocales(dir: string, obj: Record<string, any> = {}) {
+    const files = fs.readdirSync(dir);
+    files.forEach((file) => {
+        const needsTranslation = file.match(/(en|ua|ru)$/g);
+        const filePath = `${dir}/${file}`;
+        const stat = fs.lstatSync(filePath);
+        if (stat.isDirectory()) {
+            obj[file] = {};
+            if (needsTranslation) {
+                obj[file].translation = {};
+                readLocales(filePath, obj[file].translation);
+            } else {
+                readLocales(filePath, obj[file]);
+            }
+        } else {
+            obj[file.replace(".json", "")] = require(filePath);
+        }
+    });
     return obj;
 };
 
@@ -37,7 +27,7 @@ i18next.init({
     fallbackLng: "en",
     returnNull: false,
     returnEmptyString: false,
-    resources: loadLocales(),
+    resources: readLocales(join(__dirname, "..", "..", "locales")),
     interpolation: {
         escapeValue: false
     }

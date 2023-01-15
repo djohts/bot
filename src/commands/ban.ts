@@ -5,7 +5,7 @@ export const options = new SlashCommandBuilder()
     .setDescription("Ban a user from the guild.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
-    .addUserOption((o) => o.setName("member").setDescription("User that needs to be banned.").setRequired(true))
+    .addUserOption((o) => o.setName("user").setDescription("User that needs to be banned.").setRequired(true))
     .addStringOption((o) => o.setName("duration").setDescription("Ban duration."))
     .addStringOption((o) => o.setName("reason").setDescription("Ban reason."))
     .addIntegerOption((o) => o.setName("purgedays").setDescription("Delete messages within this amount of days.").setMinValue(1).setMaxValue(7))
@@ -17,18 +17,17 @@ import { getGuildDocument } from "../database";
 import prettyms from "pretty-ms";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.ban");
-    const user = interaction.options.getUser("member");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.ban");
+    const me = await interaction.guild.members.fetchMe();
+    const user = interaction.options.getUser("user", true);
 
-    if (
-        !interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
-    ) return interaction.reply({ content: t("cannotBan"), ephemeral: true });
-    if (
-        interaction.options.getString("duration")
-        && !parseTime(interaction.options.getString("duration"))
-    ) return interaction.reply({ content: t("cannotParseTime"), ephemeral: true });
+    if (!me.permissions.has(PermissionFlagsBits.BanMembers))
+        return interaction.reply({ content: t("cannotBan"), ephemeral: true });
+    const duration = interaction.options.getString("duration");
+    if (duration && !parseTime(duration))
+        return interaction.reply({ content: t("cannotParseTime"), ephemeral: true });
 
     await interaction.deferReply();
 
@@ -49,13 +48,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
     const reason = interaction.options.getString("reason")?.trim();
     const deleteMessageDays = interaction.options.getInteger("purgedays");
 
-    if (!interaction.options.getString("duration")) time = -1;
-    else time = Date.now() + parseTime(interaction.options.getString("duration"));
+    if (!duration) time = -1;
+    else time = Date.now() + parseTime(duration);
 
     const dmemb = new EmbedBuilder()
         .setAuthor({
             name: interaction.guild.name,
-            iconURL: interaction.guild.iconURL()
+            iconURL: interaction.guild.iconURL() ?? ""
         })
         .setTitle(t("dmEmbed.title"))
         .addFields({
@@ -63,9 +62,9 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
             inline: true
         });
-    if (time !== -1) dmemb.addFields({
+    if (time !== -1 && duration) dmemb.addFields({
         name: t("dmEmbed.time"),
-        value: `\`${prettyms(parseTime(interaction.options.getString("duration")))}\``,
+        value: `\`${prettyms(parseTime(duration))}\``,
         inline: true
     });
     if (reason) dmemb.addFields({
@@ -77,7 +76,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
     await interaction.guild.bans.create(user, {
         reason: `${interaction.user.tag}: ${reason || t("notSpecified")}`,
-        deleteMessageDays
+        deleteMessageDays: deleteMessageDays ?? undefined
     }).then(() => {
         document.bans.set(user.id, { userId: user.id, createdTimestamp: Date.now(), expiresTimestamp: time });
         document.safeSave();

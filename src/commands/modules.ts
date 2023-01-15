@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, StringSelectMenuBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("modules")
@@ -7,7 +7,7 @@ export const options = new SlashCommandBuilder()
     .setDMPermission(false)
     .toJSON();
 
-import { ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, SelectMenuBuilder, ComponentType, ButtonStyle } from "discord.js";
+import { ChatInputCommandInteraction, ActionRowBuilder, ButtonBuilder, ComponentType, ButtonStyle } from "discord.js";
 import { getGuildDocument } from "../database";
 import allModules from "../constants/modules";
 import i18next from "i18next";
@@ -19,26 +19,30 @@ const names = {
     webhook: "Webhook"
 };
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.modules");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.modules");
     const { modules: oldModules } = document.counting;
 
     const m = await interaction.reply({
         fetchReply: true,
         components: [
-            new ActionRowBuilder<SelectMenuBuilder>().setComponents([
-                new SelectMenuBuilder()
+            new ActionRowBuilder<StringSelectMenuBuilder>().setComponents([
+                new StringSelectMenuBuilder()
                     .setPlaceholder(t("choose"))
                     .setCustomId("modules_menu")
                     .setMinValues(0)
                     .setMaxValues(4)
-                    .setOptions(Object.keys(allModules).map((module) => ({
-                        label: names[module],
-                        value: module,
-                        description: allModules[module].description,
-                        default: oldModules.includes(module)
-                    })))
+                    .setOptions(Object.keys(allModules).map((m) => {
+                        const module = m as keyof typeof allModules;
+
+                        return {
+                            label: names[module],
+                            value: module,
+                            description: allModules[module].description,
+                            default: oldModules.includes(module)
+                        };
+                    }))
             ])
         ]
     });
@@ -49,21 +53,11 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
         time: 60 * 1000
     });
 
-    collector.on("collect", () => collector.stop("a"));
-    collector.on("end", (a, r) => {
-        if (r !== "a") return void interaction.editReply({
-            content: t("timedout"),
-            components: [
-                new ActionRowBuilder<ButtonBuilder>().setComponents([
-                    new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
-                ])
-            ]
-        });
-
-        const newModules = a.first().values;
+    collector.on("collect", (i) => {
+        const newModules = i.values;
 
         if (newModules.includes("embed") && newModules.includes("webhook"))
-            return void a.first().update({
+            return void i.update({
                 content: t("incompatible", { a: "Embed", b: "Webhook" }),
                 components: [
                     new ActionRowBuilder<ButtonBuilder>().setComponents([
@@ -72,13 +66,13 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
                 ]
             });
 
-        const oldList = oldModules?.map((m) => `**${names[m]}**`).join(",") || t("empty");
-        const newList = newModules?.map((m) => `**${names[m]}**`).join(",") || t("empty");
+        const oldList = oldModules.map((m) => `**${names[m as keyof typeof allModules]}**`).join(",") || t("empty");
+        const newList = newModules.map((m) => `**${names[m as keyof typeof allModules]}**`).join(",") || t("empty");
 
         document.counting.modules = newModules;
         document.safeSave();
 
-        return void a.first().update({
+        return void i.update({
             content: [
                 t("changes"),
                 t("old", { oldList }),
@@ -91,4 +85,12 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             ]
         });
     });
+    collector.on("end", () => void interaction.editReply({
+        content: t("timedout"),
+        components: [
+            new ActionRowBuilder<ButtonBuilder>().setComponents([
+                new ButtonBuilder().setCustomId("reply:delete").setStyle(ButtonStyle.Danger).setEmoji("🗑")
+            ])
+        ]
+    }));
 };

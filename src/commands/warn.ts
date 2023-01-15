@@ -32,13 +32,13 @@ import { paginate } from "../constants/resolvers";
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.warn");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.warn");
 
     switch (interaction.options.getSubcommand()) {
         case "add":
-            const user = interaction.options.getUser("user");
+            const user = interaction.options.getUser("user", true);
             const reason = interaction.options.getString("reason");
 
             if (user.id === interaction.user.id)
@@ -109,7 +109,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             });
             return;
         case "remove":
-            document.removeWarn(interaction.options.getString("id"));
+            document.removeWarn(interaction.options.getString("id", true));
 
             return interaction.reply(t("remove.removed"));
     };

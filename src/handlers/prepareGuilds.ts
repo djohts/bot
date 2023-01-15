@@ -1,22 +1,24 @@
 import { Guild, Message, PermissionFlagsBits } from "discord.js";
-import { clientLogger } from "../util/logger/cluster";
+import { clientLogger } from "../utils/logger/cluster";
 import { getGuildDocument } from "../database";
 import { inspect } from "util";
-import Util from "../util/Util";
+import Util from "../utils/Util";
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export = async (guild: Guild) => {
     const document = await getGuildDocument(guild.id);
     await Util.func.checkGuildBans(guild);
-    const { channelId: channelId, messageId: messageId } = document.counting;
+    const { channelId, messageId } = document.counting;
+
+    if (!channelId || !messageId) return;
 
     try {
         const channel = guild.channels.cache.get(channelId);
         const me = await guild.members.fetchMe();
 
         if (!channel) {
-            delete document.counting.channelId;
+            document.counting.channelId = "";
             return document.safeSave();
         };
 
@@ -38,7 +40,7 @@ export = async (guild: Guild) => {
                     if (!messages.size) processing = false;
                     else await channel.bulkDelete(messages, true).catch(() => fail = true);
                     if (processing && !fail) {
-                        messages = await channel.messages.fetch({ limit: 100, after: messageId }).catch(() => { fail = true; return null; });
+                        messages = await channel.messages.fetch({ limit: 100, after: messageId });
                         if (messages?.filter(filter).size) await sleep(3500);
                     };
                 };

@@ -16,30 +16,36 @@ import i18next from "i18next";
 
 const cds = new Map<string, number>();
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
-    const t = i18next.getFixedT(document.locale, null, "commands.purge");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.purge");
+    const me = await interaction.guild.members.fetchMe();
+
+    if (!interaction.channel) return;
 
     if (cds.has(interaction.channel.id))
         return interaction.reply({
-            content: t("cd", { time: prettyMs(cds.get(interaction.channel.id) - Date.now()) }),
+            content: t("cd", { time: prettyMs(cds.get(interaction.channel.id)! - Date.now()) }),
             ephemeral: true
         });
     else {
         cds.set(interaction.channel.id, Date.now() + 3500);
-        setTimeout(() => cds.delete(interaction.channel.id), 3500);
+        setTimeout(() => cds.delete(interaction.channel!.id), 3500);
     };
 
-    if (!interaction.channel.permissionsFor(interaction.guild.members.me).has(PermissionFlagsBits.ManageMessages))
+    if (!interaction.channel.permissionsFor(me).has(PermissionFlagsBits.ManageMessages))
         return interaction.reply({ content: t("noperm"), ephemeral: true });
 
     await interaction.deferReply({ ephemeral: true });
 
-    const limit = interaction.options.getInteger("amount");
+    const limit = interaction.options.getInteger("amount", true);
 
     let toDelete = await interaction.channel.messages.fetch({ limit, before: interaction.id });
     if (!document.settings.purgePinned) toDelete = toDelete.filter((m) => !m.pinned);
-    if (interaction.options.getUser("member")) toDelete = toDelete.filter((m) => m.author.id === interaction.options.getUser("member").id);
+
+    const member = interaction.options.getUser("member");
+    if (member) toDelete = toDelete.filter((m) => m.author.id === member.id);
+
     if (!toDelete.size) return interaction.editReply(t("nomessages"));
 
     const purged = await interaction.channel.bulkDelete(toDelete, true);

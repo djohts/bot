@@ -2,7 +2,7 @@ import { getGuildDocument } from "../database";
 import { Message } from "discord.js";
 
 export async function run(deleted: Message) {
-    const document = await getGuildDocument(deleted.guild.id);
+    const document = await getGuildDocument(deleted.guildId!);
     const { modules, channelId, messageId, userId, count } = document.counting;
     if (
         channelId === deleted.channel.id

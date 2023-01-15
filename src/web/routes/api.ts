@@ -3,7 +3,6 @@ import { FastifyInstance, HookHandlerDoneFunction } from "fastify";
 import { Client, WebhookClient } from "discord.js";
 import { manager } from "../../sharding";
 import config from "../../constants/config";
-import axios from "axios";
 
 const wh = new WebhookClient({ url: config.notifications_webhook });
 
@@ -17,10 +16,15 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
             users: bot.guilds.cache.reduce((total, guild) => total + guild.memberCount, 0),
             ping: bot.ws.ping,
             loading: bot.loading,
-            connecting: bot.connecting
+            connecting: !bot.isReady()
         })).then((results) => results.reduce((info, next, index) => {
-            for (const [key, value] of Object.entries(next)) {
-                if (["guilds", "cachedUsers", "channels", "users"].includes(key)) info[key] = (info[key] || 0) + value;
+            for (const [k, v] of Object.entries(next)) {
+                if (["guilds", "cachedUsers", "channels", "users"].includes(k)) {
+                    const key = k as Exclude<keyof typeof info, "clusters" | "lastUpdate">;
+                    const value = v as number;
+
+                    info[key] = (info[key] || 0) + value
+                };
             };
             info.clusters[index] = next;
             return info;
@@ -45,37 +49,6 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
         }));
         newBotInfo.lastUpdate = Date.now();
         res.send(newBotInfo);
-    });
-
-    fastify.get("/metrics", async (req, res) => {
-        const data = (await axios("http://0.0.0.0:4000/api/stats").then((res) => res.data)) as {
-            clusters: {
-                [key: string]: {
-                    status: string;
-                    guilds: number;
-                    cachedUsers: number;
-                    channels: number;
-                    users: number;
-                    ping: number;
-                    loading: boolean;
-                };
-            };
-            guilds: number;
-            cachedUsers: number;
-            channels: number;
-            users: number;
-            lastUpdate: number;
-        };
-
-        const metricObject = {
-            total_guilds: data.guilds,
-            total_channels: data.channels,
-            total_users: data.users,
-            total_cached_users: data.cachedUsers,
-            average_ping: Object.values(data.clusters).reduce((total, next) => total + next.ping, 0) / Object.keys(data.clusters).length
-        } as const;
-
-        res.type("text/plain").send(prometheusMetrics(metricObject));
     });
 
     fastify.post("/webhook/boticord", async (req, res) => {
@@ -133,23 +106,4 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
     });
 
     done();
-};
-
-const isdev = !config.monitoring.bc;
-function prometheusMetrics(obj: { [key: string]: number }): string {
-    const metrics: string[] = [];
-
-    for (let [key, value] of Object.entries(obj)) {
-        if (isdev) key = `d${key}`;
-
-        if (typeof value !== "object") {
-            metrics.push([
-                `# HELP ${key} todo`,
-                `# TYPE ${key} gauge`,
-                `${key} ${value}`
-            ].join("\n"));
-        };
-    };
-
-    return metrics.join("\n\n");
 };

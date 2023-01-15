@@ -10,13 +10,13 @@ import { ContextMenuCommandInteraction } from "discord.js";
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
-export const run = async (interaction: ContextMenuCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.unwtf");
+export const run = async (interaction: ContextMenuCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.unwtf");
 
     if (interaction.commandType !== ApplicationCommandType.Message) return;
 
-    const message = await interaction.channel.messages.fetch(interaction.targetId);
+    const message = await interaction.channel!.messages.fetch(interaction.targetId);
 
     if (!message.content)
         return interaction.reply({ content: t("nocontent"), ephemeral: true });

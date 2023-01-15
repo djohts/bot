@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, ContextMenuCommandInteraction } from "discord.js";
-import { clientLogger } from "../../util/logger/cluster";
+import { clientLogger } from "../../utils/logger/cluster";
 import { getGuildDocument } from "../../database";
 import { readdirSync } from "node:fs";
 import { inspect } from "util";
@@ -8,7 +8,7 @@ import i18next from "i18next";
 export default async (interaction: ChatInputCommandInteraction<"cached"> | ContextMenuCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
     // @ts-ignore
-    const t = i18next.getFixedT(document.locale, null, "handlers.interactions.slash");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "handlers.interactions.slash");
 
     if (document.counting.channelId === interaction.channelId)
         // @ts-ignore
@@ -20,7 +20,7 @@ export default async (interaction: ChatInputCommandInteraction<"cached"> | Conte
     try {
         await commandFile.run(interaction);
     } catch (e) {
-        clientLogger.error(`[g${interaction.guild.id}c${interaction.channel.id}u${interaction.user.id}] ${commandName}: ${inspect(e)}`);
+        clientLogger.error(`[g${interaction.guildId}c${interaction.channel!.id}u${interaction.user.id}] ${commandName}: ${inspect(e)}`);
 
         try {
             if (!interaction.replied) {
@@ -29,12 +29,12 @@ export default async (interaction: ChatInputCommandInteraction<"cached"> | Conte
                 await interaction.editReply(t("error", { user: `${interaction.user}` }));
             };
         } catch {
-            await interaction.channel.send(t("error", { user: `${interaction.user}` })).catch(() => null);
+            await interaction.channel!.send(t("error", { user: `${interaction.user}` })).catch(() => null);
         };
     };
 };
 
-const commands = [];
+const commands: any[] = [];
 export const loadCommands = () => {
     commands.length = 0;
 

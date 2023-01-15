@@ -12,7 +12,7 @@ export async function run(guild: Guild) {
                 icon_url: owner.displayAvatarURL()
             },
             thumbnail: {
-                url: guild.iconURL({ size: 4096 })
+                url: guild.iconURL({ size: 4096 }) ?? ""
             },
             fields: [{
                 name: "count",

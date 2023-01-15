@@ -1,30 +1,27 @@
-import { ChannelType, Message } from "discord.js";
 import { getGuildDocument } from "../database";
+import { Message } from "discord.js";
 import countingHandler from "../handlers/counting/handler";
 import config from "../constants/config";
-import Util from "../util/Util";
+import Util from "../utils/Util";
 import i18next from "i18next";
 
-export async function run(message: Message) {
-    if (
-        message.author.bot ||
-        message.channel.type === ChannelType.DM
-    ) return;
+export async function run(message: Message<true>) {
+    if (message.author.bot) return;
 
-    const document = await getGuildDocument(message.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "events.messageCreate");
+    const document = await getGuildDocument(message.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "events.messageCreate");
 
     if (
-        message.content.startsWith(`<@${Util.client.user.id}> eval`)
+        message.content.startsWith(`<@${message.client.user.id}> eval`)
         && config.admins.includes(message.author.id)
     ) return require("../commands/eval").run(message);
     if (
-        message.content.startsWith(`<@${Util.client.user.id}> exec`)
+        message.content.startsWith(`<@${message.client.user.id}> exec`)
         && config.admins.includes(message.author.id)
     ) return require("../commands/exec").run(message);
 
     if (document.counting.channelId === message.channel.id) return countingHandler(message);
-    if (message.content.match(`^<@!?${Util.client.user.id}>`)) {
+    if (message.content.match(`^<@!?${message.client.user.id}>`)) {
         void message.react("👋").catch(() => null);
         void message.reply(
             t("welcome", {

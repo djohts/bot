@@ -10,9 +10,9 @@ import { ChatInputCommandInteraction } from "discord.js";
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
-    const t = i18next.getFixedT(document.locale, null, "commands.docs");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.docs");
 
     return interaction.reply({
         content: t("docs", { link: "<https://djoh.gitbook.io/djoho-bot>" }),

@@ -1,17 +1,17 @@
 {
-  "extends": [
-    "config:base",
-    ":preserveSemverRanges"
-  ],
-  "labels": [
-    "dependencies"
-  ],
-  "additionalReviewers": [
-    "itzJOHv"
-  ],
-  "schedule": "at any time",
-  "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": "at any time"
-  }
+    "extends": [
+        "config:base",
+        ":preserveSemverRanges"
+    ],
+    "labels": [
+        "dependencies"
+    ],
+    "additionalReviewers": [
+        "itzJOHv"
+    ],
+    "schedule": "at any time",
+    "lockFileMaintenance": {
+        "enabled": true,
+        "schedule": "at any time"
+    }
 }

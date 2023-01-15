@@ -12,16 +12,17 @@ import { ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.unban");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.unban");
+    const me = await interaction.guild.members.fetchMe();
 
-    if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.BanMembers))
+    if (!me.permissions.has(PermissionFlagsBits.BanMembers))
         return interaction.reply({ content: t("noperm"), ephemeral: true });
 
     await interaction.deferReply({ ephemeral: true });
 
-    const user = interaction.options.getUser("user");
+    const user = interaction.options.getUser("user", true);
 
     if (!(await interaction.guild.bans.fetch(user).catch(() => 0)))
         return interaction.editReply(t("noban"))

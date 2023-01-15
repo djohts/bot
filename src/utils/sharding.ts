@@ -1,4 +1,4 @@
-import { Manager } from "discord-hybrid-sharding";
+import { ClusterManager } from "discord-hybrid-sharding";
 import { managerLogger } from "./logger/manager";
 import { createInterface } from "node:readline";
 import ChildProcess from "node:child_process";
@@ -9,12 +9,12 @@ const rl = createInterface({
     completer
 });
 
-export default function (manager: Manager) {
+export default function (manager: ClusterManager) {
     rl.on("line", async (line) => {
         const [command, ...args] = line.split(" ");
 
         if (command === "updateCommands") {
-            const clusterId = parseInt(args[0]);
+            const clusterId = parseInt(args[0]!);
 
             if (isNaN(clusterId)) {
                 await manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x) => x.size)).then((res: Map<string, object>[]) => {
@@ -32,20 +32,20 @@ export default function (manager: Manager) {
                 };
             };
         } else if (command === "respawn") {
-            const clusterId = parseInt(args[0]);
+            const clusterId = parseInt(args[0]!);
 
             if (!isNaN(clusterId)) {
                 if (manager.clusters.has(clusterId)) {
                     managerLogger.info(`Cluster ${clusterId} is rebooting.`);
-                    await manager.clusters.get(clusterId).respawn({ delay: 0 });
+                    await manager.clusters.get(clusterId)!.respawn({ delay: 0 });
                 } else {
                     managerLogger.warn(`Cluster ${clusterId} does not exist.`);
                 };
             };
-        } else if (["shutdown", "die"].includes(command)) {
+        } else if (["shutdown", "die"].includes(command!)) {
             managerLogger.info("Killing all clusters...");
             for (const [_, cluster] of manager.clusters) {
-                try { cluster.kill(); } catch { };
+                try { cluster.kill({ force: true }); } catch { };
             };
 
             managerLogger.info("Exiting");
@@ -78,7 +78,7 @@ function completer(line: string) {
     const hits = completions.filter((c) => c.startsWith(cmds.slice(-1).join(" ")));
 
     if ((cmds.length > 1) && (hits.length === 1)) {
-        let lastCmd = cmds.slice(-1)[0];
+        let lastCmd = cmds.slice(-1)[0]!;
         let pos = lastCmd.length;
         // @ts-ignore
         rl.line = line.slice(0, -pos).concat(hits[0]);

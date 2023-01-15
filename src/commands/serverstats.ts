@@ -52,14 +52,14 @@ import { ChatInputCommandInteraction, escapeMarkdown } from "discord.js";
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.serverstats");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.serverstats");
 
     switch (interaction.options.getSubcommand()) {
         case "set":
-            const channel = interaction.options.getChannel("channel");
-            const text = interaction.options.getString("text");
+            const channel = interaction.options.getChannel("channel", true);
+            const text = interaction.options.getString("text", true);
 
             const limit = 5;
 
@@ -73,7 +73,7 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
 
             return interaction.reply(t("set.done", { channel: `${channel}`, template: escapeMarkdown(text) }));
         case "delete":
-            const channelId = interaction.options.getString("channel");
+            const channelId = interaction.options.getString("channel", true);
 
             document.statschannels.delete(channelId);
             document.safeSave();

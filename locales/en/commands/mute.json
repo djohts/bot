@@ -1,4 +1,5 @@
 {
+    "nouser": "❌ Selected user is not a member of this guild.",
     "noperms": "❌ I don't have `ModerateMembers` permission.",
     "cantmod": "❌ I can't moderate that user.",
     "cantmute": "❌ You can't mute that user.",

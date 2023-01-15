@@ -4,7 +4,7 @@ import i18next from "i18next";
 
 export async function run(member: GuildMember, channel: VoiceBasedChannel) {
     const document = await getGuildDocument(member.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "events.voiceChannelJoin");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "events.voiceChannelJoin");
 
     if (!document.settings.voices_enabled || document.settings.voices_lobby !== channel.id) return;
 

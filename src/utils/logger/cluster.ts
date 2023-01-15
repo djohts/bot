@@ -1,4 +1,5 @@
 import { createLogger, format, transports } from "winston";
+import { getInfo } from "discord-hybrid-sharding";
 import { cluster } from "../../bot";
 import { join } from "path";
 import DailyRotateFile from "winston-daily-rotate-file";
@@ -12,7 +13,7 @@ export const clientLogger = createLogger({
     ),
     transports: [
         new DailyRotateFile({
-            filename: join(__dirname, `../../../logs/%DATE%-clusters.log`),
+            filename: join(__dirname, `../../../logs/%DATE%-cluster-${getInfo().CLUSTER}.log`),
             datePattern: "YYYY-MM-DD",
             zippedArchive: false,
             maxFiles: "7d",

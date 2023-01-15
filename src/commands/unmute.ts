@@ -12,17 +12,18 @@ import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "d
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
-    const document = await getGuildDocument(interaction.guild.id);
-    const t = i18next.getFixedT(document.locale, null, "commands.unmute");
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
+    const document = await getGuildDocument(interaction.guildId);
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.unmute");
+    const me = await interaction.guild.members.fetchMe();
 
     const member = interaction.options.getMember("member") as GuildMember;
 
-    if (!interaction.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers))
+    if (!me.permissions.has(PermissionFlagsBits.ModerateMembers))
         return interaction.reply({ content: t("noperms"), ephemeral: true });
     if (!member.moderatable)
         return interaction.reply({ content: t("cantmod"), ephemeral: true });
-    if (member.communicationDisabledUntil?.getTime() < Date.now())
+    if (!member.isCommunicationDisabled())
         return interaction.reply({ content: t("nomute"), ephemeral: true });
 
     let dmsent = false;

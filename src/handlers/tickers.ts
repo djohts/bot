@@ -1,9 +1,9 @@
 import { ActionRowBuilder, ActivityType, AttachmentBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } from "discord.js";
 import { getGlobalDocument, getGuildDocument, getUserDocument } from "../database";
-import { clientLogger } from "../util/logger/cluster";
+import { clientLogger } from "../utils/logger/cluster";
 import { readFileSync } from "node:fs";
 import config from "../constants/config";
-import Util from "../util/Util";
+import Util from "../utils/Util";
 import svg2img from "svg2img";
 import axios from "axios";
 

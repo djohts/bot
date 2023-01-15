@@ -7,7 +7,7 @@ export const options = new SlashCommandBuilder()
     .toJSON();
 
 import { ChatInputCommandInteraction, version } from "discord.js";
-import { Client } from "discord-hybrid-sharding";
+import { getInfo } from "discord-hybrid-sharding";
 import { getGuildDocument } from "../database";
 import prettyms from "pretty-ms";
 import i18next from "i18next";
@@ -16,9 +16,9 @@ import os from "os";
 const platform = `${os.type()} (${os.release()})`;
 let guilds = 0, users = 0, clusterCount = 0, shardCount = 0, memoryUsage = 0, memoryUsageGlobal = 0, nextUpdate = 0;
 
-export const run = async (interaction: ChatInputCommandInteraction) => {
+export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
-    const t = i18next.getFixedT(document.locale, null, "commands.info");
+    const t = i18next.getFixedT<any, any>(document.locale, null, "commands.info");
     const { util: Util } = interaction.client;
 
     if (nextUpdate < Date.now()) {
@@ -29,8 +29,8 @@ export const run = async (interaction: ChatInputCommandInteraction) => {
             bot.guilds.cache.map((g) => g.memberCount).reduce((a, b) => a + b, 0)
         ).then((res) => res.reduce((prev, val) => prev + val, 0));
 
-        clusterCount = Client.getInfo().CLUSTER_COUNT;
-        shardCount = Client.getInfo().TOTAL_SHARDS;
+        clusterCount = getInfo().CLUSTER_COUNT;
+        shardCount = getInfo().TOTAL_SHARDS;
 
         const { rss, heapUsed } = process.memoryUsage();
 

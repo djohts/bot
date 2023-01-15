@@ -4,10 +4,10 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message } from "discord.j
 import { getGuildDocument } from "../database";
 import { inspect } from "util";
 
-export const run = async (message: Message) => {
+export const run = async (message: Message<true>) => {
     try {
         const script = message.content.slice(27);
-        const gdb = await getGuildDocument(message.guild.id);
+        const gdb = await getGuildDocument(message.guildId);
 
         gdb;
 

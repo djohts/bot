@@ -1,4 +1,4 @@
-import { Collection, Guild, GuildMember, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client } from "discord.js";
+import { Collection, Guild, GuildMember, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client, MessagePayload, WebhookCreateMessageOptions } from "discord.js";
 import { getGlobalDocument, getGuildDocument } from "../database";
 import { loadCommands } from "../handlers/interactions/slash";
 import { BcBotBumpAction } from "../../types";
@@ -14,7 +14,7 @@ class Util {
         util = this;
     };
 
-    private _client: Client | null = null;
+    private _client: Client<true> = null!;
     public inspect = inspect;
     public wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
     public prettyBytes = (bytes: number, maximumFractionDigits = 2): string => {
@@ -28,10 +28,12 @@ class Util {
     };
     public func = {
         updateGuildStatsChannels: async (guildId: string): Promise<void> => {
-            const guild = this.client.guilds.cache.get(guildId);
+            const guild = this.client.guilds.cache.get(guildId)!;
+            const me = await guild.members.fetchMe();
+
             if (
                 !guild
-                || !guild.members.me.permissions.has(PermissionFlagsBits.ManageChannels)
+                || !me.permissions.has(PermissionFlagsBits.ManageChannels)
             ) return;
             const document = await getGuildDocument(guildId);
             if (!Object.keys(document.statschannels).length) return;
@@ -39,16 +41,15 @@ class Util {
             const whethertofetchmembers = Array.from(document.statschannels.values())
                 .some(({ template }) => template.includes("{users}") || template.includes("{bots}"));
 
-            let fetchedMembers: Collection<string, GuildMember>;
+            let fetchedMembers: Collection<string, GuildMember> | null = null;
             if (whethertofetchmembers) fetchedMembers = await guild.members.fetch({ time: 15_000 }).catch(() => null);
-            if (!fetchedMembers) return;
 
             const statsdata = {
                 members: guild.memberCount,
                 channels: guild.channels.cache.size,
                 roles: guild.roles.cache.size,
-                users: fetchedMembers?.filter((m) => !m.user.bot).size,
-                bots: fetchedMembers?.filter((m) => m.user.bot).size
+                users: fetchedMembers?.filter((m) => !m.user.bot).size ?? 0,
+                bots: fetchedMembers?.filter((m) => m.user.bot).size ?? 0
             };
 
             for (const [channelId, { template }] of Array.from(document.statschannels)) {
@@ -61,9 +62,7 @@ class Util {
                 let newtext = template
                     .replace(/\{members\}/g, statsdata.members.toLocaleString())
                     .replace(/\{channels\}/g, statsdata.channels.toLocaleString())
-                    .replace(/\{roles\}/g, statsdata.roles.toLocaleString());
-
-                if (fetchedMembers) newtext = newtext
+                    .replace(/\{roles\}/g, statsdata.roles.toLocaleString())
                     .replace(/\{users\}/g, statsdata.users.toLocaleString())
                     .replace(/\{bots\}/g, statsdata.bots.toLocaleString());
 
@@ -73,9 +72,11 @@ class Util {
             document.safeSave();
         },
         checkGuildBans: async (guild: Guild) => {
+            const me = await guild.members.fetchMe();
+
             if (
                 !guild.available
-                || !guild.members.me.permissions.has(PermissionFlagsBits.BanMembers)
+                || !me.permissions.has(PermissionFlagsBits.BanMembers)
             ) return;
 
             const document = await getGuildDocument(guild.id);
@@ -88,6 +89,7 @@ class Util {
                     .then(() => void document.bans.delete(key))
                     .catch(() => void document.bans.delete(key))
             ));
+
             document.safeSave();
         },
         processBotBump: async (options: BcBotBumpAction) => {
@@ -122,22 +124,22 @@ class Util {
             const commands = loadCommands().filter((x) => !["eval", "exec"].includes(x.name));
 
             return dev
-                ? this._client.guilds.cache.get("957937585299292192").commands.set(commands)
+                ? this._client.guilds.cache.get("957937585299292192")!.commands.set(commands)
                 : this._client.application.commands.set(commands);
         },
         getCommandMention: async (name: string) => {
             const dev = !config.monitoring.bc;
 
             const commands = dev
-                ? await this._client.guilds.cache.get("957937585299292192").commands.fetch()
+                ? await this._client.guilds.cache.get("957937585299292192")!.commands.fetch()
                 : await this._client.application.commands.fetch();
 
             const root_name = name.split(" ")[0];
             const command = commands.find((c) => c.name === root_name);
 
-            return `</${name}:${command.id}>`;
+            return `</${name}:${command?.id}>`;
         },
-        uselesslog: (x: unknown) => uselesswebhook.send(x)
+        uselesslog: (x: string | MessagePayload | WebhookCreateMessageOptions) => uselesswebhook.send(x)
     };
 
     public setClient(client: Client): Util {
