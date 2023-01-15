@@ -84,7 +84,7 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
                             "https://discord.com/oauth2/authorize",
                             `?client_id=${interaction.client.user.id}`,
                             "&scope=bot%20applications.commands",
-                            "&permissions=1375450033182"
+                            "&permissions=275683601438"
                         ].join("")
                     }),
                     t("support", { link: "https://discord.gg/AaS4dwVHyA" }),
