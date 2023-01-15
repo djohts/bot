@@ -1,5 +1,5 @@
 {
-    "nouser": "❌ Selected user is not a member of this guild.",
+    "nouser": "❌ Вибраний користувач не є учасником цього сервера.",
     "noperms": "❌ У мене немає дозволу `ModerateMembers`.",
     "cantmod": "❌ Я не можу модерувати цього користувача.",
     "cantmute": "❌ Ви не можете заглушити цього користувача.",
