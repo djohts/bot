@@ -1,5 +1,5 @@
 import { ClusterManager } from "discord-hybrid-sharding";
-import { managerLogger } from "./logger/manager";
+import { managerLogger } from "../logger/manager";
 import { createInterface } from "node:readline";
 import ChildProcess from "node:child_process";
 
