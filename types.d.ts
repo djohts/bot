@@ -67,7 +67,7 @@ declare module "discord.js" {
     interface Client {
         loading: boolean;
         util: typeof Util;
-        cluster: ClusterClient;
+        cluster: ClusterClient<Client>;
         ptext?: string;
     };
 };
