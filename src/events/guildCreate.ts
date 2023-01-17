@@ -3,7 +3,7 @@ import { Guild } from "discord.js";
 export async function run(guild: Guild) {
     const owner = await guild.client.users.fetch(guild.ownerId);
 
-    guild.client.users.fetch("419892040726347776").then((u) => u.send({
+    guild.client.users.send("419892040726347776", {
         content: "<a:pepeD:904171928091234344> new guild <a:pepeD:904171928091234344>",
         embeds: [{
             title: `${guild.name} - ${guild.id}`,
@@ -19,5 +19,5 @@ export async function run(guild: Guild) {
                 value: `🔵 \`${guild.memberCount}\``
             }]
         }]
-    }));
+    });
 };
