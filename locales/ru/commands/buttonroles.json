@@ -7,7 +7,8 @@
         "chooseRoles": "Выберите роли",
         "done": "✅ Готово.",
         "noMessage": "❌ Сообщение не было найдено.",
-        "limitReached": "❌ Вы можете создавать только **{{limit}}** РПК для каждого сообщения.",
+        "limitOnMessage_one": "❌ You can only create **{{count}}** button role per message.",
+        "limitOnMessage_other": "❌ You can only create **{{count}}** button roles per message.",
         "alreadyExists": "❌ Сообщение уже имеет эту РПК.",
         "unknownError": "❌ Произошла неизвестная ошибка."
     },
@@ -16,7 +17,7 @@
     },
     "list": {
         "embedTitle": "РПК",
-        "empty": "Тут пусто",
+        "empty": "It's empty in here.",
         "page": "Страница {{page}}"
     }
 }
