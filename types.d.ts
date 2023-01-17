@@ -2,34 +2,6 @@ import { ClusterClient } from "discord-hybrid-sharding";
 import { NodeOptions } from "erela.js";
 import Util from "./src/util/Util";
 
-export interface Config {
-    token: string;
-    database_uri: string;
-    client: {
-        id?: string;
-    };
-    monitoring: {
-        topgg?: string;
-        bc?: string;
-        bc_hook_key: string;
-    };
-    sirens_api: string;
-    notifications_webhook: string;
-    useless_webhook: string;
-    admins: string[];
-    lava: {
-        nodes: NodeOptions[];
-        spotify: {
-            clientId: string;
-            clientSecret: string;
-        };
-    };
-    shards?: number;
-    clusters?: number;
-    shardsPerClusters?: number;
-    port: number;
-};
-
 type GuildLocale = "en" | "ua" | "ru";
 
 export interface BcBotBumpAction {
@@ -61,13 +33,13 @@ export interface BcBotCommentAction {
     };
 };
 
-export type Subscription = "boticord";
+export type Subscription = "boticord" | "topgg" | "dbl";
 
 declare module "discord.js" {
     interface Client {
         loading: boolean;
         util: typeof Util;
-        cluster: ClusterClient;
+        cluster: ClusterClient<Client>;
         ptext?: string;
     };
 };

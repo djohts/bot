@@ -1,9 +1,16 @@
+import { replies } from "../commands/mention/eval";
 import { queueDelete } from "../handlers/utils";
 import { getGuildDocument } from "../database";
 import { Message } from "discord.js";
+import mentionCommands from "../handlers/mentionCommands";
 
 export async function run(original: Message, updated: Message) {
-    if (updated.partial) await updated.fetch();
+    if (updated.partial) await updated.fetch().catch((e) => {
+        if (e.code === 10008) return;
+        throw e;
+    });
+    if (replies.has(updated.id)) return mentionCommands(updated as Message<true>);
+
     const document = await getGuildDocument(updated.guildId!);
 
     const { modules, channelId, messageId, count } = document.counting;

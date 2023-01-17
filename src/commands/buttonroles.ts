@@ -47,6 +47,7 @@ import { paginate } from "../constants/resolvers";
 import { queueDelete } from "../handlers/utils";
 import { getGuildDocument } from "../database";
 import { generateId } from "../constants/";
+import limits from "../constants/limits";
 import i18next from "i18next";
 
 export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
@@ -118,7 +119,7 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
         if (!message || !Array.from(document.brms.values()).includes(message.id))
             return interaction.editReply(t("create.noMessage"));
         if (message.components[0]!.components.length >= 5)
-            return interaction.editReply(t("create.limitReached", { limit: "5" }));
+            return interaction.editReply(t("create.limitOnMessage", { count: limits.MAX_BUTTONROLES_MESSAGE }));
         if (message.embeds[0]!.description!.includes(role.id))
             return interaction.editReply(t("create.alreadyExists"));
 
