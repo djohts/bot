@@ -12,10 +12,7 @@ export const manager = new ClusterManager(__dirname + "/bot.js", {
     totalShards: config.shards,
     token: config.bot.token,
     execArgv: ["--no-warnings"],
-    mode: "process",
-    queue: {
-        auto: false
-    }
+    mode: "process"
 });
 cli(manager);
 
@@ -39,13 +36,12 @@ if (config.port) {
 
 manager.spawn({ timeout: -1, delay: 10000 }).then(() => {
     setTimeout(() => {
-        if (config.monitoring?.bc && config.monitoring.topgg) {
+        if (config.monitoring.bc && config.monitoring.topgg && config.monitoring.dbl) {
             postStats();
             setInterval(() => postStats(), 1000 * 60 * 60);
         };
     }, 2 * 60 * 1000);
 });
-manager.queue.next();
 
 process.on("unhandledRejection", (e) => managerLogger.error("unhandledRejection:" + inspect(e)));
 process.on("uncaughtException", (e) => managerLogger.error("uncaughtException:" + inspect(e)));

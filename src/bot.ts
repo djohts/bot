@@ -84,8 +84,6 @@ client.once("ready", async () => {
 
     client.loading = false;
     clientLogger.info(`Ready in ${Date.now() - start}ms`);
-
-    client.cluster.spawnNextCluster();
 });
 
 const eventFiles = readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
