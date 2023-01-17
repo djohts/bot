@@ -7,7 +7,8 @@
         "chooseRoles": "Choose roles",
         "done": "✅ Done.",
         "noMessage": "❌ Message not found.",
-        "limitReached": "❌ You can only create **{{limit}}** button roles per message.",
+        "limitOnMessage_one": "❌ You can only create **{{count}}** button role per message.",
+        "limitOnMessage_other": "❌ You can only create **{{count}}** button roles per message.",
         "alreadyExists": "❌ The message already has this button role.",
         "unknownError": "❌ An unknown error occurred."
     },
@@ -16,7 +17,7 @@
     },
     "list": {
         "embedTitle": "Button roles",
-        "empty": "its empty in here",
+        "empty": "It's empty in here.",
         "page": "Page {{page}}"
     }
 }
