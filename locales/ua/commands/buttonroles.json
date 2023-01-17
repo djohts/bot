@@ -7,8 +7,8 @@
         "chooseRoles": "Виберіть ролі",
         "done": "✅ Готово.",
         "noMessage": "❌ Повідомлення не знайдено.",
-        "limitOnMessage_one": "❌ You can only create **{{count}}** button role per message.",
-        "limitOnMessage_other": "❌ You can only create **{{count}}** button roles per message.",
+        "limitOnMessage_one": "❌ Ви можете створити максимум **{{count}}** РПК на одному повідомленні.",
+        "limitOnMessage_other": "❌ Ви можете створити максимум **{{count}}** РПК на одному повідомленні.",
         "alreadyExists": "❌ Повідомлення вже має кнопку з цією роллю.",
         "unknownError": "❌ Сталася невідома помилка."
     },
@@ -17,7 +17,7 @@
     },
     "list": {
         "embedTitle": "РПК",
-        "empty": "It's empty in here.",
+        "empty": "Тут пусто.",
         "page": "Сторінка {{page}}"
     }
 }
