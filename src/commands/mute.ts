@@ -2,10 +2,10 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("mute")
-    .setDescription("Mute a user.")
+    .setDescription("Timeout a member.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
-    .addUserOption((o) => o.setName("member").setDescription("User to mute.").setRequired(true))
+    .addUserOption((o) => o.setName("member").setDescription("Member to mute.").setRequired(true))
     .addStringOption((o) => o.setName("time").setDescription("Mute duration. 28 days max.").setRequired(true))
     .addStringOption((o) => o.setName("reason").setDescription("Mute reason."))
     .toJSON();

@@ -2,12 +2,12 @@ import { SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("siren")
-    .setDescription("Ukraine Air Raid siren map.")
+    .setDescription("Ukraine Air Raid Siren map.")
     .setDefaultMemberPermissions(8)
     .setDMPermission(false)
     .addSubcommand((c) =>
         c.setName("set").setDescription("Set channel where the message will be.").addChannelOption((o) =>
-            o.setName("channel").setDescription("Channel in which the selection menu will be created.").addChannelTypes(0, 5)
+            o.setName("channel").setDescription("Channel where the message will be.").addChannelTypes(0, 5)
         )
     )
     .toJSON();
