@@ -1,6 +1,5 @@
 import { ClusterClient } from "discord-hybrid-sharding";
-import { NodeOptions } from "erela.js";
-import Util from "./src/util/Util";
+import Util from "./src/utils/Util";
 
 type GuildLocale = "en" | "ua" | "ru";
 
