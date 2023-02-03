@@ -47,8 +47,9 @@ let prevData: SirenApiResponse | null = null;
 function updateSirenMaps() {
     axios.get<SirenApiResponse>(config.sirens_api).then((res) => {
         const data = res.data;
-        prevData = data;
         if (isEqual(data, prevData)) return void setTimeout(() => updateSirenMaps(), 1000 * 30);
+
+        prevData = data;
 
         let xml = readFileSync(__dirname + "/../../files/ua-map.svg", { encoding: "utf8" });
 
