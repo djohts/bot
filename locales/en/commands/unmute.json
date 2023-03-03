@@ -3,5 +3,9 @@
     "cantmod": "❌ I can't moderate that user.",
     "nomute": "❌ That user is not muted",
     "unmuted": "✅ {{user}} has been unmuted.",
+    "dmEmbed": {
+        "title": "Unuted",
+        "staff": "Moderator"
+    },
     "notified": "User notified via DM message"
 }
