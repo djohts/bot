@@ -39,9 +39,6 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
         return interaction.reply({ content: t("time"), ephemeral: true });
 
     let dmsent = false;
-    let duration = 0;
-    if (!time) duration = -1;
-    else duration = Date.now() + time;
 
     const dmemb = new EmbedBuilder()
         .setAuthor({
@@ -54,7 +51,7 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
             value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
             inline: true
         });
-    if (duration !== -1 && time) dmemb.addFields({
+    dmemb.addFields({
         name: t("dmEmbed.time"),
         value: `\`${prettyms(time)}\``,
         inline: true
