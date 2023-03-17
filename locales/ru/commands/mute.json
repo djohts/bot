@@ -5,5 +5,11 @@
     "cantmute": "❌ Вы не можете заглушить этого пользователя.",
     "time": "❌ Я не могу разобрать это время.",
     "muted": "✅ {{user}} был замьючен.",
+    "dmEmbed": {
+        "title": "Muted",
+        "staff": "Moderator",
+        "time": "Time",
+        "reason": "Reason"
+    },
     "notified": "Пользователь уведомлен через ЛС"
 }
