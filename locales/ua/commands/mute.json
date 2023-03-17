@@ -6,10 +6,10 @@
     "time": "❌ Я не можу опрацювати цей час.",
     "muted": "✅ {{user}} заглушений.",
     "dmEmbed": {
-        "title": "Muted",
-        "staff": "Moderator",
-        "time": "Time",
-        "reason": "Reason"
+        "title": "Заглушений",
+        "staff": "Модератор",
+        "time": "Час",
+        "reason": "Причина"
     },
     "notified": "Користувач був сповіщений у ПП"
 }
