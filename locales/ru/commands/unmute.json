@@ -4,8 +4,8 @@
     "nomute": "❌ Этот пользователь не замьючен",
     "unmuted": "✅ {{user}} был размьючен.",
     "dmEmbed": {
-        "title": "Unmuted",
-        "staff": "Moderator"
+        "title": "Разглушен",
+        "staff": "Модератор"
     },
     "notified": "Пользователь уведомлен через ЛС"
 }
