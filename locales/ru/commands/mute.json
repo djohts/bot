@@ -6,10 +6,10 @@
     "time": "❌ Я не могу разобрать это время.",
     "muted": "✅ {{user}} был замьючен.",
     "dmEmbed": {
-        "title": "Muted",
-        "staff": "Moderator",
-        "time": "Time",
-        "reason": "Reason"
+        "title": "Заглушен",
+        "staff": "Модератор",
+        "time": "Время",
+        "reason": "Причина"
     },
     "notified": "Пользователь уведомлен через ЛС"
 }
