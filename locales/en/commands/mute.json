@@ -5,5 +5,11 @@
     "cantmute": "❌ You can't mute that user.",
     "time": "❌ I can't parse that time.",
     "muted": "✅ {{user}} has been muted.",
+    "dmEmbed": {
+        "title": "Muted",
+        "staff": "Moderator",
+        "time": "Time",
+        "reason": "Reason"
+    },
     "notified": "User notified via DM message"
 }

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 export const options = new SlashCommandBuilder()
     .setName("unmute")
@@ -27,6 +27,20 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
         return interaction.reply({ content: t("nomute"), ephemeral: true });
 
     let dmsent = false;
+
+    const dmemb = new EmbedBuilder()
+        .setAuthor({
+            name: interaction.guild.name,
+            iconURL: interaction.guild.iconURL() ?? ""
+        })
+        .setTitle(t("dmEmbed.title"))
+        .addFields({
+            name: t("dmEmbed.staff"),
+            value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
+            inline: true
+        });
+
+    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => 0);
 
     return member.disableCommunicationUntil(null, interaction.user.tag).then(() => {
         return interaction.reply({
