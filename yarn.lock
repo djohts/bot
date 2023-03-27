@@ -1211,10 +1211,10 @@
   resolved "https://registry.yarnpkg.com/@tokenizer/token/-/token-0.3.0.tgz#fe98a93fe789247e998c75e74e9c7c63217aa276"
   integrity sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==
 
-"@typegoose/typegoose@^10.1.0":
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-10.1.0.tgz#b1e64760849840ff0c4b87e5049bb73a86c2e8bd"
-  integrity sha512-2TEOW5oLbU2d52+Tz23C3vr5gFPk+qP5gl/745IFisOAHnoAuTKf3znbagy4Ce90XBMnHUtsTjZD+mmUsEVJ1w==
+"@typegoose/typegoose@^11.0.0":
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/@typegoose/typegoose/-/typegoose-11.0.0.tgz#e48e58c2928eacbb95981d41f76a605e56358107"
+  integrity sha512-X9v0LY4fqoIGKwS1KkzTNztynckksVPvgWDKXJSuTpVJOfO5XG8B6aRjS7QYlmiCimPu6d3ihrHTzxKUqKAdhg==
   dependencies:
     lodash "^4.17.20"
     loglevel "^1.8.1"
