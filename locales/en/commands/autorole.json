@@ -12,6 +12,7 @@
     "list": {
         "title": "List of autoroles",
         "empty": "It's empty in here.",
+        "mode": "Mode: {{mode}}",
         "createdby": "Created by {{user}}",
         "createdat": "Created at {{absolute}} ({{relative}})"
     },
