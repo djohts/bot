@@ -4,7 +4,7 @@ import { Message } from "discord.js";
 export async function run(message: Message) {
     if (
         message.client.loading
-        || message.author.bot
+        || message.author?.bot
     ) return;
 
     const document = await getGuildDocument(message.guildId!);
