@@ -12,6 +12,7 @@
     "list": {
         "title": "Список авторолей",
         "empty": "Тут пусто.",
+        "mode": "Режим: {{mode}}",
         "createdby": "Создал(-а) {{user}}",
         "createdat": "Создано {{absolute}} ({{relative}})"
     },
