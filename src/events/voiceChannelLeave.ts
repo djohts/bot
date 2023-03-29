@@ -8,6 +8,6 @@ export async function run(member: GuildMember, channel: VoiceBasedChannel) {
         document.voices.delete(channel.id);
         document.safeSave();
 
-        return channel.delete().catch(() => null);
+        return channel.delete();
     };
 };

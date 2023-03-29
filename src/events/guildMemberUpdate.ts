@@ -22,15 +22,16 @@ export async function run(oldMember: GuildMember, newMember: GuildMember) {
         for (const [id] of document.autoroles.entries()) {
             if (!ids.includes(id)) document.autoroles.delete(id);
         };
+
+        document.safeSave();
     };
-    document.safeSave();
 
     const roles = ids.map((id) => newMember.guild.roles.cache.get(id)!).filter((r) => {
         const dbRole = document.autoroles.get(r.id)!;
-
         const modeCheck =
             dbRole.mode === (newMember.user.bot ? AutoroleMode.Bot : AutoroleMode.User)
-            || dbRole.mode === AutoroleMode.All
+            || dbRole.mode === AutoroleMode.All;
+
         return me.roles.highest.comparePositionTo(r) > 0 && modeCheck;
     });
     if (!roles.length) return;

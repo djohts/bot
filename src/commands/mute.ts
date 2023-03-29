@@ -10,10 +10,11 @@ export const options = new SlashCommandBuilder()
     .addStringOption((o) => o.setName("reason").setDescription("Mute reason."))
     .toJSON();
 
-import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
+import { ChatInputCommandInteraction, GuildMember, PermissionFlagsBits, EmbedBuilder } from "discord.js";
 import { parseTime } from "../constants/resolvers";
 import { getGuildDocument } from "../database";
 import i18next from "i18next";
+import prettyms from "pretty-ms";
 
 export const run = async (interaction: ChatInputCommandInteraction<"cached">) => {
     const document = await getGuildDocument(interaction.guildId);
@@ -38,6 +39,29 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
         return interaction.reply({ content: t("time"), ephemeral: true });
 
     let dmsent = false;
+
+    const dmemb = new EmbedBuilder()
+        .setAuthor({
+            name: interaction.guild.name,
+            iconURL: interaction.guild.iconURL() ?? ""
+        })
+        .setTitle(t("dmEmbed.title"))
+        .addFields({
+            name: t("dmEmbed.staff"),
+            value: `${interaction.user} (**${interaction.user.tag.replace(/\*/g, "\\*")}**)`,
+            inline: true
+        });
+    dmemb.addFields({
+        name: t("dmEmbed.time"),
+        value: `\`${prettyms(time)}\``,
+        inline: true
+    });
+    if (reason) dmemb.addFields({
+        name: t("dmEmbed.reason"),
+        value: reason
+    });
+
+    await member.user.send({ embeds: [dmemb] }).then(() => dmsent = true).catch(() => 0);
 
     return member.disableCommunicationUntil(Date.now() + time, interaction.user.tag + (reason ? `: ${reason}` : "")).then((m) => {
         interaction.reply({

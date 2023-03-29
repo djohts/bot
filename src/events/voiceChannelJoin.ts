@@ -29,7 +29,6 @@ export async function run(member: GuildMember, channel: VoiceBasedChannel) {
                     document.voices.set(ch.id, { ownerId: member.id });
                     document.safeSave();
                 })
-                .catch(() => ch.delete().catch(() => null))
-        )
-        .catch(() => null);
+                .catch(() => ch.delete())
+        );
 };

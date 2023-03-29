@@ -1,22 +1,13 @@
-import { Collection, Guild, GuildMember, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client, MessagePayload, WebhookCreateMessageOptions } from "discord.js";
+import { Collection, Guild, GuildMember, ActionRowBuilder, ButtonBuilder, WebhookClient, ButtonStyle, PermissionFlagsBits, Client, MessagePayload, WebhookMessageCreateOptions } from "discord.js";
 import { getGlobalDocument, getGuildDocument } from "../database";
 import { loadCommands } from "../handlers/interactions/slash";
 import { BcBotBumpAction } from "../../types";
-import { inspect } from "util";
 import config from "../constants/config";
 
 const uselesswebhook = new WebhookClient({ url: config.useless_webhook });
-let util: Util | null = null;
 
 class Util {
-    constructor() {
-        if (util) return util;
-        util = this;
-    };
-
     private _client: Client<true> = null!;
-    public inspect = inspect;
-    public wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
     public prettyBytes = (bytes: number, maximumFractionDigits = 2): string => {
         const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
         let i = 0;
@@ -29,12 +20,11 @@ class Util {
     public func = {
         updateGuildStatsChannels: async (guildId: string): Promise<void> => {
             const guild = this.client.guilds.cache.get(guildId)!;
-            const me = await guild.members.fetchMe();
+            if (!guild.available) return;
 
-            if (
-                !guild
-                || !me.permissions.has(PermissionFlagsBits.ManageChannels)
-            ) return;
+            const me = await guild.members.fetchMe();
+            if (!me.permissions.has(PermissionFlagsBits.ManageChannels)) return;
+
             const document = await getGuildDocument(guildId);
             if (!Object.keys(document.statschannels).length) return;
 
@@ -52,14 +42,16 @@ class Util {
                 bots: fetchedMembers?.filter((m) => m.user.bot).size ?? 0
             };
 
+            let needsToSave = false;
             for (const [channelId, { template }] of Array.from(document.statschannels)) {
                 const channel = guild.channels.cache.get(channelId);
                 if (!channel) {
+                    needsToSave = true;
                     document.statschannels.delete(channelId);
                     continue;
                 };
 
-                let newtext = template
+                const newtext = template
                     .replace(/\{members\}/g, statsdata.members.toLocaleString())
                     .replace(/\{channels\}/g, statsdata.channels.toLocaleString())
                     .replace(/\{roles\}/g, statsdata.roles.toLocaleString())
@@ -69,15 +61,13 @@ class Util {
                 await channel.edit({ name: newtext });
             };
 
-            document.safeSave();
+            if (needsToSave) document.safeSave();
         },
         checkGuildBans: async (guild: Guild) => {
+            if (!guild.available) return;
             const me = await guild.members.fetchMe();
 
-            if (
-                !guild.available
-                || !me.permissions.has(PermissionFlagsBits.BanMembers)
-            ) return;
+            if (!me.permissions.has(PermissionFlagsBits.BanMembers)) return;
 
             const document = await getGuildDocument(guild.id);
 
@@ -89,13 +79,13 @@ class Util {
                 });
             if (!ids.length) return;
 
-            await Promise.all<Promise<void>>(ids.map((key) =>
+            const result = await Promise.all(ids.map((key) =>
                 guild.bans.remove(key)
-                    .then(() => void document.bans.delete(key))
-                    .catch(() => void document.bans.delete(key))
+                    .then(() => document.bans.delete(key))
+                    .catch(() => document.bans.delete(key))
             ));
 
-            document.safeSave();
+            if (result.some((v) => v)) document.safeSave();
         },
         processBotBump: async (options: BcBotBumpAction) => {
             const global = await getGlobalDocument();
@@ -104,9 +94,7 @@ class Util {
                 next: options.data.at + (options.bonus?.status ? 6 * 60 * 60 * 1000 : 4 * 60 * 60 * 1000)
             });
 
-            const user = await this.client.users.fetch(options.data.user);
-
-            await user.send({
+            await this.client.users.send(options.data.user, {
                 embeds: [{
                     title: "Мониторинг",
                     description: [
@@ -116,17 +104,25 @@ class Util {
                 }],
                 components: [
                     new ActionRowBuilder<ButtonBuilder>().addComponents(
-                        new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId(`subscribe:boticord:${options.data.user}`)
+                        new ButtonBuilder().setLabel("Подписаться").setStyle(ButtonStyle.Secondary).setCustomId("subscribe:boticord")
                     )
                 ]
-            }).catch(() => null);
+            })
+                .then((m) => {
+                    if (m.channel.isDMBased()) {
+                        const user = m.channel.recipient;
 
-            await this.func.uselesslog({ content: `${user.tag} ${user} (\`${user.id}\`) bumped on boticord.top` });
+                        return this.func.uselesslog({
+                            content: `${user!.tag} ${user} (\`${user!.id}\`) bumped on boticord.top`
+                        });
+                    };
+                })
+                .catch(() => null);
         },
         registerCommands: () => {
             const dev = !config.monitoring.bc;
 
-            const commands = loadCommands().filter((x) => !["eval", "exec"].includes(x.name));
+            const commands = loadCommands();
 
             return dev
                 ? this._client.guilds.cache.get("957937585299292192")!.commands.set(commands)
@@ -144,7 +140,7 @@ class Util {
 
             return `</${name}:${command?.id}>`;
         },
-        uselesslog: (x: string | MessagePayload | WebhookCreateMessageOptions) => uselesswebhook.send(x)
+        uselesslog: (x: string | MessagePayload | WebhookMessageCreateOptions) => uselesswebhook.send(x)
     };
 
     public setClient(client: Client): Util {

@@ -5,6 +5,11 @@ import { Message } from "discord.js";
 import mentionCommands from "../handlers/mentionCommands";
 
 export async function run(original: Message, updated: Message) {
+    if (
+        updated.client.loading
+        || updated.author.bot
+    ) return;
+
     if (updated.partial) await updated.fetch().catch((e) => {
         if (e.code === 10008) return;
         throw e;

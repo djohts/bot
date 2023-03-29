@@ -30,7 +30,7 @@ if (config.port) {
     try {
         require("./web/")();
     } catch (e) {
-        managerLogger.error(e);
+        managerLogger.error(inspect(e));
     };
 };
 

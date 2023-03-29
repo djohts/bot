@@ -1,6 +1,7 @@
 import { ButtonInteraction, GuildMember, PermissionFlagsBits } from "discord.js";
 import { clientLogger } from "../utils/logger/cluster";
 import { getGuildDocument } from "../database";
+import { inspect } from "node:util";
 import i18next from "i18next";
 
 export = async (interaction: ButtonInteraction<"cached">) => {
@@ -25,13 +26,13 @@ export = async (interaction: ButtonInteraction<"cached">) => {
         ? member.roles.remove(role)
             .then(() => interaction.editReply(t("removed", { role: `${role}` })))
             .catch((e) => {
-                clientLogger.error(e);
+                clientLogger.error(inspect(e));
                 interaction.editReply(t("error"));
             })
         : member.roles.add(role)
             .then(() => interaction.editReply(t("added", { role: `${role}` })))
             .catch((e) => {
-                clientLogger.error(e);
+                clientLogger.error(inspect(e));
                 interaction.editReply(t("error"));
             });
 };

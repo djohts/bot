@@ -1,6 +1,8 @@
 import { Guild } from "discord.js";
 
 export async function run(guild: Guild) {
+    if (!guild.available) return;
+
     const owner = await guild.client.users.fetch(guild.ownerId);
 
     guild.client.users.send("419892040726347776", {
@@ -12,7 +14,7 @@ export async function run(guild: Guild) {
                 icon_url: owner.displayAvatarURL()
             },
             thumbnail: {
-                url: guild.iconURL({ size: 4096 }) ?? ""
+                url: guild.iconURL() ?? ""
             },
             fields: [{
                 name: "count",

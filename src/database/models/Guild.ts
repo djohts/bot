@@ -80,9 +80,9 @@ class GuildSchema {
     @prop({ type: Object, default: {} }, PropType.MAP) brcs!: Map<string, Snowflake>;
     @prop({ type: Object, default: {} }, PropType.MAP) brms!: Map<string, Snowflake>;
     @prop({ type: Object, default: {} }, PropType.MAP) brs!: Map<string, Snowflake>;
-    @prop({ type: Object, default: {} }, PropType.MAP) statschannels!: Map<Snowflake, StatsChannelsSchema>;
-    @prop({ type: Object, default: {} }, PropType.MAP) sirens!: Map<string, SirensSchema>;
-    @prop({ type: Object, default: {} }, PropType.MAP) autoroles!: Map<string, AutoroleSchema>;
+    @prop({ type: StatsChannelsSchema, default: {} }, PropType.MAP) statschannels!: Map<Snowflake, StatsChannelsSchema>;
+    @prop({ type: SirensSchema, default: {} }, PropType.MAP) sirens!: Map<string, SirensSchema>;
+    @prop({ type: AutoroleSchema, default: {} }, PropType.MAP) autoroles!: Map<string, AutoroleSchema>;
 
     addWarn(this: GuildDocument, userId: string, actionedById: string, reason: string | null): WarnSchema {
         const warn: WarnSchema = {

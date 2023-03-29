@@ -48,20 +48,24 @@ client.cluster = new ClusterClient(client);
 client.loading = true;
 
 export const cluster = `[Cluster ${client.cluster.id}]`;
-export let disabledGuilds: Set<string>;
+const unavailableGuilds = new Set<string>();
+const disabledGuilds = new Set<string>();
 const loggingin = Date.now();
 client.once("ready", async () => {
     const start = Date.now();
 
-    clientLogger.info(`Logged in as ${client.user!.tag} in ${Date.now() - loggingin}ms`);
+    clientLogger.info(`Logged in as ${client.user!.tag}. [${Date.now() - loggingin}ms]`);
+
+    client.guilds.cache.forEach((guild) => disabledGuilds.add(guild.id));
     const shards = client.options.shards as number[];
-    clientLogger.info(`Serving ${shards.length} shards: ${shards.join(", ")}`)
 
-    disabledGuilds = new Set<string>(client.guilds.cache.map((g) => g.id));
+    clientLogger.info(`Serving ${shards.length} shards: ${shards.join(", ")}.`);
+    clientLogger.info(`${disabledGuilds.size} guilds, ${unavailableGuilds.size} unavailable.`);
 
-    if (client.guilds.cache.size) {
+    if (disabledGuilds.size) {
         const guildCachingStart = Date.now();
         await touchGuildDocument([...disabledGuilds]);
+
         clientLogger.info(`Cached ${disabledGuilds.size} guilds. [${Date.now() - guildCachingStart}ms]`);
 
         let processingStartTimestamp = Date.now(), completed = 0, presenceInterval = setInterval(() => client.user!.setPresence({
@@ -71,11 +75,13 @@ client.once("ready", async () => {
                 name: `${Math.floor((completed / client.guilds.cache.size) * 100)}%`
             }]
         }), 1000);
+
         await Promise.all(client.guilds.cache.map(async (guild) => {
             await prepareGuild(guild);
             disabledGuilds.delete(guild.id);
             completed++;
         }));
+
         clearInterval(presenceInterval);
         clientLogger.info(`Processed ${client.guilds.cache.size} guilds. [${Date.now() - processingStartTimestamp}ms]`);
     };
@@ -83,18 +89,30 @@ client.once("ready", async () => {
     tickers();
 
     client.loading = false;
-    clientLogger.info(`Ready in ${Date.now() - start}ms`);
+    clientLogger.info(`Finished loading. [${Date.now() - start}ms]`);
+});
+
+client.on("shardReady", (_, unavailable) => {
+    if (unavailable) {
+        unavailable.forEach((guild) => {
+            unavailableGuilds.add(guild);
+            disabledGuilds.add(guild);
+        });
+    };
 });
 
 const eventFiles = readdirSync(__dirname + "/events/").filter((x) => x.endsWith(".js"));
 for (const filename of eventFiles) {
     const file = require(`./events/${filename}`);
     const name = filename.split(".")[0]!;
-    if (file.once) {
-        client.once(name, file.run);
-    } else {
-        client.on(name, file.run);
-    };
+
+    client[file.once ? "once" : "on"](name, async (...params) => {
+        try {
+            await file.run(...params);
+        } catch (e) {
+            clientLogger.error(`Error in ${filename}:\n${inspect(e)}`);
+        };
+    });
 };
 
 client.on("error", (err) => void clientLogger.error(`Error. ${inspect(err)}`));
@@ -105,7 +123,7 @@ client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[
 client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate limited.\n${inspect(rateLimitInfo)}`));
 
 connection.then(() => client.login()).catch((e) => {
-    clientLogger.error(e);
+    clientLogger.error(inspect(e));
     process.exit();
 });
 
