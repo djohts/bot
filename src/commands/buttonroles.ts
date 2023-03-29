@@ -239,7 +239,7 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
                 );
             });
 
-            channelObject.set(channelId, messageObject.filter((t, messageId) =>
+            channelObject.set(channelId, messageObject.filter((_, messageId) =>
                 channelBrIds.includes(Array.from(brms).find(([, v]) => v === messageId)![0])
             ));
         });

@@ -1,11 +1,11 @@
 export const paginate = <T>(arr: T[], itemsPerPage: number): T[][] => {
-    return arr.reduce((acc, val, i) => {
+    return arr.reduce<T[][]>((acc, val, i) => {
         const idx = Math.floor(i / itemsPerPage);
         const page = acc[idx] || (acc[idx] = []);
         page.push(val);
 
         return acc;
-    }, [] as T[][]);
+    }, []);
 };
 
 export const parseTime = (input: string, outputType = "ms") => {

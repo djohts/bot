@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, Message, MessageReplyOptions } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, Message, MessageEditOptions, MessageReplyOptions } from "discord.js";
 import { generateId } from "../../constants";
 import { inspect } from "util";
 import config from "../../constants/config";
@@ -27,7 +27,7 @@ export const run = async (message: Message<true>, args: string[]) => {
     };
 };
 
-async function generateMessage(message: Message, result: unknown, time: number | null, success = true, hastebin = false): Promise<MessageReplyOptions> {
+async function generateMessage(message: Message, result: unknown, time: number | null, success = true, hastebin = false): Promise<MessageReplyOptions & MessageEditOptions> {
     if (hastebin) {
         const res = await axios.post<{ key: string; }>(
             `${config.hastebinLink}/documents`,

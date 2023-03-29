@@ -14,31 +14,19 @@ export default function (manager: ClusterManager) {
         const [command, ...args] = line.split(" ");
 
         if (command === "updateCommands") {
-            const clusterId = parseInt(args[0]!);
-
-            if (isNaN(clusterId)) {
-                await manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x: any) => x.size))
-                    .then((res: number[]) => {
-                        managerLogger.info(`Updated ${res[0]} commands on all clusters`);
-                    });
-            } else {
-                if (manager.clusters.has(clusterId)) {
-                    await manager.broadcastEval<any>((c) => c.util.func.registerCommands().then((x: any) => x.size), {
-                        cluster: clusterId
-                    }).then((res: number) => {
-                        managerLogger.info(`Updated ${res} commands on cluster ${clusterId}`);
-                    });
-                } else {
-                    managerLogger.warn(`Cluster ${clusterId} does not exist.`);
-                };
-            };
+            await manager.broadcastEval((c) => c.util.func.registerCommands().then((x) => x.size), {
+                cluster: 0
+            }).then((res) => {
+                managerLogger.info(`Updated ${res} commands.`);
+            });
         } else if (command === "respawn") {
             const clusterId = parseInt(args[0]!);
 
             if (!isNaN(clusterId)) {
                 if (manager.clusters.has(clusterId)) {
                     managerLogger.info(`Cluster ${clusterId} is rebooting.`);
-                    await manager.clusters.get(clusterId)!.respawn({ delay: 0 });
+
+                    await manager.clusters.get(clusterId)!.respawn({ delay: 1000 });
                 } else {
                     managerLogger.warn(`Cluster ${clusterId} does not exist.`);
                 };

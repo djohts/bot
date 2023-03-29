@@ -8,6 +8,16 @@ export const options = new SlashCommandBuilder()
     .addSubcommand((c) =>
         c.setName("add").setDescription("Add a role that will be added upon member join.")
             .addRoleOption((o) => o.setName("role").setDescription("A role that will be given.").setRequired(true))
+            .addIntegerOption((o) => o.setName("mode").setDescription("Mode of the autorole.").setRequired(true).addChoices({
+                name: "All",
+                value: 0
+            }, {
+                name: "User",
+                value: 1
+            }, {
+                name: "Bot",
+                value: 2
+            }))
     )
     .addSubcommand((c) =>
         c.setName("list").setDescription("Add a role that will be added upon member join.")
@@ -49,9 +59,11 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
             if (me.roles.highest.comparePositionTo(role) < 1)
                 return interaction.reply({ content: t("add.rolepos"), ephemeral: true });
 
+            const mode = interaction.options.getInteger("mode", true);
+
             document.autoroles.set(role.id, {
                 id: role.id,
-                mode: AutoroleMode.User,
+                mode,
                 createdTimestamp: Date.now(),
                 createdBy: interaction.user.id
             });
@@ -66,9 +78,11 @@ export const run = async (interaction: ChatInputCommandInteraction<"cached">) =>
 
             const mapped = Array.from(document.autoroles.values()).map((dbRole) => {
                 const timestamp = Math.round(dbRole.createdTimestamp / 1000);
+                const modeName = AutoroleMode[dbRole.mode]!;
 
                 return dedent`
                     > <@&${dbRole.id}> (\`${dbRole.id}\`)
+                        - ${t("list.mode", { mode: modeName })}
                         - ${t("list.createdby", { user: `<@${dbRole.createdBy}>` })}
                         - ${t("list.createdat", { absolute: `<t:${timestamp}:f>`, relative: `<t:${timestamp}:R>` })}
                 `;

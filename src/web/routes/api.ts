@@ -17,30 +17,21 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
             ping: bot.ws.ping,
             loading: bot.loading,
             connecting: !bot.isReady()
-        })).then((results) => results.reduce((info, next, index) => {
+        })).then((results) => results.reduce<BotStats>((info, next) => {
             for (const [k, v] of Object.entries(next)) {
                 if (["guilds", "cachedUsers", "channels", "users"].includes(k)) {
                     const key = k as Exclude<keyof typeof info, "clusters" | "lastUpdate">;
                     const value = v as number;
 
-                    info[key] = (info[key] || 0) + value
+                    info[key] = (info[key] || 0) + value;
                 };
             };
-            info.clusters[index] = next;
+
+            info.clusters.push(next);
+
             return info;
         }, {
-            clusters: {} as {
-                [key: string]: {
-                    status: number;
-                    guilds: number;
-                    cachedUsers: number;
-                    channels: number;
-                    users: number;
-                    ping: number;
-                    loading: boolean;
-                    connecting: boolean;
-                }
-            },
+            clusters: [],
             guilds: 0,
             cachedUsers: 0,
             channels: 0,
@@ -106,4 +97,24 @@ export default (fastify: FastifyInstance, _: any, done: HookHandlerDoneFunction)
     });
 
     done();
+};
+
+type ClusterStats = {
+    status: number;
+    guilds: number;
+    cachedUsers: number;
+    channels: number;
+    users: number;
+    ping: number;
+    loading: boolean;
+    connecting: boolean;
+};
+
+type BotStats = {
+    clusters: ClusterStats[];
+    guilds: number;
+    cachedUsers: number;
+    channels: number;
+    users: number;
+    lastUpdate: number;
 };

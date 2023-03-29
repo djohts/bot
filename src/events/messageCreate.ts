@@ -7,7 +7,10 @@ import Util from "../utils/Util";
 import i18next from "i18next";
 
 export async function run(message: Message<true>) {
-    if (message.author.bot) return;
+    if (
+        message.client.loading
+        || message.author.bot
+    ) return;
 
     const document = await getGuildDocument(message.guildId);
     const t = i18next.getFixedT<any, any>(document.locale, null, "events.messageCreate");
@@ -15,9 +18,7 @@ export async function run(message: Message<true>) {
     if (
         message.content.startsWith(`<@${message.client.user.id}> `)
         && config.admins.includes(message.author.id)
-    ) {
-        return mentionCommands(message);
-    };
+    ) return mentionCommands(message);
 
     if (document.counting.channelId === message.channel.id) return countingHandler(message);
     if (message.content.match(`^<@!?${message.client.user.id}>`)) {

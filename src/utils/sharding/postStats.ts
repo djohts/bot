@@ -18,7 +18,7 @@ export async function postStats(): Promise<void> {
         axios.post("https://api.boticord.top/v2/stats", {
             servers: guilds,
             shards: guildsPerShard.length,
-            users: users
+            users
         }, {
             headers: {
                 Authorization: `Bot ${config.monitoring.bc}`,

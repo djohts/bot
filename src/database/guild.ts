@@ -35,6 +35,6 @@ export function touchGuildDocument(guildIds: Snowflake[]): Promise<void> {
 
 export async function resetGuildDocument(guildId: Snowflake): Promise<boolean> {
     const guild = await getGuildDocument(guildId, false);
-    void guild.remove();
+    void guild.deleteOne();
     return guildCache.delete(guildId) && guildCacheQueue.delete(guildId);
 };

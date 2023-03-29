@@ -6,19 +6,20 @@ export = async (message: Message<true>) => {
     const document = await getGuildDocument(message.guildId);
     const content = message.content;
     if (content.startsWith("!") && message.member!.permissions.has(PermissionFlagsBits.ManageMessages)) return;
-    let { count, userId, modules } = document.counting;
+    let { count, userId, modules, scores } = document.counting;
 
     if (
-        message.client.loading
-        || (!modules.includes("spam") && message.author.id === userId)
+        (!modules.includes("spam") && message.author.id === userId)
         || (!modules.includes("talking") && content !== `${count + 1}`)
         || content.split(/\s/g)[0] !== `${count + 1}`
     ) return queueDelete([message]);
-    document.counting.count++;
+
+    count++;
     userId = message.member!.id;
-    document.counting.scores.set(
+
+    scores.set(
         message.author.id,
-        (document.counting.scores.get(message.author.id) ?? 0) + 1
+        (scores.get(message.author.id) ?? 0) + 1
     );
 
     let countingMessage = message;
@@ -46,7 +47,7 @@ export = async (message: Message<true>) => {
 
             queueDelete([message]);
         };
-    } catch (e) { }
+    } catch { }
     else if (modules.includes("embed")) try {
         const webhooks = await message.channel.fetchWebhooks();
         let webhook = webhooks.find((w) => w.name === "Counting");
@@ -64,7 +65,7 @@ export = async (message: Message<true>) => {
 
             queueDelete([message]);
         };
-    } catch (e) { };
+    } catch { };
 
     document.counting.messageId = countingMessage.id;
 

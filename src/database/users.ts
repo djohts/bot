@@ -14,5 +14,5 @@ export function getUserDocument(userId: Snowflake): Promise<UserDocument> {
 
 export async function resetUserDocument(userid: Snowflake): Promise<void> {
     const user = await getUserDocument(userid);
-    return void user.remove();
+    return void user.deleteOne();
 };

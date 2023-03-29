@@ -2,6 +2,7 @@ import { ActionRowBuilder, ActivityType, AttachmentBuilder, ButtonBuilder, Butto
 import { getGlobalDocument, getGuildDocument, getUserDocument } from "../database";
 import { clientLogger } from "../utils/logger/cluster";
 import { readFileSync } from "node:fs";
+import { inspect } from "node:util";
 import { isEqual } from "lodash";
 import config from "../constants/config";
 import Util from "../utils/Util";
@@ -45,8 +46,7 @@ function updateGuildStatsChannels() {
 
 let prevData: SirenApiResponse | null = null;
 function updateSirenMaps() {
-    axios.get<SirenApiResponse>(config.sirens_api).then((res) => {
-        const data = res.data;
+    axios.get<SirenApiResponse>(config.sirens_api).then(({ data }) => {
         if (isEqual(data, prevData)) return void setTimeout(() => updateSirenMaps(), 1000 * 30);
 
         prevData = data;
@@ -94,13 +94,13 @@ function updateSirenMaps() {
             })).then(() => void setTimeout(() => updateSirenMaps(), 1000 * 30));
         });
     }).catch(() => void setTimeout(() => updateSirenMaps(), 1000 * 30));
+};
 
-    function changeColor(xml: string, region: string, color: string) {
-        const regionName = region.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const replace = `(name="${regionName}" fill=".*?")|(name="${regionName}")`;
-        const re = new RegExp(replace, "g");
-        return xml.replace(re, `name="${regionName}" fill="${color}"`);
-    };
+function changeColor(xml: string, region: string, color: string) {
+    const regionName = region.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const replace = `(name="${regionName}" fill=".*?")|(name="${regionName}")`;
+    const re = new RegExp(replace, "g");
+    return xml.replace(re, `name="${regionName}" fill="${color}"`);
 };
 
 function processBotBumps() {
@@ -138,7 +138,7 @@ function processBotBumps() {
                         })
                         .catch(() => null);
                 };
-            } catch (e) { clientLogger.error(e); };
+            } catch (e) { clientLogger.error(inspect(e)); };
         })).then(() => void setTimeout(() => processBotBumps(), 30 * 1000));
     });
 };

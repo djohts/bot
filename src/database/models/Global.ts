@@ -11,13 +11,13 @@ class GlobalSchema {
     addBump(this: GlobalDocument, d: BumpData): void {
         this.boticordBumps.push(d);
 
-        return void this.safeSave();
+        return this.safeSave();
     };
 
     removeBump(this: GlobalDocument, userId: BumpData["userId"]): void {
         this.boticordBumps = this.boticordBumps.filter((d) => d.userId !== userId);
 
-        return void this.safeSave();
+        return this.safeSave();
     };
 
     safeSave(this: GlobalDocument): void {

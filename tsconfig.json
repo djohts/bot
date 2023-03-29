@@ -14,6 +14,7 @@
         "target": "ES2022",
         "removeComments": true,
         "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "pretty": true,
         "newLine": "lf",
         "noImplicitOverride": true,
