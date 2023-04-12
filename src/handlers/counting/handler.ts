@@ -6,7 +6,7 @@ export = async (message: Message<true>) => {
     const document = await getGuildDocument(message.guildId);
     const content = message.content;
     if (content.startsWith("!") && message.member!.permissions.has(PermissionFlagsBits.ManageMessages)) return;
-    let { count, userId, modules, scores } = document.counting;
+    const { count, userId, modules, scores } = document.counting;
 
     if (
         (!modules.includes("spam") && message.author.id === userId)
@@ -14,8 +14,8 @@ export = async (message: Message<true>) => {
         || content.split(/\s/g)[0] !== `${count + 1}`
     ) return queueDelete([message]);
 
-    count++;
-    userId = message.member!.id;
+    document.counting.count++;
+    document.counting.userId = message.member!.id;
 
     scores.set(
         message.author.id,
