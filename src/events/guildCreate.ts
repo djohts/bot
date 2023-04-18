@@ -5,7 +5,7 @@ export async function run(guild: Guild) {
 
     const owner = await guild.client.users.fetch(guild.ownerId);
 
-    guild.client.users.send("419892040726347776", {
+    guild.client.users.send("736719142345900195", {
         content: "<a:pepeD:904171928091234344> new guild <a:pepeD:904171928091234344>",
         embeds: [{
             title: `${guild.name} - ${guild.id}`,
