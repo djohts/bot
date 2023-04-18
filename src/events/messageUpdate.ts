@@ -7,6 +7,7 @@ import mentionCommands from "../handlers/mentionCommands";
 export async function run(original: Message, updated: Message) {
     if (
         updated.client.loading
+        || !updated.author
         || updated.author.bot
     ) return;
 
