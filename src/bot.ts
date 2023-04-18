@@ -117,8 +117,8 @@ for (const filename of eventFiles) {
 
 client.on("error", (err) => void clientLogger.error(`Error. ${inspect(err)}`));
 client.on("warn", (info) => void clientLogger.warn(`Warning. ${inspect(info)}`));
-client.on("shardReconnecting", (id) => void clientLogger.warn(`[Shard ${id}] Reconnecting.`));
-client.on("shardResume", (id, events) => void clientLogger.warn(`[Shard ${id}] Resumed. ${events} replayed events.`));
+// client.on("shardReconnecting", (id) => void clientLogger.warn(`[Shard ${id}] Reconnecting.`));
+// client.on("shardResume", (id, events) => void clientLogger.warn(`[Shard ${id}] Resumed. ${events} replayed events.`));
 client.on("shardDisconnect", ({ code, reason }, id) => void clientLogger.warn(`[Shard ${id}] Disconnected. (${code} - ${reason})`));
 client.rest.on("rateLimited", (rateLimitInfo) => void clientLogger.warn(`Rate limited.\n${inspect(rateLimitInfo)}`));
 
